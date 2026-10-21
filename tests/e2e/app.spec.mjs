@@ -5,6 +5,8 @@ import { test, expect } from '@playwright/test';
 const FAST = { budget: 'rapide', autoExplain: false, level: 'intermediaire', showOpponentArrow: true, apiUrl: '' };
 
 async function setup(page, settings = {}, code = '') {
+  // Pas d'appel réseau réel vers Lichess dans ces tests : réponses déterministes.
+  await page.route(/https:\/\/(explorer\.)?lichess\.org\//, (r) => r.abort());
   await page.addInitScript(([s, c]) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();

@@ -4,6 +4,7 @@ const KEY_BACKUP = 'coach-echecs:partie-precedente:v1';
 const KEY_CORRUPT = 'coach-echecs:partie-illisible';
 const KEY_SETTINGS = 'coach-echecs:reglages:v1';
 const KEY_CODE = 'coach-echecs:code-acces';
+const KEY_LICHESS = 'coach-echecs:jeton-lichess';
 
 function get(key) {
   try { return localStorage.getItem(key); } catch { return null; }
@@ -50,3 +51,7 @@ export function saveSettings(s) { set(KEY_SETTINGS, JSON.stringify(s)); }
 
 export function getAccessCode() { return get(KEY_CODE) || ''; }
 export function setAccessCode(code) { if (code) set(KEY_CODE, code); else del(KEY_CODE); }
+
+// Jeton Lichess personnel (créé SANS aucune permission) pour l'Opening Explorer.
+export function getLichessToken() { return get(KEY_LICHESS) || ''; }
+export function setLichessToken(t) { if (t) set(KEY_LICHESS, t); else del(KEY_LICHESS); }

@@ -36,6 +36,8 @@ jobs:
         working-directory: worker
       - name: Tests unitaires (règles, continuité, import/export)
         run: npm test
+      - name: Répertoire revérifié par Stockfish (pièges et réfutations, profondeur 18)
+        run: node scripts/verify-repertoire.mjs --all --dry
       - name: Tests du Worker (auth, CORS, limites) avec Claude simulé
         run: npm test
         working-directory: worker
@@ -105,6 +107,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ACCESS_CODE: ${{ secrets.COACH_ACCESS_CODE }}
+          LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }}
           ORIGIN: ${{ steps.secrets.outputs.origin }}
           MODEL: ${{ vars.CLAUDE_MODEL || 'claude-opus-5-5' }}
           DAILY: ${{ vars.DAILY_LIMIT || '100' }}
@@ -112,7 +115,8 @@ jobs:
           set -o pipefail
           npx wrangler deploy --var "ALLOWED_ORIGINS:$ORIGIN" --var "CLAUDE_MODEL:$MODEL" --var "DAILY_LIMIT:$DAILY" 2>&1 | tee deploy.log
           # Les secrets ne passent ni par la ligne de commande ni par un fichier du dépôt.
-          node -e 'process.stdout.write(JSON.stringify({ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY, ACCESS_CODE: process.env.ACCESS_CODE}))' | npx wrangler secret bulk
+          # LICHESS_TOKEN (facultatif) active le relais Opening Explorer.
+          node -e 'const e=process.env, s={ANTHROPIC_API_KEY:e.ANTHROPIC_API_KEY, ACCESS_CODE:e.ACCESS_CODE}; if (e.LICHESS_TOKEN) s.LICHESS_TOKEN=e.LICHESS_TOKEN; process.stdout.write(JSON.stringify(s))' | npx wrangler secret bulk
           url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
           if [ -z "$url" ]; then
             echo "::error::Adresse workers.dev introuvable. Ouvrez une fois « Workers & Pages » dans le tableau de bord Cloudflare pour créer votre sous-domaine workers.dev, puis relancez."
@@ -189,10 +193,16 @@ jobs:
           echo "Sans code : $code"
           [ "$code" = "401" ]
       - name: Parcours réel sur le site publié (moteur compris)
-        run: npx playwright test -g "parcours complet|téléphone|panne du moteur"
+        run: npx playwright test -g "parcours complet|téléphone|panne du moteur|navigation entre les pages"
         env:
           BASE_URL: ${{ needs.pages.outputs.url }}
           WITH_WEBKIT: '1'
+      - name: Vraies API Lichess depuis le site publié (Cloud Eval, Explorer avec jeton si fourni)
+        run: npx playwright test -g "@online" --project=chromium-ordinateur
+        env:
+          BASE_URL: ${{ needs.pages.outputs.url }}
+          ONLINE: '1'
+          LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }}
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

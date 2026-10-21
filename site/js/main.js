@@ -8,6 +8,10 @@ import {
 } from './analysis.js';
 import { Coach, CoachError, LEVELS, buildCoachPayload, allowedMoveSet, renderCoachText } from './coach.js';
 import * as store from './storage.js';
+import { LichessClient } from './lichess.js';
+import { OptimalPanel, DEFAULT_FILTER } from './optimal.js';
+import { initRouter } from './router.js';
+import { RepertoirePage } from './repertoire-page.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -33,6 +37,25 @@ const coach = new Coach({
   getCode: () => store.getAccessCode(),
 });
 
+const lichess = new LichessClient({
+  getToken: () => store.getLichessToken(),
+  // Relais Cloudflare (jeton Lichess côté serveur) si l'API le propose et que le code est saisi.
+  getProxy: () => (state.relay && coach.configured() ? { url: coach.getApiUrl(), code: coach.getCode() } : null),
+});
+const optimal = new OptimalPanel({
+  el: $('optimal'),
+  client: lichess,
+  getFilter: () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) }),
+  setFilter: (f) => { state.settings.explorerFilter = f; store.saveSettings(state.settings); },
+  onChange: () => renderBoard(),
+  onPlay: (uci) => {
+    if (state.viewPly !== null) return;
+    const mv = state.game.legalMoves().find((m) => m.lan === uci);
+    if (mv && window.confirm(`Enregistrer ${sanFr(mv.san)} comme coup réellement joué ?`)) playMove(uci, 'explorer');
+  },
+});
+let repertoirePage = null;
+
 async function init() {
   fillSelects();
   restoreGame();
@@ -44,6 +67,19 @@ async function init() {
   } catch { /* pas de config publiée : pas d'API Claude */ }
   refreshCoachPill();
   renderAll();
+  initRouter({
+    onShow: (page) => {
+      if (page === 'repertoire') {
+        repertoirePage ??= new RepertoirePage({
+          el: $('page-repertoire'),
+          client: lichess,
+          getFilter: () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) }),
+          openLine: openLineInBoard,
+        });
+        repertoirePage.show();
+      }
+    },
+  });
   try {
     await engine.load();
   } catch { /* état d'erreur déjà affiché */ }
@@ -79,6 +115,8 @@ function onPositionChanged(reason) {
   state.coach = { status: 'idle', token: null, html: '', error: null, abort: null, meta: null };
   state.analysis = { status: 'waiting-engine', token: null, live: null, advice: null, error: null, deeper: false };
   renderAll();
+  optimal.setEngine(engine.state === 'error' ? 'error' : 'computing', null);
+  optimal.update(g);
   const st = g.status();
   if (st.over) {
     engine.cancelAll();
@@ -118,6 +156,7 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
   } catch (e) {
     if (state.game.isCurrent(token) && state.analysis.jobId === jobId) {
       state.analysis = { ...state.analysis, status: 'engine-error', error: e.message };
+      optimal.setEngine('error', null);
       renderAdvice();
       renderBoard();
     }
@@ -138,6 +177,7 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
     return;
   }
   state.analysis = { ...state.analysis, status: 'ready', advice, live: null };
+  optimal.setEngine('ready', advice);
   if (!advice.isPlayerTurn) {
     state.expectation = { gameId: g.id, revision: g.revision, ply: g.ply, uci: advice.best.lan, san: advice.best.san };
   }
@@ -282,6 +322,11 @@ function renderBoard() {
     else if (state.settings.showOpponentArrow) arrows.push({ from: a.advice.best.from, to: a.advice.best.to, kind: 'reply' });
     const th = state.coach.meta?.threat;
     if (th && state.coach.token && g.isCurrent(state.coach.token)) arrows.push({ from: th.move.from, to: th.move.to, kind: 'threat' });
+  }
+  if (live) {
+    const stat = optimal.statArrow((t) => g.isCurrent(t));
+    // Flèche bleue seulement si le coup statistique diffère du coup moteur déjà fléché.
+    if (stat && !arrows.some((x) => x.from === stat.from && x.to === stat.to)) arrows.push(stat);
   }
   board.setArrows(arrows);
   $('view-banner').classList.toggle('hidden', live);
@@ -503,6 +548,7 @@ function renderEnginePill(s) {
     el.textContent = 'Moteur en panne';
     el.title = s.message;
     engine.lastError = s.message;
+    optimal.setEngine('error', null);
     if (state.game) { state.analysis.status = 'engine-error'; state.analysis.error = s.message; renderAdvice(); }
   }
   if (state.game) renderButtons();
@@ -521,6 +567,9 @@ async function refreshCoachPill() {
   el.textContent = 'Claude : vérification…';
   try {
     const s = await coach.status();
+    const hadRelay = state.relay;
+    state.relay = !!s.explorerProxy;
+    if (state.relay !== hadRelay && state.game) optimal.update(state.game);
     el.className = 'pill ok';
     el.textContent = 'Claude : prêt';
     el.title = `Modèle ${s.model} · ${s.usedToday}/${s.dailyLimit} appels aujourd’hui`;
@@ -651,6 +700,12 @@ function bindUi() {
     }
     state.settings.apiUrl = prevApi;
   };
+  $('clear-lichess').onclick = () => {
+    store.setLichessToken('');
+    $('set-lichess').value = '';
+    $('coach-test-msg').textContent = 'Jeton Lichess effacé de cet appareil.';
+    optimal.update(state.game);
+  };
   $('clear-code').onclick = () => {
     store.setAccessCode('');
     $('set-code').value = '';
@@ -751,6 +806,8 @@ function openSettings() {
   $('set-code').value = '';
   $('set-code').placeholder = store.getAccessCode() ? 'Code enregistré sur cet appareil (laisser vide pour le garder)' : 'Saisi une fois, conservé sur cet appareil';
   $('coach-test-msg').textContent = '';
+  $('set-lichess').value = '';
+  $('set-lichess').placeholder = store.getLichessToken() ? 'Jeton enregistré sur cet appareil (laisser vide pour le garder)' : 'lip_… (jeton sans aucune permission)';
   $('dlg-settings').showModal();
 }
 
@@ -767,6 +824,9 @@ function saveSettingsFromForm() {
   store.saveGame(state.game.toJSON());
   const code = $('set-code').value.trim();
   if (code) store.setAccessCode(code);
+  const tok = $('set-lichess').value.trim();
+  if (tok) store.setLichessToken(tok);
+  if (tok || code) optimal.update(state.game);
   refreshCoachPill();
   renderCoach();
   renderBoard();
@@ -774,6 +834,16 @@ function saveSettingsFromForm() {
 }
 
 // Accès pour les tests automatisés (lecture seule de l'état).
-window.__coach = { state, engine };
+window.__coach = { state, engine, optimal, lichess, get repertoire() { return repertoirePage; } };
+
+// Ouvre une ligne du répertoire sur l'échiquier comme nouvelle partie (l'ancienne est sauvegardée).
+function openLineInBoard(entry) {
+  const color = entry.rep === 'gd' ? 'w' : 'b';
+  const pgn = entry.san.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(' ');
+  if (!window.confirm(`Ouvrir « ${entry.nom} » sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`)) return;
+  store.backupGame();
+  setGame(Game.fromPgn(pgn, { playerColor: color, level: state.settings.level }));
+  location.hash = '#/moteur';
+}
 
 init();

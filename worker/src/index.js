@@ -9,6 +9,8 @@ import { DurableObject } from 'cloudflare:workers';
 import { SYSTEM_PROMPT, buildUserMessage, validatePayload } from './prompt.js';
 
 const MAX_BODY = 16 * 1024;
+const EXPLORER_URL = 'https://explorer.lichess.org/lichess';
+const EXPLORER_PARAMS = ['variant', 'fen', 'play', 'speeds', 'ratings', 'since', 'until', 'moves', 'topGames', 'recentGames'];
 // Modèles acceptant le repli serveur `fallbacks: "default"` (refus des classifieurs de sécurité).
 const FALLBACK_MODELS = new Set(['claude-opus-5-5', 'claude-opus-5', 'claude-fable-5-1', 'claude-sonnet-5-5']);
 
@@ -31,6 +33,16 @@ export class Gate extends DurableObject {
     f.total += 1;
     f.ips[ip] = (f.ips[ip] || 0) + 1;
     await this.ctx.storage.put('fails', f);
+  }
+
+  // Relais Opening Explorer : limite séparée, sans toucher au quota Claude.
+  async consumeExplorer(perMinute) {
+    const minute = Math.floor(Date.now() / 60000);
+    const m = await this._get('xminute', { period: minute, count: 0 });
+    if (m.count >= perMinute) return false;
+    m.count += 1;
+    await this.ctx.storage.put('xminute', m);
+    return true;
   }
 
   async usage(dailyLimit) {
@@ -81,6 +93,34 @@ async function checkCode(provided, expected) {
   return crypto.subtle.timingSafeEqual(a, b);
 }
 
+// Relaie une requête vers l'Opening Explorer avec le jeton Lichess stocké dans les secrets.
+// Seuls les paramètres documentés sont transmis ; réponses mises en cache 24 h.
+async function explorerRelay(url, env, gate, headers) {
+  if (!env.LICHESS_TOKEN) return json({ error: 'Relais Lichess non configuré (secret LICHESS_TOKEN absent).' }, 503, headers);
+  if (!(await gate.consumeExplorer(Number(env.EXPLORER_PER_MINUTE || 60)))) {
+    return json({ error: 'Trop de requêtes vers l’explorateur, patientez une minute.' }, 429, headers);
+  }
+  const qs = new URLSearchParams();
+  for (const k of EXPLORER_PARAMS) if (url.searchParams.has(k)) qs.set(k, url.searchParams.get(k).slice(0, 2000));
+  const target = `${env.EXPLORER_URL || EXPLORER_URL}?${qs}`;
+  const cache = typeof caches !== 'undefined' ? caches.default : null;
+  const cacheKey = new Request(target);
+  const hit = cache && (await cache.match(cacheKey));
+  if (hit) return new Response(hit.body, { status: 200, headers: { ...headers, 'content-type': 'application/json', 'x-cache': 'hit' } });
+  let res;
+  try {
+    res = await fetch(target, { headers: { authorization: `Bearer ${env.LICHESS_TOKEN}`, accept: 'application/json' } });
+  } catch {
+    return json({ error: 'Opening Explorer injoignable.' }, 502, headers);
+  }
+  if (res.status === 429) return json({ error: 'Lichess limite les requêtes : réessayez dans une minute.' }, 429, headers);
+  if (res.status === 401) return json({ error: 'Jeton Lichess du relais refusé (secret LICHESS_TOKEN).' }, 502, headers);
+  if (!res.ok) return json({ error: `Opening Explorer : HTTP ${res.status}` }, 502, headers);
+  const body = await res.text();
+  if (cache) await cache.put(cacheKey, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=86400' } }));
+  return new Response(body, { status: 200, headers: { ...headers, 'content-type': 'application/json', 'cache-control': 'no-store' } });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -92,7 +132,7 @@ export default {
       return new Response('API Coach Échecs : accès réservé.\n', { headers: { 'content-type': 'text/plain; charset=utf-8' } });
     }
     if (!cors.allowed) return json({ error: 'Origine non autorisée' }, 403, cors.headers);
-    if (!['/v1/status', '/v1/explain'].includes(url.pathname)) return json({ error: 'Introuvable' }, 404, cors.headers);
+    if (!['/v1/status', '/v1/explain', '/v1/explorer'].includes(url.pathname)) return json({ error: 'Introuvable' }, 404, cors.headers);
 
     if (!env.ACCESS_CODE || env.ACCESS_CODE.length < 8) {
       return json({ error: 'Serveur mal configuré : code d’accès absent ou trop court (8 caractères minimum).' }, 503, cors.headers);
@@ -114,8 +154,9 @@ export default {
 
     if (url.pathname === '/v1/status' && request.method === 'GET') {
       const u = await gate.usage(dailyLimit);
-      return json({ ok: true, model, claudeConfigured: !!env.ANTHROPIC_API_KEY, ...u }, 200, cors.headers);
+      return json({ ok: true, model, claudeConfigured: !!env.ANTHROPIC_API_KEY, explorerProxy: !!env.LICHESS_TOKEN, ...u }, 200, cors.headers);
     }
+    if (url.pathname === '/v1/explorer' && request.method === 'GET') return explorerRelay(url, env, gate, cors.headers);
     if (request.method !== 'POST') return json({ error: 'Méthode non autorisée' }, 405, cors.headers);
     if (!env.ANTHROPIC_API_KEY) return json({ error: 'Clé API Anthropic absente des secrets du Worker.' }, 503, cors.headers);
 

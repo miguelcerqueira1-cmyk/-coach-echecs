@@ -6,12 +6,14 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "postinstall": "node scripts/vendor.mjs",
-    "build": "node scripts/build.mjs",
+    "postinstall": "node scripts/vendor.mjs && node scripts/repertoire.mjs",
+    "build": "node scripts/repertoire.mjs && node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
     "test": "node --test tests/unit/*.test.mjs",
     "test:e2e": "playwright test",
-    "check": "npm run build && npm test && npm run test:e2e"
+    "check": "npm run build && npm test && npm run test:e2e",
+    "verify:repertoire": "node scripts/verify-repertoire.mjs",
+    "check:repertoire": "node scripts/verify-repertoire.mjs --check"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

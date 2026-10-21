@@ -29,6 +29,12 @@ before(async () => {
     let body = '';
     req.on('data', (c) => { body += c; });
     req.on('end', () => {
+      if (req.url.startsWith('/lichess')) {
+        received.push({ url: req.url, headers: req.headers, explorer: true });
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ white: 3, draws: 1, black: 1, moves: [] }));
+        return;
+      }
       received.push({ url: req.url, headers: req.headers, body: JSON.parse(body || '{}') });
       res.writeHead(200, { 'content-type': 'application/json' });
       res.end(JSON.stringify({
@@ -38,9 +44,9 @@ before(async () => {
       }));
     });
   }).listen(MOCK);
-  writeFileSync(join(dir, '.dev.vars'), `ACCESS_CODE=${CODE}\nANTHROPIC_API_KEY=sk-test-factice\n`);
+  writeFileSync(join(dir, '.dev.vars'), `ACCESS_CODE=${CODE}\nANTHROPIC_API_KEY=sk-test-factice\nLICHESS_TOKEN=lip_relais\n`);
   wrangler = spawn(join(dir, 'node_modules/.bin/wrangler'), ['dev', '--show-interactive-dev-session=false', '--port', String(PORT), '--ip', '127.0.0.1',
-    '--var', `ANTHROPIC_BASE_URL:http://127.0.0.1:${MOCK}`, '--var', 'PER_MINUTE_LIMIT:3', '--var', `ALLOWED_ORIGINS:${ORIGIN}`,
+    '--var', `ANTHROPIC_BASE_URL:http://127.0.0.1:${MOCK}`, '--var', `EXPLORER_URL:http://127.0.0.1:${MOCK}/lichess`, '--var', 'PER_MINUTE_LIMIT:3', '--var', `ALLOWED_ORIGINS:${ORIGIN}`,
     '--persist-to', join(dir, '.wrangler/test-state')], { cwd: dir, stdio: 'pipe', detached: true });
   let log = '';
   wrangler.stdout.on('data', (d) => { log += d; });
@@ -88,6 +94,19 @@ test('statut avec bon code', async () => {
   assert.equal(d.claudeConfigured, true);
 });
 
+test('relais Opening Explorer : jeton Lichess ajouté côté serveur, paramètres filtrés', async () => {
+  const st = await (await call('/v1/status')).json();
+  assert.equal(st.explorerProxy, true);
+  const r = await call('/v1/explorer?fen=x&play=d2d4,d7d5&ratings=0,1000&speeds=blitz&evil=1');
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).white, 3);
+  const req = received.find((x) => x.explorer);
+  assert.equal(req.headers.authorization, 'Bearer lip_relais');
+  assert.match(req.url, /play=d2d4%2Cd7d5/);
+  assert.doesNotMatch(req.url, /evil/);
+  assert.equal((await call('/v1/explorer?fen=x', { code: 'faux' })).status, 401);
+});
+
 test('données invalides : 400 sans consommer de quota', async () => {
   const r = await call('/v1/explain', { method: 'POST', body: { fen: 'x' } });
   assert.equal(r.status, 400);
@@ -115,8 +134,8 @@ test('limite par minute : 429 au-delà de 3 appels', async () => {
 });
 
 test('verrouillage après 10 échecs d’authentification', async () => {
-  // 1 échec déjà compté (test « sans code ») + 9 ici = 10 → verrouillage.
-  for (let i = 0; i < 9; i++) assert.equal((await call('/v1/status', { code: 'mauvais-' + i })).status, 401);
+  // 2 échecs déjà comptés (« sans code », relais avec mauvais code) + 8 ici = 10 → verrouillage.
+  for (let i = 0; i < 8; i++) assert.equal((await call('/v1/status', { code: 'mauvais-' + i })).status, 401);
   const r = await call('/v1/status');
   assert.equal(r.status, 429);
 });

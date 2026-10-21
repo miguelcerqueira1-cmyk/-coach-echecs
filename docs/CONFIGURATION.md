@@ -50,6 +50,24 @@ Inventez une phrase d'au moins 12 caractères (par exemple 4 ou 5 mots sans rapp
 eux). Elle protège l'API : sans elle, personne ne peut consommer vos crédits. Vous la
 saisirez une fois dans l'application (⚙ Réglages), elle restera mémorisée sur l'appareil.
 
+## 3 bis. Jeton Lichess (statistiques de parties réelles)
+
+L'Opening Explorer de Lichess exige désormais un jeton. Un jeton **sans aucune permission**
+suffit : il ne permet ni de jouer, ni de lire vos messages, ni de modifier votre compte.
+
+1. Connectez-vous sur <https://lichess.org> (compte gratuit).
+2. Ouvrez <https://lichess.org/account/oauth/token/create>.
+3. *Description* : `coach-echecs`. **Ne cochez aucune case** de permission.
+4. **Create** → copiez le jeton (`lip_…`).
+
+Deux façons de l'utiliser (une seule suffit) :
+- **Sur l'appareil** : ⚙ Réglages → « Jeton Lichess personnel ». Le navigateur interroge
+  directement Lichess.
+- **Par le relais Cloudflare** (recommandé si l'API Claude est configurée) : secret GitHub
+  `LICHESS_TOKEN` ci-dessous. Le jeton reste sur le serveur et les réponses sont mises en cache.
+
+Cloud Eval (évaluations Stockfish de Lichess) ne demande aucun jeton.
+
 ## 4. Enregistrer les secrets dans GitHub
 
 Dépôt → **Settings** → **Secrets and variables** → **Actions** → onglet **Secrets** →
@@ -61,6 +79,7 @@ Dépôt → **Settings** → **Secrets and variables** → **Actions** → ongle
 | `CLOUDFLARE_API_TOKEN` | le jeton Cloudflare (étape 2.4) |
 | `CLOUDFLARE_ACCOUNT_ID` | l'identifiant de compte (étape 2.3) |
 | `COACH_ACCESS_CODE` | votre code d'accès (étape 3) |
+| `LICHESS_TOKEN` | facultatif : jeton Lichess (étape 3 bis), active le relais |
 
 Facultatif, onglet **Variables** → **New repository variable** :
 
@@ -79,6 +98,7 @@ vert, ouvrez le site → ⚙ → saisissez le code → **Tester la connexion**.
 | GitHub (dépôt public, Pages, Actions) | 0 € |
 | Cloudflare Workers, offre Free (100 000 requêtes/jour) | 0 € |
 | Stockfish (calcul dans votre navigateur) | 0 € |
+| API Lichess (Cloud Eval, Opening Explorer) | 0 € |
 | API Anthropic | à l'usage, crédits prépayés |
 
 Estimation API (tarifs publics au moment de l'écriture, par million de jetons

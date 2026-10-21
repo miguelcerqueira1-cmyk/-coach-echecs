@@ -15,11 +15,21 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/analysis.js           Validation des variantes, points de vue des scores, descriptions FR
   js/board.js              Échiquier DOM (clic, glisser, flèches SVG, choix de promotion)
   js/coach.js              Client de l'API Claude + vérification des coups cités
-  js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès)
+  js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess)
+  js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
+  js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
+  js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré)
+  js/repertoire-page.js    Page Répertoire : tableau 9 colonnes, arbre Lichess, liens vidéo perso
+  js/lines.js              Lecture des lignes « 1. d4 d5 2. c4? », index ECO, empreintes
+  data/repertoire.js       38 fiches rédigées (Gambit Dame, Caro-Kann) — source à éditer
+  data/repertoire.json     GÉNÉRÉ (scripts/repertoire.mjs) : fiches + ECO + vérification
   pieces/                  SVG cburnett (GPLv2+)
   vendor/, engine/         GÉNÉRÉS par scripts/vendor.mjs (postinstall), non versionnés
 worker/                    API Cloudflare Worker (Claude) : src/index.js, src/prompt.js
-scripts/                   vendor.mjs, build.mjs (→ dist/ + config.json), serve.mjs
+scripts/                   vendor.mjs, build.mjs (→ dist/ + config.json), serve.mjs,
+                           repertoire.mjs (ECO + JSON), verify-repertoire.mjs + uci-node.mjs (Stockfish Node)
+data/chess-openings/       Base ECO CC0 de lichess-org/chess-openings (TSV)
+data/verification.json     Résultats Stockfish (profondeur 18) des punitions/pièges, par empreinte de fiche
 tests/unit/                node:test (règles, continuité, import/export)
 tests/e2e/                 Playwright, vrai Stockfish ; API Claude simulée par interception
 .github/workflows/deploy.yml  vérif → Worker → Pages → test du site publié
@@ -40,7 +50,14 @@ npx playwright test    # bout en bout (sert dist/ sous /coach-echecs/) ; WITH_WE
 BASE_URL=https://…/coach-echecs/ npx playwright test -g "parcours complet"   # site publié
 cd worker && npm ci && npm test   # Worker + faux serveur Anthropic (wrangler dev)
 cd worker && npm run check        # wrangler deploy --dry-run
+npm run verify:repertoire         # après modification d'une fiche : recalcule data/verification.json
+node scripts/verify-repertoire.mjs --all --dry   # CI : tout recalculer sans écrire
 ```
+
+Modifier le répertoire : éditer `site/data/repertoire.js` (coups en SAN anglaise, « ? » sur le
+coup fautif des punitions/pièges), puis `npm run verify:repertoire`. Une fiche dont la
+vérification n'est pas confirmée fait échouer les tests : corriger la ligne (le script affiche
+la suite proposée par le moteur) plutôt que baisser le seuil.
 
 ## Décisions
 
@@ -71,8 +88,34 @@ cd worker && npm run check        # wrangler deploy --dry-run
   compteurs dans un Durable Object SQLite (offre gratuite). Modèle par défaut
   `claude-opus-5-5`, effort `low`, `fallbacks: "default"` (bêta `server-side-fallback-2026-07-01`).
 - Sans API ou sans code : tout fonctionne sauf l'explication, indiquée comme indisponible.
+- **Lichess** (vérifié dans la spécification officielle lichess-org/api, oct. 2026) :
+  Cloud Eval est public (`security: []`, CORS `*`, 404 si position absente du cache).
+  L'Opening Explorer est sur `explorer.lichess.org` (plus `.ovh`) et exige un jeton OAuth2 :
+  jeton personnel sans permission (stocké sur l'appareil) ou relais Worker `/v1/explorer`
+  (secret `LICHESS_TOKEN`, cache 24 h, 60 req/min). Le CORS de l'explorateur avec en-tête
+  `Authorization` n'a pas pu être testé depuis l'environnement de développement (hôtes Lichess
+  bloqués) : test `@online` en CI sur le site publié, relais en solution de repli.
+  Une requête Lichess à la fois, une minute de pause après un 429 (règles d'usage Lichess).
+- **Chess.com** n'expose pas de statistiques d'ouvertures agrégées : seules les tranches de
+  classement Lichess sont proposées, avec l'avertissement qu'elles ne correspondent pas à Chess.com.
+- « Meilleur % de victoire » : seulement parmi les coups ayant au moins N parties (50 par défaut),
+  toujours présenté comme une fréquence observée, distincte de l'évaluation moteur.
+- Répertoire : codes ECO et noms attribués automatiquement (position la plus profonde reconnue
+  dans la base CC0) ; il n'existe pas de nomenclature FIDE officielle des variantes.
+  Plans/structures = texte rédigé (interprétation) ; punitions/pièges = lignes vérifiées par
+  Stockfish (punition ≥ +1,5 par défaut, ou seuil plus bas explicite pour un gain de pion).
+  Lors de l'écriture initiale, 16 lignes rédigées de mémoire ont été rejetées par le moteur et
+  corrigées ou retirées : ne jamais ajouter une ligne tactique sans la vérifier.
+- Vidéos : aucun lien horodaté n'est inventé. Chaque fiche propose une recherche YouTube ; un lien
+  précis n'est publié que s'il est vérifié (`video.url` + `verifie: true`, contrôlé par les tests).
+  L'utilisateur peut enregistrer son propre lien horodaté (stocké sur l'appareil).
+- Interface en mode sombre par défaut (`:root[data-theme="light"]` pour le clair).
 
 ## Phase 2 (non implémenté)
+
+- Liens vidéo horodatés vérifiés pour chaque fiche (à choisir et contrôler à la main).
+- Plus de fiches (le répertoire actuel couvre 38 lignes ; l'arbre Lichess couvre le reste).
+- Statistiques « Masters » et parties d'un joueur précis (endpoints /masters et /player).
 
 - Modes « indice » → « explication » → « montrer le coup », en plus du conseil direct.
 - Bilan de fin de partie : moments décisifs, erreurs principales, trois pistes de travail.

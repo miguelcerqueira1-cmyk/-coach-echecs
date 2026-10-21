@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Coach Échecs</title>
   <meta name="description" content="Entraîneur d'échecs : Stockfish calcule, chess.js valide les règles, Claude explique.">
-  <meta name="theme-color" content="#1f2a24">
+  <meta name="theme-color" content="#0f1312">
   <link rel="icon" href="pieces/wN.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
   <header class="top">
     <h1>Coach Échecs</h1>
+    <nav class="tabs" aria-label="Pages">
+      <a href="#/moteur" data-page="moteur">Moteur</a>
+      <a href="#/repertoire" data-page="repertoire">Répertoire</a>
+    </nav>
     <div class="pills">
       <span id="engine-pill" class="pill" title="État du moteur Stockfish">Moteur…</span>
       <span id="coach-pill" class="pill" title="État des explications Claude">Claude…</span>
@@ -19,7 +23,7 @@
     <button id="btn-settings" class="icon-btn" type="button" aria-label="Réglages" title="Réglages">⚙</button>
   </header>
 
-  <main class="layout">
+  <main id="page-moteur" class="layout page">
     <section class="board-col">
       <div id="turn-banner" class="turn-banner" aria-live="polite"></div>
       <div id="board" class="board-wrap"></div>
@@ -47,6 +51,7 @@
 
     <section class="side-col">
       <article id="advice" class="card advice" aria-live="polite"></article>
+      <article id="optimal" class="card optimal" aria-live="polite"></article>
       <article id="coach" class="card coach" aria-live="polite"></article>
       <article class="card moves-card">
         <div class="moves-head">
@@ -63,6 +68,8 @@
       </article>
     </section>
   </main>
+
+  <main id="page-repertoire" class="page repertoire hidden" aria-label="Répertoire d’ouvertures"></main>
 
   <footer class="foot muted small">
     Pour l’entraînement, l’analyse et les parties où l’assistance est autorisée.
@@ -142,6 +149,14 @@
         <button type="button" id="clear-code">Effacer le code de cet appareil</button>
       </div>
       <p id="coach-test-msg" class="muted small" role="status"></p>
+      <h3>Données Lichess (Opening Explorer)</h3>
+      <label>Jeton Lichess personnel
+        <input id="set-lichess" type="password" autocomplete="off" spellcheck="false">
+      </label>
+      <p class="muted small">Créez-le sur lichess.org → Préférences → Jetons d’accès API, <strong>sans cocher aucune permission</strong>. Il reste sur cet appareil. Inutile si le relais Cloudflare est configuré.</p>
+      <div class="dlg-actions left">
+        <button type="button" id="clear-lichess">Effacer le jeton de cet appareil</button>
+      </div>
       <details>
         <summary>Avancé</summary>
         <label>Adresse de l’API (laisser vide pour la valeur publiée)

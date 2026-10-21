@@ -10,6 +10,16 @@ et, si l'API est configurée, une explication rédigée par **Claude** à partir
 
 Pour l'entraînement, l'analyse et les parties où l'assistance est autorisée.
 
+## Deux pages
+
+- **Moteur** : échiquier, conseil Stockfish après chaque coup réellement joué, et panneau
+  « Coup optimal » qui sépare trois sources : Stockfish (sur l'appareil), Lichess Cloud Eval,
+  et le coup au meilleur % de victoire dans les parties Lichess du niveau choisi
+  (ex. Blitz autour de 1000).
+- **Répertoire** : Gambit Dame (Blancs) et Caro-Kann (Noirs) — 38 fiches avec code ECO, plan,
+  structure, punition des coups adverses, pièges à éviter (tous vérifiés par Stockfish),
+  statistiques et évaluations Lichess, et un arbre qui explore tous les coups réellement joués.
+
 ## Utilisation
 
 1. Ouvrez le site (adresse : `https://<votre-compte>.github.io/coach-echecs/`).

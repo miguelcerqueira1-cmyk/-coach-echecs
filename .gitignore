@@ -7,3 +7,4 @@ playwright-report/
 .wrangler/
 worker/node_modules/
 .dev.vars
+site/data/repertoire.json
