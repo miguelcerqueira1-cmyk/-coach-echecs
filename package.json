@@ -1,0 +1,21 @@
+{
+  "name": "coach-echecs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Entraîneur d'échecs : Stockfish (WASM) calcule, chess.js valide, Claude explique.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/vendor.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node --test tests/unit/*.test.mjs",
+    "test:e2e": "playwright test",
+    "check": "npm run build && npm test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "chess.js": "1.4.0",
+    "stockfish": "18.0.8"
+  }
+}

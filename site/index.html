@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Coach Échecs</title>
+  <meta name="description" content="Entraîneur d'échecs : Stockfish calcule, chess.js valide les règles, Claude explique.">
+  <meta name="theme-color" content="#1f2a24">
+  <link rel="icon" href="pieces/wN.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Coach Échecs</h1>
+    <div class="pills">
+      <span id="engine-pill" class="pill" title="État du moteur Stockfish">Moteur…</span>
+      <span id="coach-pill" class="pill" title="État des explications Claude">Claude…</span>
+    </div>
+    <button id="btn-settings" class="icon-btn" type="button" aria-label="Réglages" title="Réglages">⚙</button>
+  </header>
+
+  <main class="layout">
+    <section class="board-col">
+      <div id="turn-banner" class="turn-banner" aria-live="polite"></div>
+      <div id="board" class="board-wrap"></div>
+      <p id="advice-mini" class="advice-mini" aria-hidden="true"></p>
+      <div id="view-banner" class="view-banner hidden">
+        <span id="view-text"></span>
+        <button id="btn-live" type="button">Revenir à la position actuelle</button>
+      </div>
+      <nav class="toolbar" aria-label="Actions">
+        <button id="btn-new" type="button">Nouvelle partie</button>
+        <button id="btn-undo" type="button">Annuler</button>
+        <button id="btn-flip" type="button">Retourner</button>
+        <button id="btn-deeper" type="button">Analyser davantage</button>
+        <button id="btn-explain" type="button">Expliquer</button>
+        <button id="btn-import" type="button">Importer</button>
+        <button id="btn-export" type="button">Exporter</button>
+      </nav>
+      <form id="notation-form" class="notation" autocomplete="off">
+        <label for="notation-input">Saisir un coup</label>
+        <input id="notation-input" type="text" inputmode="text" placeholder="ex. Cf3, Nf3, e2e4, O-O, e8=D" spellcheck="false" autocapitalize="off">
+        <button type="submit">Jouer</button>
+      </form>
+      <p id="notation-msg" class="notation-msg" role="status"></p>
+    </section>
+
+    <section class="side-col">
+      <article id="advice" class="card advice" aria-live="polite"></article>
+      <article id="coach" class="card coach" aria-live="polite"></article>
+      <article class="card moves-card">
+        <div class="moves-head">
+          <h2>Coups joués</h2>
+          <div class="nav-btns">
+            <button type="button" data-nav="start" aria-label="Début">⏮</button>
+            <button type="button" data-nav="prev" aria-label="Coup précédent">◀</button>
+            <button type="button" data-nav="next" aria-label="Coup suivant">▶</button>
+            <button type="button" data-nav="end" aria-label="Position actuelle">⏭</button>
+          </div>
+        </div>
+        <p id="start-note" class="muted small"></p>
+        <ol id="moves" class="moves"></ol>
+      </article>
+    </section>
+  </main>
+
+  <footer class="foot muted small">
+    Pour l’entraînement, l’analyse et les parties où l’assistance est autorisée.
+    Moteur : Stockfish (GPLv3) via stockfish.js · Règles : chess.js · Pièces : Colin M.L. Burnett (GPLv2+).
+  </footer>
+
+  <!-- Nouvelle partie / import -->
+  <dialog id="dlg-new">
+    <form method="dialog" id="form-new">
+      <h2 id="dlg-new-title">Nouvelle partie</h2>
+      <fieldset>
+        <legend>Je joue avec</legend>
+        <label><input type="radio" name="color" value="w" checked> les Blancs</label>
+        <label><input type="radio" name="color" value="b"> les Noirs</label>
+      </fieldset>
+      <fieldset>
+        <legend>Position de départ</legend>
+        <label><input type="radio" name="source" value="initial" checked> Position initiale</label>
+        <label><input type="radio" name="source" value="pgn"> Partie PGN</label>
+        <label><input type="radio" name="source" value="fen"> Position FEN</label>
+      </fieldset>
+      <textarea id="new-pgn" class="hidden" rows="6" placeholder="Collez ici le PGN (en-têtes facultatifs)"></textarea>
+      <input id="new-fen" class="hidden" type="text" placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" spellcheck="false">
+      <p id="new-fen-note" class="note hidden">Une FEN ne contient pas l’historique : les répétitions antérieures seront inconnues.</p>
+      <label class="row">Mon niveau
+        <select id="new-level"></select>
+      </label>
+      <p id="new-error" class="error-text" role="alert"></p>
+      <div class="dlg-actions">
+        <button value="cancel" type="submit" formnovalidate>Annuler</button>
+        <button id="new-ok" value="ok" type="submit" class="primary">Commencer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Export -->
+  <dialog id="dlg-export">
+    <form method="dialog">
+      <h2>Exporter</h2>
+      <label>PGN de la partie réellement jouée
+        <textarea id="export-pgn" rows="8" readonly></textarea>
+      </label>
+      <div class="dlg-actions left">
+        <button type="button" id="copy-pgn">Copier le PGN</button>
+        <button type="button" id="download-pgn">Télécharger .pgn</button>
+      </div>
+      <label>FEN de la position actuelle
+        <input id="export-fen" type="text" readonly>
+      </label>
+      <div class="dlg-actions left">
+        <button type="button" id="copy-fen">Copier la FEN</button>
+      </div>
+      <p id="export-msg" class="muted small" role="status"></p>
+      <div class="dlg-actions"><button value="close" class="primary">Fermer</button></div>
+    </form>
+  </dialog>
+
+  <!-- Réglages -->
+  <dialog id="dlg-settings">
+    <form method="dialog" id="form-settings">
+      <h2>Réglages</h2>
+      <label class="row">Budget de calcul
+        <select id="set-budget"></select>
+      </label>
+      <p class="muted small">Le moteur joue toujours à pleine force ; le budget fixe seulement le temps de réflexion. La profondeur atteinte dépend de l’appareil.</p>
+      <label class="row">Niveau des explications
+        <select id="set-level"></select>
+      </label>
+      <label class="check"><input type="checkbox" id="set-auto"> Explication Claude automatique à mon tour</label>
+      <label class="check"><input type="checkbox" id="set-opp-arrow"> Montrer la meilleure réponse adverse calculée sur l’échiquier</label>
+      <h3>Explications Claude</h3>
+      <label>Code d’accès personnel
+        <input id="set-code" type="password" autocomplete="off" placeholder="Saisi une fois, conservé sur cet appareil">
+      </label>
+      <div class="dlg-actions left">
+        <button type="button" id="test-coach">Tester la connexion</button>
+        <button type="button" id="clear-code">Effacer le code de cet appareil</button>
+      </div>
+      <p id="coach-test-msg" class="muted small" role="status"></p>
+      <details>
+        <summary>Avancé</summary>
+        <label>Adresse de l’API (laisser vide pour la valeur publiée)
+          <input id="set-api" type="url" placeholder="https://….workers.dev" spellcheck="false">
+        </label>
+        <p id="engine-info" class="muted small"></p>
+        <div class="dlg-actions left">
+          <button type="button" id="restore-backup">Restaurer la partie précédente</button>
+        </div>
+      </details>
+      <div class="dlg-actions">
+        <button value="cancel" formnovalidate>Fermer sans enregistrer</button>
+        <button value="ok" class="primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

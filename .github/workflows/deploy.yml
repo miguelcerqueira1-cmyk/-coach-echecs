@@ -1,0 +1,201 @@
+name: Vérifier et publier
+
+# - pull request : vérification seule
+# - push sur main (ou lancement manuel) : vérification, déploiement du Worker
+#   Cloudflare (si les secrets sont présents), publication GitHub Pages,
+#   puis test du site réellement publié (chargement du moteur compris).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Vérification (tests unitaires, Worker, navigateur)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
+      - run: npm ci
+      - run: npm ci
+        working-directory: worker
+      - name: Tests unitaires (règles, continuité, import/export)
+        run: npm test
+      - name: Tests du Worker (auth, CORS, limites) avec Claude simulé
+        run: npm test
+        working-directory: worker
+      - name: Construction du site
+        run: npm run build
+      - name: Navigateurs de test
+        run: npx playwright install --with-deps chromium webkit
+      - name: Tests de bout en bout (vrai Stockfish, Chromium + WebKit/iPhone)
+        run: npx playwright test
+        env:
+          WITH_WEBKIT: '1'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: rapport-playwright
+          path: playwright-report/
+          retention-days: 7
+
+  worker:
+    name: Déploiement de l'API Claude (Cloudflare Worker)
+    needs: verify
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Présence des secrets
+        id: secrets
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
+          CODE: ${{ secrets.COACH_ACCESS_CODE }}
+        run: |
+          missing=""
+          [ -n "$CF_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$CF_ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          [ -n "$ANTHROPIC" ] || missing="$missing ANTHROPIC_API_KEY"
+          [ -n "$CODE" ] || missing="$missing COACH_ACCESS_CODE"
+          if [ -n "$missing" ]; then
+            echo "::notice::API Claude non déployée : secrets manquants :$missing. Le site est publié sans explications Claude."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          elif [ ${#CODE} -lt 12 ]; then
+            echo "::error::COACH_ACCESS_CODE doit contenir au moins 12 caractères."
+            exit 1
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "origin=https://${owner}.github.io" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          node-version: 22
+      - run: npm ci
+        if: steps.secrets.outputs.ok == 'true'
+        working-directory: worker
+      - name: Déployer le Worker, puis ses secrets
+        id: deploy
+        if: steps.secrets.outputs.ok == 'true'
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ACCESS_CODE: ${{ secrets.COACH_ACCESS_CODE }}
+          ORIGIN: ${{ steps.secrets.outputs.origin }}
+          MODEL: ${{ vars.CLAUDE_MODEL || 'claude-opus-5-5' }}
+          DAILY: ${{ vars.DAILY_LIMIT || '100' }}
+        run: |
+          set -o pipefail
+          npx wrangler deploy --var "ALLOWED_ORIGINS:$ORIGIN" --var "CLAUDE_MODEL:$MODEL" --var "DAILY_LIMIT:$DAILY" 2>&1 | tee deploy.log
+          # Les secrets ne passent ni par la ligne de commande ni par un fichier du dépôt.
+          node -e 'process.stdout.write(JSON.stringify({ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY, ACCESS_CODE: process.env.ACCESS_CODE}))' | npx wrangler secret bulk
+          url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          if [ -z "$url" ]; then
+            echo "::error::Adresse workers.dev introuvable. Ouvrez une fois « Workers & Pages » dans le tableau de bord Cloudflare pour créer votre sous-domaine workers.dev, puis relancez."
+            exit 1
+          fi
+          echo "deployment-url=$url" >> "$GITHUB_OUTPUT"
+          echo "API déployée : $url"
+
+  pages:
+    name: Publication GitHub Pages
+    needs: [verify, worker]
+    if: always() && github.event_name != 'pull_request' && needs.verify.result == 'success' && needs.worker.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Construire avec l'adresse de l'API
+        run: npm run build
+        env:
+          COACH_API_URL: ${{ needs.worker.outputs.url }}
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  online:
+    name: Vérification du site publié
+    needs: [pages, worker]
+    if: always() && needs.pages.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Fichiers servis sous le chemin réel du dépôt
+        env:
+          SITE: ${{ needs.pages.outputs.url }}
+        run: |
+          for f in "" config.json engine/manifest.json engine/stockfish.js engine/stockfish.wasm vendor/chess.js js/main.js; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 10 --retry-all-errors "${SITE}${f}")
+            echo "${SITE}${f} -> $code"
+            [ "$code" = "200" ] || exit 1
+          done
+          curl -s "${SITE}config.json"
+      - name: API Claude en ligne et protégée (sans code → 401)
+        if: needs.worker.outputs.url != ''
+        env:
+          API: ${{ needs.worker.outputs.url }}
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' "${API}/v1/status")
+          echo "Sans code : $code"
+          [ "$code" = "401" ]
+      - name: Parcours réel sur le site publié (moteur compris)
+        run: npx playwright test -g "parcours complet|téléphone|panne du moteur"
+        env:
+          BASE_URL: ${{ needs.pages.outputs.url }}
+          WITH_WEBKIT: '1'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: rapport-site-publie
+          path: playwright-report/
+          retention-days: 7

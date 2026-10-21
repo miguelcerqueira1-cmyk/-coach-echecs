@@ -1,0 +1,18 @@
+{
+  "name": "coach-echecs-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "dev": "wrangler dev",
+    "check": "wrangler deploy --dry-run --outdir .wrangler/dry",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.3"
+  }
+}

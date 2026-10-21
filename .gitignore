@@ -1,0 +1,9 @@
+node_modules/
+site/vendor/
+site/engine/
+dist/
+test-results/
+playwright-report/
+.wrangler/
+worker/node_modules/
+.dev.vars

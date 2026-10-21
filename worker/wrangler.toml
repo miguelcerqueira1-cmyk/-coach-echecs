@@ -1,0 +1,23 @@
+# Worker Cloudflare de l'API « entraîneur ». Déployé par GitHub Actions.
+# Secrets (jamais dans ce fichier) : ANTHROPIC_API_KEY, ACCESS_CODE.
+name = "coach-echecs-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+CLAUDE_MODEL = "claude-opus-5-5"
+CLAUDE_EFFORT = "low"
+DAILY_LIMIT = "100"
+PER_MINUTE_LIMIT = "8"
+# Remplacé au déploiement par l'origine GitHub Pages réelle.
+ALLOWED_ORIGINS = "http://localhost:4173"
+
+[[durable_objects.bindings]]
+name = "GATE"
+class_name = "Gate"
+
+# Durable Object à stockage SQLite : disponible sur l'offre gratuite.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Gate"]
