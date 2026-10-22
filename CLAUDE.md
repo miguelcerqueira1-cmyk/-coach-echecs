@@ -25,6 +25,8 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
   js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
   js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré / maîtres / Élite)
+  js/joueurs.js            Recherche par joueur : noms normalisés, index joueurs.json (pur, testé)
+  js/joueurs-ui.js         Section « Parties de joueurs » de la recherche du Répertoire
   js/elite.js              Jeu « Élite » : chargement (branche donnees-elite puis data/elite.json), clé FEN,
                            lecture d'une position, « Nouvelles parties » (pur, testé)
   js/repertoire-page.js    Page Répertoire : filtres, recherche par coup/ECO, tableau 9 colonnes, Anti-trash,
@@ -210,6 +212,34 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   désactivés après 60 jours sans commit sur la branche par défaut (les commits de donnees-elite ne
   comptent pas) ; une partie apparaît au passage qui suit sa fin (+ jusqu'à 5 min de cache raw) ;
   date affichée = début de partie (Lichess) ou fin (Chess.com).
+- **Joueurs suivis** (`scripts/elite-suivis.mjs`) : grands maîtres collectés même hors du top 50
+  (plafond 200 parties par cadence, fenêtre 3 mois). Les comptes listés sont des candidats, vérifiés
+  à chaque collecte (Lichess : dans la requête groupée `/api/users` ; Chess.com : `/pub/player/{u}`
+  en reconstruction puis au plus une fois par semaine) : profil existant et ouvert, titre GM, nom réel
+  concordant quand le profil en donne un, sinon « vérifié (titre seul) ». Verdicts dans
+  `meta.sources.su.comptes`. Vérifié le 2026-10-22 sur Lichess : DrNykterstein, DrDrunkenstein
+  (titre seul), alireza2003, AnishGiri ; rejetés à l'essai et retirés de la liste : gmwso (autre nom
+  réel), comptes fermés ou sans titre. Chess.com (bloqué ici) n'est vérifié qu'en CI. Le nom usuel
+  (« Magnus Carlsen ») est attaché aux parties (`wn`/`bn`) ; un compte non vérifié n'en reçoit pas.
+- **Tournois retransmis** (source `bc`, « Tournois (retransmissions Lichess) ») : tournois de
+  catégorie 5 (`tier`) ou annonçant un joueur suivi (`info.players`), sur 6 mois ; reconstruction :
+  pages `/api/broadcast/top` (Lichess refuse les pages trop anciennes : « resource too old ») + une
+  recherche `/api/broadcast/search?q=<nom>` par joueur suivi ; détail `/api/broadcast/{id}` puis
+  export `/api/broadcast/{id}.pgn` (toutes les rondes) ; incrémental : page 1 (en cours et tout juste
+  finis) et seulement les rondes terminées non lues (`/api/broadcast/round/{id}.pgn`). Parties
+  gardées : les deux joueurs 2600+ (Elo FIDE de la retransmission) ou un joueur suivi (nom FIDE
+  « Carlsen, Magnus », mots entiers). Ordre littéral 1.d4 d5 2.c4 / 1.e4 c6 : beaucoup de parties
+  classiques arrivent au Gambit Dame par 1.d4 Cf6 2.c4 e6 3.Cf3 d5 et ne sont donc pas retenues.
+  Les exports de retransmission sont lents (≈ 10 s par ronde) : la reconstruction hebdomadaire prend
+  plusieurs dizaines de minutes (délai du job : 90 min).
+- **Recherche par joueur** (barre `data-q` du Répertoire) : `joueurs.json` (branche donnees-elite,
+  sinon copie du site) chargé à la première saisie : toutes les parties gardées (coups complets,
+  ouverture nommée) et, par joueur (nom usuel des suivis, compte du top, nom des tournois), ses
+  parties et sa couleur ; suggestions par `datalist`. Un index dédié plutôt qu'`etat.json` : etat.json
+  contient l'état interne (dernières parties hors répertoire, ETag…) et grossit avec lui. Recherche
+  insensible aux accents et à la casse, ≥ 3 caractères ; les fiches restent filtrées par la même
+  requête ; si ni fiche ni joueur : message « Aucun joueur … » et liste de ce qui est couvert.
+  Ouverture d'une partie : `openGame` avec White/Black/WhiteElo/BlackElo/Event/Site/Date/Result.
 
 ## Phase 2 (non implémenté)
 

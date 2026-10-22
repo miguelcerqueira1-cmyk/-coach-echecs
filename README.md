@@ -37,6 +37,13 @@ suit sa fin ; GitHub retarde souvent ces passages de 5 à 20 min, et les désact
 sans commit sur `main` (Actions → « Données Élite » → Enable workflow). Une position absente du jeu
 de données est affichée comme absente. Détails dans CLAUDE.md.
 
+**Grands maîtres et tournois** : les parties de joueurs suivis (Magnus Carlsen, Hikaru Nakamura,
+Alireza Firouzja, Anish Giri… — comptes vérifiés automatiquement : titre GM, nom réel) et des grands
+tournois retransmis sur Lichess (joueurs 2600+) s'ajoutent au jeu Élite. Tapez un nom dans la
+recherche du Répertoire (« carlsen », « Giri ») : ses parties dans nos ouvertures s'affichent, avec
+date, adversaire, résultat, plateforme ou tournoi et ouverture ; « ▶ Ouvrir » la place sur
+l'échiquier. Un joueur absent des données collectées est signalé comme tel.
+
 Mode « Indice d'abord » (⚙) : indice → explication → coup, au lieu d'afficher directement le conseil.
 
 ## Utilisation

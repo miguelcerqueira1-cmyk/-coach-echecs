@@ -8,25 +8,32 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Chess } from '../../site/vendor/chess.js';
-import { lookupElite, splitText, recentInfo, ELITE_LIVE_URL } from '../../site/js/elite.js';
+import { lookupElite, splitText, recentInfo, ELITE_LIVE_URL, eliteHeaders } from '../../site/js/elite.js';
+import { JOUEURS_LIVE_URL, searchPlayers, playerGames } from '../../site/js/joueurs.js';
 import { sanFr } from '../../site/js/analysis.js';
 
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
 const root = new URL('../..', import.meta.url).pathname;
 let dir;
 let dataset;
+let joueurs;
 const fenAfter = (san) => { const c = new Chess(); san.forEach((m) => c.move(m)); return c.fen(); };
 
 test.beforeAll(() => {
   dir = mkdtempSync(join(tmpdir(), 'elite-e2e-'));
   const out = join(dir, 'elite.json');
-  execFileSync(process.execPath, ['scripts/elite.mjs', '--fixture', 'tests/fixtures/elite', '--top', '2', '--now', '2026-10-22T12:00:00Z', '--out', out], { cwd: root, stdio: 'pipe' });
+  execFileSync(process.execPath, ['scripts/elite.mjs', '--fixture', 'tests/fixtures/elite', '--top', '2', '--now', '2026-10-22T12:00:00Z', '--out', out, '--joueurs', join(dir, 'joueurs.json')], { cwd: root, stdio: 'pipe' });
   dataset = readFileSync(out, 'utf8');
+  joueurs = readFileSync(join(dir, 'joueurs.json'), 'utf8');
 });
 test.afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
 // elite : copie publiée avec le site (data/elite.json) ; live : branche donnees-elite (raw GitHub).
-async function setup(page, { elite = 'ok', live = null, calls = [] } = {}) {
+async function setup(page, { elite = 'ok', live = null, calls = [], index = 'live' } = {}) {
+  await page.route(JOUEURS_LIVE_URL, (r) => (index === 'live'
+    ? r.fulfill({ headers: CORS, contentType: 'application/json', body: joueurs })
+    : r.fulfill({ status: 404, headers: CORS, body: '404: Not Found' })));
+  await page.route('**/data/joueurs.json', (r) => r.fulfill({ status: 404, body: 'absent' }));
   await page.route(ELITE_LIVE_URL, (r) => {
     calls.push('live');
     return live ? r.fulfill({ headers: CORS, contentType: 'application/json', body: live }) : r.fulfill({ status: 404, headers: CORS, body: '404: Not Found' });
@@ -121,7 +128,7 @@ test('Élite : colonne Statistiques et arbre du Répertoire (présente, absente,
   await tree.locator('[data-elite-game="0"]').click();
   await expect(page).toHaveURL(/#\/moteur/);
   await expect.poll(() => page.evaluate(() => window.__coach.state.game.ply)).toBe(g.san.length);
-  expect(await page.evaluate(() => window.__coach.state.game.record.headers.White)).toBe(`${g.w} (${g.wr})`);
+  expect(await page.evaluate(() => window.__coach.state.game.record.headers.White)).toBe(eliteHeaders(g).White);
 });
 
 test('Élite : jeu de données non publié, affiché comme tel', async ({ page }) => {
@@ -162,4 +169,48 @@ test('Élite : « Nouvelles parties » du Répertoire ouvrables sur l’échiqui
   await expect.poll(() => page.evaluate(() => window.__coach.state.game.ply)).toBe(recent[0].san.length);
   expect(await page.evaluate(() => window.__coach.state.game.record.headers.Site)).toBe(recent[0].url);
   expect(await page.evaluate(() => window.__coach.state.game.playerColor)).toBe(recent[0].color);
+});
+
+test('Répertoire : recherche par joueur (Carlsen), suggestions, partie ouverte avec ses en-têtes', async ({ page }) => {
+  await setup(page, { live: dataset });
+  await page.goto('./#/repertoire');
+  const idx = JSON.parse(joueurs);
+  const [mc] = searchPlayers(idx, 'carlsen');
+  expect(mc.n).toBe('Magnus Carlsen');
+  const games = playerGames(idx, mc);
+  expect(games.length).toBeGreaterThan(1);
+  const q = page.locator('[data-q]');
+  await q.click();
+  await expect(page.locator('#rep-joueurs option[value="Magnus Carlsen"]')).toHaveCount(1);
+  await q.fill('CARLSEN');
+  const card = page.locator('#rep-players .players-card').first();
+  await expect(card.locator('h3')).toContainText('Magnus Carlsen');
+  await expect(card).toContainText('joueur suivi');
+  await expect(card).toContainText('DrNykterstein');
+  await expect(card.locator('tbody tr')).toHaveCount(Math.min(games.length, 30));
+  await expect(card.locator('tbody tr').first()).toContainText(games[0].opponent);
+  // Partie en cours vide : ouverte sans confirmation, échiquier du côté du joueur cherché.
+  await card.locator('[data-player-game]').first().click();
+  await expect(page).toHaveURL(/#\/moteur/);
+  const g = games[0];
+  await expect.poll(() => page.evaluate(() => window.__coach.state.game.ply)).toBe(g.san.length);
+  const h = await page.evaluate(() => window.__coach.state.game.record.headers);
+  const want = eliteHeaders(g);
+  for (const k of ['White', 'Black', 'WhiteElo', 'BlackElo', 'Event', 'Site', 'Date', 'Result']) expect(h[k] ?? '').toBe(want[k]);
+  expect(await page.evaluate(() => window.__coach.state.game.playerColor)).toBe(g.side);
+  await expect(page.locator('#game-info')).toContainText(want.White);
+});
+
+test('Répertoire : joueur absent des données (message clair) ; une fiche trouvée reste affichée', async ({ page }) => {
+  await setup(page, { live: dataset });
+  await page.goto('./#/repertoire');
+  await page.locator('[data-q]').fill('Kasparov');
+  const none = page.locator('#rep-players .players-none');
+  await expect(none).toContainText('Aucun joueur « Kasparov » dans les données collectées');
+  await expect(none).toContainText('top 50 blitz et rapide');
+  await expect(none).toContainText('Magnus Carlsen');
+  await page.click('[data-view=ck]');
+  await page.locator('[data-q]').fill('Karpov');
+  await expect(page.locator('tr[data-id="ck-karpov"]')).toBeVisible();
+  await expect(page.locator('#rep-players .players-none')).toHaveCount(0);
 });

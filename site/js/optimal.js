@@ -319,7 +319,7 @@ export class OptimalPanel {
           <span class="w" style="width:${s.white}%"></span><span class="d" style="width:${s.draws}%"></span><span class="b" style="width:${s.black}%"></span></div>
           <span class="tiny">${p1(s.white)} / ${p1(s.draws)} / ${p1(s.black)}</span></td>
         <td class="num">${p1(m.win)}</td>
-        ${elite ? `<td class="num tiny">${m.li} / ${m.cc}</td>` : ''}
+        ${elite ? `<td class="num tiny">${m.li} / ${m.cc}${e.split.bc ? ` / ${m.bc}` : ''}</td>` : ''}
       </tr>`;
     }).join('');
     const total = e.stats;
@@ -333,7 +333,7 @@ export class OptimalPanel {
       ${opening}
       <p class="muted small">${e.total.toLocaleString('fr-FR')} parties ${{ niveau: '', maitres: 'de maîtres ', elite: 'Élite ' }[src]}dans cette position (Blancs ${p1(total.white)} · nulles ${p1(total.draws)} · Noirs ${p1(total.black)}).${note}</p>
       <table>
-        <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th>${elite ? '<th title="Parties Lichess / Chess.com">Li / C.com</th>' : ''}</tr></thead>
+        <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th>${elite ? `<th title="Parties Lichess / Chess.com${e.split.bc ? ' / tournois retransmis' : ''}">Li / C.com${e.split.bc ? ' / Tourn.' : ''}</th>` : ''}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <p class="muted small">${src === 'niveau' ? `Grisé : moins de ${e.filter.minGames} parties. ` : ''}Toucher un coup le joue sur l’échiquier.</p>

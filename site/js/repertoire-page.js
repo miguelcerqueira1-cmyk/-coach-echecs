@@ -11,6 +11,8 @@ import { enrichMoves, bucketLabel, SPEED_LABELS } from './lichess.js';
 import { sanFr, formatScore, formatLine } from './analysis.js';
 import { repertoireToPgn } from './repertoire-pgn.js';
 import { LANGS, searchLink, decodeEntities } from './youtube.js';
+import { loadJoueurs } from './joueurs.js';
+import { datalistHtml, playersSectionHtml, bindPlayers } from './joueurs-ui.js';
 import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago } from './elite.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -222,7 +224,8 @@ export class RepertoirePage {
           ${chip('data-badge-chip', 'loufoque', this.badge, 'Coup loufoque')}
         </div>
         <div class="rep-filters">
-          <input type="search" data-q placeholder="Rechercher : nom, coup (Fg4, Bg4, 2…Fg4) ou code ECO (B12)" value="${esc(this.query)}">
+          <input type="search" data-q list="rep-joueurs" placeholder="Rechercher : nom, coup (Fg4, Bg4, 2…Fg4), code ECO (B12) ou joueur (Carlsen)" value="${esc(this.query)}">
+          <datalist id="rep-joueurs">${datalistHtml(this.joueurs)}</datalist>
           ${this.view === 'trash' ? '' : `<select data-sort aria-label="Classer les variantes">
             ${[['', 'Ordre du répertoire'], ['joue-niveau', 'Les plus jouées (mon niveau)'], ['score-niveau', 'Meilleur score pour moi (mon niveau)'], ['joue-maitres', 'Les plus jouées (maîtres)'], ['score-maitres', 'Meilleur score pour moi (maîtres)'], ['eval', 'Meilleure évaluation Stockfish']].map(([v, l]) => `<option value="${v}"${this.sort === v ? ' selected' : ''}>${l}</option>`).join('')}
           </select>`}
@@ -238,6 +241,7 @@ export class RepertoirePage {
         <p class="small muted">${list.length} fiche(s) affichée(s). Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
       </div>
       <div data-ranking>${this.rankingHtml(list)}</div>
+      <section id="rep-players">${playersSectionHtml(this.joueurs, this.query, list.length)}</section>
       ${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}
       <section class="card live-card" id="rep-live">${this.liveHtml()}</section>
       <section class="card tree-card" id="rep-tree">${this.treeHtml()}</section>
@@ -703,6 +707,23 @@ export class RepertoirePage {
     });
     this.el.querySelectorAll('[data-export]').forEach((b) => b.addEventListener('click', () => this.exportPgn(b.dataset.export)));
     const q = this.el.querySelector('[data-q]');
+    // Index des joueurs chargé à la demande (première saisie) : suggestions et parties par nom.
+    const wantPlayers = () => {
+      if (this.joueurs) return;
+      this.joueurs = { status: 'loading' };
+      loadJoueurs().then((r) => {
+        this.joueurs = r;
+        this.el.querySelector('#rep-joueurs')?.replaceChildren(...new DOMParser().parseFromString(`<datalist>${datalistHtml(r)}</datalist>`, 'text/html').querySelector('datalist').children);
+        const sec = this.el.querySelector('#rep-players');
+        if (sec) {
+          sec.innerHTML = playersSectionHtml(r, this.query, this.entries().length);
+          bindPlayers(sec, r, this.openGame);
+        }
+      });
+    };
+    q.addEventListener('focus', wantPlayers);
+    if (this.query) wantPlayers();
+    bindPlayers(this.el.querySelector('#rep-players'), this.joueurs, this.openGame);
     q.addEventListener('input', () => {
       clearTimeout(this.qTimer);
       this.qTimer = setTimeout(() => {

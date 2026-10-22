@@ -159,8 +159,10 @@ jobs:
           SITE: ${{ steps.pages-config.outputs.base_url }}
         run: |
           if git fetch -q --depth=1 origin donnees-elite && git show FETCH_HEAD:elite.json > site/data/elite.json; then
+            git show FETCH_HEAD:joueurs.json > site/data/joueurs.json || rm -f site/data/joueurs.json
             echo "Jeu Élite : copie de la branche donnees-elite."
           elif curl -sf --retry 3 "${SITE}/data/elite.json" -o site/data/elite.json; then
+            curl -sf --retry 3 "${SITE}/data/joueurs.json" -o site/data/joueurs.json || rm -f site/data/joueurs.json
             echo "::notice::Branche donnees-elite absente : version déjà publiée conservée."
           else
             rm -f site/data/elite.json

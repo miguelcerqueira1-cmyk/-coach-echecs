@@ -1,0 +1,116 @@
+[
+ {
+  "id": "cutemouse83",
+  "username": "cutemouse83",
+  "title": "GM",
+  "perfs": {
+   "blitz": {
+    "games": 19608
+   },
+   "rapid": {
+    "games": 0
+   }
+  },
+  "profile": {
+   "realName": "Michael Roiz"
+  }
+ },
+ {
+  "id": "tarzansmurf",
+  "username": "tarzansmurf",
+  "perfs": {
+   "blitz": {
+    "games": 53
+   },
+   "rapid": {
+    "games": 0
+   }
+  }
+ },
+ {
+  "id": "kurald_galain",
+  "username": "Kurald_Galain",
+  "perfs": {
+   "blitz": {
+    "games": 3368
+   },
+   "rapid": {
+    "games": 1704
+   }
+  },
+  "profile": {
+   "realName": "Anomander Rake"
+  }
+ },
+ {
+  "id": "just_no_fun",
+  "username": "Just_No_Fun",
+  "perfs": {
+   "blitz": {
+    "games": 570
+   },
+   "rapid": {
+    "games": 524
+   }
+  },
+  "profile": {}
+ },
+ {
+  "id": "drnykterstein",
+  "username": "DrNykterstein",
+  "title": "GM",
+  "perfs": {
+   "blitz": {
+    "games": 609
+   },
+   "rapid": {
+    "games": 0
+   }
+  }
+ },
+ {
+  "id": "drdrunkenstein",
+  "username": "DrDrunkenstein",
+  "title": "GM",
+  "perfs": {
+   "blitz": {
+    "games": 0
+   },
+   "rapid": {
+    "games": 0
+   }
+  }
+ },
+ {
+  "id": "alireza2003",
+  "username": "alireza2003",
+  "title": "GM",
+  "perfs": {
+   "blitz": {
+    "games": 530
+   },
+   "rapid": {
+    "games": 3
+   }
+  },
+  "profile": {
+   "realName": "Alireza Firouzja"
+  }
+ },
+ {
+  "id": "anishgiri",
+  "username": "AnishGiri",
+  "title": "GM",
+  "perfs": {
+   "blitz": {
+    "games": 107
+   },
+   "rapid": {
+    "games": 0
+   }
+  },
+  "profile": {
+   "realName": "Anish Giri"
+  }
+ }
+]

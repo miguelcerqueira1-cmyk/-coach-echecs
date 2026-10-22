@@ -459,3 +459,10 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .game-info .dot { width: .8rem; height: .8rem; border-radius: 50%; border: 1px solid #777; display: inline-block; }
 .game-info .dot.w { background: #fff; }
 .game-info .dot.b { background: #222; }
+
+/* Recherche par joueur (Répertoire, joueurs-ui.js) */
+.players-card { margin: .5rem 0; }
+.players-card h3 { margin: .1rem 0 .2rem; }
+.players-table .dot { width: .7rem; height: .7rem; border-radius: 50%; border: 1px solid #777; display: inline-block; vertical-align: middle; }
+.players-table .dot.w { background: #fff; }
+.players-table .dot.b { background: #222; }

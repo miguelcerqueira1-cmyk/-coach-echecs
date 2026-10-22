@@ -108,7 +108,7 @@ test('format compact : seuil de parties par position, exemples réindexés, donn
   const agg = aggregate(games, { plies: 10, minPositionGames: 2, samples: 2 });
   const c = compact(agg);
   const qg = fenKey(fenAfter(['d4', 'd5', 'c4']));
-  assert.deepEqual(c.positions[qg].m, [['e6', 1, 1, 1, 2700, 1, 2]]);
+  assert.deepEqual(c.positions[qg].m, [['e6', 1, 1, 1, 2700, 1, 2, 0]]);
   assert.equal(c.positions[fenKey(fenAfter(['d4', 'd5', 'c4', 'e6', 'Nc3']))], undefined, 'une seule partie : position retirée');
   assert.ok(c.dropped > 0);
   assert.equal(c.games.length, 2);
@@ -121,7 +121,7 @@ test('format compact : seuil de parties par position, exemples réindexés, donn
   assert.equal(x.moves.length, 1, 'coup illégal ignoré');
   assert.equal(x.top.uci, 'e7e6');
   assert.equal(x.total, 3);
-  assert.deepEqual(x.split, { li: 1, cc: 2 });
+  assert.deepEqual(x.split, { li: 1, cc: 2, bc: 0 });
   assert.equal(Math.round(x.top.score), 50, 'score des Noirs : 1 victoire + 1 nulle sur 3');
   assert.equal(x.games[0].url, 'https://www.chess.com/game/live/g2');
   assert.deepEqual(x.games[0].san, ['d4', 'd5', 'c4', 'e6', 'Nf3']);
@@ -187,20 +187,43 @@ test('génération hors ligne (fixtures) : métadonnées, échec partiel noté, 
     assert.equal(data.recent.length, 10);
     assert.ok(data.recent.every((g, i) => i === 0 || data.recent[i - 1].t >= g.t), 'plus récentes d’abord');
     assert.ok(data.recent.every((g) => g.eco && g.n), 'ouverture nommée (base CC0)');
-    assert.equal(m.games.cc, 9, 'bullet, amicale, hors répertoire et doublon écartés');
-    assert.equal(m.games.total, m.games.li + m.games.cc);
+    assert.equal(m.games.cc, 10, 'bullet, amicale, hors répertoire et doublon écartés ; + 1 partie du compte suivi MagnusCarlsen');
+    assert.equal(m.games.bc, 4, 'Norway Chess : 3 parties de Carlsen + 1 entre 2600+, la partie hors répertoire écartée');
+    assert.equal(m.sources.bc.status, 'ok');
+    assert.equal(m.sources.bc.events, 1);
+    assert.equal(m.games.total, m.games.li + m.games.cc + m.games.bc);
+    // Joueurs suivis : verdicts notés, aucun compte deviné.
+    const su = m.sources.su;
+    const verdict = (k) => su.comptes.find((c) => `${c.p}:${c.compte}` === k);
+    assert.equal(verdict('li:DrNykterstein').statut, 'vérifié (titre seul)');
+    assert.equal(verdict('li:alireza2003').statut, 'vérifié');
+    assert.equal(verdict('cc:MagnusCarlsen').statut, 'vérifié');
+    assert.equal(verdict('cc:lachesisQ').statut, 'rejeté', 'nom réel discordant');
+    assert.equal(verdict('cc:dingliren').statut, 'introuvable');
+    assert.equal(su.verified, su.comptes.filter((c) => c.ok).length);
+    const carlsenGames = data.games.filter((g) => g.wn === 'Magnus Carlsen' || g.bn === 'Magnus Carlsen');
+    assert.ok(carlsenGames.every((g) => g.p !== 'bc' || g.ev === 'Norway Chess 2026 | Open'));
     assert.ok(m.players.some((p) => p.p === 'cc' && p.u === 'Exemple_Blitz_A' && p.perf === 'blitz'));
     assert.ok(Object.keys(data.positions).length > 10);
     for (const pos of Object.values(data.positions)) {
       const total = pos.m.reduce((a, x) => a + x[1] + x[2] + x[3], 0);
       assert.ok(total >= m.filters.minPositionGames);
-      assert.equal(pos.m.reduce((a, x) => a + x[5] + x[6], 0), total, 'répartition Lichess + Chess.com = total');
+      assert.equal(pos.m.reduce((a, x) => a + x[5] + x[6] + x[7], 0), total, 'répartition Lichess + Chess.com + tournois = total');
       for (const g of pos.g) assert.ok(data.games[g]);
     }
     const root = lookupElite(data, fenAfter(['d4', 'd5', 'c4']));
     assert.equal(root.status, 'ok');
     assert.equal(root.split.cc, 6, 'QGD ×3 (dont la partie dédoublonnée), Slave, GDA ×2');
-    assert.match(eliteSummary(m), /Lichess : \d+ parties de 4 joueurs ; Chess\.com : 9 parties de 3 joueurs \(récupération partielle\)/);
+    assert.equal(root.split.bc, 3);
+    assert.match(eliteSummary(m), /Lichess : \d+ parties de 4 joueurs ; Chess\.com : 10 parties de 3 joueurs \(récupération partielle\) ; Tournois \(retransmissions Lichess\) : 4 parties de 1 tournois ; joueurs suivis : \d+ comptes vérifiés/);
+    // Index de recherche publié à côté.
+    const idx = JSON.parse(readFileSync(join(dir, 'joueurs.json'), 'utf8'));
+    const [mc] = searchPlayers(idx, 'carlsen');
+    assert.equal(mc.n, 'Magnus Carlsen');
+    const pg = playerGames(idx, mc);
+    assert.deepEqual(pg.map((g) => g.p).sort(), ['bc', 'bc', 'bc', 'cc']);
+    assert.ok(pg.find((g) => g.p === 'bc').source.startsWith('Norway Chess 2026 | Open, Round'));
+    assert.equal(searchPlayers(idx, 'Gukesh')[0].n, 'Gukesh Dommaraju', 'nom FIDE « Gukesh D » → nom usuel');
     // Une seule source demandée : l'autre est notée « ignoré ».
     await run({ ...o, sources: ['cc'] }, { log: () => {}, http });
     assert.equal(JSON.parse(readFileSync(out, 'utf8')).meta.sources.li.status, 'ignoré');
@@ -332,6 +355,185 @@ test('incrémental : since après la dernière partie, nouveaux venus, ETag Ches
     assert.equal(Object.keys(r5.state.games).length, 0);
     assert.equal(process.exitCode, 2, 'aucune partie : code de sortie 2');
     process.exitCode = 0;
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// ---------- Joueurs suivis, tournois retransmis, recherche par nom ----------
+
+import { SUIVIS, verifyAccount, lichessProfile, chessComProfile, suiviByName } from '../../scripts/elite-suivis.mjs';
+import { splitPgn, pgnHeaders, normalizeBroadcast, keepBroadcast, keepTour } from '../../scripts/elite-core.mjs';
+import { withCanonicalNames, buildPlayersIndex } from '../../scripts/elite.mjs';
+import { normalizeName, nameMatches, displayFideName, searchPlayers, playerGames } from '../../site/js/joueurs.js';
+import { eliteHeaders, gameInfo as eliteGameInfo } from '../../site/js/elite.js';
+
+const carlsen = SUIVIS.find((s) => s.nom === 'Magnus Carlsen');
+const so = SUIVIS.find((s) => s.nom === 'Wesley So');
+
+test('joueurs suivis : vérification des comptes (jamais deviné)', () => {
+  assert.deepEqual(verifyAccount(carlsen, lichessProfile(undefined)).statut, 'introuvable');
+  assert.equal(verifyAccount(carlsen, lichessProfile({ id: 'x', title: 'GM', disabled: true })).statut, 'fermé');
+  assert.equal(verifyAccount(carlsen, lichessProfile({ id: 'x', title: 'GM', tosViolation: true })).ok, false);
+  assert.match(verifyAccount(carlsen, lichessProfile({ id: 'x', title: 'IM' })).raison, /titre IM/);
+  // Cas réel (Lichess, 2026-10-22) : le profil « gmwso » donne un autre nom réel que Wesley So ;
+  // même avec un titre GM, un nom réel discordant fait rejeter le compte.
+  const gmwso = verifyAccount(so, lichessProfile({ id: 'gmwso', title: 'GM', profile: { realName: 'onofre dignos' } }));
+  assert.deepEqual([gmwso.ok, gmwso.statut], [false, 'rejeté']);
+  assert.equal(verifyAccount(carlsen, chessComProfile({ title: 'GM', name: 'Magnus Carlsen', status: 'premium' })).statut, 'vérifié');
+  assert.equal(verifyAccount(carlsen, chessComProfile({ title: 'GM', name: 'Magnus Carlsen', status: 'closed:fair_play_violations' })).statut, 'fermé');
+  const seul = verifyAccount(carlsen, lichessProfile({ id: 'drnykterstein', title: 'GM' }));
+  assert.deepEqual([seul.ok, seul.statut], [true, 'vérifié (titre seul)']);
+  assert.equal(suiviByName('Carlsen, Magnus')?.nom, 'Magnus Carlsen');
+  assert.equal(suiviByName('Vachier-Lagrave, Maxime')?.nom, 'Maxime Vachier-Lagrave');
+  assert.equal(suiviByName('So, Wesley')?.nom, 'Wesley So');
+  assert.equal(suiviByName('Sokolov, Ivan'), null, '« So » doit être un mot entier');
+  assert.equal(suiviByName('Carlsen, Henrik'), null, 'prénom exigé quand il est dans les clés');
+});
+
+test('noms : accents, casse, format FIDE', () => {
+  assert.equal(normalizeName('  Vachier-Lagrave, Maxime '), 'vachier lagrave maxime');
+  assert.equal(normalizeName('Ñepomniachtchi'), 'nepomniachtchi');
+  assert.equal(displayFideName('Carlsen, Magnus'), 'Magnus Carlsen');
+  assert.equal(displayFideName('Gukesh D'), 'Gukesh D');
+  assert.ok(nameMatches('Gukesh D', ['gukesh']));
+  assert.ok(!nameMatches('', ['x']));
+});
+
+const BC_PGN = `[Event "U.S. Chess Championship"]
+[Round "2.2"]
+[White "Caruana, Fabiano"]
+[Black "Oparin, Grigoriy"]
+[Result "1-0"]
+[WhiteElo "2784"]
+[BlackElo "2638"]
+[UTCDate "2026.10.21"]
+[UTCTime "16:37:58"]
+[BroadcastName "U.S. Chess Championships 2026 | Open"]
+[GameURL "https://lichess.org/broadcast/us/round-2/kGvbCF8o/Bv37MO2o"]
+
+1. e4 c6 2. d4 d5 3. e5 Bf5 1-0
+
+
+[Event "U.S. Chess Championship"]
+[Round "2.3"]
+[White "Robson, Ray"]
+[Black "Shankland, Sam"]
+[Result "*"]
+[GameURL "https://lichess.org/broadcast/us/round-2/kGvbCF8o/zzzzzzzz"]
+
+1. d4 d5 2. c4 *
+
+
+[Event "X"]
+[White "A, B"]
+[Black "C, D"]
+[Result "0-1"]
+[WhiteElo "2700"]
+[BlackElo "2500"]
+[UTCDate "2026.10.20"]
+[GameURL "https://lichess.org/broadcast/x/r/abc/xyz12345"]
+
+1. d4 d5 2. c4 e6 0-1`;
+
+test('retransmissions : découpe, en-têtes, partie normalisée, filtres', () => {
+  const parts = splitPgn(BC_PGN);
+  assert.equal(parts.length, 3);
+  assert.equal(pgnHeaders(parts[0]).BroadcastName, 'U.S. Chess Championships 2026 | Open');
+  const g = normalizeBroadcast(parts[0], { speed: 'classical', event: 'U.S. Championships', roundName: 'Round 2', displayName: displayFideName });
+  assert.deepEqual([g.p, g.id, g.w, g.wr, g.b, g.br, g.r, g.s, g.ev, g.rd], ['bc', 'Bv37MO2o', 'Fabiano Caruana', 2784, 'Grigoriy Oparin', 2638, '1-0', 'classical', 'U.S. Championships', 'Round 2']);
+  assert.equal(g.t, Date.UTC(2026, 9, 21, 16, 37, 58));
+  assert.equal(g.u, 'https://lichess.org/broadcast/us/round-2/kGvbCF8o/Bv37MO2o');
+  assert.deepEqual(g.san, ['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5']);
+  assert.equal(normalizeBroadcast(parts[1]), null, 'partie en cours ignorée');
+  const x = normalizeBroadcast(parts[2]);
+  assert.equal(keepBroadcast(g), true, 'deux joueurs 2600+');
+  assert.equal(keepBroadcast(x), false, '2500 : écartée');
+  assert.equal(keepBroadcast(x, { isSuivi: (n) => n === 'C, D' }), true, 'joueur suivi : gardée');
+  assert.equal(keepBroadcast({ ...g, br: null }), false, 'Elo inconnu : pas 2600+');
+  assert.equal(normalizeBroadcast(parts[0].replace('1. e4 c6', '1. e4 e5')), null, 'hors répertoire');
+  assert.equal(normalizeBroadcast(`[Variant "Chess960"]\n[Result "1-0"]\n\n1. d4 d5 2. c4 1-0`), null);
+  assert.equal(keepTour({ tier: 5 }), true);
+  assert.equal(keepTour({ tier: 4, info: { players: 'Carlsen, Keymer' } }, { mentionsSuivi: (p) => p.includes('Carlsen') }), true);
+  assert.equal(keepTour({ tier: 3, info: { players: 'Urkedal' } }), false);
+});
+
+test('noms usuels attachés aux parties, index de recherche, en-têtes pour l’échiquier', () => {
+  const state = {
+    suivis: { 'li:drnykterstein': { p: 'li', compte: 'DrNykterstein', nom: 'Magnus Carlsen', ok: true }, 'cc:hikaru': { p: 'cc', compte: 'Hikaru', nom: 'Hikaru Nakamura', ok: false } },
+    tops: { li: { blitz: [{ u: 'TopA' }] }, cc: {} },
+    bc: { tours: { t1: { name: 'Norway Chess 2026 | Open' } } },
+  };
+  const games = withCanonicalNames([
+    { ...game('li', 'g1', 'd4 d5 c4 e6', '1-0'), w: 'DrNykterstein', b: 'TopA', t: 3000, m: 'd4 d5 c4 e6' },
+    { ...game('cc', 'g2', 'e4 c6', '0-1'), w: 'Hikaru', b: 'X', t: 2000, m: 'e4 c6' },
+    { ...game('bc', 'g3', 'e4 c6 d4', '1/2-1/2'), w: 'Vincent Keymer', b: 'Magnus Carlsen', t: 1000, ev: 'Norway Chess 2026 | Open', rd: 'Round 3', u: 'https://lichess.org/broadcast/n/r/a/g3', m: 'e4 c6 d4' },
+  ], state);
+  assert.equal(games[0].wn, 'Magnus Carlsen');
+  assert.equal(games[1].wn, undefined, 'compte non vérifié : aucun nom attribué');
+  assert.equal(games[2].bn, 'Magnus Carlsen');
+  assert.equal(games[2].wn, 'Vincent Keymer');
+  const idx = buildPlayersIndex(games, state, { now: 5000, suivis: SUIVIS });
+  const [mc] = searchPlayers(idx, 'CARLSEN');
+  assert.equal(mc.n, 'Magnus Carlsen');
+  assert.equal(mc.s, 1);
+  assert.deepEqual(mc.c, [{ p: 'li', u: 'DrNykterstein' }]);
+  const pg = playerGames(idx, mc);
+  assert.deepEqual(pg.map((g) => [g.id, g.side, g.opponent]), [['g1', 'w', 'TopA'], ['g3', 'b', 'Vincent Keymer']]);
+  assert.equal(searchPlayers(idx, 'drnyk')[0].n, 'Magnus Carlsen', 'par compte');
+  assert.equal(searchPlayers(idx, 'magnus carlsen')[0].n, 'Magnus Carlsen');
+  assert.equal(searchPlayers(idx, 'hikaru')[0].n, 'Hikaru', 'compte non vérifié : joueur ordinaire, sans nom usuel');
+  assert.deepEqual(searchPlayers(idx, 'ca'), [], 'au moins 3 caractères');
+  assert.deepEqual(searchPlayers(idx, 'kasparov'), []);
+  assert.ok(idx.joueurs.some((j) => j.n === 'TopA'));
+  assert.deepEqual(idx.meta.tournois, ['Norway Chess 2026 | Open']);
+  assert.equal(idx.meta.suivis.find((s) => s.nom === 'Magnus Carlsen').verifie, true);
+  // En-têtes affichés au-dessus de l'échiquier.
+  const h = eliteHeaders(eliteGameInfo(idx.games.find((g) => g.id === 'g3')));
+  assert.deepEqual(h, {
+    Event: 'Norway Chess 2026 | Open, Round 3', Site: 'https://lichess.org/broadcast/n/r/a/g3', White: 'Vincent Keymer', Black: 'Magnus Carlsen',
+    WhiteElo: '3000', BlackElo: '2800', Date: '1970.01.01', Result: '1/2-1/2',
+  });
+  const h1 = eliteHeaders(eliteGameInfo(idx.games.find((g) => g.id === 'g1')));
+  assert.equal(h1.White, 'Magnus Carlsen (DrNykterstein)');
+  assert.equal(h1.Event, 'Élite Lichess Blitz');
+});
+
+test('tournois en incrémental : seules les rondes terminées depuis le passage précédent', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'elite-bc-'));
+  try {
+    const etat = join(dir, 'etat.json');
+    const o = parseArgs(['--sources', 'bc', '--incremental', etat, '--out', join(dir, 'elite.json')]);
+    const now = Date.UTC(2026, 9, 22, 12);
+    const tour = { id: 'T1', name: 'Super Tournoi 2026', tier: 5, info: { fideTC: 'rapid' }, dates: [now - 86400000, now + 86400000] };
+    const rounds = [{ id: 'R1', name: 'Round 1', finished: true, finishedAt: now - 3600000 }, { id: 'R2', name: 'Round 2', finished: false }];
+    const pg = (id, rid, moves, res, we = 2700, be = 2650) => `[White "A, B"]\n[Black "C, D"]\n[Result "${res}"]\n[WhiteElo "${we}"]\n[BlackElo "${be}"]\n[UTCDate "2026.10.22"]\n[UTCTime "10:00:00"]\n[BroadcastURL "https://lichess.org/broadcast/s/r/${rid}"]\n[GameURL "https://lichess.org/broadcast/s/r/${rid}/${id}"]\n\n${moves} ${res}`;
+    const calls = [];
+    const fetchImpl = async (url) => {
+      const u = new URL(url);
+      calls.push(u.pathname);
+      if (u.pathname === '/api/broadcast/top') return resp(200, { active: [{ tour }], past: { currentPageResults: [], nextPage: null } });
+      if (u.pathname === '/api/broadcast/search') return resp(200, { currentPageResults: [] });
+      if (u.pathname === '/api/broadcast/T1') return resp(200, { tour, rounds });
+      if (u.pathname === '/api/broadcast/T1.pgn') return resp(200, [pg('g1', 'R1', '1. d4 d5 2. c4 e6', '1-0'), pg('g2', 'R1', '1. e4 c6 2. d4 d5', '0-1', 2550, 2500)].join('\n\n\n'));
+      if (u.pathname === '/api/broadcast/round/R2.pgn') return resp(200, pg('g3', 'R2', '1. e4 c6 2. Nc3 d5', '1/2-1/2'));
+      return resp(404);
+    };
+    const http = () => new Http({ fetchImpl, minIntervalMs: {} });
+    const r1 = await run(o, { log: () => {}, http: http(), now });
+    assert.deepEqual(Object.keys(r1.state.games), ['bc:g1'], 'g2 : joueurs sous 2600');
+    assert.equal(r1.state.games['bc:g1'].rd, 'Round 1');
+    assert.equal(r1.state.games['bc:g1'].s, 'rapid');
+    assert.ok(calls.includes('/api/broadcast/T1.pgn'), 'premier passage : export de toutes les rondes');
+    calls.length = 0;
+    rounds[1] = { ...rounds[1], finished: true, finishedAt: now + 1000 };
+    const r2 = await run(o, { log: () => {}, http: http(), now: now + 1800000 });
+    assert.deepEqual(calls.filter((c) => c.endsWith('.pgn')), ['/api/broadcast/round/R2.pgn'], 'seule la ronde nouvellement terminée');
+    assert.equal(r2.run.newGames, 1);
+    assert.equal(r2.state.games['bc:g3'].rd, 'Round 2');
+    calls.length = 0;
+    await run(o, { log: () => {}, http: http(), now: now + 3600000 });
+    assert.equal(calls.filter((c) => c.endsWith('.pgn')).length, 0, 'rien de nouveau : aucun export');
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
