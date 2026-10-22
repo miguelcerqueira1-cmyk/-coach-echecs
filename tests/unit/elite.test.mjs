@@ -6,8 +6,9 @@ import { join } from 'node:path';
 import { Chess } from '../../site/vendor/chess.js';
 import {
   firstSans, normalizeLichess, normalizeChessCom, parseNdjson, aggregate, compact, dedupe, countGames,
+  emptyState, ownerKey, recordDownload, pruneState, stateGames, recentGames, MONTH_MS,
 } from '../../scripts/elite-core.mjs';
-import { parseArgs, fixtureName, Http, run, buildDataset, DEFAULTS } from '../../scripts/elite.mjs';
+import { parseArgs, fixtureName, Http, run, buildDataset, DEFAULTS, LICHESS_OVERLAP_MS } from '../../scripts/elite.mjs';
 import { fenKey, lookupElite, repertoireOfSan, gameInfo, eliteSummary, absentText, splitText } from '../../site/js/elite.js';
 
 const FIXTURE = new URL('../fixtures/elite/', import.meta.url).pathname;
@@ -35,7 +36,7 @@ test('premiers coups d’un PGN Chess.com (horloges, numéros 1...)', () => {
 
 test('Lichess : seules les parties classées blitz/rapide du répertoire, terminées, sont gardées', () => {
   const g = normalizeLichess(li('abcd1234', 'd4 d5 c4 e6 Nc3'), 'TopA');
-  assert.deepEqual(g, { p: 'li', id: 'abcd1234', w: 'TopA', wr: 3000, b: 'Adv', br: 2800, y: 2026, r: '1-0', s: 'blitz', san: ['d4', 'd5', 'c4', 'e6', 'Nc3'] });
+  assert.deepEqual(g, { p: 'li', id: 'abcd1234', w: 'TopA', wr: 3000, b: 'Adv', br: 2800, y: 2026, t: Date.UTC(2026, 9, 1), r: '1-0', s: 'blitz', san: ['d4', 'd5', 'c4', 'e6', 'Nc3'] });
   assert.equal(normalizeLichess(li('x', 'e4 c6 d4', { winner: undefined, status: 'draw' }), 'TopA').r, '1/2-1/2');
   assert.equal(normalizeLichess(li('x', 'd4 Nf6 c4'), 'TopA'), null, 'hors répertoire');
   assert.equal(normalizeLichess(li('x', 'd4 d5 c4', { speed: 'bullet' }), 'TopA'), null, 'bullet');
@@ -135,9 +136,11 @@ test('taille visée : le seuil de parties par position est relevé automatiqueme
   for (let i = 0; i < 40; i++) games.push(game('li', `g${i}`, i % 2 ? 'd4 d5 c4 e6 Nc3 Nf6 Bg5 Be7' : 'd4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4', '1-0'));
   games.push(game('li', 'rare', 'd4 d5 c4 Nc6 Nc3 e5', '0-1'));
   const o = { ...DEFAULTS, minPosition: 1, plies: 10 };
-  const results = [{ platform: 'li', src: { status: 'ok', players: 1, gamesDownloaded: 41, errors: [] }, players: [], games }];
-  const big = buildDataset({ results, o });
-  const small = buildDataset({ results, o: { ...o, maxBytes: big.json.length - 1 } });
+  const state = emptyState();
+  recordDownload(state, 'li:topa:blitz', games.map((g, i) => ({ id: g.id, t: 1000 + i, game: g })), { maxGames: 100 });
+  const sources = () => ({ li: { status: 'ok', errors: [] }, cc: { status: 'ignoré', errors: [] } });
+  const big = buildDataset({ state, sources: sources(), o });
+  const small = buildDataset({ state, sources: sources(), o: { ...o, maxBytes: big.json.length - 1 } });
   assert.ok(small.json.length < big.json.length);
   assert.ok(small.data.meta.filters.minPositionGames > 1);
   assert.equal(big.data.meta.games.total, 41);
@@ -171,7 +174,7 @@ test('génération hors ligne (fixtures) : métadonnées, échec partiel noté, 
   const dir = mkdtempSync(join(tmpdir(), 'elite-'));
   try {
     const out = join(dir, 'elite.json');
-    const o = parseArgs(['--fixture', FIXTURE, '--top', '2', '--out', out]);
+    const o = parseArgs(['--fixture', FIXTURE, '--top', '2', '--out', out, '--now', '2026-10-22T12:00:00Z']);
     const http = new Http({ fixture: FIXTURE, fetchImpl: () => { throw new Error('réseau interdit en test'); } });
     await run(o, { log: () => {}, http });
     const data = JSON.parse(readFileSync(out, 'utf8'));
@@ -179,7 +182,11 @@ test('génération hors ligne (fixtures) : métadonnées, échec partiel noté, 
     assert.equal(m.sources.li.status, 'ok');
     assert.equal(m.sources.li.players, 4);
     assert.equal(m.sources.cc.status, 'partiel', 'archive manquante notée, la source continue');
-    assert.match(m.sources.cc.errors.join(' '), /Exemple_Rapide_C : HTTP 404/);
+    assert.match(m.sources.cc.errors.join(' '), /exemple_rapide_c 2026\/09 : /);
+    assert.equal(m.run.mode, 'complet');
+    assert.equal(data.recent.length, 10);
+    assert.ok(data.recent.every((g, i) => i === 0 || data.recent[i - 1].t >= g.t), 'plus récentes d’abord');
+    assert.ok(data.recent.every((g) => g.eco && g.n), 'ouverture nommée (base CC0)');
     assert.equal(m.games.cc, 9, 'bullet, amicale, hors répertoire et doublon écartés');
     assert.equal(m.games.total, m.games.li + m.games.cc);
     assert.ok(m.players.some((p) => p.p === 'cc' && p.u === 'Exemple_Blitz_A' && p.perf === 'blitz'));
@@ -197,6 +204,134 @@ test('génération hors ligne (fixtures) : métadonnées, échec partiel noté, 
     // Une seule source demandée : l'autre est notée « ignoré ».
     await run({ ...o, sources: ['cc'] }, { log: () => {}, http });
     assert.equal(JSON.parse(readFileSync(out, 'utf8')).meta.sources.li.status, 'ignoré');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// ---------- Mises à jour incrémentales ----------
+
+test('état : dédoublonnage, plafond des dernières parties, fenêtre, joueurs sortis du top', () => {
+  const st = emptyState();
+  const g = (id, t, rep = true) => ({ id, t, game: rep ? { ...game('li', id, 'd4 d5 c4 e6', '1-0'), t } : null });
+  const ka = ownerKey('li', 'TopA', 'blitz');
+  const kb = ownerKey('li', 'TopB', 'blitz');
+  assert.equal(ka, 'li:topa:blitz');
+  assert.equal(recordDownload(st, ka, [g('a1', 100), g('a2', 200, false), g('ab', 300)], { maxGames: 3 }), 2);
+  assert.equal(recordDownload(st, kb, [g('ab', 300)], { maxGames: 3 }), 0, 'même partie vue par deux joueurs du top : une seule fois');
+  assert.deepEqual(st.games['li:ab'].o, [ka, kb]);
+  assert.equal(recordDownload(st, ka, [g('ab', 300), g('a3', 400)], { maxGames: 3 }), 1, 'chevauchement : déjà connue');
+  assert.equal(st.owners[ka].last, 400);
+  assert.deepEqual(st.owners[ka].recent.map((r) => r[0]), ['a3', 'ab', 'a2'], '3 dernières parties seulement');
+  // a1 n'est plus dans les 3 dernières de TopA : retirée ; ab reste (TopB).
+  const now = 400 + MONTH_MS;
+  assert.equal(pruneState(st, { now, months: 3, activeOwners: new Set([ka, kb]) }), 1);
+  assert.deepEqual(Object.keys(st.games).sort(), ['li:a3', 'li:ab']);
+  // TopB sort du top : ab ne tient plus que par TopA.
+  pruneState(st, { now, months: 3, activeOwners: new Set([ka]) });
+  assert.deepEqual(st.games['li:ab'].o, [ka]);
+  assert.equal(st.owners[kb], undefined);
+  // Fenêtre dépassée : tout est retiré, rien n'est inventé.
+  assert.equal(pruneState(st, { now: 401 + 3 * MONTH_MS, months: 3, activeOwners: new Set([ka]) }), 2);
+  assert.deepEqual(stateGames(st), []);
+  assert.deepEqual(recentGames(st), []);
+});
+
+const resp = (status, body = '', etag = null) => ({
+  status, ok: status >= 200 && status < 300,
+  text: async () => (typeof body === 'string' ? body : JSON.stringify(body)),
+  headers: { get: (h) => (h === 'etag' ? etag : null) },
+});
+const ndjson = (list) => list.map((x) => JSON.stringify(x)).join('\n');
+const liGame = (id, user, opp, moves, createdAt, speed = 'blitz') => ({
+  id, rated: true, variant: 'standard', speed, createdAt, status: 'resign', winner: 'white', moves,
+  players: { white: { user: { name: user }, rating: 3000 }, black: { user: { name: opp }, rating: 2900 } },
+});
+const ccGame = (id, user, pgnMoves, endS) => ({
+  url: `https://www.chess.com/game/live/${id}`, rules: 'chess', time_class: 'blitz', rated: true, end_time: endS,
+  white: { username: user, rating: 3200 }, black: { username: 'Adv', rating: 3000 },
+  pgn: `[White "${user}"]\n[Black "Adv"]\n[Result "1-0"]\n\n${pgnMoves} 1-0`,
+});
+
+test('incrémental : since après la dernière partie, nouveaux venus, ETag Chess.com, changement de mois', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'elite-inc-'));
+  try {
+    const out = join(dir, 'elite.json');
+    const etat = join(dir, 'etat.json');
+    const o = parseArgs(['--incremental', etat, '--out', out, '--top', '50']);
+    const t0 = Date.UTC(2026, 9, 20, 12);
+    const H = 3600000;
+    let lichessTop = ['TopA'];
+    const liByUser = {
+      TopA: [liGame('g1', 'TopA', 'X', 'd4 d5 c4 e6', t0 - H), liGame('g2', 'TopA', 'X', 'e4 e5 Nf3', t0 - 2 * H), liGame('old', 'TopA', 'X', 'd4 d5 c4 c6', t0 - 4 * MONTH_MS)],
+      NewB: [liGame('n1', 'NewB', 'X', 'e4 c6 d4 d5', t0 - 5 * H)],
+    };
+    let cc = { etag: '"v1"', games: [ccGame('c1', 'TopC', '1. d4 d5 2. c4 e6', t0 / 1000 - 3600)] };
+    const calls = [];
+    const fetchImpl = async (url, init) => {
+      const u = new URL(url);
+      calls.push({ url, headers: init.headers });
+      if (u.pathname === '/api/player/top/50/blitz') return resp(200, { users: lichessTop.map((n) => ({ username: n, id: n.toLowerCase(), perfs: { blitz: { rating: 3000 } } })) });
+      if (u.pathname === '/api/player/top/50/rapid') return resp(200, { users: [] });
+      if (u.pathname === '/api/users') {
+        // Compteur de parties classées blitz (le nombre de parties de l'exemple suffit ici).
+        return resp(200, init.body.split(',').map((id) => ({ id, perfs: { blitz: { games: (Object.entries(liByUser).find(([n]) => n.toLowerCase() === id)?.[1] || []).length } } })));
+      }
+      const m = u.pathname.match(/^\/api\/games\/user\/(\w+)$/);
+      if (m) {
+        const since = Number(u.searchParams.get('since'));
+        return resp(200, ndjson((liByUser[m[1]] || []).filter((g) => g.createdAt >= since)));
+      }
+      if (u.pathname === '/pub/leaderboards') return resp(200, { live_blitz: [{ username: 'TopC', score: 3300 }], live_rapid: [] });
+      if (u.pathname === '/pub/player/topc/games/archives') return resp(200, { archives: ['https://api.chess.com/pub/player/topc/games/2026/09', 'https://api.chess.com/pub/player/topc/games/2026/10'] });
+      if (u.pathname === '/pub/player/topc/games/2026/10') return init.headers['if-none-match'] === cc.etag ? resp(304) : resp(200, { games: cc.games }, cc.etag);
+      return resp(404);
+    };
+    const http = () => new Http({ fetchImpl, minIntervalMs: {} });
+
+    // 1. État absent : reconstruction complète.
+    const r1 = await run(o, { log: () => {}, http: http(), now: t0 });
+    assert.equal(r1.run.mode, 'complet');
+    assert.deepEqual(Object.keys(r1.state.games).sort(), ['cc:c1', 'li:g1'], 'hors répertoire et hors fenêtre écartées');
+
+    // 2. Trente minutes plus tard : une nouvelle partie de TopA, un nouveau venu, Chess.com inchangé.
+    calls.length = 0;
+    liByUser.TopA.unshift(liGame('g3', 'TopA', 'X', 'e4 c6 Nc3 d5', t0 + 10 * 60000));
+    lichessTop = ['TopA', 'NewB'];
+    const r2 = await run(o, { log: () => {}, http: http(), now: t0 + 30 * 60000 });
+    assert.equal(r2.run.mode, 'incrémental');
+    assert.equal(r2.run.newGames, 2, 'g3 et n1 ; g1 (chevauchement) déjà connue');
+    const sinceA = Number(new URL(calls.find((c) => c.url.includes('/games/user/TopA')).url).searchParams.get('since'));
+    assert.equal(sinceA, t0 - H - LICHESS_OVERLAP_MS, 'since = dernière partie vue − 1 h');
+    assert.equal(calls.find((c) => c.url.endsWith('/api/users')).headers['content-type'], 'text/plain');
+    const sinceB = Number(new URL(calls.find((c) => c.url.includes('/games/user/NewB')).url).searchParams.get('since'));
+    assert.ok(sinceB < t0 - 2 * MONTH_MS, 'nouveau venu : toute la fenêtre');
+    assert.equal(calls.filter((c) => c.url.includes('chess.com')).length, 2, 'classement + mois en cours (pas la liste des archives)');
+    assert.equal(calls.find((c) => c.url.endsWith('/2026/10')).headers['if-none-match'], '"v1"');
+    const d2 = JSON.parse(readFileSync(out, 'utf8'));
+    assert.equal(d2.meta.games.total, 4);
+    assert.equal(d2.recent[0].id, 'g3');
+    assert.equal(d2.meta.run.newGames, 2);
+
+    // 3. Nouveau mois : mois en cours vide (404) + mois précédent, avec une nouvelle partie Chess.com.
+    //    Compteurs Lichess inchangés : aucun export demandé.
+    calls.length = 0;
+    cc = { etag: '"v2"', games: [...cc.games, ccGame('c2', 'TopC', '1. e4 c6 2. d4 d5', t0 / 1000 + 3600)] };
+    const nov = Date.UTC(2026, 10, 1, 0, 10);
+    const r3 = await run(o, { log: () => {}, http: http(), now: nov });
+    assert.deepEqual(calls.filter((c) => c.url.includes('/topc/')).map((c) => c.url.split('/games/')[1]), ['2026/11', '2026/10']);
+    assert.equal(r3.state.games['cc:c2']?.id, 'c2');
+    assert.equal(calls.filter((c) => c.url.includes('/games/user/')).length, 0, 'compteurs inchangés : pas d’export Lichess');
+
+    // 4. TopA sort du top Lichess : ses parties disparaissent ; la fenêtre retire le reste plus tard.
+    lichessTop = ['NewB'];
+    const r4 = await run(o, { log: () => {}, http: http(), now: nov + 60000 });
+    assert.ok(!r4.state.games['li:g1'] && !r4.state.games['li:g3']);
+    assert.ok(r4.state.games['li:n1']);
+    const r5 = await run(o, { log: () => {}, http: http(), now: t0 + 4 * MONTH_MS });
+    assert.equal(Object.keys(r5.state.games).length, 0);
+    assert.equal(process.exitCode, 2, 'aucune partie : code de sortie 2');
+    process.exitCode = 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

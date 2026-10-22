@@ -25,7 +25,8 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
   js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
   js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré / maîtres / Élite)
-  js/elite.js              Jeu « Élite » : chargement de data/elite.json, clé FEN, lecture d'une position (pur, testé)
+  js/elite.js              Jeu « Élite » : chargement (branche donnees-elite puis data/elite.json), clé FEN,
+                           lecture d'une position, « Nouvelles parties » (pur, testé)
   js/repertoire-page.js    Page Répertoire : filtres, recherche par coup/ECO, tableau 9 colonnes, Anti-trash,
                            « Tester cette ligne », arbre Lichess (niveau/maîtres), vidéos, export PGN
   js/repertoire-pgn.js     Export PGN du répertoire (variantes, $2, commentaires ; relu par chess.js en test)
@@ -33,7 +34,7 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/lines.js              Lecture des lignes « 1. d4 d5 2. c4? », index ECO, empreintes
   data/repertoire.js       58 fiches rédigées (Gambit Dame, Caro-Kann) — source à éditer
   data/repertoire.json     GÉNÉRÉ (scripts/repertoire.mjs) : fiches + ECO + vérification
-  data/elite.json          GÉNÉRÉ (scripts/elite.mjs, réseau) : parties du top blitz/rapide, non versionné
+  data/elite.json          GÉNÉRÉ (scripts/elite.mjs, réseau) : copie de secours embarquée par deploy.yml, non versionnée
   pieces/                  SVG cburnett (GPLv2+)
   vendor/, engine/         GÉNÉRÉS par scripts/vendor.mjs (postinstall), non versionnés
 worker/                    API Cloudflare Worker (Claude) : src/index.js, src/prompt.js
@@ -46,6 +47,7 @@ tests/unit/                node:test (règles, continuité, import/export)
 tests/e2e/                 Playwright, vrai Stockfish ; API Claude simulée par interception
 tests/fixtures/elite/      Réponses enregistrées pour `elite.mjs --fixture` (Lichess réelles, Chess.com synthétiques)
 .github/workflows/deploy.yml  vérif → Worker → Pages → test du site publié
+.github/workflows/elite.yml   collecte Élite toutes les 30 min (incrémentale) + lundi (complète) → branche donnees-elite
 ```
 
 Trois mondes distincts :
@@ -66,7 +68,9 @@ cd worker && npm run check        # wrangler deploy --dry-run
 npm run verify:repertoire         # après modification d'une fiche : recalcule data/verification.json
 node scripts/verify-repertoire.mjs --all --dry   # CI : tout recalculer sans écrire
 npm run elite                     # réseau : site/data/elite.json (≈ 10 min pour Lichess ; options en tête du script)
-node scripts/elite.mjs --fixture tests/fixtures/elite --top 2 --out /tmp/elite.json   # hors ligne
+node scripts/elite.mjs --state d/etat.json --out d/elite.json         # complet + état
+node scripts/elite.mjs --incremental d/etat.json --out d/elite.json   # nouvelles parties seulement
+node scripts/elite.mjs --fixture tests/fixtures/elite --top 2 --now 2026-10-22T12:00:00Z --out /tmp/elite.json   # hors ligne
 ```
 
 Modifier le répertoire : éditer `site/data/repertoire.js` (coups en SAN anglaise, « ? » sur le
@@ -177,10 +181,28 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   navigateurs) : c'était la cause des 404 « sans jeton » observés ; api.chess.com est bloqué depuis
   l'environnement de développement (fixtures Chess.com synthétiques). Node 22 n'utilise le proxy de
   l'environnement qu'avec `NODE_USE_ENV_PROXY=1` : le script se relance lui-même ainsi.
-  CI : job `elite` (lundi + lancement manuel seulement) → artefact → job pages ; sinon le fichier déjà
-  publié est repris ; déclenchement hebdomadaire (lundi). Fichier non versionné (comme
-  repertoire.json) : régénéré chaque semaine, un instantané figerait des données datées et
-  alourdirait l'historique. Sans fichier, l'interface affiche « non publié ».
+  **Mise à jour continue** (`.github/workflows/elite.yml`, seul écrivain, groupe de concurrence
+  `donnees-elite`) : toutes les 30 min, `--incremental etat.json` ; le lundi (ou état absent, ou
+  lancement manuel « complet ») reconstruction complète. `etat.json` garde par joueur × cadence la
+  dernière partie vue et ses 100 dernières parties (id, date), les listes du top, les ETag Chess.com
+  et les parties du répertoire gardées (coups SAN complets, pour les ouvrir sur l'échiquier).
+  L'agrégat est **recalculé** à chaque passage depuis ces parties (dédoublonnées par plateforme + id) :
+  fenêtre glissante de 3 mois, 100 dernières parties par joueur × cadence, joueurs sortis du top
+  retirés, nouveaux venus chargés sur toute la fenêtre. Lichess : `since` = dernière partie − 3 h
+  (une partie commencée avant le passage précédent peut finir après). Chess.com : archive du mois en
+  cours (+ mois précédent tant qu'aucune partie du mois n'a été vue), `If-None-Match` → 304.
+  Classement injoignable : liste précédente conservée et erreur notée. Publication : branche
+  orpheline `donnees-elite` d'**un seul commit remplacé à chaque fois** (force push, sinon ≈ 50
+  commits/jour de fichiers de 1 à 3 Mo), seulement si les données ont changé ; message
+  « Élite : +N parties (date) ». Le site lit `raw.githubusercontent.com/…/donnees-elite/elite.json`
+  (CORS `*` et `cache-control: max-age=300` vérifiés le 2026-10-22, 404 si la branche manque),
+  rechargé au plus toutes les 5 min, sinon `./data/elite.json` (copie prise par deploy.yml sur la
+  branche), sinon « non publié ». Affichage « Mis à jour il y a X min » (`meta.generatedAt` = dernier
+  changement publié) et « 🔴 Nouvelles parties du top » (10 dernières, page Répertoire, ouvrables).
+  Limites : un cron GitHub est souvent retardé de 5 à 20 min ; les workflows planifiés sont
+  désactivés après 60 jours sans commit sur la branche par défaut (les commits de donnees-elite ne
+  comptent pas) ; une partie apparaît au passage qui suit sa fin (+ jusqu'à 5 min de cache raw) ;
+  date affichée = début de partie (Lichess) ou fin (Chess.com).
 
 ## Phase 2 (non implémenté)
 

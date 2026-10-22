@@ -3,10 +3,15 @@
 // répertoire (1.d4 d5 2.c4 et 1.e4 c6), agrégées par position.
 // Ce sont des FRÉQUENCES OBSERVÉES chez des joueurs en ligne très forts, jamais une évaluation :
 // une position absente du fichier est affichée comme absente, sans extrapolation.
+// Chargement : d'abord la branche « donnees-elite » du dépôt (mise à jour toutes les ~30 min par
+// .github/workflows/elite.yml, servie par raw.githubusercontent.com avec CORS « * » et ~5 min de
+// cache), sinon la copie publiée avec le site, sinon « non publié ».
 import { Chess } from '../vendor/chess.js';
 import { enrichMoves, nodeStats, SPEED_LABELS } from './lichess.js';
 
+export const ELITE_LIVE_URL = 'https://raw.githubusercontent.com/miguelcerqueira1-cmyk/-coach-echecs/donnees-elite/elite.json';
 export const ELITE_URL = './data/elite.json';
+const RELOAD_MS = 5 * 60000; // même durée que le cache de raw.githubusercontent.com
 export const PLATFORM_LABELS = { li: 'Lichess', cc: 'Chess.com' };
 export const ROOTS = { gd: ['d4', 'd5', 'c4'], ck: ['e4', 'c6'] };
 
@@ -68,10 +73,21 @@ export function lookupElite(data, fen) {
   };
 }
 
-// Résumé lisible des métadonnées (date, joueurs, parties par plateforme, sources en échec).
-export function eliteSummary(meta) {
+// « il y a 12 min », « il y a 3 h », « il y a 2 j » (date ISO ou millisecondes).
+export function ago(when, now = Date.now()) {
+  const t = typeof when === 'number' ? when : Date.parse(when);
+  if (!Number.isFinite(t)) return '?';
+  const min = Math.max(0, Math.round((now - t) / 60000));
+  if (min < 1) return 'à l’instant';
+  if (min < 60) return `il y a ${min} min`;
+  if (min < 48 * 60) return `il y a ${Math.round(min / 60)} h`;
+  return `il y a ${Math.round(min / 1440)} j`;
+}
+
+// Résumé lisible des métadonnées (fraîcheur, joueurs, parties par plateforme, sources en échec).
+export function eliteSummary(meta, now = Date.now()) {
   if (!meta) return '';
-  const d = meta.generatedAt ? new Date(meta.generatedAt).toLocaleDateString('fr-FR') : '?';
+  const d = meta.generatedAt ? `Mis à jour ${ago(meta.generatedAt, now)} (${new Date(meta.generatedAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })})` : 'Date inconnue';
   const src = meta.sources || {};
   const part = (k) => {
     const s = src[k];
@@ -79,7 +95,7 @@ export function eliteSummary(meta) {
     if (s.status === 'erreur') return `${PLATFORM_LABELS[k]} : indisponible lors de la génération (aucune partie)`;
     return `${PLATFORM_LABELS[k]} : ${s.gamesKept.toLocaleString('fr-FR')} parties de ${s.players} joueurs${s.status === 'partiel' ? ' (récupération partielle)' : ''}`;
   };
-  return `Données du ${d} — ${[part('li'), part('cc')].filter(Boolean).join(' ; ')}.`;
+  return `${d} — ${[part('li'), part('cc')].filter(Boolean).join(' ; ')}.`;
 }
 
 // Répartition par plateforme, ex. « Lichess 12 · Chess.com 30 ».
@@ -98,19 +114,40 @@ export function absentText(meta) {
   return `Position absente du jeu Élite : il ne couvre que les positions après 1.d4 d5 2.c4 ou 1.e4 c6, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`;
 }
 
-// Chargement unique et partagé du fichier (absent en développement tant qu'il n'est pas généré).
-let pending = null;
-export function loadElite(fetchImpl = (...a) => fetch(...a)) {
-  pending ??= (async () => {
+export const SOURCE_LABELS = { direct: 'mise à jour continue (branche donnees-elite)', site: 'copie publiée avec le site' };
+
+// « Nouvelles parties » : dernières parties gardées, tous joueurs du top confondus.
+export function recentInfo(data) {
+  return (data?.recent || []).map((g) => {
+    const info = gameInfo(g);
+    const rep = repertoireOfSan(info.san);
+    return { ...info, rep, color: rep === 'ck' ? 'b' : 'w', opening: g.eco ? `${g.eco} ${g.n || ''}`.trim() : '' };
+  });
+}
+
+// Chargement partagé, rechargé au plus toutes les 5 minutes : branche de données d'abord,
+// copie du site ensuite. Résultat : { status: 'ok', data, source: 'direct' | 'site' } ou
+// { status: 'unavailable', error }.
+let cache = null;
+export function loadElite(fetchImpl = (...a) => fetch(...a), now = Date.now()) {
+  if (cache && now - cache.at < RELOAD_MS) return cache.promise;
+  const get = async (url) => {
+    const r = await fetchImpl(url, { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    if (!data?.positions || !data?.meta) throw new Error('fichier illisible');
+    return data;
+  };
+  const promise = (async () => {
     try {
-      const r = await fetchImpl(ELITE_URL, { cache: 'no-cache' });
-      if (!r.ok) return { status: 'unavailable', error: `data/elite.json absent (HTTP ${r.status})` };
-      const data = await r.json();
-      if (!data?.positions || !data?.meta) return { status: 'unavailable', error: 'data/elite.json illisible' };
-      return { status: 'ok', data };
-    } catch {
-      return { status: 'unavailable', error: 'data/elite.json illisible ou injoignable' };
+      return { status: 'ok', data: await get(ELITE_LIVE_URL), source: 'direct' };
+    } catch { /* branche absente ou injoignable : copie du site */ }
+    try {
+      return { status: 'ok', data: await get(ELITE_URL), source: 'site' };
+    } catch (e) {
+      return { status: 'unavailable', error: `data/elite.json absent ou illisible (${e.message})` };
     }
   })();
-  return pending;
+  cache = { at: now, promise };
+  return promise;
 }
