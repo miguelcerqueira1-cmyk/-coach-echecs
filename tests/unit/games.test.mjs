@@ -87,3 +87,35 @@ test('conversions et seuils', () => {
   assert.equal(classify(150).id, 'erreur');
   assert.equal(classify(400).id, 'gaffe');
 });
+
+import { rapport, motifs, lineSan, lineText, pourVous } from '../../site/js/games-core.js';
+
+test('rapport détaillé : erreur expliquée (mat du berger), variante et bon coup, points à retenir', () => {
+  const game = { color: 'b', outcome: 'défaite', san: ['e4', 'e5', 'Bc4', 'Nc6', 'Qh5', 'Nf6', 'Qxf7#'] };
+  const evals = [30, 30, 30, 30, 30, 30, 1000, 1000].map((cp, i) => ({ cp, best: i === 5 ? 'g7g6' : null }));
+  const plies = analyseGame(game, evals);
+  const b = bilan(game, plies, null);
+  const deep = { 5: { best: { pv: ['g7g6', 'h5f3', 'g8f6'], cp: 30 }, played: { pv: ['h5f7'], cp: 1000 } } };
+  const r = rapport(game, plies, b, null, deep);
+  assert.equal(r.erreurs.length, 1);
+  const e = r.erreurs[0];
+  assert.equal(e.coup, '3… Cf6');
+  assert.equal(e.meilleurCoup, 'g6');
+  assert.match(e.pourquoi.join(' '), /maté/);
+  assert.equal(e.refutation, '4. Dxf7#');
+  assert.equal(e.meilleureLigne, '3… g6 4. Df3 Cf6');
+  assert.equal(e.apres, 'perdant (mat en vue)');
+  assert.ok(r.aRetenir.some((x) => /échecs adverses/.test(x)));
+  assert.equal(r.exercices[0].i, 5);
+  assert.match(r.synthese, /Vous avez perdu/);
+});
+
+test('motifs tactiques : fourchette de Cavalier et matériel', () => {
+  // Cavalier en c7 : fourchette Roi e8 + Tour a8.
+  const fen = 'r3k3/8/8/1N6/8/8/8/4K3 w - - 0 1';
+  const m = motifs(fen, lineSan(fen, ['b5c7', 'e8d7', 'c7a8']), 'w');
+  assert.ok(m.some((x) => x.id === 'fourchette' && x.qui === 'moi'));
+  assert.ok(m.some((x) => x.id === 'materiel-gagne' && x.n === 5));
+  assert.equal(lineText(fen, ['Nc7+', 'Kd7']), '1. Cc7+ Rd7');
+  assert.equal(pourVous(-120, 'b'), '+1,2');
+});

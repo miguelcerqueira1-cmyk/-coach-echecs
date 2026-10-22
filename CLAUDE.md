@@ -171,6 +171,13 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - Bilan de la partie (page Moteur, bouton « Bilan ») : la partie est envoyée à « Mes parties »
   (`localGame`, id dérivé des coups → cache d'analyse réutilisé) et analysée comme une partie
   importée ; exclue de la vue d'ensemble. Indisponible pour une partie commencée depuis un FEN.
+- Rapport détaillé (Mes parties, sous l'analyse) : `rapport()` dans games-core.js, sans IA.
+  Note globale (perte moyenne, gaffes), déroulement par phase, bons coups (erreurs adverses
+  sanctionnées, séries sans faute), erreurs expliquées (pièce en prise via chess.js, motifs
+  détectés sur la variante de réfutation : mat, fourchette, matériel), variantes de Stockfish
+  pour le coup joué et le meilleur coup (`deepen()` : 2 calculs ≥ 1 s par erreur principale,
+  mis en cache avec l'analyse), occasions manquées, rappels « à retenir », exercices (position
+  sans flèche, solution sur demande).
 - Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
   chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page

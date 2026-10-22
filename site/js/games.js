@@ -4,7 +4,7 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
-  parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo,
+  parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
 } from './games-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -184,6 +184,44 @@ export class GamesPage {
     for (const id of ids.slice(40)) delete this.cache[id];
     save(CACHE, this.cache);
     this.render();
+    this.deepen(game);
+  }
+
+  // Rapport détaillé : variantes de Stockfish (meilleur coup et réfutation du coup joué)
+  // pour chaque erreur principale. Mises en cache avec l'analyse.
+  async deepen(game) {
+    const c = this.cache[game.id];
+    if (!c || c.deep || this.deepening === game.id) return;
+    this.deepening = game.id;
+    const job = this.job;
+    const replay = new Chess();
+    const ucis = game.san.map((s) => replay.move(s).lan);
+    const b = bilan(game, analyseGame(game, c.evals), game.deviation);
+    const deep = {};
+    try {
+      for (const i of keyPlies(b)) {
+        for (const [k, n] of [['best', i], ['played', i + 1]]) {
+          if (job !== this.job || !this.visible() || this.selected !== game.id) return;
+          const pos = new Chess();
+          for (const u of ucis.slice(0, n)) pos.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
+          if (pos.isGameOver()) continue;
+          const res = await this.engine.analyze({
+            position: `position startpos${n ? ' moves ' + ucis.slice(0, n).join(' ') : ''}`,
+            movetime: Math.max(1000, 3 * (Number(this.prefs.precision) || 300)),
+            token: { gameId: `rapport-${game.id}`, branchId: 'rapport', revision: n, ply: n },
+          });
+          if (res.cancelled) return;
+          (deep[i] ||= {})[k] = { pv: (res.info?.pv || []).slice(0, 10), cp: whiteCp(res.info?.score, pos.turn()) };
+        }
+      }
+      c.deep = deep;
+      save(CACHE, this.cache);
+      if (this.selected === game.id) this.renderAnalysis();
+    } catch (e) {
+      c.deepError = e.message;
+    } finally {
+      this.deepening = null;
+    }
   }
 
   // ---------- Rendu ----------
@@ -336,6 +374,7 @@ export class GamesPage {
           <p class="muted tiny">Pistes déduites des calculs de Stockfish (${this.prefs.precision} ms par position) et des règles, sans IA.</p>
         </div>
       </div>
+      ${this.reportHtml(g, plies, b, cached)}
       <h3>Coups</h3>
       <p class="moves-annot">${plies.map((p) => `<button type="button" class="m ${p.mover === g.color ? 'mine' : ''} ${p.cls ? 'c-' + p.cls.id : ''}" data-ply="${p.i}">${p.i % 2 === 0 ? `${p.i / 2 + 1}.` : ''}${fr(p.san)}${p.cls && p.mover === g.color ? p.cls.mark : ''}</button>`).join(' ')}</p>
     </div>`;
@@ -344,11 +383,52 @@ export class GamesPage {
     this.reviewBoard.setOrientation(g.color);
     this.showPly(g, plies, b.errors[0]?.i ?? 0);
     box.querySelectorAll('[data-ply]').forEach((el) => el.addEventListener('click', () => this.showPly(g, plies, Number(el.dataset.ply))));
+    box.querySelectorAll('[data-exo]').forEach((el) => el.addEventListener('click', () => {
+      this.showPly(g, plies, Number(el.dataset.exo), { exo: true });
+      box.querySelector('[data-review-board]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }));
+    if (!cached.deep) this.deepen(g);
   }
 
-  showPly(g, plies, i) {
+  reportHtml(g, plies, b, cached) {
+    const r = rapport(g, plies, b, g.deviation, cached.deep || {});
+    const at = (i, label) => `<button type="button" class="link-btn" data-ply="${i}">${label}</button>`;
+    const pending = !cached.deep ? '<p class="state small"><span class="spinner"></span> Stockfish approfondit vos erreurs (variantes « ce qui aurait pu se passer »)…</p>' : '';
+    return `<section class="card report" data-report>
+      <h3>📝 Rapport détaillé</h3>
+      <p class="report-note ${r.note.ton ? 'note-' + r.note.ton : ''}"><strong>${esc(r.note.titre)}.</strong> ${esc(r.synthese)}</p>
+      <h4>Déroulement</h4>
+      <ul>${r.phases.map((x) => `<li><strong>${esc(x.phase[0].toUpperCase() + x.phase.slice(1))}</strong> : ${esc(x.avis)}${x.coups ? ` <span class="muted">(${x.coups} coups${x.loss != null ? `, perte moyenne ${(x.loss / 100).toFixed(2).replace('.', ',')}` : ''})</span>` : ''}</li>`).join('')}</ul>
+      <h4>✔ Vos bons coups</h4>
+      ${r.bons.length ? `<ul>${r.bons.map((x) => `<li>${at(x.i, '▸')} ${esc(x.text)}</li>`).join('')}</ul>` : '<p class="small muted">Pas de coup marquant détecté (aucune erreur adverse à sanctionner, ou pas de longue série sans faute).</p>'}
+      <h4>✘ Vos erreurs, expliquées</h4>
+      ${pending}
+      ${r.erreurs.length ? r.erreurs.map((e) => `<div class="report-err">
+        <p><strong>${at(e.i, esc(e.coup))}</strong> — ${esc(e.cls.label)} (${esc(e.phase)}). Évaluation pour vous : ${esc(e.avant)} → <strong>${esc(e.apres)}</strong> (perte ≈ ${esc(e.perte)} pion${e.perte === '1,0' ? '' : 's'}).</p>
+        ${e.pourquoi.length ? `<p><strong>Pourquoi :</strong> ${esc(e.pourquoi.join(' ; '))}.</p>` : ''}
+        ${e.refutation ? `<p><strong>Ce qui pouvait suivre :</strong> <span class="line">${esc(e.refutation)}</span>${e.refutationEval ? ` → ${esc(e.refutationEval)} pour vous` : ''}.</p>` : ''}
+        <p><strong>Le meilleur coup :</strong> ${esc(e.meilleurCoup)}${e.meilleureLigne ? `, par exemple <span class="line">${esc(e.meilleureLigne)}</span>` : ''} → ${esc(e.meilleureEval)} pour vous${e.gains.length ? ` (${esc(e.gains.join(', '))})` : ''}.</p>
+      </div>`).join('') : '<p class="small muted">Aucune erreur détectée à ce niveau d’analyse. 👏</p>'}
+      ${r.occasions.length ? `<h4>💡 Occasions manquées</h4><ul>${r.occasions.map((x) => `<li>${at(x.i, '▸')} ${esc(x.text)}</li>`).join('')}</ul>` : ''}
+      <h4>🧠 À retenir pour la prochaine partie</h4>
+      <ul>${r.aRetenir.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      ${r.exercices.length ? `<h4>🎯 Exercices sur vos positions</h4><ul>${r.exercices.map((x) => `<li><button type="button" class="link-btn" data-exo="${x.i}">${esc(x.text)}</button></li>`).join('')}</ul>` : ''}
+      <p class="muted tiny">Rapport rédigé automatiquement à partir des calculs de Stockfish (évaluations et variantes) et des règles du jeu (chess.js), sans IA. Les variantes sont des calculs du moteur, pas des certitudes sur ce qu’aurait joué votre adversaire.</p>
+    </section>`;
+  }
+
+  showPly(g, plies, i, { exo = false } = {}) {
     const p = plies[i];
     if (!p || !p.fenBefore) return;
+    if (exo) {
+      // Exercice : position seule, sans flèche ni solution.
+      this.reviewBoard.setPosition(new Chess(p.fenBefore), { lastMove: null });
+      this.reviewBoard.setArrows([]);
+      const cap = this.el.querySelector('[data-review-caption]');
+      if (cap) cap.innerHTML = `🎯 Exercice : ${p.mover === 'w' ? 'les Blancs' : 'les Noirs'} jouent. Trouvez le meilleur coup, puis touchez <button type="button" class="link-btn" data-sol="${i}">voir la solution</button>.`;
+      cap?.querySelector('[data-sol]')?.addEventListener('click', () => this.showPly(g, plies, i));
+      return;
+    }
     this.reviewBoard.setPosition(new Chess(p.fenBefore), { lastMove: i > 0 ? { from: plies[i - 1].uci?.slice(0, 2), to: plies[i - 1].uci?.slice(2, 4) } : null });
     const arrows = [{ from: p.uci.slice(0, 2), to: p.uci.slice(2, 4), kind: 'threat' }];
     if (p.bestUci) arrows.push({ from: p.bestUci.slice(0, 2), to: p.bestUci.slice(2, 4), kind: 'best' });

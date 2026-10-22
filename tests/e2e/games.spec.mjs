@@ -152,3 +152,32 @@ test('Bilan de la partie de l’échiquier : analyse Stockfish et pistes sur la 
   await expect(box).toContainText('Répertoire suivi');
   await expect(page.locator('#page-parties .game-card').first()).toContainText('Échiquier');
 });
+
+test('rapport détaillé : erreur expliquée avec la suite du moteur, bon coup, exercice', async ({ page }) => {
+  await page.route(/https:\/\/(lichess\.org|explorer\.lichess\.org)\//, (r) => r.abort());
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('e2e-init')) {
+      localStorage.clear();
+      localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
+      sessionStorage.setItem('e2e-init', '1');
+    }
+  });
+  await page.goto('./');
+  await page.waitForFunction(() => window.__coach?.engine.state === 'ready', null, { timeout: 60000 });
+  for (const m of ['f3', 'e5', 'g4', 'Qh4#']) {
+    await page.fill('#notation-input', m);
+    await page.press('#notation-input', 'Enter');
+    await expect.poll(() => page.evaluate(() => window.__coach.state.game.moves.at(-1)?.san)).toBe(m);
+  }
+  await page.click('#btn-bilan');
+  const rep = page.locator('#page-parties [data-report]');
+  await expect(rep).toContainText('Rapport détaillé', { timeout: 60000 });
+  await expect(rep).toContainText('Vous avez perdu');
+  await expect(rep).toContainText('2. g4');
+  // Variantes approfondies : la réfutation est le mat.
+  await expect(rep).toContainText('Ce qui pouvait suivre : 2… Dh4#', { timeout: 60000 });
+  await expect(rep).toContainText('À retenir pour la prochaine partie');
+  await rep.locator('[data-exo]').first().click();
+  await expect(page.locator('#page-parties [data-review-caption]')).toContainText('Exercice');
+  await expect(page.locator('#page-parties [data-review-board] .board-arrows line')).toHaveCount(0);
+});

@@ -516,3 +516,12 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .players-table .dot { width: .7rem; height: .7rem; border-radius: 50%; border: 1px solid #777; display: inline-block; vertical-align: middle; }
 .players-table .dot.w { background: #fff; }
 .players-table .dot.b { background: #222; }
+.report h4 { margin: .9rem 0 .3rem; font-size: .95rem; }
+.report ul { margin: .2rem 0; padding-left: 1.1rem; }
+.report li { margin: .2rem 0; }
+.report-note { padding: .6rem .8rem; border-radius: 10px; background: var(--surface-2); }
+.report-note.note-ok { box-shadow: inset 4px 0 0 var(--best); }
+.report-note.note-ko { box-shadow: inset 4px 0 0 var(--threat); }
+.report-err { padding: .5rem .8rem; margin: .4rem 0; border-radius: 10px; background: var(--surface-2); }
+.report-err p { margin: .25rem 0; font-size: .92rem; }
+.report .link-btn { text-align: left; }

@@ -217,3 +217,183 @@ export function bilan(game, plies, deviation) {
   }
   return { errors: errors.slice(0, 3), decisive, avg, counts: { gaffe: count('gaffe'), erreur: count('erreur'), imprecision: count('imprecision') }, pistes: pistes.slice(0, 3) };
 }
+
+// ---------- Rapport détaillé (texte) ----------
+// Rédigé uniquement à partir des calculs de Stockfish (évaluations, variantes) et de
+// vérifications de chess.js (matériel, pièces en prise, fourchettes, échecs). Sans IA.
+
+const VAL = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+const NOM = { p: 'pion', n: 'Cavalier', b: 'Fou', r: 'Tour', q: 'Dame', k: 'Roi' };
+const LE = { p: 'le pion', n: 'le Cavalier', b: 'le Fou', r: 'la Tour', q: 'la Dame', k: 'le Roi' };
+const toMv = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
+
+// Évaluation (centipions côté Blancs) → texte du point de vue de `color`.
+export function pourVous(cpWhite, color) {
+  if (cpWhite == null) return '?';
+  const v = color === 'w' ? cpWhite : -cpWhite;
+  if (Math.abs(v) >= 1000) return v > 0 ? 'gagnant (mat en vue)' : 'perdant (mat en vue)';
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${(Math.abs(v) / 100).toFixed(1).replace('.', ',')}`;
+}
+
+// Variante UCI rejouée et convertie en SAN (tronquée au premier coup illégal).
+export function lineSan(fen, uciPv, max = 8) {
+  const c = new Chess(fen);
+  const out = [];
+  for (const u of (uciPv || []).slice(0, max)) {
+    try { out.push(c.move(toMv(u)).san); } catch { break; }
+  }
+  return out;
+}
+
+// Variante numérotée en notation française : « 15. Fxe5 Cxe5 16. Dd4 ».
+export function lineText(fen, sans) {
+  const parts = fen.split(' ');
+  let no = Number(parts[5] || 1);
+  let turn = parts[1];
+  return sans.map((s, i) => {
+    const t = turn === 'w' ? `${no}. ${sanFr(s)}` : (i === 0 ? `${no}… ${sanFr(s)}` : sanFr(s));
+    if (turn === 'b') no++;
+    turn = turn === 'w' ? 'b' : 'w';
+    return t;
+  }).join(' ');
+}
+
+// Motifs tactiques le long d'une variante, vus par `color` (« moi ») : matériel, fourchettes,
+// échecs et mat, pièces laissées en prise. `fen` = position avant le premier coup de `sans`.
+export function motifs(fen, sans, color) {
+  const c = new Chess(fen);
+  const out = [];
+  let bilanMat = 0; // matériel gagné (+) ou perdu (−) par « moi » sur la variante
+  sans.forEach((san) => {
+    let m;
+    try { m = c.move(san); } catch { return; }
+    if (m.captured) bilanMat += (m.color === color ? 1 : -1) * VAL[m.captured];
+    if (m.promotion) bilanMat += (m.color === color ? 1 : -1) * (VAL[m.promotion] - 1);
+    if (san.endsWith('#')) out.push({ id: 'mat', qui: m.color === color ? 'moi' : 'adv', san });
+    // Fourchette : la pièce jouée attaque au moins deux pièces adverses de valeur (ou le Roi + une pièce).
+    const cibles = [];
+    for (const row of c.board()) for (const p of row) {
+      if (!p || p.color === m.color || p.type === 'p') continue;
+      if (c.attackers(p.square, m.color).includes(m.to) && (p.type === 'k' || VAL[p.type] >= VAL[m.piece] || !c.attackers(p.square, p.color).length)) cibles.push(p);
+    }
+    if (cibles.length >= 2 && !out.some((o) => o.id === 'fourchette')) out.push({ id: 'fourchette', qui: m.color === color ? 'moi' : 'adv', san, piece: m.piece, square: m.to, cibles });
+  });
+  if (bilanMat <= -2) out.push({ id: 'materiel-perdu', n: -bilanMat });
+  if (bilanMat >= 2) out.push({ id: 'materiel-gagne', n: bilanMat });
+  return out;
+}
+
+const RAPPELS = {
+  'en-prise': 'Avant de jouer, vérifiez chaque pièce : est-elle attaquée ? est-elle défendue ? (une pièce non défendue est une cible)',
+  fourchette: 'Repérez les cases de fourchette des Cavaliers et de la Dame adverses avant de placer deux pièces sur des cases attaquables ensemble.',
+  mat: 'Quand le Roi est exposé, cherchez d’abord les échecs adverses (échecs, prises, menaces : dans cet ordre).',
+  'materiel-perdu': 'Calculez la réponse forcée de l’adversaire (prises et échecs) avant de jouer un coup qui semble actif.',
+  occasion: 'Après chaque coup adverse, demandez-vous : « qu’est-ce qui a changé ? une pièce ne se défend plus ? un échec est possible ? »',
+  repertoire: 'Révisez la ligne de votre répertoire (Entraînement → Révision espacée) jusqu’au coup où vous en êtes sorti.',
+  finale: 'En finale, activez le Roi et comptez les tempos des pions passés avant de vous lancer.',
+  ouverture: 'Dans l’ouverture : développez, roquez, ne bougez pas deux fois la même pièce sans raison.',
+};
+
+// `deep[i]` (facultatif) : { best: { pv, cp }, played: { pv, cp } } — variantes de Stockfish
+// pour le meilleur coup et pour la réfutation du coup joué au demi-coup i.
+export function rapport(game, plies, b, deviation, deep = {}) {
+  const color = game.color;
+  const mine = plies.filter((p) => p.mover === color && p.cpBefore != null);
+  const nMine = mine.length;
+  const exact = mine.filter((p) => !p.cls).length;
+  const precision = nMine ? Math.round((100 * exact) / nMine) : null;
+  const avg = b.avg;
+  let note;
+  if (avg == null) note = { titre: 'Analyse incomplète', ton: '' };
+  else if (avg <= 25 && !b.counts.gaffe) note = { titre: 'Très bonne partie', ton: 'ok' };
+  else if (avg <= 50 && b.counts.gaffe <= 1) note = { titre: 'Bonne partie', ton: 'ok' };
+  else if (avg <= 100) note = { titre: 'Partie correcte, avec des moments à revoir', ton: '' };
+  else note = { titre: 'Partie difficile', ton: 'ko' };
+  const resultat = { victoire: 'Vous avez gagné', défaite: 'Vous avez perdu', nulle: 'Partie nulle', 'en cours': 'Partie non terminée' }[game.outcome] || 'Résultat inconnu';
+  const synthese = `${resultat}. ${nMine} coups analysés : ${exact} sans faute (${precision ?? '?'} %), ${b.counts.imprecision} imprécision(s), ${b.counts.erreur} erreur(s), ${b.counts.gaffe} gaffe(s)${avg != null ? ` ; perte moyenne ${(avg / 100).toFixed(2).replace('.', ',')} pion par coup` : ''}.`;
+
+  // Phases : où la partie s'est jouée.
+  const phases = ['ouverture', 'milieu de partie', 'finale'].map((ph) => {
+    const ps = mine.filter((p) => p.phase === ph);
+    if (!ps.length) return null;
+    const err = ps.filter((p) => p.cls && p.cls.id !== 'imprecision').length;
+    const loss = Math.round(ps.reduce((a, p) => a + Math.min(p.loss, 1000), 0) / ps.length);
+    const avis = err === 0 && loss <= 40 ? 'solide' : err === 0 ? 'quelques imprécisions' : err === 1 ? 'une faute qui a coûté' : `${err} fautes`;
+    return { phase: ph, coups: ps.length, avis, loss };
+  }).filter(Boolean);
+  if (deviation?.who === 'moi' && deviation.expected) phases.unshift({ phase: 'répertoire', avis: `sorti au coup ${moveNo(deviation.ply)} (${sanFr(deviation.played)} au lieu de ${deviation.expected.map(sanFr).join(' ou ')})` });
+  else if (deviation?.who === 'aucun' || deviation?.who === 'fin' || deviation?.who === 'adversaire') phases.unshift({ phase: 'répertoire', avis: 'suivi jusqu’à la sortie des fiches ✔' });
+
+  // Bons coups : erreurs adverses sanctionnées, plus longue série de coups exacts.
+  const bons = [];
+  for (const p of plies) {
+    if (p.mover === color || !p.cls || p.cls.id === 'imprecision') continue;
+    const r = plies[p.i + 1];
+    if (r && r.mover === color && r.cpBefore != null && !r.cls) bons.push({ i: r.i, text: `${moveNo(r.i)} ${sanFr(r.san)} : bonne réponse à l’${p.cls.label.toLowerCase()} adverse ${moveNo(p.i)} ${sanFr(p.san)} (évaluation ${pourVous(r.cpAfter, color)} pour vous).` });
+  }
+  let run = 0; let best = { len: 0, end: -1 };
+  for (const p of mine) { run = p.cls ? 0 : run + 1; if (run > best.len) best = { len: run, end: p.i }; }
+  if (best.len >= 6) {
+    const start = mine[mine.findIndex((p) => p.i === best.end) - best.len + 1];
+    bons.push({ i: start.i, text: `Série de ${best.len} coups sans faute, de ${moveNo(start.i)} à ${moveNo(best.end)}.` });
+  }
+
+  // Erreurs détaillées : ce qui a été joué, pourquoi c'était faux, ce que donnait le meilleur coup.
+  const themes = new Set();
+  const erreurs = [...b.errors].sort((x, y) => x.i - y.i).map((p) => {
+    const d = deep[p.i] || {};
+    const fenBefore = p.fenBefore;
+    const refut = d.played?.pv ? lineSan(p.fenAfter, d.played.pv, 8) : [];
+    const meilleur = d.best?.pv ? lineSan(fenBefore, d.best.pv, 8) : [];
+    const pourquoi = [];
+    if (p.hanging?.length) {
+      const h = p.hanging[0];
+      pourquoi.push(`${LE[h.type]} en ${h.square} reste ${h.defended ? 'insuffisamment protégé' : 'sans défense'}`);
+      themes.add('en-prise');
+    }
+    for (const m of motifs(p.fenAfter, refut, color)) {
+      if (m.id === 'fourchette' && m.qui === 'adv') { pourquoi.push(`l’adversaire dispose d’une fourchette (${sanFr(m.san)} attaque ${m.cibles.map((x) => `${NOM[x.type]} ${x.square}`).join(' et ')})`); themes.add('fourchette'); }
+      if (m.id === 'mat' && m.qui === 'adv') { pourquoi.push('le Roi peut être maté'); themes.add('mat'); }
+      if (m.id === 'materiel-perdu') { pourquoi.push(`la suite fait perdre environ ${m.n} point(s) de matériel`); themes.add('materiel-perdu'); }
+    }
+    // Un mat possible prime sur le reste : c'est la vraie raison de l'erreur.
+    if (pourquoi.some((x) => x.includes('maté'))) pourquoi.splice(0, pourquoi.length, 'le Roi peut être maté');
+    const gains = meilleur.length ? motifs(fenBefore, meilleur, color).filter((m) => m.qui === 'moi' || m.id === 'materiel-gagne') : [];
+    return {
+      i: p.i, cls: p.cls, coup: `${moveNo(p.i)} ${sanFr(p.san)}`, phase: p.phase,
+      avant: pourVous(p.cpBefore, color), apres: pourVous(p.cpAfter, color), perte: (Math.min(p.loss, 1000) / 100).toFixed(1).replace('.', ','),
+      pourquoi,
+      refutation: refut.length ? lineText(p.fenAfter, refut) : null,
+      refutationEval: d.played?.cp != null ? pourVous(d.played.cp, color) : null,
+      meilleurCoup: sanFr(p.bestSan),
+      meilleureLigne: meilleur.length ? lineText(fenBefore, meilleur) : null,
+      meilleureEval: d.best?.cp != null ? pourVous(d.best.cp, color) : pourVous(p.cpBefore, color),
+      gains: gains.map((m) => (m.id === 'fourchette' ? `fourchette ${sanFr(m.san)}` : m.id === 'mat' ? `mat (${sanFr(m.san)})` : `gain d’environ ${m.n} point(s) de matériel`)),
+    };
+  });
+
+  // Occasions manquées : gaffe adverse non exploitée.
+  const occasions = [];
+  for (const p of plies) {
+    if (p.mover === color || p.cls?.id !== 'gaffe') continue;
+    const r = plies[p.i + 1];
+    if (r && r.mover === color && r.cls && r.loss >= 150 && !b.errors.includes(r)) {
+      occasions.push({ i: r.i, text: `Après ${moveNo(p.i)} ${sanFr(p.san)}?? de l’adversaire, ${sanFr(r.bestSan)} gardait l’avantage (${pourVous(r.cpBefore, color)}) ; ${sanFr(r.san)} l’a laissé passer (${pourVous(r.cpAfter, color)}).` });
+      themes.add('occasion');
+    }
+  }
+  if (b.pistes.some((x) => x.id === 'occasion')) themes.add('occasion');
+  if (deviation?.who === 'moi' && deviation.expected) themes.add('repertoire');
+  const pire = phases.filter((x) => x.loss != null).sort((a, z) => z.loss - a.loss)[0];
+  if (pire && pire.loss > 60 && (pire.phase === 'finale' || pire.phase === 'ouverture')) themes.add(pire.phase);
+
+  const aRetenir = [...themes].map((t) => RAPPELS[t]).filter(Boolean).slice(0, 5);
+  if (!aRetenir.length) aRetenir.push('Rien de grave : continuez à vérifier les menaces adverses à chaque coup, c’est ce qui a fonctionné ici.');
+  const exercices = erreurs.map((e) => ({ i: e.i, text: `Position avant ${e.coup} : retrouvez ${e.meilleurCoup} (sans regarder la solution).` }));
+  return { note, synthese, precision, phases, bons: bons.slice(0, 5), erreurs, occasions: occasions.slice(0, 2), aRetenir, exercices };
+}
+
+// Demi-coups à approfondir avec Stockfish : erreurs principales du joueur.
+export function keyPlies(b) {
+  return b.errors.map((p) => p.i);
+}
