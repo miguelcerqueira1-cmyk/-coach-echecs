@@ -212,7 +212,7 @@ export const LIGNES = [
     conserver: 'Fou d3 (diagonale vers h7), Tours centralisées',
     video: { recherche: 'Semi-Slav Meran variation explained 10.e4 c5 11.d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=AdiwIMRwPSk', titre: 'The Complete Semi-Slav Part 2: The Modern Meran (8...Bb7)', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=AdiwIMRwPSk', titre: 'The Complete Semi-Slav Part 2: The Modern Meran (8...Bb7)', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -227,7 +227,7 @@ export const LIGNES = [
     conserver: 'Centre d4/e4, Cavaliers actifs',
     video: { recherche: 'Semi-Slav Moscow variation 5.Bg5 h6 6.Bxf6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=KPpaSJRVeuQ', titre: 'The Complete Semi-Slav Part 9: Moscow Variation (5…h6)', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=KPpaSJRVeuQ', titre: 'The Complete Semi-Slav Part 9: Moscow Variation (5…h6)', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
