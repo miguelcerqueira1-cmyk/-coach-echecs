@@ -1,0 +1,80 @@
+{
+ "games": [
+  {
+   "url": "https://www.chess.com/game/live/900000001",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Exemple_Blitz_A\"]\n[Black \"Exemple_Blitz_B\"]\n[Result \"1-0\"]\n\n1. d4 {[%clk 0:02:59.9]} d5 2. c4 {[%clk 0:02:59.9]} e6 3. Nc3 {[%clk 0:02:59.9]} Nf6 4. Bg5 {[%clk 0:02:59.9]} Be7 5. e3 {[%clk 0:02:59.9]} O-O 6. Nf3 {[%clk 0:02:59.9]} h6 1-0",
+   "time_control": "180",
+   "end_time": 1792000060,
+   "rated": true,
+   "time_class": "blitz",
+   "rules": "chess",
+   "white": {
+    "rating": 3290,
+    "result": "win",
+    "username": "Exemple_Blitz_A"
+   },
+   "black": {
+    "rating": 3240,
+    "result": "resigned",
+    "username": "Exemple_Blitz_B"
+   }
+  },
+  {
+   "url": "https://www.chess.com/game/live/900000007",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Exemple_Blitz_B\"]\n[Black \"Adversaire_6\"]\n[Result \"1/2-1/2\"]\n\n1. d4 {[%clk 0:02:59.9]} d5 2. c4 {[%clk 0:02:59.9]} e6 3. Nc3 {[%clk 0:02:59.9]} Nf6 4. Bg5 {[%clk 0:02:59.9]} Be7 5. e3 {[%clk 0:02:59.9]} O-O 6. Nf3 {[%clk 0:02:59.9]} h6 1/2-1/2",
+   "time_control": "180",
+   "end_time": 1792000420,
+   "rated": true,
+   "time_class": "blitz",
+   "rules": "chess",
+   "white": {
+    "rating": 3245,
+    "result": "agreed",
+    "username": "Exemple_Blitz_B"
+   },
+   "black": {
+    "rating": 2900,
+    "result": "agreed",
+    "username": "Adversaire_6"
+   }
+  },
+  {
+   "url": "https://www.chess.com/game/live/900000008",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Adversaire_7\"]\n[Black \"Exemple_Blitz_B\"]\n[Result \"1-0\"]\n\n1. e4 {[%clk 0:02:59.9]} c6 2. Nc3 {[%clk 0:02:59.9]} d5 3. Nf3 {[%clk 0:02:59.9]} Bg4 4. h3 {[%clk 0:02:59.9]} Bxf3 5. Qxf3 {[%clk 0:02:59.9]} e6 1-0",
+   "time_control": "180",
+   "end_time": 1792000480,
+   "rated": true,
+   "time_class": "blitz",
+   "rules": "chess",
+   "white": {
+    "rating": 2980,
+    "result": "win",
+    "username": "Adversaire_7"
+   },
+   "black": {
+    "rating": 3250,
+    "result": "resigned",
+    "username": "Exemple_Blitz_B"
+   }
+  },
+  {
+   "url": "https://www.chess.com/game/live/900000009",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Exemple_Blitz_B\"]\n[Black \"Adversaire_11\"]\n[Result \"1-0\"]\n\n1. d4 {[%clk 0:02:59.9]} d5 2. c4 {[%clk 0:02:59.9]} dxc4 3. e3 {[%clk 0:02:59.9]} b5 4. a4 {[%clk 0:02:59.9]} c6 5. axb5 {[%clk 0:02:59.9]} cxb5 6. Qf3 {[%clk 0:02:59.9]} 1-0",
+   "time_control": "180",
+   "end_time": 1792000540,
+   "rated": true,
+   "time_class": "blitz",
+   "rules": "chess",
+   "white": {
+    "rating": 3248,
+    "result": "win",
+    "username": "Exemple_Blitz_B"
+   },
+   "black": {
+    "rating": 2870,
+    "result": "resigned",
+    "username": "Adversaire_11"
+   }
+  }
+ ]
+}

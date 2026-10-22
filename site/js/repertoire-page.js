@@ -1,16 +1,17 @@
 // Page « Répertoire » : encyclopédie du Gambit Dame (Blancs) et de la Caro-Kann (Noirs).
 //  - filtres rapides (ouverture, type), recherche par nom, coup (FR/EN) ou code ECO ;
 //  - tableau 9 colonnes : fiches rédigées + vérification Stockfish faite à la construction,
-//    colonnes dynamiques (Cloud Eval, statistiques « mon niveau » et « maîtres ») ;
+//    colonnes dynamiques (Cloud Eval, statistiques « mon niveau », « maîtres » et « Élite ») ;
 //  - vue « Anti-trash Blitz » : coups adverses loufoques et leur réfutation immédiate ;
 //  - « Tester cette ligne » (lecture animée sur la page Moteur), export PGN ;
-//  - arbre des coups réellement joués (mon niveau ou maîtres) ; vidéos YouTube multilingues.
+//  - arbre des coups réellement joués (mon niveau, maîtres ou Élite) ; vidéos YouTube multilingues.
 import { Chess } from '../vendor/chess.js';
 import { START_FEN } from './lines.js';
 import { enrichMoves, bucketLabel, SPEED_LABELS } from './lichess.js';
 import { sanFr, formatScore, formatLine } from './analysis.js';
 import { repertoireToPgn } from './repertoire-pgn.js';
 import { LANGS, searchLink, decodeEntities } from './youtube.js';
+import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders } from './elite.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -74,13 +75,16 @@ function saveVideos(v) { try { localStorage.setItem(VIDEO_KEY, JSON.stringify(v)
 const bar = (s) => `<div class="wdl-bar" title="Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)}"><span class="w" style="width:${s.white}%"></span><span class="d" style="width:${s.draws}%"></span><span class="b" style="width:${s.black}%"></span></div>`;
 
 export class RepertoirePage {
-  constructor({ el, client, getFilter, openSan, openMaster, youtube }) {
+  constructor({ el, client, getFilter, openSan, openMaster, openGame = null, youtube, loadEliteData = loadElite }) {
     this.el = el;
     this.client = client;
     this.getFilter = getFilter;
     this.openSan = openSan;
     this.openMaster = openMaster;
+    this.openGame = openGame;
     this.youtube = youtube;
+    this.loadEliteData = loadEliteData;
+    this.elite = { status: 'loading' }; // jeu de données statique (data/elite.json)
     this.data = null;
     this.view = 'gd'; // 'gd' | 'ck' | 'trash'
     this.badge = '';
@@ -103,6 +107,11 @@ export class RepertoirePage {
         return;
       }
       for (const e of this.data.entries) e._search = searchText(e);
+      this.loadEliteData().then((r) => {
+        this.elite = r;
+        if (this.el.querySelector('.rep-table')) this.data.entries.forEach((e) => this.updateRow(e));
+        if (this.tree?.source === 'elite') this.openTree(this.tree.path);
+      });
     }
     const fk = this.filterKey();
     if (this.lastFilterKey && this.lastFilterKey !== fk) { this.live.clear(); this.generation++; }
@@ -154,7 +163,7 @@ export class RepertoirePage {
             </div>
           </details>
         </div>
-        <p class="small muted">${list.length} fiche(s) affichée(s). Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE. Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
+        <p class="small muted">${list.length} fiche(s) affichée(s). Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
       </div>
       ${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}
       <section class="card tree-card" id="rep-tree">${this.treeHtml()}</section>
@@ -192,7 +201,7 @@ export class RepertoirePage {
       </td>
       <td data-label="Séquence" class="line">${esc(sanLine(e.san))}</td>
       <td data-label="Évaluation">${this.evalCell(e, live)}</td>
-      <td data-label="Statistiques">${this.statsCell(live)}</td>
+      <td data-label="Statistiques">${this.statsCell(live, e)}</td>
       <td data-label="Plan & structure"><p class="small">${esc(e.plan)}</p><p class="small"><strong>Structure :</strong> ${esc(e.structure)}</p></td>
       <td data-label="Punition tactique">${this.claimCell(e, 'punition', v?.punition, color)}</td>
       <td data-label="Piège à éviter">${this.claimCell(e, 'piege', v?.piege, color)}</td>
@@ -213,7 +222,7 @@ export class RepertoirePage {
     return cloud + (v ? `<div class="small">Stockfish (vérif.) : <strong>${esc(scoreText(toWhite(v.main, v.main.pov)))}</strong></div>` : '');
   }
 
-  statsCell(live) {
+  statsCell(live, e) {
     const one = (x, label) => {
       if (!x) return `<div class="muted tiny">${label} : en attente</div>`;
       if (x.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
@@ -223,7 +232,19 @@ export class RepertoirePage {
       if (!s.total) return `<div class="muted tiny">${label} : aucune partie</div>`;
       return `<div class="stat-line"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString('fr-FR')} parties</span>${bar(s)}<span class="tiny">Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)}</span></div>`;
     };
-    return one(live.explorer, 'Mon niveau') + one(live.masters, 'Maîtres');
+    return one(live.explorer, 'Mon niveau') + one(live.masters, 'Maîtres') + this.eliteLine(e.fenFinale);
+  }
+
+  // Ligne « Élite » : lue dans le fichier statique, sans requête réseau supplémentaire.
+  eliteLine(fen) {
+    const el = this.elite;
+    const label = 'Élite';
+    if (el.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
+    if (el.status !== 'ok') return `<div class="muted tiny">${label} : jeu de données non publié</div>`;
+    const x = lookupElite(el.data, fen);
+    if (x.status !== 'ok') return `<div class="muted tiny elite-absent">${label} : position absente (aucune partie du top retenue)</div>`;
+    const s = x.stats;
+    return `<div class="stat-line stat-elite"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString('fr-FR')} parties · ensuite surtout ${esc(sanFr(x.top.san))} (${p1((100 * x.top.stats.total) / x.total)})</span>${bar(s)}<span class="tiny">Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)} · ${esc(splitText(x.split))}</span></div>`;
   }
 
   claimCell(e, kind, v, color) {
@@ -350,16 +371,16 @@ export class RepertoirePage {
     if (!tr) return;
     const live = this.live.get(e.id) || {};
     tr.querySelector('[data-label="Évaluation"]').innerHTML = this.evalCell(e, live);
-    tr.querySelector('[data-label="Statistiques"]').innerHTML = this.statsCell(live);
+    tr.querySelector('[data-label="Statistiques"]').innerHTML = this.statsCell(live, e);
   }
 
   // ---------- Arbre dynamique ----------
 
   treeHtml() {
     const src = this.treeSource;
-    const toggle = `<div class="seg"><button type="button" data-tree-src="niveau" aria-selected="${src === 'niveau'}">Mon niveau</button><button type="button" data-tree-src="maitres" aria-selected="${src === 'maitres'}">Maîtres</button></div>`;
+    const toggle = `<div class="seg"><button type="button" data-tree-src="niveau" aria-selected="${src === 'niveau'}">Mon niveau</button><button type="button" data-tree-src="maitres" aria-selected="${src === 'maitres'}">Maîtres</button><button type="button" data-tree-src="elite" aria-selected="${src === 'elite'}">Élite blitz/rapide</button></div>`;
     if (!this.tree) {
-      return `<h2>Arbre des coups joués</h2>${toggle}<p class="muted small">Touchez « Arbre des coups joués » sur une fiche, ou <button type="button" class="link-btn" data-tree-root>partez de la racine du répertoire</button>, pour explorer tous les coups réellement joués — à votre niveau (coups loufoques compris) ou chez les maîtres.</p>`;
+      return `<h2>Arbre des coups joués</h2>${toggle}<p class="muted small">Touchez « Arbre des coups joués » sur une fiche, ou <button type="button" class="link-btn" data-tree-root>partez de la racine du répertoire</button>, pour explorer tous les coups réellement joués — à votre niveau (coups loufoques compris), chez les maîtres ou chez les meilleurs joueurs blitz/rapide en ligne.</p>`;
     }
     const t = this.tree;
     const c = new Chess();
@@ -370,6 +391,8 @@ export class RepertoirePage {
     const n = t.node;
     if (!n || n.status === 'loading') body = '<p class="state"><span class="spinner"></span> Chargement…</p>';
     else if (n.status === 'notoken') body = '<p class="muted">Jeton Lichess requis (⚙ Réglages) pour l’Opening Explorer.</p>';
+    else if (n.status === 'unavailable') body = `<p class="muted">Jeu de données Élite non publié sur ce site (${esc(n.error)}).</p>`;
+    else if (n.status === 'absent') body = `<p class="muted elite-absent">${esc(absentText(n.meta))}</p>`;
     else if (n.status === 'error') body = `<p class="errbox">${esc(n.error)}</p>`;
     else {
       const known = this.knownChildren(t.path);
@@ -384,12 +407,17 @@ export class RepertoirePage {
         </tr>`;
       }).join('');
       const res = (g) => (g.winner === 'white' ? '1-0' : g.winner === 'black' ? '0-1' : '½-½');
-      const games = src === 'maitres' && n.games?.length
+      let games = src === 'maitres' && n.games?.length
         ? `<details class="master-games" open><summary>Parties de référence de maîtres (${n.games.length})</summary><ul>${n.games.map((g) => `<li><button type="button" class="link-btn" data-master="${esc(g.id)}">${esc(g.white.name)} (${g.white.rating}) – ${esc(g.black.name)} (${g.black.rating})</button> <span class="muted small">${res(g)}, ${esc(String(g.year))}</span></li>`).join('')}</ul></details>` : '';
+      if (src === 'elite' && n.games?.length) {
+        games = `<details class="master-games elite-games" open><summary>Parties exemples du top (${n.games.length})</summary><ul>${n.games.map((g, i) => `<li><button type="button" class="link-btn" data-elite-game="${i}">${esc(g.label)}</button> <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))}, ${esc(String(g.y))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}</span> <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('')}</ul></details>`;
+      }
+      const who = { niveau: 'à votre niveau', maitres: 'de maîtres', elite: `du top blitz/rapide (${esc(splitText(n.split))})` }[src];
       body = `${n.opening ? `<p class="small"><span class="badge eco">${esc(n.opening.eco)}</span> ${esc(n.opening.name)}</p>` : ''}
-        <p class="muted small">${n.total.toLocaleString('fr-FR')} parties ${src === 'maitres' ? 'de maîtres' : 'à votre niveau'} · trait aux ${turn === 'w' ? 'Blancs' : 'Noirs'}</p>
+        <p class="muted small">${n.total.toLocaleString('fr-FR')} parties ${who} · trait aux ${turn === 'w' ? 'Blancs' : 'Noirs'}</p>
+        ${src === 'elite' ? `<p class="muted tiny">Fréquences observées chez les meilleurs joueurs en ligne, pas une évaluation moteur. ${esc(eliteSummary(n.meta))}</p>` : ''}
         <table class="tree-table"><thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${turn === 'w' ? 'Blancs' : 'Noirs'}</th></tr></thead>
-        <tbody>${rows || `<tr><td colspan="4" class="muted">Aucun coup joué ici ${src === 'maitres' ? 'par les maîtres' : 'avec ce filtre'}.</td></tr>`}</tbody></table>${games}`;
+        <tbody>${rows || `<tr><td colspan="4" class="muted">Aucun coup joué ici ${{ niveau: 'avec ce filtre', maitres: 'par les maîtres', elite: 'dans le jeu Élite' }[src]}.</td></tr>`}</tbody></table>${games}`;
     }
     return `<h2>Arbre des coups joués</h2>${toggle}
       <p class="crumbs"><button type="button" class="link-btn" data-crumb="0">Départ</button> ${crumbs}</p>
@@ -414,8 +442,22 @@ export class RepertoirePage {
   openTree(path) {
     const gen = this.generation;
     const src = this.treeSource;
-    this.tree = { path, node: { status: 'loading' } };
+    this.tree = { path, source: src, node: { status: 'loading' } };
     this.renderTree();
+    if (src === 'elite') {
+      // Lecture locale du fichier Élite (rechargé à la fin du chargement s'il est en cours).
+      const el = this.elite;
+      if (el.status === 'loading') return;
+      if (el.status !== 'ok') this.tree.node = el;
+      else {
+        const c = new Chess();
+        path.forEach((u) => c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }));
+        const x = lookupElite(el.data, c.fen());
+        this.tree.node = { ...x, meta: el.data.meta };
+      }
+      this.renderTree();
+      return;
+    }
     if (!this.client.explorerMode()) {
       this.tree.node = { status: 'notoken' };
       this.renderTree();
@@ -594,6 +636,10 @@ export class RepertoirePage {
     el.querySelectorAll('[data-master]').forEach((b) => b.addEventListener('click', () => {
       const color = this.view === 'ck' ? 'b' : 'w';
       this.openMaster(b.dataset.master, color);
+    }));
+    el.querySelectorAll('[data-elite-game]').forEach((b) => b.addEventListener('click', () => {
+      const g = this.tree?.node?.games?.[Number(b.dataset.eliteGame)];
+      if (g) this.openGame?.(g.san, this.view === 'ck' ? 'b' : 'w', `la partie ${g.label}`, eliteHeaders(g));
     }));
   }
 }

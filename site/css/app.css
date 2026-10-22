@@ -408,6 +408,11 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .master-games ul { margin: .3rem 0; padding-left: 1.1rem; }
 .master-games li { margin: .25rem 0; }
 
+/* Élite blitz/rapide (data/elite.json) */
+.mv-elite { color: #b36bd6; font-size: 1.2rem; }
+.elite-block .tiny { margin: .2rem 0 0; }
+@media (max-width: 520px) { .seg button { padding: .2rem .5rem; font-size: .8rem; } }
+
 /* Répertoire : filtres rapides, export, anti-trash, vidéos */
 .chips { display: flex; gap: .35rem; flex-wrap: wrap; margin: .35rem 0; }
 .chip { min-height: 34px; padding: .2rem .75rem; border-radius: 999px; font-size: .86rem; background: var(--surface); border: 1px solid var(--border); }

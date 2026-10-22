@@ -4,11 +4,15 @@ name: Vérifier et publier
 # - push sur main (ou lancement manuel) : vérification, déploiement du Worker
 #   Cloudflare (si les secrets sont présents), publication GitHub Pages,
 #   puis test du site réellement publié (chargement du moteur compris).
+# - chaque lundi : même chaîne, pour rafraîchir le jeu de données « Élite »
+#   (parties des meilleurs joueurs Lichess/Chess.com, scripts/elite.mjs).
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
 
 permissions:
   contents: read
@@ -54,6 +58,31 @@ jobs:
         with:
           name: rapport-playwright
           path: playwright-report/
+          retention-days: 7
+
+  # Jeu de données « Élite » : requêtes série vers Lichess et Chess.com (≈ 15 à 30 min).
+  # Une source en échec est notée dans le fichier ; si aucune partie n'est obtenue, le job échoue
+  # et la publication reprend le fichier déjà en ligne (voir job pages).
+  elite:
+    name: Jeu de données Élite (top blitz/rapide Lichess + Chess.com)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Télécharger les parties et agréger par position
+        env:
+          LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }} # facultatif (débit Lichess plus élevé)
+        run: node scripts/elite.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: elite-json
+          path: site/data/elite.json
           retention-days: 7
 
   worker:
@@ -127,7 +156,7 @@ jobs:
 
   pages:
     name: Publication GitHub Pages
-    needs: [verify, worker]
+    needs: [verify, worker, elite]
     if: always() && github.event_name != 'pull_request' && needs.verify.result == 'success' && needs.worker.result != 'failure'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -147,13 +176,33 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - uses: actions/configure-pages@v5
+        id: pages-config
+        with:
+          enablement: true
+      - name: Jeu de données Élite (job elite)
+        id: elite
+        if: needs.elite.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: elite-json
+          path: site/data
+      - name: Sinon, reprendre le jeu Élite déjà publié
+        if: steps.elite.outcome != 'success'
+        env:
+          SITE: ${{ steps.pages-config.outputs.base_url }}
+        run: |
+          if curl -sf --retry 3 "${SITE}/data/elite.json" -o site/data/elite.json; then
+            echo "::notice::Jeu de données Élite non régénéré : version déjà publiée conservée."
+          else
+            rm -f site/data/elite.json
+            echo "::warning::Jeu de données Élite indisponible : le site est publié sans (bloc « non publié »)."
+          fi
       - name: Construire avec l'adresse de l'API
         run: npm run build
         env:
           COACH_API_URL: ${{ needs.worker.outputs.url }}
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

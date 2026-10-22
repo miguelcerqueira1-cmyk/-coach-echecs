@@ -1,0 +1,20 @@
+{
+ "live_blitz": [
+  {
+   "username": "Exemple_Blitz_A",
+   "score": 3300,
+   "title": "GM"
+  },
+  {
+   "username": "Exemple_Blitz_B",
+   "score": 3250
+  }
+ ],
+ "live_rapid": [
+  {
+   "username": "Exemple_Rapide_C",
+   "score": 2900,
+   "title": "IM"
+  }
+ ]
+}

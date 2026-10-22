@@ -56,6 +56,7 @@ const optimal = new OptimalPanel({
   setFilter: (f) => { state.settings.explorerFilter = f; store.saveSettings(state.settings); },
   onChange: () => renderBoard(),
   onOpenMaster: (id) => openMasterGame(id, state.game.playerColor),
+  onOpenGame: (san, label, headers) => openSanInBoard(san, state.game.playerColor, label, { headers }),
   onPlay: (uci) => {
     if (state.viewPly !== null) return;
     const mv = state.game.legalMoves().find((m) => m.lan === uci);
@@ -94,6 +95,7 @@ async function init() {
           getFilter: () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) }),
           openSan: (san, color, label) => openSanInBoard(san, color, label, { animate: true }),
           openMaster: openMasterGame,
+          openGame: (san, color, label, headers) => openSanInBoard(san, color, label, { headers }),
           youtube: new YouTubeClient({ getKey: () => store.getYoutubeKey() }),
         });
         repertoirePage.show();
@@ -1131,8 +1133,9 @@ window.__coach = { state, engine, optimal, lichess, get repertoire() { return re
 
 // Ouvre une suite de coups sur l'échiquier comme nouvelle partie (l'ancienne est sauvegardée).
 // animate : rejoue la séquence coup par coup (≈ 400 ms) puis revient à la position finale.
+// headers : en-têtes PGN conservés (partie exemple Élite : joueurs, lien d'origine).
 let replayTimer = null;
-function openSanInBoard(san, color, label, { animate = false } = {}) {
+function openSanInBoard(san, color, label, { animate = false, headers = null } = {}) {
   const pgn = san.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(' ');
   const cur = state.game;
   // Pas de confirmation si la partie en cours est vide ou n'est qu'une ligne testée.
@@ -1141,6 +1144,7 @@ function openSanInBoard(san, color, label, { animate = false } = {}) {
   if (!disposable) store.backupGame();
   let g;
   try { g = Game.fromPgn(pgn || '*', { playerColor: color, level: state.settings.level }); } catch (e) { notationMsg(e.message, true); return; }
+  if (headers) g.record.headers = { ...(g.record.headers || {}), ...headers };
   if (animate) g.record.headers = { ...(g.record.headers || {}), Event: `Test : ${label}` };
   clearTimeout(replayTimer);
   setGame(g);

@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "check": "npm run build && npm test && npm run test:e2e",
     "verify:repertoire": "node scripts/verify-repertoire.mjs",
-    "check:repertoire": "node scripts/verify-repertoire.mjs --check"
+    "check:repertoire": "node scripts/verify-repertoire.mjs --check",
+    "elite": "node scripts/elite.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

@@ -135,7 +135,7 @@ test('Répertoire : 9 colonnes, filtres rapides, vérification Stockfish, stats 
   const stats = rows.first().locator('[data-label="Statistiques"]');
   await expect(stats).toContainText('Mon niveau');
   await expect(stats).toContainText('Maîtres');
-  await expect(stats.locator('.stat-line')).toHaveCount(2);
+  await expect(stats.locator('.stat-line:not(.stat-elite)')).toHaveCount(2);
   expect(calls.some((c) => c.url.startsWith('https://explorer.lichess.org/masters'))).toBe(true);
   await expect(rows.first().locator('[data-label="Évaluation"]')).toContainText('Cloud Eval');
   await page.click('[data-view=ck]');

@@ -1,0 +1,80 @@
+{
+ "games": [
+  {
+   "url": "https://www.chess.com/game/live/900000010",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Exemple_Rapide_C\"]\n[Black \"Adversaire_8\"]\n[Result \"1-0\"]\n\n1. d4 {[%clk 0:02:59.9]} d5 2. c4 {[%clk 0:02:59.9]} e6 3. Nc3 {[%clk 0:02:59.9]} Nf6 4. Bg5 {[%clk 0:02:59.9]} Be7 5. e3 {[%clk 0:02:59.9]} O-O 6. Nf3 {[%clk 0:02:59.9]} h6 1-0",
+   "time_control": "600",
+   "end_time": 1792000600,
+   "rated": true,
+   "time_class": "rapid",
+   "rules": "chess",
+   "white": {
+    "rating": 2890,
+    "result": "win",
+    "username": "Exemple_Rapide_C"
+   },
+   "black": {
+    "rating": 2700,
+    "result": "resigned",
+    "username": "Adversaire_8"
+   }
+  },
+  {
+   "url": "https://www.chess.com/game/live/900000011",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Adversaire_9\"]\n[Black \"Exemple_Rapide_C\"]\n[Result \"1/2-1/2\"]\n\n1. e4 {[%clk 0:02:59.9]} c6 2. d4 {[%clk 0:02:59.9]} d5 3. e5 {[%clk 0:02:59.9]} Bf5 4. Nf3 {[%clk 0:02:59.9]} e6 5. Be2 {[%clk 0:02:59.9]} c5 1/2-1/2",
+   "time_control": "600",
+   "end_time": 1792000660,
+   "rated": true,
+   "time_class": "rapid",
+   "rules": "chess",
+   "white": {
+    "rating": 2750,
+    "result": "agreed",
+    "username": "Adversaire_9"
+   },
+   "black": {
+    "rating": 2900,
+    "result": "agreed",
+    "username": "Exemple_Rapide_C"
+   }
+  },
+  {
+   "url": "https://www.chess.com/game/live/900000012",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Exemple_Rapide_C\"]\n[Black \"Adversaire_12\"]\n[Result \"0-1\"]\n\n1. d4 {[%clk 0:02:59.9]} d5 2. c4 {[%clk 0:02:59.9]} dxc4 3. e3 {[%clk 0:02:59.9]} b5 4. a4 {[%clk 0:02:59.9]} c6 5. axb5 {[%clk 0:02:59.9]} cxb5 6. Qf3 {[%clk 0:02:59.9]} 0-1",
+   "time_control": "600",
+   "end_time": 1792000720,
+   "rated": true,
+   "time_class": "rapid",
+   "rules": "chess",
+   "white": {
+    "rating": 2895,
+    "result": "resigned",
+    "username": "Exemple_Rapide_C"
+   },
+   "black": {
+    "rating": 2760,
+    "result": "win",
+    "username": "Adversaire_12"
+   }
+  },
+  {
+   "url": "https://www.chess.com/game/live/900000013",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Adversaire_10\"]\n[Black \"Exemple_Rapide_C\"]\n[Result \"0-1\"]\n\n1. e4 {[%clk 0:02:59.9]} c6 2. d4 {[%clk 0:02:59.9]} d5 3. e5 {[%clk 0:02:59.9]} Bf5 4. Nf3 {[%clk 0:02:59.9]} e6 5. Be2 {[%clk 0:02:59.9]} c5 0-1",
+   "time_control": "180",
+   "end_time": 1792000780,
+   "rated": true,
+   "time_class": "blitz",
+   "rules": "chess",
+   "white": {
+    "rating": 2750,
+    "result": "resigned",
+    "username": "Adversaire_10"
+   },
+   "black": {
+    "rating": 2900,
+    "result": "win",
+    "username": "Exemple_Rapide_C"
+   }
+  }
+ ]
+}

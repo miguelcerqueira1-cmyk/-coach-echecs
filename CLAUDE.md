@@ -24,7 +24,8 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess, clé YouTube)
   js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
   js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
-  js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré)
+  js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré / maîtres / Élite)
+  js/elite.js              Jeu « Élite » : chargement de data/elite.json, clé FEN, lecture d'une position (pur, testé)
   js/repertoire-page.js    Page Répertoire : filtres, recherche par coup/ECO, tableau 9 colonnes, Anti-trash,
                            « Tester cette ligne », arbre Lichess (niveau/maîtres), vidéos, export PGN
   js/repertoire-pgn.js     Export PGN du répertoire (variantes, $2, commentaires ; relu par chess.js en test)
@@ -32,15 +33,18 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/lines.js              Lecture des lignes « 1. d4 d5 2. c4? », index ECO, empreintes
   data/repertoire.js       58 fiches rédigées (Gambit Dame, Caro-Kann) — source à éditer
   data/repertoire.json     GÉNÉRÉ (scripts/repertoire.mjs) : fiches + ECO + vérification
+  data/elite.json          GÉNÉRÉ (scripts/elite.mjs, réseau) : parties du top blitz/rapide, non versionné
   pieces/                  SVG cburnett (GPLv2+)
   vendor/, engine/         GÉNÉRÉS par scripts/vendor.mjs (postinstall), non versionnés
 worker/                    API Cloudflare Worker (Claude) : src/index.js, src/prompt.js
 scripts/                   vendor.mjs, build.mjs (→ dist/ + config.json), serve.mjs,
-                           repertoire.mjs (ECO + JSON), verify-repertoire.mjs + uci-node.mjs (Stockfish Node)
+                           repertoire.mjs (ECO + JSON), verify-repertoire.mjs + uci-node.mjs (Stockfish Node),
+                           elite.mjs (téléchargement) + elite-core.mjs (lecture, filtre, agrégation ; pur)
 data/chess-openings/       Base ECO CC0 de lichess-org/chess-openings (TSV)
 data/verification.json     Résultats Stockfish (profondeur 18) des punitions/pièges, par empreinte de fiche
 tests/unit/                node:test (règles, continuité, import/export)
 tests/e2e/                 Playwright, vrai Stockfish ; API Claude simulée par interception
+tests/fixtures/elite/      Réponses enregistrées pour `elite.mjs --fixture` (Lichess réelles, Chess.com synthétiques)
 .github/workflows/deploy.yml  vérif → Worker → Pages → test du site publié
 ```
 
@@ -61,6 +65,8 @@ cd worker && npm ci && npm test   # Worker + faux serveur Anthropic (wrangler de
 cd worker && npm run check        # wrangler deploy --dry-run
 npm run verify:repertoire         # après modification d'une fiche : recalcule data/verification.json
 node scripts/verify-repertoire.mjs --all --dry   # CI : tout recalculer sans écrire
+npm run elite                     # réseau : site/data/elite.json (≈ 10 min pour Lichess ; options en tête du script)
+node scripts/elite.mjs --fixture tests/fixtures/elite --top 2 --out /tmp/elite.json   # hors ligne
 ```
 
 Modifier le répertoire : éditer `site/data/repertoire.js` (coups en SAN anglaise, « ? » sur le
@@ -141,13 +147,32 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   (sinon par les fiches) ; nos coups : « répertoire » si présents dans les fiches, sinon jugés
   par Stockfish (perte ≤ 0,4 bon, ≤ 1,2 imprécision, ≤ 3 erreur, au-delà gaffe) ; pièges signalés.
 - Mes parties : export Lichess `/api/games/user/{pseudo}` (NDJSON). Depuis l'environnement de
-  développement, cet export répond 404 sans jeton (même pour des comptes connus) : l'application
-  envoie le jeton personnel s'il existe. Chess.com : API publique `pub/player/{pseudo}/games/…`
+  développement, cet export répondait 404 sans jeton : en fait au User-Agent de curl seulement
+  (vérifié le 2026-10-22, voir Élite) ; l'application envoie le jeton personnel s'il existe. Chess.com : API publique `pub/player/{pseudo}/games/…`
   (CORS non vérifié localement ; test @online en CI). Analyse : une position = un calcul de
   `precision` ms, évaluations bornées à ±10 pions, mises en cache (40 parties) ; erreurs classées
   par perte (≥ 0,5 imprécision, ≥ 1,2 erreur, ≥ 3 gaffe) ; bilan = règles factuelles (sortie de
   répertoire, pièce laissée en prise, gaffe adverse non exploitée, phase la plus coûteuse).
 - Interface en mode sombre par défaut (`:root[data-theme="light"]` pour le clair).
+
+- **Élite blitz/rapide** (`scripts/elite.mjs` → `site/data/elite.json`) : top 50 blitz et rapide
+  Lichess (`/api/player/top/{n}/{perf}`, export `/api/games/user/{u}` NDJSON, `perfType`, 100 parties
+  max sur 3 mois) et Chess.com (`/pub/leaderboards` live_blitz/live_rapid, archives mensuelles,
+  3 mois max). Parties classées gardées si 1.d4 d5 2.c4 ou 1.e4 c6 (ordre littéral), quel que soit le
+  camp du joueur du top ; agrégation par FEN sans compteurs, de la racine du répertoire jusqu'au
+  demi-coup 24 (les fiches vont jusqu'à 24) ; par coup : Blancs/nulles/Noirs, Elo moyen du joueur qui le joue,
+  Lichess/Chess.com ; 3 parties exemples (meilleure moyenne Elo) avec leurs coups pour l'échiquier.
+  Positions de moins de 2 parties retirées (seuil relevé automatiquement au-delà de 1,5 Mo).
+  Requêtes série, pause de 60 s sur 429, User-Agent avec l'adresse du dépôt ; `LICHESS_TOKEN`
+  facultatif (jamais écrit). Source en échec : notée dans `meta.sources`, jamais complétée.
+  L'export Lichess répond **404 au User-Agent par défaut de curl** (pas à celui de Node ni des
+  navigateurs) : c'était la cause des 404 « sans jeton » observés ; api.chess.com est bloqué depuis
+  l'environnement de développement (fixtures Chess.com synthétiques). Node 22 n'utilise le proxy de
+  l'environnement qu'avec `NODE_USE_ENV_PROXY=1` : le script se relance lui-même ainsi.
+  CI : job `elite` (hors pull request) → artefact → job pages ; sans artefact, le fichier déjà
+  publié est repris ; déclenchement hebdomadaire (lundi). Fichier non versionné (comme
+  repertoire.json) : régénéré chaque semaine, un instantané figerait des données datées et
+  alourdirait l'historique. Sans fichier, l'interface affiche « non publié ».
 
 ## Phase 2 (non implémenté)
 

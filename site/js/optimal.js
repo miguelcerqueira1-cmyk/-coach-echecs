@@ -1,14 +1,16 @@
 // Panneau « Coup optimal » de la page Moteur.
-// Trois sources clairement séparées :
+// Sources clairement séparées :
 //   1. Stockfish local (calcul en direct sur l'appareil, fourni par main.js) ;
 //   2. Lichess Cloud Eval (évaluation déjà en cache chez Lichess, si elle existe) ;
-//   3. Opening Explorer (fréquences de résultats dans des parties réelles, filtrées par niveau).
+//   3. Opening Explorer (fréquences de résultats dans des parties réelles, filtrées par niveau) ;
+//   4. Élite blitz/rapide (data/elite.json : fréquences chez les meilleurs joueurs en ligne).
 // Un fort % de victoire ne signifie pas que le coup est objectivement le meilleur.
 import { Chess } from '../vendor/chess.js';
 import {
   RATING_BUCKETS, SPEEDS, SPEED_LABELS, PRESETS, bucketLabel, enrichMoves, bestByWinRate,
 } from './lichess.js';
 import { sanFr, formatScore, COLOR_NAMES } from './analysis.js';
+import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders } from './elite.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -22,10 +24,13 @@ function uciToSan(fen, uci) {
 }
 
 export class OptimalPanel {
-  constructor({ el, client, getFilter, setFilter, onChange = () => {}, onPlay = null, onOpenMaster = null }) {
+  constructor({ el, client, getFilter, setFilter, onChange = () => {}, onPlay = null, onOpenMaster = null, onOpenGame = null, loadEliteData = loadElite }) {
     this.onOpenMaster = onOpenMaster;
+    this.onOpenGame = onOpenGame; // (san, label, headers) : partie exemple Élite ouverte sur l'échiquier
+    this.loadEliteData = loadEliteData;
     this.masters = { status: 'idle' };
-    this.tableSource = 'niveau'; // 'niveau' | 'maitres'
+    this.elite = { status: 'idle' };
+    this.tableSource = 'niveau'; // 'niveau' | 'maitres' | 'elite'
     this.el = el;
     this.client = client;
     this.getFilter = getFilter;
@@ -71,13 +76,22 @@ export class OptimalPanel {
       this.cloud = { status: 'idle' };
       this.explorer = { status: 'idle' };
       this.masters = { status: 'idle' };
+      this.elite = { status: 'idle' };
       this.render();
       return;
     }
     this.cloud = { status: 'loading' };
     this.explorer = this.client.explorerMode() ? { status: 'loading' } : { status: 'notoken' };
     this.masters = this.client.explorerMode() ? { status: 'loading' } : { status: 'notoken' };
+    this.elite = { status: 'loading' };
     this.render();
+
+    // Élite : fichier statique publié avec le site (aucun jeton, aucune requête Lichess).
+    this.loadEliteData().then((r) => {
+      if (isStale()) return;
+      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen), meta: r.data.meta } : r;
+      this.render();
+    });
 
     this.client.cloudEval(fen, { isStale }).then((r) => {
       if (r.stale || isStale()) return;
@@ -152,6 +166,7 @@ export class OptimalPanel {
         ${this.blockCloud()}
         ${this.blockStats(turn)}
         ${this.blockMasters(turn)}
+        ${this.blockElite(turn)}
       </div>
       ${this.filters(f)}
       ${this.table(fen)}
@@ -227,6 +242,31 @@ export class OptimalPanel {
     </ul><p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p></details>`;
   }
 
+  blockElite(turn) {
+    const e = this.elite;
+    let body;
+    if (e.status === 'loading') body = '<span class="state"><span class="spinner"></span>Jeu de données Élite…</span>';
+    else if (e.status === 'unavailable') body = `<span class="muted">Jeu de données Élite non publié sur ce site (${esc(e.error)}).</span>`;
+    else if (e.status === 'absent') body = `<span class="muted elite-absent">${esc(absentText(e.meta))}</span>`; else if (e.status === 'ok' && e.top) {
+      const share = (100 * e.top.stats.total) / e.total;
+      body = `<strong class="mv-elite">${esc(sanFr(e.top.san))}</strong> <span class="eval">${p1(share)} des parties</span>
+        <span class="muted small">${e.total.toLocaleString('fr-FR')} parties · score ${turn === 'w' ? 'Blancs' : 'Noirs'} ${p1(e.top.score)} · ${splitText(e.split)}</span>`;
+    } else body = '—';
+    const meta = e.meta ? `<p class="muted tiny">${esc(eliteSummary(e.meta))}</p>` : '';
+    return `<div class="opt-block elite-block"><p class="label">Élite blitz/rapide — top ${e.meta?.filters?.top ?? 50} Lichess et Chess.com</p><p>${body}</p>
+      <p class="muted small">Fréquences observées chez les meilleurs joueurs en ligne (blitz/rapide), pas une évaluation moteur.</p>${meta}${this.eliteGames()}</div>`;
+  }
+
+  eliteGames() {
+    const e = this.elite;
+    if (e.status !== 'ok' || !e.games.length) return '';
+    return `<details class="master-games elite-games"><summary>Parties exemples (${e.games.length})</summary><ul>
+      ${e.games.map((g, i) => `<li><button type="button" class="link-btn" data-elite-game="${i}">${esc(g.label)}</button>
+        <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))}, ${esc(String(g.y))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}</span>
+        <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('')}
+    </ul><p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p></details>`;
+  }
+
   filters(f) {
     const presetOpts = Object.entries(PRESETS).map(([k, v]) => `<option value="${k}" ${f.preset === k ? 'selected' : ''}>${esc(v.label)}</option>`).join('');
     return `<details class="opt-filters" ${f.open ? 'open' : ''}>
@@ -255,15 +295,18 @@ export class OptimalPanel {
 
   table(fen) {
     const src = this.tableSource;
-    const e = src === 'maitres' ? this.masters : this.explorer;
+    const e = { niveau: this.explorer, maitres: this.masters, elite: this.elite }[src];
     const toggle = `<div class="seg" role="tablist">
       <button type="button" data-src="niveau" aria-selected="${src === 'niveau'}">Mon niveau</button>
-      <button type="button" data-src="maitres" aria-selected="${src === 'maitres'}">Maîtres</button></div>`;
+      <button type="button" data-src="maitres" aria-selected="${src === 'maitres'}">Maîtres</button>
+      <button type="button" data-src="elite" aria-selected="${src === 'elite'}">Élite blitz/rapide</button></div>`;
     if (e.status !== 'ok' || !e.moves.length) {
-      return (this.explorer.status === 'ok' || this.masters.status === 'ok')
-        ? `<div class="opt-table">${toggle}<p class="muted small">${src === 'maitres' ? 'Aucune partie de maître dans cette position.' : 'Aucune partie à ce niveau.'}</p></div>` : '';
+      const empty = { niveau: 'Aucune partie à ce niveau.', maitres: 'Aucune partie de maître dans cette position.', elite: 'Position absente du jeu Élite (ou jeu de données non publié).' }[src];
+      return [this.explorer, this.masters, this.elite].some((x) => x.status === 'ok' || x.status === 'absent')
+        ? `<div class="opt-table">${toggle}<p class="muted small">${empty}</p></div>` : '';
     }
-    if (src === 'maitres') e.filter = { minGames: 1 };
+    if (src !== 'niveau') e.filter = { minGames: 1 };
+    const elite = src === 'elite';
     const opening = e.opening ? `<p class="small"><span class="badge">${esc(e.opening.eco)}</span> ${esc(e.opening.name)}</p>` : '';
     const rows = e.moves.map((m) => {
       const s = m.stats;
@@ -276,24 +319,34 @@ export class OptimalPanel {
           <span class="w" style="width:${s.white}%"></span><span class="d" style="width:${s.draws}%"></span><span class="b" style="width:${s.black}%"></span></div>
           <span class="tiny">${p1(s.white)} / ${p1(s.draws)} / ${p1(s.black)}</span></td>
         <td class="num">${p1(m.win)}</td>
+        ${elite ? `<td class="num tiny">${m.li} / ${m.cc}</td>` : ''}
       </tr>`;
     }).join('');
     const total = e.stats;
+    const note = {
+      niveau: ` Source : ${e.mode === 'relais' ? 'relais Cloudflare' : 'jeton personnel'}.`,
+      maitres: ' Base Lichess des parties à la cadence classique de joueurs titrés.',
+      elite: ` Parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (${splitText(e.split)}) : fréquences observées, pas une évaluation.`,
+    }[src];
     return `<div class="opt-table">
       ${toggle}
       ${opening}
-      <p class="muted small">${e.total.toLocaleString('fr-FR')} parties ${src === 'maitres' ? 'de maîtres ' : ''}dans cette position (Blancs ${p1(total.white)} · nulles ${p1(total.draws)} · Noirs ${p1(total.black)}).${src === 'maitres' ? ' Base Lichess des parties à la cadence classique de joueurs titrés.' : ` Source : ${e.mode === 'relais' ? 'relais Cloudflare' : 'jeton personnel'}.`}</p>
+      <p class="muted small">${e.total.toLocaleString('fr-FR')} parties ${{ niveau: '', maitres: 'de maîtres ', elite: 'Élite ' }[src]}dans cette position (Blancs ${p1(total.white)} · nulles ${p1(total.draws)} · Noirs ${p1(total.black)}).${note}</p>
       <table>
-        <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th></tr></thead>
+        <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th>${elite ? '<th title="Parties Lichess / Chess.com">Li / C.com</th>' : ''}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <p class="muted small">${src === 'maitres' ? '' : `Grisé : moins de ${e.filter.minGames} parties. `}Toucher un coup le joue sur l’échiquier.</p>
+      <p class="muted small">${src === 'niveau' ? `Grisé : moins de ${e.filter.minGames} parties. ` : ''}Toucher un coup le joue sur l’échiquier.</p>
     </div>`;
   }
 
   bind() {
     this.el.querySelectorAll('[data-src]').forEach((b) => b.addEventListener('click', () => { this.tableSource = b.dataset.src; this.render(); }));
     this.el.querySelectorAll('[data-master]').forEach((b) => b.addEventListener('click', () => this.onOpenMaster?.(b.dataset.master)));
+    this.el.querySelectorAll('[data-elite-game]').forEach((b) => b.addEventListener('click', () => {
+      const g = this.elite.games?.[Number(b.dataset.eliteGame)];
+      if (g) this.onOpenGame?.(g.san, `la partie ${g.label}`, eliteHeaders(g));
+    }));
     const f = { ...this.getFilter() };
     const apply = (patch) => {
       this.setFilter({ ...f, ...patch, open: true });
