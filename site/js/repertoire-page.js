@@ -237,7 +237,7 @@ export class RepertoirePage {
         </div>
         <div class="rep-filters">
           <input type="search" data-q list="rep-joueurs" placeholder="Rechercher : nom, coup (Fg4, Bg4, 2…Fg4), code ECO (B12) ou joueur (Carlsen)" value="${esc(this.query)}">
-          <datalist id="rep-joueurs">${datalistHtml(this.joueurs)}</datalist>
+          <datalist id="rep-joueurs">${datalistHtml(this.joueurs, this.query)}</datalist>
           ${this.view === 'trash' ? '' : `<select data-sort aria-label="Classer les variantes">
             ${[['', 'Ordre du répertoire'], ['joue-niveau', 'Les plus jouées (mon niveau)'], ['score-niveau', 'Meilleur score pour moi (mon niveau)'], ['joue-maitres', 'Les plus jouées (maîtres)'], ['score-maitres', 'Meilleur score pour moi (maîtres)'], ['eval', 'Meilleure évaluation Stockfish']].map(([v, l]) => `<option value="${v}"${this.sort === v ? ' selected' : ''}>${l}</option>`).join('')}
           </select>`}
@@ -250,16 +250,32 @@ export class RepertoirePage {
             </div>
           </details>
         </div>
-        <p class="small muted">${list.length} fiche(s) affichée(s). Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
+        <p class="small muted"><span data-count>${list.length} fiche(s) affichée(s).</span> Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
       </div>
       <div data-ranking>${this.rankingHtml(list)}</div>
       <section id="rep-players">${playersSectionHtml(this.joueurs, this.query, list.length)}</section>
-      ${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}
+      <div data-results>${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}</div>
       <section class="card live-card" id="rep-live">${this.liveHtml()}</section>
       <section class="card tree-card" id="rep-tree">${this.treeHtml()}</section>
       <dialog class="video-dlg" data-video-dlg></dialog>
     `;
     this.bind();
+    this.observe();
+    if (this.sort && this.sort !== 'eval' && this.view !== 'trash') list.forEach((e) => this.load(e));
+  }
+
+  // Mise à jour des seuls résultats (saisie dans la recherche) : la case de recherche n'est
+  // jamais recréée pendant la frappe (sinon Safari iPhone perd la saisie et se fige).
+  renderResults() {
+    const list = this.entries();
+    this.el.querySelector('[data-count]').textContent = `${list.length} fiche(s) affichée(s).`;
+    this.el.querySelector('[data-ranking]').innerHTML = this.rankingHtml(list);
+    const sec = this.el.querySelector('#rep-players');
+    sec.innerHTML = playersSectionHtml(this.joueurs, this.query, list.length);
+    bindPlayers(sec, this.joueurs, this.openGame);
+    this.el.querySelector('[data-results]').innerHTML = this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list);
+    const dl = this.el.querySelector('#rep-joueurs');
+    if (dl) dl.innerHTML = datalistHtml(this.joueurs, this.query);
     this.observe();
     if (this.sort && this.sort !== 'eval' && this.view !== 'trash') list.forEach((e) => this.load(e));
   }
@@ -470,7 +486,7 @@ export class RepertoirePage {
         const box = this.el.querySelector('[data-ranking]');
         if (box) box.innerHTML = this.rankingHtml(list);
         const order = [...this.el.querySelectorAll('.rep-table tbody tr[data-id]')].map((r) => r.dataset.id).join();
-        if (!this.sortPending(list) && order !== list.map((x) => x.id).join()) this.render();
+        if (!this.sortPending(list) && order !== list.map((x) => x.id).join()) this.renderResults();
       }, 200);
     }
   }
@@ -726,7 +742,8 @@ export class RepertoirePage {
       this.joueurs = { status: 'loading' };
       loadJoueurs().then((r) => {
         this.joueurs = r;
-        this.el.querySelector('#rep-joueurs')?.replaceChildren(...new DOMParser().parseFromString(`<datalist>${datalistHtml(r)}</datalist>`, 'text/html').querySelector('datalist').children);
+        const dl = this.el.querySelector('#rep-joueurs');
+        if (dl) dl.innerHTML = datalistHtml(r, this.query);
         const sec = this.el.querySelector('#rep-players');
         if (sec) {
           sec.innerHTML = playersSectionHtml(r, this.query, this.entries().length);
@@ -741,15 +758,11 @@ export class RepertoirePage {
       clearTimeout(this.qTimer);
       this.qTimer = setTimeout(() => {
         this.query = q.value;
-        const pos = q.selectionStart;
-        this.render();
-        const q2 = this.el.querySelector('[data-q]');
-        q2.focus();
-        q2.setSelectionRange(pos, pos);
-      }, 250);
+        this.renderResults();
+      }, 300);
     });
-    const main = this.el.querySelector('.rep-table tbody, .trash');
-    main?.addEventListener('click', (ev) => {
+    // Délégation sur le conteneur des résultats : reste valable après renderResults().
+    this.el.querySelector('[data-results]').addEventListener('click', (ev) => {
       const b = ev.target.closest('button');
       if (!b) return;
       const entry = (id) => this.data.entries.find((x) => x.id === id);

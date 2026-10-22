@@ -214,3 +214,25 @@ test('Répertoire : joueur absent des données (message clair) ; une fiche trouv
   await expect(page.locator('tr[data-id="ck-karpov"]')).toBeVisible();
   await expect(page.locator('#rep-players .players-none')).toHaveCount(0);
 });
+
+test('recherche d’un joueur au clavier sur téléphone @mobile : la saisie reste, la page répond', async ({ page }) => {
+  await setup(page, { live: dataset });
+  await page.goto('./#/repertoire');
+  const q = page.locator('[data-q]');
+  await expect(page.locator('.rep-table tbody tr[data-id]').first()).toBeVisible();
+  await q.click();
+  await page.evaluate(() => { window.__qEl = document.querySelector('[data-q]'); });
+  await page.keyboard.type('carlsen', { delay: 80 });
+  await expect(page.locator('#rep-players .players-card h3').first()).toContainText('Magnus Carlsen');
+  // Même élément de saisie (jamais recréé pendant la frappe), texte intact, focus conservé.
+  expect(await page.evaluate(() => window.__qEl === document.querySelector('[data-q]') && document.activeElement === window.__qEl)).toBe(true);
+  await expect(q).toHaveValue('carlsen');
+  // Suggestions courtes (une longue liste fige Safari iPhone).
+  expect(await page.locator('#rep-joueurs option').count()).toBeLessThanOrEqual(12);
+  await page.keyboard.press('Backspace');
+  await page.keyboard.type('n', { delay: 80 });
+  await expect(q).toHaveValue('carlsen');
+  // La page répond : on peut encore changer d'ouverture.
+  await page.click('[data-view=ck]');
+  await expect(page.locator('[data-view=ck]')).toHaveAttribute('aria-pressed', 'true');
+});

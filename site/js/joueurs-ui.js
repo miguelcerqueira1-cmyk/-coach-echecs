@@ -10,10 +10,17 @@ const MAX_GAMES = 30;
 const isNameQuery = (q) => normalizeName(q).replace(/ /g, '').length >= 3;
 
 // Suggestions (datalist) : joueurs suivis puis comptes du top.
-export function datalistHtml(idx) {
+// Suggestions courtes (une longue liste fige Safari sur iPhone) : joueurs suivis, puis
+// au plus `max` noms commençant par ce qui est tapé.
+export function datalistHtml(idx, query = '', max = 12) {
   if (idx?.status !== 'ok') return '';
-  const names = idx.data.joueurs.slice().sort((a, b) => (b.s ? 1 : 0) - (a.s ? 1 : 0) || a.n.localeCompare(b.n)).map((j) => j.n);
-  return [...new Set(names)].map((n) => `<option value="${esc(n)}"></option>`).join('');
+  const q = normalizeName(query);
+  const all = [...new Map(idx.data.joueurs.map((j) => [j.n, j])).values()];
+  const pick = q.length >= 2
+    ? all.filter((j) => normalizeName(j.n).split(' ').some((w) => w.startsWith(q)) || normalizeName(j.n).startsWith(q))
+    : all.filter((j) => j.s);
+  return pick.sort((a, b) => (b.s ? 1 : 0) - (a.s ? 1 : 0) || a.n.localeCompare(b.n)).slice(0, max)
+    .map((j) => `<option value="${esc(j.n)}"></option>`).join('');
 }
 
 // idx : { status: 'loading' | 'ok' | 'unavailable', data } ; ficheCount : fiches trouvées par la même requête.
