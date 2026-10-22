@@ -510,3 +510,9 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 :root[data-theme="neon"] button { border-radius: 12px; }
 .appearance-row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
 .appearance-row input[type="color"] { width: 52px; height: 40px; padding: 2px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); }
+/* Recherche par joueur (Répertoire, joueurs-ui.js) */
+.players-card { margin: .5rem 0; }
+.players-card h3 { margin: .1rem 0 .2rem; }
+.players-table .dot { width: .7rem; height: .7rem; border-radius: 50%; border: 1px solid #777; display: inline-block; vertical-align: middle; }
+.players-table .dot.w { background: #fff; }
+.players-table .dot.b { background: #222; }

@@ -57,3 +57,16 @@ for (const [u, list] of [['exemple_blitz_a', AB], ['exemple_blitz_b', B], ['exem
   if (u !== 'exemple_rapide_c') w(`api.chess.com_pub_player_${u}_games_2026_09`, { games: [] });
   else writeFileSync(`${dir}/api.chess.com_pub_player_${u}_games_2026_09`, '{"games":[{"url":"tronqu');
 }
+
+// Profils de joueurs suivis (SYNTHÉTIQUES, format /pub/player/{u}) : un compte vérifié avec une partie,
+// un compte vérifié sans partie, un compte au nom discordant (rejeté). Les autres comptes candidats
+// n'ont pas de fichier : « introuvable ».
+w('api.chess.com_pub_player_magnuscarlsen', { username: 'magnuscarlsen', title: 'GM', name: 'Magnus Carlsen', status: 'premium' });
+w('api.chess.com_pub_player_magnuscarlsen_games_archives', arch('magnuscarlsen'));
+w('api.chess.com_pub_player_magnuscarlsen_games_2026_10', { games: [
+  game('Adversaire_13', 2810, 'MagnusCarlsen', 2950, CK2, '0-1', { time_class: 'rapid', time_control: '600' }),
+] });
+w('api.chess.com_pub_player_magnuscarlsen_games_2026_09', { games: [] });
+w('api.chess.com_pub_player_hikaru', { username: 'hikaru', title: 'GM', name: 'Hikaru Nakamura', status: 'premium' });
+w('api.chess.com_pub_player_hikaru_games_archives', { archives: [] });
+w('api.chess.com_pub_player_lachesisq', { username: 'lachesisq', title: 'GM', name: 'Quelqu’un d’autre', status: 'basic' });

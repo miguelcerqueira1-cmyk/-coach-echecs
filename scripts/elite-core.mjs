@@ -65,6 +65,13 @@ export function parseNdjson(text) {
   return { items: out, bad };
 }
 
+// Champs publiés d'une partie (noms usuels des joueurs suivis, tournoi et ronde, lien direct).
+export function publicGame(g) {
+  const out = { p: g.p, id: g.id, w: g.w, wr: g.wr, b: g.b, br: g.br, y: g.y, t: g.t, r: g.r, s: g.s };
+  for (const k of ['wn', 'bn', 'ev', 'rd', 'u']) if (g[k]) out[k] = g[k];
+  return out;
+}
+
 const avgElo = (g) => {
   const r = [g.wr, g.br].filter((x) => Number.isFinite(x));
   return r.length ? r.reduce((a, b) => a + b, 0) / r.length : 0;
@@ -94,7 +101,7 @@ export function aggregate(games, { plies = 24, minPositionGames = 2, samples = 3
       let pos = positions.get(key);
       if (!pos) { pos = { moves: new Map(), samples: [] }; positions.set(key, pos); }
       let m = pos.moves.get(mv.san);
-      if (!m) { m = { w: 0, d: 0, b: 0, eloSum: 0, eloN: 0, li: 0, cc: 0 }; pos.moves.set(mv.san, m); }
+      if (!m) { m = { w: 0, d: 0, b: 0, eloSum: 0, eloN: 0, li: 0, cc: 0, bc: 0 }; pos.moves.set(mv.san, m); }
       if (g.r === '1-0') m.w++; else if (g.r === '0-1') m.b++; else m.d++;
       const elo = mv.color === 'w' ? g.wr : g.br;
       if (Number.isFinite(elo)) { m.eloSum += elo; m.eloN++; }
@@ -122,7 +129,7 @@ export function compact(agg, minPositionGames = agg.minPositionGames) {
   };
   let dropped = 0;
   for (const [key, pos] of agg.positions) {
-    const moves = [...pos.moves].map(([san, m]) => [san, m.w, m.d, m.b, m.eloN ? Math.round(m.eloSum / m.eloN) : null, m.li, m.cc]);
+    const moves = [...pos.moves].map(([san, m]) => [san, m.w, m.d, m.b, m.eloN ? Math.round(m.eloSum / m.eloN) : null, m.li, m.cc, m.bc]);
     const total = moves.reduce((a, m) => a + m[1] + m[2] + m[3], 0);
     if (total < minPositionGames) { dropped++; continue; }
     moves.sort((a, b) => (b[1] + b[2] + b[3]) - (a[1] + a[2] + a[3]) || (a[0] < b[0] ? -1 : 1));
@@ -131,14 +138,14 @@ export function compact(agg, minPositionGames = agg.minPositionGames) {
   const games = [];
   for (const [gi, idx] of used) {
     const g = agg.games[gi];
-    games[idx] = { p: g.p, id: g.id, w: g.w, wr: g.wr, b: g.b, br: g.br, y: g.y, r: g.r, s: g.s, m: g.san.join(' ') };
+    games[idx] = { ...publicGame(g), m: g.san.join(' ') };
   }
   return { positions, games, dropped };
 }
 
 // Ensemble des parties gardées, comptées par plateforme et par répertoire.
 export function countGames(games) {
-  const out = { li: 0, cc: 0, gd: 0, ck: 0 };
+  const out = { li: 0, cc: 0, bc: 0, gd: 0, ck: 0 };
   for (const g of games) {
     out[g.p]++;
     out[repertoireOfSan(g.san)]++;
@@ -198,18 +205,20 @@ export function recordDownload(state, key, items, { maxGames }) {
 
 // Retire : les joueurs sortis du top, les parties hors fenêtre, et celles qui ne font plus partie
 // des `maxGames` dernières parties d'aucun joueur du top. Renvoie le nombre de parties retirées.
-export function pruneState(state, { now, months, activeOwners }) {
-  const start = now - months * MONTH_MS;
+// monthsBy : fenêtre propre à une source (ex. { bc: 6 } pour les tournois).
+export function pruneState(state, { now, months, activeOwners, monthsBy = {} }) {
+  const startOf = (p) => now - (monthsBy[p] ?? months) * MONTH_MS;
   for (const k of Object.keys(state.owners)) if (!activeOwners.has(k)) delete state.owners[k];
   const ids = new Map();
   for (const [k, o] of Object.entries(state.owners)) {
+    const start = startOf(k.split(':')[0]);
     o.recent = o.recent.filter((r) => r[1] >= start);
     ids.set(k, new Set(o.recent.map((r) => r[0])));
   }
   let removed = 0;
   for (const [gk, g] of Object.entries(state.games)) {
     g.o = g.o.filter((k) => ids.get(k)?.has(g.id));
-    if (!g.o.length || g.t < start) { delete state.games[gk]; removed++; }
+    if (!g.o.length || g.t < startOf(g.p)) { delete state.games[gk]; removed++; }
   }
   return removed;
 }
@@ -226,6 +235,61 @@ export function stateGames(state) {
 export function recentGames(state, n = 10, classifyFn = () => null) {
   return stateGames(state).slice(0, n).map((g) => {
     const op = classifyFn(g.san);
-    return { p: g.p, id: g.id, w: g.w, wr: g.wr, b: g.b, br: g.br, y: g.y, t: g.t, r: g.r, s: g.s, m: g.m, eco: op?.eco || null, n: op?.name || null };
+    return { ...publicGame(g), m: g.m, eco: op?.eco || null, n: op?.name || null };
   });
+}
+
+// ---------- Retransmissions Lichess (tournois officiels) ----------
+
+// Découpe un PGN de plusieurs parties.
+export function splitPgn(text) {
+  return String(text).replace(/\r/g, '').split(/\n\s*\n(?=\[)/).map((x) => x.trim()).filter((x) => x.startsWith('['));
+}
+
+export function pgnHeaders(pgn) {
+  const h = {};
+  for (const m of String(pgn).matchAll(/^\[(\w+)\s+"((?:[^"\\]|\\.)*)"\]\s*$/gm)) h[m[1]] = m[2].replace(/\\(.)/g, '$1');
+  return h;
+}
+
+export const FIDE_TC = { standard: 'classical', rapid: 'rapid', blitz: 'blitz' };
+
+// Partie d'une retransmission → partie normalisée (p: 'bc'), ou null (inachevée, autre variante,
+// position de départ imposée, hors répertoire, coups illisibles).
+// opts : { speed, event, roundName, displayName(nom FIDE) }.
+export function normalizeBroadcast(pgn, { speed = 'classical', event = '', roundName = '', displayName = (n) => n } = {}) {
+  const h = pgnHeaders(pgn);
+  if (!RESULTS.includes(h.Result)) return null;
+  if (h.Variant && h.Variant.toLowerCase() !== 'standard') return null;
+  if (h.SetUp === '1' || h.FEN) return null;
+  const body = PGN_BODY(pgn);
+  if (!mayReachRepertoire(firstSans(body, 3))) return null;
+  const c = new Chess();
+  try { c.loadPgn(pgn); } catch { return null; }
+  const san = c.history();
+  if (!repertoireOfSan(san)) return null;
+  const url = h.GameURL || '';
+  const id = url.split('/').pop() || `${h.Event}-${h.Round}-${h.White}-${h.Black}`.replace(/\W+/g, '');
+  const day = (h.UTCDate || h.Date || '').replace(/\./g, '-');
+  let t = Date.parse(`${day}T${h.UTCTime || '12:00:00'}Z`);
+  if (!Number.isFinite(t)) t = 0;
+  const elo = (x) => (/^\d{3,4}$/.test(x || '') ? Number(x) : null);
+  return {
+    p: 'bc', id, u: url || undefined, w: displayName(h.White || '?'), wr: elo(h.WhiteElo), b: displayName(h.Black || '?'), br: elo(h.BlackElo),
+    y: t ? new Date(t).getUTCFullYear() : null, t, r: h.Result, s: speed, ev: event || h.BroadcastName || h.Event || '', rd: roundName || (h.Round ? `ronde ${h.Round}` : ''),
+    san, wFide: h.WhiteFideId || null, bFide: h.BlackFideId || null,
+  };
+}
+
+// Garder une partie de tournoi : les deux joueurs à minElo+ (Elo FIDE de la retransmission), ou
+// au moins un joueur suivi.
+export function keepBroadcast(g, { minElo = 2600, isSuivi = () => false } = {}) {
+  if (isSuivi(g.w) || isSuivi(g.b)) return true;
+  return g.wr != null && g.br != null && g.wr >= minElo && g.br >= minElo;
+}
+
+// Tournoi retenu : catégorie Lichess la plus haute (tier 5), ou un joueur suivi dans la liste des
+// participants annoncée.
+export function keepTour(tour, { minTier = 5, mentionsSuivi = () => false } = {}) {
+  return (tour?.tier ?? 0) >= minTier || mentionsSuivi(tour?.info?.players || '');
 }

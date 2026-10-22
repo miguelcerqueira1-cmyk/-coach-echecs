@@ -1,0 +1,23 @@
+{
+ "games": [
+  {
+   "url": "https://www.chess.com/game/live/900000014",
+   "pgn": "[Event \"Live Chess\"]\n[Site \"Chess.com\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"Adversaire_13\"]\n[Black \"MagnusCarlsen\"]\n[Result \"0-1\"]\n\n1. e4 {[%clk 0:02:59.9]} c6 2. Nc3 {[%clk 0:02:59.9]} d5 3. Nf3 {[%clk 0:02:59.9]} Bg4 4. h3 {[%clk 0:02:59.9]} Bxf3 5. Qxf3 {[%clk 0:02:59.9]} e6 0-1",
+   "time_control": "600",
+   "end_time": 1792000840,
+   "rated": true,
+   "time_class": "rapid",
+   "rules": "chess",
+   "white": {
+    "rating": 2810,
+    "result": "resigned",
+    "username": "Adversaire_13"
+   },
+   "black": {
+    "rating": 2950,
+    "result": "win",
+    "username": "MagnusCarlsen"
+   }
+  }
+ ]
+}

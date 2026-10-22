@@ -1,6 +1,7 @@
 // Jeu de données « Élite blitz/rapide » (data/elite.json, généré par scripts/elite.mjs) :
-// parties récentes des meilleurs joueurs blitz/rapide de Lichess et Chess.com, limitées au
-// répertoire (1.d4 d5 2.c4 et 1.e4 c6), agrégées par position.
+// parties récentes des meilleurs joueurs blitz/rapide de Lichess et Chess.com, de grands maîtres
+// suivis (comptes vérifiés) et des tournois retransmis sur Lichess, limitées au répertoire
+// (1.d4 d5 2.c4 et 1.e4 c6), agrégées par position.
 // Ce sont des FRÉQUENCES OBSERVÉES chez des joueurs en ligne très forts, jamais une évaluation :
 // une position absente du fichier est affichée comme absente, sans extrapolation.
 // Chargement : d'abord la branche « donnees-elite » du dépôt (mise à jour toutes les ~30 min par
@@ -12,7 +13,8 @@ import { enrichMoves, nodeStats, SPEED_LABELS } from './lichess.js';
 export const ELITE_LIVE_URL = 'https://raw.githubusercontent.com/miguelcerqueira1-cmyk/-coach-echecs/donnees-elite/elite.json';
 export const ELITE_URL = './data/elite.json';
 const RELOAD_MS = 5 * 60000; // même durée que le cache de raw.githubusercontent.com
-export const PLATFORM_LABELS = { li: 'Lichess', cc: 'Chess.com' };
+export const PLATFORM_LABELS = { li: 'Lichess', cc: 'Chess.com', bc: 'Tournois' };
+export const SOURCE_NAMES = { li: 'Lichess', cc: 'Chess.com', bc: 'Tournois (retransmissions Lichess)' };
 export const ROOTS = { gd: ['d4', 'd5', 'c4'], ck: ['e4', 'c6'] };
 
 // Clé de position : FEN sans les compteurs de coups (les transpositions se rejoignent).
@@ -29,7 +31,14 @@ export function repertoireOfSan(san) {
 }
 
 export function gameUrl(g) {
+  if (g.u) return g.u; // retransmission : lien complet vers la partie
   return g.p === 'li' ? `https://lichess.org/${g.id}` : `https://www.chess.com/game/live/${g.id}`;
+}
+
+// « Lichess Blitz » ou « Norway Chess 2026 | Open, Round 3 ».
+export function gameSource(g) {
+  if (g.p === 'bc') return [g.ev, g.rd].filter(Boolean).join(', ') || PLATFORM_LABELS.bc;
+  return `${PLATFORM_LABELS[g.p] || g.p} ${SPEED_LABELS[g.s] || g.s || ''}`.trim();
 }
 
 // Partie exemple → forme affichable (coups SAN prêts pour l'échiquier).
@@ -38,8 +47,9 @@ export function gameInfo(g) {
     ...g,
     url: gameUrl(g),
     platform: PLATFORM_LABELS[g.p] || g.p,
+    source: gameSource(g),
     san: String(g.m || '').split(' ').filter(Boolean),
-    label: `${g.w} (${g.wr ?? '?'}) – ${g.b} (${g.br ?? '?'})`,
+    label: `${g.wn || g.w} (${g.wr ?? '?'}) – ${g.bn || g.b} (${g.br ?? '?'})`,
   };
 }
 
@@ -50,13 +60,13 @@ export function lookupElite(data, fen) {
   const c = new Chess(fen);
   const turn = c.turn();
   const raw = [];
-  for (const [san, w, d, b, elo, li, cc] of pos.m) {
+  for (const [san, w, d, b, elo, li, cc, bc = 0] of pos.m) {
     let uci = null;
     try {
       const mv = new Chess(fen).move(san);
       uci = mv.lan;
     } catch { continue; /* coup illégal : ignoré */ }
-    raw.push({ san, uci, white: w, draws: d, black: b, avgElo: elo, li, cc });
+    raw.push({ san, uci, white: w, draws: d, black: b, avgElo: elo, li, cc, bc });
   }
   const moves = enrichMoves(raw, turn).sort((a, b) => b.stats.total - a.stats.total);
   const sum = (k) => moves.reduce((a, m) => a + m[k], 0);
@@ -67,7 +77,7 @@ export function lookupElite(data, fen) {
     moves,
     total: stats.total,
     stats,
-    split: { li: sum('li'), cc: sum('cc') },
+    split: { li: sum('li'), cc: sum('cc'), bc: sum('bc') },
     top: moves[0] || null,
     games: (pos.g || []).map((i) => data.games[i]).filter(Boolean).map(gameInfo),
   };
@@ -92,21 +102,32 @@ export function eliteSummary(meta, now = Date.now()) {
   const part = (k) => {
     const s = src[k];
     if (!s || s.status === 'ignoré') return null;
-    if (s.status === 'erreur') return `${PLATFORM_LABELS[k]} : indisponible lors de la génération (aucune partie)`;
-    return `${PLATFORM_LABELS[k]} : ${s.gamesKept.toLocaleString('fr-FR')} parties de ${s.players} joueurs${s.status === 'partiel' ? ' (récupération partielle)' : ''}`;
+    if (s.status === 'erreur') return `${SOURCE_NAMES[k]} : indisponible lors de la génération (aucune partie)`;
+    const who = k === 'bc' ? `${s.events ?? 0} tournois` : `${s.players} joueurs`;
+    return `${SOURCE_NAMES[k]} : ${s.gamesKept.toLocaleString('fr-FR')} parties de ${who}${s.status === 'partiel' ? ' (récupération partielle)' : ''}`;
   };
-  return `${d} — ${[part('li'), part('cc')].filter(Boolean).join(' ; ')}.`;
+  const su = src.su && src.su.status !== 'ignoré' ? `joueurs suivis : ${src.su.verified} comptes vérifiés` : null;
+  return `${d} — ${[part('li'), part('cc'), part('bc'), su].filter(Boolean).join(' ; ')}.`;
 }
 
-// Répartition par plateforme, ex. « Lichess 12 · Chess.com 30 ».
+// Répartition par source, ex. « Lichess 12 · Chess.com 30 » (+ « Tournois 3 » s'il y en a).
 export function splitText(split) {
-  return Object.entries(PLATFORM_LABELS).map(([k, l]) => `${l} ${(split?.[k] || 0).toLocaleString('fr-FR')}`).join(' · ');
+  return Object.entries(PLATFORM_LABELS).filter(([k]) => k !== 'bc' || split?.bc)
+    .map(([k, l]) => `${l} ${(split?.[k] || 0).toLocaleString('fr-FR')}`).join(' · ');
 }
 
 // En-têtes PGN d'une partie exemple (lien vers l'original conservé dans Site).
+// Noms affichés : nom usuel du joueur suivi s'il est connu (« Magnus Carlsen (DrNykterstein) »).
 export function eliteHeaders(g) {
-  return { Event: `Élite ${g.platform} ${SPEED_LABELS[g.s] || g.s}`, Site: g.url, White: `${g.w} (${g.wr ?? '?'})`, Black: `${g.b} (${g.br ?? '?'})`, Date: `${g.y}.??.??` };
+  const name = (acc, canon) => (canon && normalize(canon) !== normalize(acc) ? `${canon} (${acc})` : acc);
+  const date = g.t ? new Date(g.t).toISOString().slice(0, 10).replace(/-/g, '.') : `${g.y}.??.??`;
+  return {
+    Event: g.p === 'bc' ? gameSource(g) : `Élite ${gameSource(g)}`, Site: g.url || gameUrl(g),
+    White: name(g.w, g.wn), Black: name(g.b, g.bn), WhiteElo: g.wr != null ? String(g.wr) : '', BlackElo: g.br != null ? String(g.br) : '',
+    Date: date, Result: g.r || '*',
+  };
 }
+const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 // Position absente : explication honnête du périmètre (aucun chiffre extrapolé).
 export function absentText(meta) {

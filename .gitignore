@@ -9,3 +9,4 @@ worker/node_modules/
 .dev.vars
 site/data/repertoire.json
 site/data/elite.json
+site/data/joueurs.json
