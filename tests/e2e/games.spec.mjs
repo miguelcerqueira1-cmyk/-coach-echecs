@@ -107,3 +107,24 @@ test('@online import Lichess réel avec jeton', async ({ page }) => {
   await page.click('[data-import]');
   await expect(page.locator('.games-status')).toContainText(/Lichess : \d+ partie/, { timeout: 30000 });
 });
+
+test('Mes parties : revenir sur Moteur pendant une analyse ne bloque pas le calcul', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/parties');
+  await page.waitForFunction(() => window.__coach?.engine.state === 'ready', null, { timeout: 60000 });
+  await page.click('[data-import]');
+  await expect(page.locator('.game-card')).toHaveCount(3);
+  // Analyse « précise » (longue) lancée, puis retour immédiat sur la page Moteur.
+  await page.evaluate(() => { window.__coach.games.prefs.precision = 800; });
+  await page.locator('.game-card').first().locator('[data-analyse]').click();
+  await page.waitForTimeout(500);
+  await page.click('.tabs a[data-page=moteur]');
+  await page.waitForFunction(() => {
+    const s = window.__coach.state;
+    return s.analysis.status === 'ready' && s.game.isCurrent(s.analysis.advice.token);
+  }, null, { timeout: 30000 });
+  await expect(page.locator('#optimal')).toContainText(/prof\. \d+/);
+  // De retour sur Mes parties, l'analyse reprend et se termine.
+  await page.click('.tabs a[data-page=parties]');
+  await expect(page.locator('.analysis-card')).toContainText('Trois pistes de travail', { timeout: 90000 });
+});

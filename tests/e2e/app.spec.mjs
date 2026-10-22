@@ -342,3 +342,28 @@ test('mode « Indice d’abord » : coup caché jusqu’à « Montrer le coup »
   await waitAdvice(page);
   await expect(advice).toContainText('À vous de trouver le meilleur coup');
 });
+
+test('position passée : meilleur coup Stockfish calculé pour la position consultée', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await waitAdvice(page);
+  for (const m of ['e4', 'e5', 'Cf3', 'Cc6', 'Fc4']) await page.fill('#notation-input', m).then(() => page.press('#notation-input', 'Enter'));
+  await waitAdvice(page);
+  // On remonte deux demi-coups : position après 2.Cf3, trait aux Noirs (l'adversaire).
+  await page.click('.board-nav [data-nav=prev]');
+  await page.click('.board-nav [data-nav=prev]');
+  const advice = page.locator('#advice');
+  await expect(advice).toContainText('Position consultée');
+  await expect(advice).toContainText('Meilleur coup selon Stockfish', { timeout: 30000 });
+  await expect(advice).toContainText('Coup réellement joué');
+  await expect(page.locator('.board-arrows line.arrow-reply')).toHaveCount(1);
+  await expect(page.locator('#optimal')).toContainText(/prof\. \d+/);
+  // Un demi-coup de plus en arrière : trait aux Blancs (nous), flèche verte.
+  await page.click('.board-nav [data-nav=prev]');
+  await expect(advice).toContainText('Meilleur coup selon Stockfish', { timeout: 30000 });
+  await expect(page.locator('.board-arrows line.arrow-best')).toHaveCount(1);
+  // Retour à la position actuelle : le conseil de la partie réelle revient.
+  await page.click('.board-nav [data-nav=end]');
+  await expect(advice).not.toContainText('Position consultée');
+  await expect(advice).toContainText(/Coup conseillé|Meilleure réponse adverse/, { timeout: 30000 });
+});

@@ -24,7 +24,8 @@ export class GamesPage {
     this.getToken = getToken;
     this.openGame = openGame;
     this.prefs = load(PREFS, { lichess: '', chesscom: '', max: 20, speed: 'blitz', precision: 300 });
-    this.cache = load(CACHE, {}); // id → evals
+    this.cache = load(CACHE, {}); // id → evals (analyses terminées)
+    this.partial = {}; // id → evals partielles (analyse mise en pause)
     this.games = [];
     this.status = {};
     this.data = null;
@@ -37,7 +38,12 @@ export class GamesPage {
       try { this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json(); } catch { this.data = { entries: [] }; }
     }
     if (!this.rendered) this.render();
+    // Reprise automatique d'une analyse mise en pause quand on avait quitté la page.
+    const paused = this.games.find((g) => g.id === this.selected && g.paused);
+    if (paused) this.analyse(paused);
   }
+
+  visible() { return !this.el.classList.contains('hidden'); }
 
   // ---------- Import ----------
 
@@ -116,7 +122,9 @@ export class GamesPage {
     const n = game.san.length;
     const c = new Chess();
     const ucis = game.san.map((s) => c.move(s).lan);
-    const evals = this.cache[game.id]?.evals?.length === n + 1 ? this.cache[game.id].evals : new Array(n + 1).fill(null);
+    const done = this.cache[game.id]?.evals;
+    const part = this.partial[game.id];
+    const evals = done?.length === n + 1 ? done : (part?.length === n + 1 ? part : new Array(n + 1).fill(null));
     game.progress = evals.filter(Boolean).length / (n + 1);
     this.render();
     const replay = new Chess();
@@ -125,6 +133,12 @@ export class GamesPage {
     for (let i = 0; i <= n; i++) {
       if (evals[i]) continue;
       if (job !== this.job) return;
+      // Le moteur est partagé : on s'arrête quand la page n'est plus affichée.
+      if (!this.visible()) {
+        game.paused = true;
+        this.partial[game.id] = evals; // analyse partielle, reprise au retour sur la page
+        return;
+      }
       const pos = new Chess(fens[i]);
       if (pos.isCheckmate()) evals[i] = { cp: pos.turn() === 'w' ? -1000 : 1000, best: null };
       else if (pos.isStalemate() || pos.isInsufficientMaterial()) evals[i] = { cp: 0, best: null };
@@ -148,6 +162,7 @@ export class GamesPage {
       if (i % 4 === 0) this.renderAnalysis();
     }
     game.paused = false;
+    delete this.partial[game.id];
     this.cache[game.id] = { evals, at: Date.now() };
     // Cache limité aux 40 dernières analyses.
     const ids = Object.keys(this.cache).sort((a, b) => this.cache[b].at - this.cache[a].at);

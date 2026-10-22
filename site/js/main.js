@@ -1,6 +1,7 @@
 // Contrôleur principal. Principe : l'état de partie (game.js) est la source de vérité ;
 // Stockfish calcule ; chess.js valide ; Claude explique les résultats calculés.
 import { Game, parseMoveText } from './game.js';
+import { Chess } from '../vendor/chess.js';
 import { Engine } from './engine.js';
 import { Board } from './board.js';
 import {
@@ -141,6 +142,8 @@ function onPositionChanged(reason) {
   const g = state.game;
   store.saveGame(g.toJSON());
   state.viewPly = null;
+  state.view = null;
+  viewJob++;
   // Toute explication en cours devient obsolète.
   abortCoach();
   state.coach = { status: 'idle', token: null, html: '', error: null, abort: null, meta: null };
@@ -198,8 +201,17 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
   // Réponse tardive d'une position qui n'est plus la position actuelle : ignorée.
   if (!state.game.isCurrent(token) || state.analysis.jobId !== jobId) return;
   if (res.cancelled) {
-    // Calcul interrompu sans remplaçant (cas rare) : on garde le dernier conseil valide.
-    state.analysis = { ...state.analysis, status: previous ? 'ready' : 'error', error: previous ? null : 'Calcul interrompu. Touchez « Analyser davantage » pour relancer.', live: null };
+    // Calcul interrompu par une autre page qui utilisait le moteur : on garde le dernier
+    // conseil valide, sinon on relance dès que la page Moteur est affichée.
+    if (previous) {
+      state.analysis = { ...state.analysis, status: 'ready', live: null };
+      optimal.setEngine('ready', previous);
+    } else if (!$('page-moteur').classList.contains('hidden') && state.viewPly === null) {
+      setTimeout(() => { if (state.game.isCurrent(token) && state.analysis.jobId === jobId) runAnalysis(movetime); }, 150);
+      return;
+    } else {
+      state.analysis = { ...state.analysis, status: 'waiting-engine', live: null };
+    }
     renderAdvice();
     return;
   }
@@ -386,9 +398,15 @@ function renderBoard() {
     if (th && state.coach.token && g.isCurrent(state.coach.token)) arrows.push({ from: th.move.from, to: th.move.to, kind: 'threat' });
   }
   if (live && !hide) {
-    const stat = optimal.statArrow((t) => g.isCurrent(t));
+    const stat = optimal.statArrow((t) => optimal.game?.isCurrent(t));
     // Flèche bleue seulement si le coup statistique diffère du coup moteur déjà fléché.
     if (stat && !arrows.some((x) => x.from === stat.from && x.to === stat.to)) arrows.push(stat);
+  }
+  if (!live && state.view?.status === 'ready' && state.view.ply === state.viewPly) {
+    const b = state.view.advice.best;
+    arrows.push({ from: b.from, to: b.to, kind: state.view.advice.isPlayerTurn ? 'best' : 'reply' });
+    const stat = optimal.statArrow((t) => optimal.game?.isCurrent(t));
+    if (stat && !(stat.from === b.from && stat.to === b.to)) arrows.push(stat);
   }
   board.setArrows(arrows);
   $('view-banner').classList.toggle('hidden', live);
@@ -506,7 +524,12 @@ function renderMini() {
   if (a.status === 'over') el.textContent = '';
   else if (a.status === 'engine-error') el.innerHTML = '<span class="error-text">Moteur indisponible : aucun conseil.</span>';
   else if (!adv) el.innerHTML = '<span class="muted">Stockfish calcule…</span>';
-  else if (adv.isPlayerTurn && moveHidden()) el.innerHTML = '<span class="muted">Mode indice : à vous de trouver le coup.</span>';
+  else if (state.viewPly !== null) {
+    const v = state.view;
+    el.innerHTML = v?.status === 'ready'
+      ? `Position consultée — meilleur coup : <strong class="best">${esc(sanFr(v.advice.best.san))}</strong> <span class="muted">(${esc(v.advice.scoreText)})</span>`
+      : '<span class="muted">Position consultée — Stockfish analyse…</span>';
+  } else if (adv.isPlayerTurn && moveHidden()) el.innerHTML = '<span class="muted">Mode indice : à vous de trouver le coup.</span>';
   else if (adv.isPlayerTurn) el.innerHTML = `Conseil : <strong class="best">${esc(sanFr(adv.best.san))}</strong> — ${esc(adv.bestDescription)} <span class="muted">(${esc(adv.scoreText)})</span>`;
   else el.innerHTML = `Meilleure réponse adverse calculée : <strong class="reply">${esc(sanFr(adv.best.san))}</strong> <span class="muted">— saisissez le coup réel</span>`;
 }
@@ -514,6 +537,11 @@ function renderMini() {
 function renderAdvice() {
   renderMini();
   const el = $('advice');
+  if (state.viewPly !== null) {
+    renderButtons();
+    renderViewAdvice(el);
+    return;
+  }
   const a = state.analysis;
   const g = state.game;
   renderButtons();
@@ -751,10 +779,99 @@ function flash(text, err) { notationMsg(text, err); }
 function viewAt(ply) {
   const g = state.game;
   ply = Math.max(0, Math.min(g.ply, ply));
+  const wasViewing = state.viewPly !== null;
   state.viewPly = ply === g.ply ? null : ply;
+  if (state.viewPly !== null) {
+    analyzeView(ply);
+  } else {
+    state.view = null;
+    viewJob++;
+    if (wasViewing) {
+      // Retour à la position actuelle : panneau « Coup optimal » et calcul de la partie réelle.
+      optimal.update(g);
+      if (state.analysis.status === 'ready' && g.isCurrent(state.analysis.advice?.token)) optimal.setEngine('ready', state.analysis.advice);
+      else if (!g.status().over) runAnalysis(BUDGETS[state.settings.budget].movetime);
+    }
+  }
   renderBoard();
   renderMoves();
   renderButtons();
+  renderAdvice();
+}
+
+// Partie « vue » à un demi-coup passé, présentée avec la même interface que Game pour
+// les fonctions de conseil (buildAdvice) et le panneau « Coup optimal ».
+function viewGameAt(ply) {
+  const g = state.game;
+  const fen = g.fen(ply);
+  const tok = { gameId: g.id, branchId: 'vue', revision: g.revision, ply };
+  return {
+    playerColor: g.playerColor,
+    startFen: g.startFen,
+    moves: g.moves.slice(0, ply),
+    fen: () => fen,
+    turn: () => fen.split(' ')[1],
+    token: () => tok,
+    isCurrent: (t) => !!t && t.branchId === 'vue' && t.ply === ply && t.revision === g.revision && t.gameId === g.id && state.viewPly === ply,
+    status: () => { const c = new Chess(fen); return { over: c.isCheckmate() || c.isStalemate() || c.isInsufficientMaterial() }; },
+  };
+}
+
+let viewJob = 0;
+async function analyzeView(ply) {
+  const g = state.game;
+  const job = ++viewJob;
+  const vg = viewGameAt(ply);
+  state.view = { ply, status: 'computing', advice: null, game: vg };
+  optimal.update(vg);
+  optimal.setEngine('computing', null);
+  if (vg.status().over) { state.view.status = 'over'; renderAdvice(); return; }
+  if (engine.state !== 'ready') { state.view.status = 'engine-error'; renderAdvice(); return; }
+  const ucis = g.moves.slice(0, ply).map((m) => m.uci).join(' ');
+  let res;
+  try {
+    res = await engine.analyze({
+      position: `position fen ${g.startFen}${ucis ? ' moves ' + ucis : ''}`,
+      movetime: BUDGETS[state.settings.budget].movetime,
+      token: vg.token(),
+    });
+  } catch (e) {
+    if (job === viewJob) { state.view = { ...state.view, status: 'engine-error', error: e.message }; renderAdvice(); }
+    return;
+  }
+  if (job !== viewJob || state.viewPly !== ply || res.cancelled) return;
+  const advice = buildAdvice(vg, res);
+  state.view = { ...state.view, status: advice.ok ? 'ready' : 'error', advice: advice.ok ? advice : null, error: advice.error };
+  if (advice.ok) optimal.setEngine('ready', advice);
+  renderAdvice();
+  renderBoard();
+}
+
+// Panneau de conseil pour une position consultée dans l'historique.
+function renderViewAdvice(el) {
+  const g = state.game;
+  const v = state.view;
+  const ply = state.viewPly;
+  const where = ply === 0 ? 'Position de départ' : `Après ${moveLabel(ply - 1)}`;
+  const turn = g.fen(ply).split(' ')[1];
+  let body;
+  if (!v || v.status === 'computing') body = '<div class="state"><span class="spinner"></span><span>Stockfish analyse cette position…</span></div>';
+  else if (v.status === 'over') body = '<p class="desc">Partie terminée dans cette position.</p>';
+  else if (v.status === 'engine-error' || v.status === 'error') body = `<div class="errbox">${esc(v.error || 'Moteur indisponible')}</div>`;
+  else {
+    const adv = v.advice;
+    const played = ply < g.ply ? g.verboseMove(ply) : null;
+    const same = played && played.lan === adv.best.lan;
+    body = `<p class="label">Meilleur coup selon Stockfish</p>
+      <p class="move-big ${turn === g.playerColor ? 'best' : 'reply'}">${esc(sanFr(adv.best.san))}</p>
+      <p class="desc">${esc(adv.bestDescription)}</p>
+      <dl>${evalBlock(adv)}<dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd>
+        ${played ? `<dt>Coup réellement joué</dt><dd><strong>${esc(sanFr(played.san))}</strong> ${same ? '<span class="ok">✔ c’était le meilleur coup</span>' : '<span class="muted">(différent du calcul)</span>'}</dd>` : ''}
+      </dl>${techDetails(adv, { movetime: adv.movetime })}`;
+  }
+  el.innerHTML = `<p><span class="badge">Position consultée</span> <strong>${esc(where)}</strong> — trait aux ${COLOR_NAMES[turn]}</p>${body}
+    <p class="muted small">Ce n’est pas la position actuelle de la partie. <button type="button" class="link-btn" id="btn-back-live">Revenir à la position actuelle</button></p>`;
+  $('btn-back-live').onclick = () => viewAt(g.ply);
 }
 
 // ---------- Interface ----------
