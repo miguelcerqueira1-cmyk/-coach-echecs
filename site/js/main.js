@@ -16,6 +16,7 @@ import { explicationGratuite, renderExplication, menaceSerieuse } from './explai
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
 import { YouTubeClient } from './youtube.js';
+import { THEMES, BOARDS, applyAppearance } from './theme.js';
 import { TrainingPage } from './training.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
@@ -76,6 +77,7 @@ function filterLabel() {
 }
 
 async function init() {
+  applyAppearance(state.settings);
   fillSelects();
   restoreGame();
   board.setOrientation(state.game.playerColor);
@@ -977,7 +979,15 @@ function bindUi() {
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   };
 
-  // Réglages
+  // Réglages : apparence prévisualisée en direct, rétablie si on ferme sans enregistrer.
+  for (const id of ['set-theme', 'set-board']) $(id).addEventListener('change', () => applyAppearance(appearanceFromForm()));
+  $('set-accent').addEventListener('input', () => { $('set-accent').dataset.custom = '1'; applyAppearance(appearanceFromForm()); });
+  $('reset-accent').onclick = () => {
+    $('set-accent').dataset.custom = '';
+    applyAppearance(appearanceFromForm());
+    $('set-accent').value = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+  };
+  $('dlg-settings').addEventListener('close', () => applyAppearance(state.settings));
   $('form-settings').addEventListener('submit', (e) => {
     if (e.submitter?.value !== 'ok') return;
     saveSettingsFromForm();
@@ -1115,7 +1125,17 @@ function openSettings() {
   $('set-lichess').placeholder = store.getLichessToken() ? 'Jeton enregistré sur cet appareil (laisser vide pour le garder)' : 'lip_… (jeton sans aucune permission)';
   $('set-youtube').value = '';
   $('set-youtube').placeholder = store.getYoutubeKey() ? 'Clé enregistrée sur cet appareil (laisser vide pour la garder)' : 'AIza… (clé restreinte à ce site)';
+  $('set-theme').innerHTML = Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
+  $('set-board').innerHTML = Object.entries(BOARDS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
+  $('set-theme').value = s.theme || 'neon';
+  $('set-board').value = s.board || 'auto';
+  $('set-accent').value = s.accent || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#9d8cff';
+  $('set-accent').dataset.custom = s.accent ? '1' : '';
   $('dlg-settings').showModal();
+}
+
+function appearanceFromForm() {
+  return { theme: $('set-theme').value, board: $('set-board').value, accent: $('set-accent').dataset.custom ? $('set-accent').value : '' };
 }
 
 function saveSettingsFromForm() {
@@ -1129,6 +1149,8 @@ function saveSettingsFromForm() {
   renderAdvice();
   s.showOpponentArrow = $('set-opp-arrow').checked;
   s.apiUrl = $('set-api').value.trim();
+  Object.assign(s, appearanceFromForm());
+  applyAppearance(s);
   store.saveSettings(s);
   state.game.setLevel(s.level);
   store.saveGame(state.game.toJSON());

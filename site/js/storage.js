@@ -44,6 +44,9 @@ export const DEFAULT_SETTINGS = {
   helpMode: 'direct', // 'direct' : conseil affiché ; 'indice' : Indice → Explication → Montrer le coup
   showOpponentArrow: true,
   apiUrl: '', // vide = valeur publiée dans config.json
+  theme: 'neon', // 'neon' | 'sombre' | 'clair'
+  board: 'auto', // style d'échiquier (js/theme.js), 'auto' = assorti au thème
+  accent: '', // couleur principale personnalisée (#rrggbb), vide = celle du thème
 };
 
 export function loadSettings() {

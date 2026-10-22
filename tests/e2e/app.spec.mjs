@@ -380,3 +380,27 @@ test('partie importée : noms et classements des joueurs affichés au-dessus de 
   await newGame(page);
   await expect(info).toBeHidden();
 });
+
+test('apparence : Nuit néon par défaut, choix du thème et de l’échiquier, aperçu annulable', async ({ page }) => {
+  await page.goto('./');
+  const root = page.locator('html');
+  await expect(root).toHaveAttribute('data-theme', 'neon');
+  await expect(root).toHaveAttribute('data-board', 'neon');
+  const sq = () => page.evaluate(() => getComputedStyle(document.querySelector('#board .sq.light')).backgroundColor);
+  expect(await sq()).toBe('rgb(199, 202, 240)');
+  // Aperçu puis fermeture sans enregistrer : retour à l'apparence précédente.
+  await page.click('#btn-settings');
+  await page.selectOption('#set-board', 'noyer');
+  await expect(root).toHaveAttribute('data-board', 'noyer');
+  await page.click('#form-settings button[value=cancel]');
+  await expect(root).toHaveAttribute('data-board', 'neon');
+  // Enregistré : conservé après rechargement, sans flash (appliqué dès le <head>).
+  await page.click('#btn-settings');
+  await page.selectOption('#set-theme', 'clair');
+  await page.selectOption('#set-board', 'marbre');
+  await page.click('#form-settings button[value=ok]');
+  await page.reload();
+  await expect(root).toHaveAttribute('data-theme', 'light');
+  await expect(root).toHaveAttribute('data-board', 'marbre');
+  expect(await sq()).toBe('rgb(236, 233, 228)');
+});

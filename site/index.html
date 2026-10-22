@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Coach Échecs</title>
   <meta name="description" content="Entraîneur d'échecs : Stockfish calcule, chess.js valide les règles, Claude explique.">
-  <meta name="theme-color" content="#0f1312">
+  <meta name="theme-color" content="#0b0d1e">
+  <script>
+    // Apparence enregistrée appliquée avant l'affichage (même logique que js/theme.js).
+    (function () {
+      var s = {};
+      try { s = JSON.parse(localStorage.getItem('coach-echecs:reglages:v1') || '{}'); } catch (e) { /* rien */ }
+      var t = s.theme || 'neon';
+      var boards = { neon: 'neon', sombre: 'classique', clair: 'classique-clair' };
+      var r = document.documentElement;
+      r.dataset.theme = t === 'sombre' ? 'dark' : t === 'clair' ? 'light' : 'neon';
+      r.dataset.board = s.board && s.board !== 'auto' ? s.board : (boards[t] || 'neon');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
   <link rel="icon" href="pieces/wN.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css">
 </head>
@@ -157,6 +172,19 @@
       </label>
       <label class="check"><input type="checkbox" id="set-auto"> Explication Claude automatique à mon tour</label>
       <label class="check"><input type="checkbox" id="set-opp-arrow"> Montrer la meilleure réponse adverse calculée sur l’échiquier</label>
+      <h3>Apparence</h3>
+      <label class="row">Thème
+        <select id="set-theme"></select>
+      </label>
+      <label class="row">Échiquier
+        <select id="set-board"></select>
+      </label>
+      <div class="row appearance-row">
+        <label for="set-accent">Couleur principale</label>
+        <input type="color" id="set-accent">
+        <button type="button" id="reset-accent">Couleur du thème</button>
+      </div>
+      <p class="muted small">Aperçu immédiat ; « Fermer sans enregistrer » rétablit l’apparence précédente.</p>
       <h3>Explications Claude</h3>
       <label>Code d’accès personnel
         <input id="set-code" type="password" autocomplete="off" placeholder="Saisi une fois, conservé sur cet appareil">

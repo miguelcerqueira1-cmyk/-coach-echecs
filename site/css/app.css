@@ -55,13 +55,52 @@
   color-scheme: light;
 }
 
+:root[data-theme="neon"] {
+  --bg: #0b0d1e;
+  --surface: #15183a;
+  --surface-2: #1d2150;
+  --text: #ecebff;
+  --muted: #a3a6d6;
+  --border: #2a2e5e;
+  --accent: #9d8cff;
+  --accent-contrast: #0b0d1e;
+  --warn: #ffc857;
+  --warn-bg: #2f2612;
+  --error: #ff8fa3;
+  --error-bg: #3a1424;
+  --sel: rgba(157, 140, 255, .55);
+  --best: #3fe0c5;
+  --reply: #ffa24c;
+  --threat: #ff5f7a;
+  --stat: #6fb6ff;
+  --w-bar: #ecebff;
+  --d-bar: #5c61b8;
+  --b-bar: #000000;
+  --bar-edge: #a3a6d6;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px rgba(0, 0, 0, .35);
+  --font: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+/* Styles d'échiquier (réglage « Échiquier ») : après les thèmes pour les remplacer. */
+:root[data-board="classique"] { --light-sq: #dcd3be; --dark-sq: #7d9673; --last: rgba(234, 200, 70, .45); }
+:root[data-board="classique-clair"] { --light-sq: #ece3cf; --dark-sq: #8ca37f; --last: rgba(234, 200, 70, .45); }
+:root[data-board="neon"] { --light-sq: #c7caf0; --dark-sq: #5c61b8; --last: rgba(63, 224, 197, .6); }
+:root[data-board="erable"] { --light-sq: #f1ddb8; --dark-sq: #c48e58; --last: rgba(232, 194, 90, .6); }
+:root[data-board="noyer"] { --light-sq: #e2c49b; --dark-sq: #7d5233; --last: rgba(217, 184, 90, .6); }
+:root[data-board="marbre"] { --light-sq: #ece9e4; --dark-sq: #a69d92; --last: rgba(233, 201, 120, .65); }
+:root[data-board="ardoise"] { --light-sq: #dde4ee; --dark-sq: #7088a8; --last: rgba(242, 210, 122, .65); }
+:root[data-board="sapin"] { --light-sq: #e6ebdd; --dark-sq: #4e7a5c; --last: rgba(229, 211, 106, .6); }
+:root[data-board="corail"] { --light-sq: #f8e6dc; --dark-sq: #d7876f; --last: rgba(244, 192, 78, .6); }
+:root[data-board="encre"] { --light-sq: #f6f2e7; --dark-sq: #9a958a; --last: rgba(228, 199, 107, .65); }
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16px/1.45 var(--font, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 h1 { font-size: 1.15rem; margin: 0; letter-spacing: .01em; }
@@ -459,3 +498,15 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .game-info .dot { width: .8rem; height: .8rem; border-radius: 50%; border: 1px solid #777; display: inline-block; }
 .game-info .dot.w { background: #fff; }
 .game-info .dot.b { background: #222; }
+
+/* Nuit néon : halo autour de l'échiquier, onglets en pastille, titre marqué. */
+:root[data-theme="neon"] .board {
+  box-shadow: 0 0 0 3px var(--accent), 0 0 28px color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 12px;
+}
+:root[data-theme="neon"] .tabs a[aria-current="page"] { background: var(--accent); color: var(--accent-contrast); box-shadow: none; }
+:root[data-theme="neon"] .top h1 { letter-spacing: .06em; text-transform: uppercase; }
+:root[data-theme="neon"] .card, :root[data-theme="neon"] dialog { border-radius: 16px; }
+:root[data-theme="neon"] button { border-radius: 12px; }
+.appearance-row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.appearance-row input[type="color"] { width: 52px; height: 40px; padding: 2px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); }
