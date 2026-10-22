@@ -157,14 +157,23 @@ test('Répertoire : recherche par coup (français ou anglais) et par code ECO', 
   const rows = page.locator('.rep-table tbody tr[data-id]');
   await expect(rows.first()).toBeVisible();
   await page.click('[data-view=ck]');
-  await page.fill('[data-q]', '4...Fg4');
-  await expect.poll(() => rows.count()).toBeGreaterThan(0);
+  const shown = page.locator('#page-repertoire .rep-head p.small.muted').first();
+  const total = await rows.count();
+  // On attend que le filtre soit appliqué (compteur mis à jour), pas seulement des lignes visibles.
+  await page.fill('[data-q]', '3...Fg4');
+  await expect(shown).not.toContainText(`${total} fiche(s)`);
   const fr = await rows.count();
-  await page.fill('[data-q]', '4...Bg4');
-  await expect.poll(() => rows.count()).toBe(fr);
+  expect(fr).toBeGreaterThan(0);
+  const ids = await rows.evaluateAll((rs) => rs.map((r) => r.dataset.id));
+  await page.fill('[data-q]', '3...Bg4');
+  await expect.poll(() => rows.evaluateAll((rs) => rs.map((r) => r.dataset.id))).toEqual(ids);
+  // « 3…Fg4 » ne correspond pas à « 13…Fg4 » : chaque fiche trouvée a bien …Fg4 au 3e coup noir.
+  for (const id of ids) {
+    const san = await page.evaluate((x) => window.__coach.repertoire.data.entries.find((e) => e.id === x), id);
+    expect([san.san, san.punition?.san, san.piege?.san].some((l) => l && l[5] === 'Bg4')).toBe(true);
+  }
   await page.fill('[data-q]', 'B12');
-  await expect.poll(() => rows.count()).toBeGreaterThan(0);
-  expect(await rows.locator('.badge.eco').allTextContents()).toContain('B12');
+  await expect.poll(() => rows.locator('.badge.eco').allTextContents()).toContain('B12');
   await page.fill('[data-q]', 'zzzz');
   await expect(rows).toHaveCount(0);
 });

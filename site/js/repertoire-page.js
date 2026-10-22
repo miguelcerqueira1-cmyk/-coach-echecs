@@ -46,8 +46,9 @@ function markedLineHtml(san, markIndex, from = 0) {
 // Texte de recherche : chaque coup avec son numéro, en anglais et en français.
 function searchText(e) {
   const lines = [e.san, e.punition?.san, e.piege?.san].filter(Boolean);
-  const numbered = lines.map((sans) => sans.map((s, i) => `${Math.floor(i / 2) + 1}${i % 2 ? '...' : '.'}${s} ${Math.floor(i / 2) + 1}${i % 2 ? '...' : '.'}${sanFr(s)}`).join(' ')).join(' ');
-  return norm([e.id, e.nom, e.famille, e.eco, e.ecoNom, e.plan, e.structure, e.cases, numbered].join(' '));
+  // Coups numérotés séparés par « | » : « 3.Fg4 » ne doit pas correspondre à « 13.Fg4 ».
+  const numbered = lines.map((sans) => sans.map((s, i) => `|${Math.floor(i / 2) + 1}${i % 2 ? '...' : '.'}${s}|${Math.floor(i / 2) + 1}${i % 2 ? '...' : '.'}${sanFr(s)}`).join('')).join('');
+  return norm([e.id, e.nom, e.famille, e.eco, e.ecoNom, e.plan, e.structure, e.cases].join(' ')) + norm(numbered);
 }
 const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/…|\.\.\./g, '.').replace(/[\s+#!?]/g, '');
 
@@ -146,7 +147,7 @@ export class RepertoirePage {
   entries() {
     const q = norm(this.query.trim());
     const list = this.data.entries.filter((e) => (this.view === 'trash' || e.rep === this.view)
-      && (!this.badge || e.badge === this.badge) && (!q || e._search.includes(q)));
+      && (!this.badge || e.badge === this.badge) && (!q || e._search.includes(/^\d/.test(q) ? '|' + q : q)));
     if (!this.sort || this.view === 'trash') return list;
     // Tri stable : les fiches sans donnée (ou sous le seuil de parties) restent en fin de liste.
     const val = (e) => this.sortValue(e);
