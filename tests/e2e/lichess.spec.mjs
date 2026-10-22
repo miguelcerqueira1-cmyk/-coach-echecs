@@ -292,8 +292,19 @@ test('Répertoire : vidéos multilingues sans clé (lien de recherche) et avec c
   });
   await setup(page);
   await page.goto('./#/repertoire');
+  // Vidéos choisies à la main : affichées directement dans la cellule, nouvel onglet, chaîne et langue.
+  const curated = page.locator('tr[data-id="gd-orthodoxe"] [data-curated] a');
+  await expect(curated).toHaveCount(2);
+  await expect(curated.first()).toHaveAttribute('href', 'https://www.youtube.com/watch?v=RajtCtk9xwM');
+  await expect(curated.first()).toHaveAttribute('target', '_blank');
+  await expect(curated.first()).toContainText('▶ Classical Variation of the Queen’s Gambit Declined');
+  await expect(page.locator('tr[data-id="gd-orthodoxe"] [data-curated]')).toContainText('(Hanging Pawns, EN)');
+  await expect(page.locator('tr[data-id="gd-orthodoxe"] [data-curated]')).toContainText('dès 9:20');
+  await expect(page.locator('tr[data-id="gd-g5"] [data-curated]')).toHaveCount(0);
   await page.click('[data-videos="gd-orthodoxe"]');
   const dlg = page.locator('[data-video-dlg]');
+  await expect(dlg).toContainText('Sélection vérifiée');
+  await expect(dlg.locator('[data-curated] a').first()).toHaveAttribute('href', 'https://www.youtube.com/watch?v=RajtCtk9xwM');
   await expect(dlg.locator('a.primary-link')).toHaveAttribute('href', /youtube\.com\/results\?search_query=/);
   await dlg.locator('[data-vlang=es]').click();
   await expect(dlg.locator('a.primary-link')).toHaveAttribute('href', /ajedrez/);

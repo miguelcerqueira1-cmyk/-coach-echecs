@@ -208,6 +208,10 @@ jobs:
           code=$(curl -s -o /dev/null -w '%{http_code}' "${API}/v1/status")
           echo "Sans code : $code"
           [ "$code" = "401" ]
+      - name: Liens vidéo du répertoire (oEmbed YouTube ; avertissements seulement, jamais bloquant)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: node scripts/verify-videos.mjs
       - name: Parcours réel sur le site publié (moteur compris)
         run: npx playwright test -g "parcours complet|téléphone|panne du moteur|navigation entre les pages"
         env:
