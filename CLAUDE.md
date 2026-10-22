@@ -92,9 +92,10 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   Cloud Eval est public (`security: []`, CORS `*`, 404 si position absente du cache).
   L'Opening Explorer est sur `explorer.lichess.org` (plus `.ovh`) et exige un jeton OAuth2 :
   jeton personnel sans permission (stocké sur l'appareil) ou relais Worker `/v1/explorer`
-  (secret `LICHESS_TOKEN`, cache 24 h, 60 req/min). Le CORS de l'explorateur avec en-tête
-  `Authorization` n'a pas pu être testé depuis l'environnement de développement (hôtes Lichess
-  bloqués) : test `@online` en CI sur le site publié, relais en solution de repli.
+  (secret `LICHESS_TOKEN`, cache 24 h, 60 req/min). CORS vérifié le 2026-10-22 : le preflight
+  de l'explorateur renvoie `access-control-allow-origin: *` et autorise `Authorization` ; les 401
+  (explorateur) et 404 (Cloud Eval) portent aussi les en-têtes CORS. Le mode « jeton sur
+  l'appareil » fonctionne donc directement depuis GitHub Pages ; le relais reste une option.
   Une requête Lichess à la fois, une minute de pause après un 429 (règles d'usage Lichess).
 - **Chess.com** n'expose pas de statistiques d'ouvertures agrégées : seules les tranches de
   classement Lichess sont proposées, avec l'avertissement qu'elles ne correspondent pas à Chess.com.
