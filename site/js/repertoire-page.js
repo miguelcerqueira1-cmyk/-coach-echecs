@@ -70,6 +70,17 @@ export function buildVideoLink(url, time) {
   else if (t) return null;
   return `https://www.youtube.com/watch?v=${m[1]}${secs ? `&t=${secs}s` : ''}`;
 }
+// Vidéos choisies à la main (video.liens) : « ▶ Titre (chaîne, EN) », ouvertes dans un nouvel onglet.
+// Un horodatage n'existe que s'il vient d'un chapitre publié par l'auteur (champ `chapitre`).
+function curatedVideosHtml(e, cls = 'vd-curated') {
+  const liens = e.video?.liens || [];
+  if (!liens.length) return '';
+  return `<div class="${cls}" data-curated="${esc(e.id)}">${liens.map((l) => {
+    const debut = l.chapitre ? (l.url.match(/&t=(\d+)s/) || [])[1] : null;
+    const at = debut ? ` · dès ${Math.floor(debut / 60)}:${String(debut % 60).padStart(2, '0')}` : '';
+    return `<div class="small"><a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener"${l.chapitre ? ` title="Chapitre : ${esc(l.chapitre)}"` : ''}>▶ ${esc(l.titre)}</a> <span class="muted tiny">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())}${at})</span></div>`;
+  }).join('')}</div>`;
+}
 function loadVideos() { try { return JSON.parse(localStorage.getItem(VIDEO_KEY) || '{}'); } catch { return {}; } }
 function saveVideos(v) { try { localStorage.setItem(VIDEO_KEY, JSON.stringify(v)); } catch { /* stockage indisponible */ } }
 
@@ -346,7 +357,7 @@ export class RepertoirePage {
     const mine = perso
       ? `<a class="btn-link" href="${esc(perso)}" target="_blank" rel="noopener">▶ Mon lien horodaté</a> <button type="button" class="link-btn tiny" data-video-del="${e.id}">retirer</button>`
       : `<button type="button" class="link-btn" data-video-add="${e.id}">+ Ajouter mon lien horodaté</button>`;
-    return `${verified}<button type="button" class="small-btn" data-videos="${e.id}">🎬 Vidéos (${Object.keys(LANGS).length} langues)</button><div>${mine}</div>`;
+    return `${verified}${curatedVideosHtml(e)}<button type="button" class="small-btn" data-videos="${e.id}">🎬 Vidéos (${Object.keys(LANGS).length} langues)</button><div>${mine}</div>`;
   }
 
   // ---------- Vue Anti-trash ----------
@@ -615,6 +626,7 @@ export class RepertoirePage {
     const dlg = this.el.querySelector('[data-video-dlg]');
     this.videoLang = lang;
     const head = `<div class="vd-head"><h2>Vidéos : ${esc(e.nom)}</h2><button type="button" class="icon-btn" data-vclose aria-label="Fermer">✕</button></div>
+      ${e.video?.liens?.length ? `<h3 class="small">Sélection vérifiée</h3>${curatedVideosHtml(e, 'vd-curated vd-curated-dlg')}<h3 class="small">Recherche par langue</h3>` : ''}
       <div class="chips">${Object.entries(LANGS).map(([k, l]) => `<button type="button" class="chip" data-vlang="${k}" aria-pressed="${k === lang}">${esc(l.label)}</button>`).join('')}</div>`;
     const render = (body) => {
       dlg.innerHTML = `${head}${body}<p class="muted tiny">L’application trouve et classe les vidéos ; elle ne les regarde pas. Pour garder un passage précis, utilisez « ⏱ Garder ce passage ».</p>`;

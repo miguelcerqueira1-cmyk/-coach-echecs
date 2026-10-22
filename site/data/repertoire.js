@@ -14,6 +14,10 @@
 // - `video.recherche` sert à construire une recherche YouTube. Un lien horodaté précis
 //   n'est indiqué que s'il a été vérifié (sinon `url: null`) ; l'utilisateur peut ajouter
 //   le sien dans l'application.
+// - `video.liens` : 1 à 3 vidéos choisies à la main, chacune trouvée telle quelle dans un
+//   résultat réel (vidéothèque Lichess ou recherche web) : identifiant YouTube jamais
+//   reconstruit, titre et chaîne recopiés, langue. `&t=` seulement depuis un chapitre publié
+//   par l'auteur (recopié dans `chapitre`). Contrôle en ligne : scripts/verify-videos.mjs (CI).
 
 export const REPERTOIRES = {
   gd: { id: 'gd', titre: 'Gambit Dame', couleur: 'w', sousTitre: 'Joué avec les Blancs : 1.d4 d5 2.c4 et déviations adverses' },
@@ -44,7 +48,11 @@ export const LIGNES = [
     cases: 'e4 (poussée libératrice), c5/e5 (cases de libération noires), colonne c',
     echanger: 'Fou g5 contre Cf6 si cela affaiblit le contrôle de e4 ; Fous de cases noires après …Cd5',
     conserver: 'Fou de cases blanches (pression sur h7 et d5), Cavalier f3',
-    video: { recherche: 'Queen\'s Gambit Declined orthodox Capablanca freeing maneuver explained', url: null },
+    video: { recherche: 'Queen\'s Gambit Declined orthodox Capablanca freeing maneuver explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=RajtCtk9xwM', titre: 'Classical Variation of the Queen’s Gambit Declined', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=TSTnJNs9wdw&t=560s', titre: 'Queen\'s Gambit Declined | Modern & Exchange Variation | Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '9:20 4.Bg5, Modern Variation' },
+      ] },
   },
   {
     id: 'gd-ff4', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Système avec 5.Ff4', badge: 'theorie',
@@ -56,7 +64,10 @@ export const LIGNES = [
     cases: 'e5, c7, d5 (blocage), colonne d',
     echanger: 'Cavaliers qui défendent d5 ; Fou de cases noires noir s’il bloque la colonne c',
     conserver: 'Fou f4 (contrôle de c7/e5), Dame c2 sur la diagonale b1-h7',
-    video: { recherche: 'Queen\'s Gambit Declined 5.Bf4 system plan explained', url: null },
+    video: { recherche: 'Queen\'s Gambit Declined 5.Bf4 system plan explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=ckk1pjyfMXQ&t=940s', titre: 'Queen\'s Gambit Declined | Mainlines, Plans & Strategies | Mainlines with 5.Bf4 | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '15:40 Black’s move 4…Be7, Three Knights Variation — White’s move 5.Bf4, Harrwitz Attack' },
+      ] },
   },
   {
     id: 'gd-echange', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Variante d’échange, structure Karlsbad et attaque de minorité', badge: 'theorie',
@@ -75,7 +86,12 @@ export const LIGNES = [
     cases: 'b5 (levier), c5 (avant-poste), e5 (avant-poste noir à surveiller), c6 (faiblesse cible)',
     echanger: 'Fou g5 contre le Cavalier qui défend e4/d5 ; Fous de cases blanches si les Noirs visent h3',
     conserver: 'Tours sur b1/c1 pour l’attaque de minorité, Cavalier c3 (pression sur d5)',
-    video: { recherche: 'Carlsbad structure minority attack Queen\'s Gambit Exchange explained', url: null },
+    video: { recherche: 'Carlsbad structure minority attack Queen\'s Gambit Exchange explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=G2F8inwFmk0', titre: 'Exchange Variation of the Queen’s Gambit Declined', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=TSTnJNs9wdw&t=35s', titre: 'Queen\'s Gambit Declined | Modern & Exchange Variation | Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '00:35 4.cxd5, Exchange Variation' },
+        { url: 'https://www.youtube.com/watch?v=0FVrbaMszUc', titre: 'Be alert when you have this Pawn Structure on the Board | Carlsbad Structure | GM Alex Lenderman', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-tarrasch', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Défense Tarrasch : jouer contre le pion d isolé', badge: 'theorie',
@@ -87,7 +103,12 @@ export const LIGNES = [
     cases: 'd4 (blocage), d5 (cible), e5 (case active noire à contrôler)',
     echanger: 'Fou g5 contre Cf6 (défenseur de d5) ; pièces mineures en général',
     conserver: 'Fou g2 (pression sur d5), Cavalier bloqueur en d4',
-    video: { recherche: 'Tarrasch Defense isolated queen pawn how to play against IQP', url: null },
+    video: { recherche: 'Tarrasch Defense isolated queen pawn how to play against IQP', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=esjT83wWr78', titre: 'Tarrasch Defense Opening Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=ckk1pjyfMXQ&t=92s', titre: 'Queen\'s Gambit Declined | Mainlines, Plans & Strategies | Mainlines with 5.Bf4 | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:32 Queen’s Gambit Declined: 3…c5, Tarrasch Defense' },
+        { url: 'https://www.youtube.com/watch?v=YLA7uhFgInE', titre: 'How to play with or against an isolated pawn #1 The basics', chaine: 'Blitzstream', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-gda-central', rep: 'gd', famille: 'Gambit Dame Accepté', nom: 'Variante centrale 3.e4', badge: 'theorie',
@@ -103,7 +124,11 @@ export const LIGNES = [
     cases: 'e4/d5 (centre), f7 (cible du Fou c4), b7 (cible de Db3)',
     echanger: 'Fou de cases blanches contre le Fe6 pour doubler les pions e',
     conserver: 'Pion e4 (domination centrale), Dame active sur b3',
-    video: { recherche: 'Queen\'s Gambit Accepted central variation 3.e4 explained', url: null },
+    video: { recherche: 'Queen\'s Gambit Accepted central variation 3.e4 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=ayGm-TV7z2k', titre: 'Queen\'s Gambit Accepted, Central Variation (3.e4)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=kx7-bulFFnA&t=295s', titre: 'Queen\'s Gambit Accepted | Mainlines without 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '4:55 – Queen’s Gambit Accepted: Central Variation 3.e4' },
+      ] },
   },
   {
     id: 'gd-gda-classique', rep: 'gd', famille: 'Gambit Dame Accepté', nom: 'Variante classique (3.Cf3 et 5.Fxc4)', badge: 'theorie',
@@ -115,7 +140,11 @@ export const LIGNES = [
     cases: 'd5 (poussée), e5 (avant-poste du Cavalier), h7 (cible)',
     echanger: 'Éviter les échanges massifs si le pion d4 est isolé',
     conserver: 'Fou d3/Fou c2 sur la diagonale b1-h7, Cavalier pouvant aller en e5',
-    video: { recherche: 'Queen\'s Gambit Accepted classical main line plans', url: null },
+    video: { recherche: 'Queen\'s Gambit Accepted classical main line plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=DXPrQwSRiBw', titre: 'Queen\'s Gambit Accepted, Main Line (3.Nf3)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=xCTnlxo-zRQ&t=604s', titre: 'Queen\'s Gambit Accepted | Mainlines with 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '10:04 Black’s move: 6…c5, Classical, Main line' },
+      ] },
   },
   {
     id: 'gd-gda-b5', rep: 'gd', famille: 'Gambit Dame Accepté', nom: 'Garder le pion c4 avec …b5 : le piège Df3', badge: 'piege',
@@ -130,7 +159,12 @@ export const LIGNES = [
     cases: 'a8 et b7 (grande diagonale), a-colonne',
     echanger: 'Pion a contre pion b pour ouvrir la diagonale',
     conserver: 'Dame prête à aller en f3',
-    video: { recherche: 'Queen\'s Gambit Accepted trap Qf3 b5 c6 axb5', url: null },
+    video: { recherche: 'Queen\'s Gambit Accepted trap Qf3 b5 c6 axb5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=crTU1QVefWY', titre: 'Chess Traps #8: A Trap in the Queen\'s Gambit Accepted', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=oRfGbul6MUs&t=446s', titre: 'Learn the Queen\'s Gambit Chess Opening: TRAPS & Errors', chaine: 'Remote Chess Academy', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '07:26 Queen\'s Gambit Accepted: Q-side pawns trap' },
+        { url: 'https://www.youtube.com/watch?v=6r_VKSdpRH8', titre: '5 Queen\'s Gambit Traps Every Chess Player Should Know', chaine: 'Eric Rosen', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-slave', rep: 'gd', famille: 'Défense slave', nom: 'Slave principale (5.a4 Ff5)', badge: 'theorie',
@@ -145,7 +179,11 @@ export const LIGNES = [
     cases: 'e4 (poussée-clé), b5 (case contrôlée par a4), e5',
     echanger: 'Cavalier contre le Fou f5 si l’occasion se présente (paire de Fous)',
     conserver: 'Pion a4 (empêche …b5), Dame e2 qui soutient e4',
-    video: { recherche: 'Slav Defense main line 5.a4 Bf5 plans for White', url: null },
+    video: { recherche: 'Slav Defense main line 5.a4 Bf5 plans for White', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tVsSmTj46b0&t=4280s', titre: 'Top 8 Most Popular Queen\'s Gambit Variations', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:11:20 Slav Defense' },
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-slave-echange', rep: 'gd', famille: 'Défense slave', nom: 'Slave, variante d’échange', badge: 'theorie',
@@ -157,7 +195,10 @@ export const LIGNES = [
     cases: 'colonne c, e5 (avant-poste), b5 (clouage du Cc6)',
     echanger: 'Fou f4 contre le Fou d6 noir si celui-ci contrôle e5',
     conserver: 'Tour sur la colonne c, Cavalier pouvant aller en e5',
-    video: { recherche: 'Exchange Slav how to play for a win as White', url: null },
+    video: { recherche: 'Exchange Slav how to play for a win as White', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Cw5wQQT6iZg', titre: 'Slav Defense Theory: Exchange Variation', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gd-meran', rep: 'gd', famille: 'Semi-Slave', nom: 'Semi-Slave, variante Meran', badge: 'theorie',
@@ -169,7 +210,10 @@ export const LIGNES = [
     cases: 'd5, e5, e6 (rupture), colonne e',
     echanger: 'Pion d contre pion e/c pour ouvrir le centre',
     conserver: 'Fou d3 (diagonale vers h7), Tours centralisées',
-    video: { recherche: 'Semi-Slav Meran variation explained 10.e4 c5 11.d5', url: null },
+    video: { recherche: 'Semi-Slav Meran variation explained 10.e4 c5 11.d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=AdiwIMRwPSk', titre: 'The Complete Semi-Slav Part 2: The Modern Meran (8...Bb7)', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gd-moscou', rep: 'gd', famille: 'Semi-Slave', nom: 'Semi-Slave, variante de Moscou (5.Fg5 h6 6.Fxf6)', badge: 'theorie',
@@ -181,7 +225,10 @@ export const LIGNES = [
     cases: 'e5 (poussée qui gagne de l’espace), d6, f6',
     echanger: 'Fou g5 contre Cf6 (choix de la variante)',
     conserver: 'Centre d4/e4, Cavaliers actifs',
-    video: { recherche: 'Semi-Slav Moscow variation 5.Bg5 h6 6.Bxf6 plans', url: null },
+    video: { recherche: 'Semi-Slav Moscow variation 5.Bg5 h6 6.Bxf6 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=KPpaSJRVeuQ', titre: 'The Complete Semi-Slav Part 9: Moscow Variation (5…h6)', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gd-albin', rep: 'gd', famille: 'Contre-gambit Albin', nom: 'Contre-gambit Albin (2…e5)', badge: 'theorie',
@@ -196,7 +243,12 @@ export const LIGNES = [
     cases: 'd4 (pion avancé à attaquer), e5 (pion à garder), b5 (attaque contre le grand roque)',
     echanger: 'Cavalier contre le Cavalier qui soutient d4',
     conserver: 'Pion e5, Fou g2 (diagonale vers b7)',
-    video: { recherche: 'Albin Countergambit Lasker trap underpromotion explained', url: null },
+    video: { recherche: 'Albin Countergambit Lasker trap underpromotion explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=s_ED8vrQQlM', titre: 'Chess Traps #3: Lasker Trap - Albin Counter Gambit', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=VDfjsMXlcek', titre: 'Chess Openings- Albin Counter Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=6r_VKSdpRH8&t=251s', titre: '5 Queen\'s Gambit Traps Every Chess Player Should Know', chaine: 'Eric Rosen', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '4:11 Albin Counter Gambit Trap -- Promote to a knight!' },
+      ] },
   },
   {
     id: 'gd-chigorine', rep: 'gd', famille: 'Défense Tchigorine', nom: 'Défense Tchigorine (2…Cc6)', badge: 'theorie',
@@ -208,7 +260,10 @@ export const LIGNES = [
     cases: 'b7 (cible de Tb1), d4/e5 (centre), cases claires pour les Fous',
     echanger: 'Éviter d’échanger les Fous ; échanger les Cavaliers noirs actifs',
     conserver: 'Paire de Fous',
-    video: { recherche: 'Chigorin Defense how to play against it as White', url: null },
+    video: { recherche: 'Chigorin Defense how to play against it as White', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tVsSmTj46b0&t=1631s', titre: 'Top 8 Most Popular Queen\'s Gambit Variations', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '27:11 Chigorin Defense' },
+      ] },
   },
   {
     id: 'gd-baltique', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Défense balte (2…Ff5)', badge: 'loufoque',
@@ -220,7 +275,10 @@ export const LIGNES = [
     cases: 'a4-e8 (diagonale de l’échec), d5',
     echanger: 'Cavalier b1 contre le Fou f5 (paire de Fous)',
     conserver: 'Pion d4, paire de Fous',
-    video: { recherche: 'Baltic Defense 2...Bf5 refutation Qa4+', url: null },
+    video: { recherche: 'Baltic Defense 2...Bf5 refutation Qa4+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tVsSmTj46b0&t=879s', titre: 'Top 8 Most Popular Queen\'s Gambit Variations', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '14:39 Baltic Defense' },
+      ] },
   },
   {
     id: 'gd-marshall', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Défense Marshall (2…Cf6)', badge: 'loufoque',
@@ -236,7 +294,11 @@ export const LIGNES = [
     cases: 'd4/e4 (centre), e5 (poussée qui chasse le Cf6)',
     echanger: 'Peu d’échanges : garder le centre',
     conserver: 'Pions d4/e4',
-    video: { recherche: 'Marshall Defense 2...Nf6 Queen\'s Gambit refutation', url: null },
+    video: { recherche: 'Marshall Defense 2...Nf6 Queen\'s Gambit refutation', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tVsSmTj46b0&t=2136s', titre: 'Top 8 Most Popular Queen\'s Gambit Variations', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '35:36 Marshall Defense' },
+        { url: 'https://www.youtube.com/watch?v=oRfGbul6MUs&t=597s', titre: 'Learn the Queen\'s Gambit Chess Opening: TRAPS & Errors', chaine: 'Remote Chess Academy', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '09:57 QGD: Marshall Defense, 2...Nf6' },
+      ] },
   },
   {
     id: 'gd-autrichienne', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Défense autrichienne (2…c5)', badge: 'loufoque',
@@ -248,7 +310,10 @@ export const LIGNES = [
     cases: 'd5, e4, colonne c',
     echanger: 'Pion c contre pion d',
     conserver: 'Avance de développement',
-    video: { recherche: 'Symmetrical Queen\'s Gambit 2...c5 how to punish', url: null },
+    video: { recherche: 'Symmetrical Queen\'s Gambit 2...c5 how to punish', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tVsSmTj46b0&t=138s', titre: 'Top 8 Most Popular Queen\'s Gambit Variations', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '2:18 Austrian Defense' },
+      ] },
   },
   {
     id: 'gd-englund', rep: 'gd', famille: 'Déviation au 1er coup', nom: 'Gambit Englund (1…e5)', badge: 'loufoque',
@@ -267,7 +332,11 @@ export const LIGNES = [
     cases: 'b2 et c1 (points faibles), d5 (saut du Cavalier), c7',
     echanger: 'Rien de pressé : développer d’abord',
     conserver: 'Pion e5, Cavalier c3 qui défend b1/d5',
-    video: { recherche: 'Englund Gambit trap Qc1 mate how to avoid', url: null },
+    video: { recherche: 'Englund Gambit trap Qc1 mate how to avoid', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=rAgux17jnZU', titre: 'The Englund Gambit | Mainline and Traps | Chess Openings | Gambits | IM Andrey Ostrovskiy', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=vrZ3WwAXBsQ', titre: 'Ending the Englund Gambit', chaine: 'Daniel Naroditsky', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gd-englund-dh4', rep: 'gd', famille: 'Déviation au 1er coup', nom: 'Englund avec …Dh4 et …Db4+ (ligne fréquente sous 1000)', badge: 'loufoque',
@@ -282,7 +351,10 @@ export const LIGNES = [
     cases: 'b4/a5 (cases de la Dame noire), d5 (saut du Cavalier)',
     echanger: 'Rien : chasser la Dame avec des pièces',
     conserver: 'Pion e5, Cavaliers actifs',
-    video: { recherche: 'Englund Gambit Qh4 Qb4+ refutation for White', url: null },
+    video: { recherche: 'Englund Gambit Qh4 Qb4+ refutation for White', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vrZ3WwAXBsQ', titre: 'Ending the Englund Gambit', chaine: 'Daniel Naroditsky', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gd-g5', rep: 'gd', famille: 'Déviation au 1er coup', nom: 'Poussée hâtive 1…g5 (« Borg » inversé)', badge: 'loufoque',
@@ -351,7 +423,10 @@ export const LIGNES = [
     cases: 'd4 (base de la chaîne), f5 (case du Fou ou du Cavalier), c5',
     echanger: 'Fou f5 contre le Fou d3 blanc si possible',
     conserver: 'Fou de cases noires pour le contrôle de d4',
-    video: { recherche: 'Caro-Kann Advance Variation Short system 4.Nf3 e6 5.Be2 c5', url: null },
+    video: { recherche: 'Caro-Kann Advance Variation Short system 4.Nf3 e6 5.Be2 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=kRmwIRYnm8A&t=1016s', titre: 'Caro-Kann Defense | Advance Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '16:56 4.Nf3, Short Variation' },
+      ] },
   },
   {
     id: 'ck-avance-tal', rep: 'ck', famille: 'Variante d’avance', nom: 'Variante Tal (4.h4)', badge: 'theorie',
@@ -366,7 +441,10 @@ export const LIGNES = [
     cases: 'g4, g5, h5 (aile roi), d4 (base de la chaîne)',
     echanger: 'Fou f5 contre le Fou d3 blanc',
     conserver: 'Pion h5 (contrôle de g4)',
-    video: { recherche: 'Caro-Kann Advance Tal variation 4.h4 h5 explained', url: null },
+    video: { recherche: 'Caro-Kann Advance Tal variation 4.h4 h5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=kRmwIRYnm8A&t=175s', titre: 'Caro-Kann Defense | Advance Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '2:55 4.h4, Tal Variation' },
+      ] },
   },
   {
     id: 'ck-avance-cc3', rep: 'ck', famille: 'Variante d’avance', nom: 'Avance avec 4.Cc3 e6 5.g4', badge: 'theorie',
@@ -378,7 +456,10 @@ export const LIGNES = [
     cases: 'd4, c5, h7 (retraite du Fou)',
     echanger: 'Pion c contre pion d pour ouvrir le centre',
     conserver: 'Fou h7 (diagonale b1-h7)',
-    video: { recherche: 'Caro-Kann Advance 4.Nc3 e6 5.g4 Bg6 6.Nge2 c5', url: null },
+    video: { recherche: 'Caro-Kann Advance 4.Nc3 e6 5.g4 Bg6 6.Nge2 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=kRmwIRYnm8A&t=460s', titre: 'Caro-Kann Defense | Advance Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '7:40 4.Nc3, Van der Wiel Attack' },
+      ] },
   },
   {
     id: 'ck-avance-fd3', rep: 'ck', famille: 'Variante d’avance', nom: 'Avance avec 4.Fd3 ?! (échange du bon Fou)', badge: 'loufoque',
@@ -405,7 +486,11 @@ export const LIGNES = [
     cases: 'b5/b4 (attaque de minorité), e4 (avant-poste noir), c3 (cible)',
     echanger: 'Fous de cases noires (…Fd6), Fou g4 contre Cf3',
     conserver: 'Cavalier pour l’avant-poste e4',
-    video: { recherche: 'Caro-Kann Exchange Variation 4.Bd3 plans for Black minority attack', url: null },
+    video: { recherche: 'Caro-Kann Exchange Variation 4.Bd3 plans for Black minority attack', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=SMIhNIXoMNk', titre: 'Caro-Kann Defense – Exchange Variation (and how to punish it!) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=oif3zWWJm1k', titre: 'Caro-Kann Defense | Exchange Variation ⎸Chess Openings | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-panov', rep: 'ck', famille: 'Variante d’échange', nom: 'Attaque Panov (4.c4)', badge: 'theorie',
@@ -420,7 +505,11 @@ export const LIGNES = [
     cases: 'd5 (blocage), d4 (cible), e4',
     echanger: 'Pièces mineures, surtout le Cavalier blanc qui vise d5/e5',
     conserver: 'Cavalier en d5',
-    video: { recherche: 'Caro-Kann Panov Attack plan against isolated queen pawn', url: null },
+    video: { recherche: 'Caro-Kann Panov Attack plan against isolated queen pawn', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=hWLTjQ8LMeE', titre: 'Panov-Botvinnik Attack - Fight the Caro-Kann aggressively ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=YLA7uhFgInE', titre: 'How to play with or against an isolated pawn #1 The basics', chaine: 'Blitzstream', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-classique', rep: 'ck', famille: 'Variante classique', nom: 'Classique (4…Ff5)', badge: 'theorie',
@@ -435,7 +524,11 @@ export const LIGNES = [
     cases: 'c5 (rupture), e4 et d5 (cases des Cavaliers), g6/h7 (retraite du Fou)',
     echanger: 'Fous de cases blanches',
     conserver: 'Structure c6/e6 compacte, Cavalier f6',
-    video: { recherche: 'Caro-Kann Classical 4...Bf5 main line plans for Black', url: null },
+    video: { recherche: 'Caro-Kann Classical 4...Bf5 main line plans for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=86onnhhKHMg&t=75s', titre: 'Caro-Kann Defense: Classical Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:15 4…Bf5, Classical Variation (Mainline)' },
+        { url: 'https://www.youtube.com/watch?v=3KvEdj_TcM4', titre: 'Caro-Kann Main Line in depth ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-karpov', rep: 'ck', famille: 'Variante classique', nom: 'Variante moderne / Karpov (4…Cd7)', badge: 'theorie',
@@ -450,7 +543,11 @@ export const LIGNES = [
     cases: 'd6 (case du mat étouffé), c5 (rupture), e4',
     echanger: 'Cavalier e4 blanc',
     conserver: 'Souplesse : …Cgf6 seulement quand c’est sûr',
-    video: { recherche: 'Caro-Kann Karpov 4...Nd7 Qe2 Nd6 smothered mate trap', url: null },
+    video: { recherche: 'Caro-Kann Karpov 4...Nd7 Qe2 Nd6 smothered mate trap', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YLEmufSFoGk&t=105s', titre: 'Karpov Variation of the Caro-Kann Defense (B17) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:45 5.Nf3' },
+        { url: 'https://www.youtube.com/watch?v=SlAa08l1Ync&t=1078s', titre: '13 Caro-Kann Defense Traps', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '17:58 The Nd6# trap (V: Karpov, Two Knights)' },
+      ] },
   },
   {
     id: 'ck-tartakower', rep: 'ck', famille: 'Variante classique', nom: '4…Cf6 5.Cxf6+ exf6 (Tartakower)', badge: 'theorie',
@@ -477,7 +574,11 @@ export const LIGNES = [
     cases: 'd4, e3 et g3 (cases noires), f7',
     echanger: 'Fou b4 contre Cc3 si cela affaiblit e4/d4',
     conserver: 'Solidité de e6/d5',
-    video: { recherche: 'Caro-Kann Fantasy Variation 3.f3 e6 plan for Black', url: null },
+    video: { recherche: 'Caro-Kann Fantasy Variation 3.f3 e6 plan for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0yMkAJ6Pyig&t=450s', titre: 'Fantasy Variation of the Caro-Kann ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '3…e6 – 07:30' },
+        { url: 'https://www.youtube.com/watch?v=ssLCThsdWcw', titre: 'Caro-Kann Defense | Fantasy Variation ⎸Chess Openings | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-deux-cavaliers', rep: 'ck', famille: 'Deux Cavaliers', nom: 'Variante des deux Cavaliers (2.Cc3 d5 3.Cf3)', badge: 'theorie',
@@ -489,7 +590,10 @@ export const LIGNES = [
     cases: 'd4 (poussée noire), c6 (point faible après Fb5+), e5',
     echanger: 'Fou g4 contre Cf3 (le plan de la variante)',
     conserver: 'Structure d5/e6',
-    video: { recherche: 'Caro-Kann Two Knights 3...Bg4 4.h3 Bxf3 explained', url: null },
+    video: { recherche: 'Caro-Kann Two Knights 3...Bg4 4.h3 Bxf3 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S5OjT1K_s58', titre: 'Two Knights Variation of the Caro-Kann (B11) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-panov-acceleree', rep: 'ck', famille: 'Variante d’échange', nom: 'Panov accélérée (2.c4)', badge: 'theorie',
@@ -501,7 +605,10 @@ export const LIGNES = [
     cases: 'd5 (Cavalier central), d4',
     echanger: 'Cavalier d5 contre Cc3 si les Blancs gagnent des temps',
     conserver: 'Développement harmonieux',
-    video: { recherche: 'Caro-Kann 2.c4 Accelerated Panov plan for Black', url: null },
+    video: { recherche: 'Caro-Kann 2.c4 Accelerated Panov plan for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=alLPVK4wCiA&t=1115s', titre: 'The Accelerated Panov Variation | Tricky Lines in the Caro-Kann Defense | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '18:35 5.Nc3' },
+      ] },
   },
   {
     id: 'ck-kia', rep: 'ck', famille: 'Systèmes fermés', nom: 'Attaque est-indienne (2.d3)', badge: 'theorie',
@@ -513,7 +620,10 @@ export const LIGNES = [
     cases: 'd4, a4 (expansion), e5',
     echanger: 'Peu : garder le centre',
     conserver: 'Pions d5/e5',
-    video: { recherche: 'Caro-Kann vs King\'s Indian Attack 2.d3 plan for Black', url: null },
+    video: { recherche: 'Caro-Kann vs King\'s Indian Attack 2.d3 plan for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=HgzcN2JnbtU', titre: 'Caro-Kann Defense | The Breyer Variation | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-dh5', rep: 'ck', famille: 'Déviations agressives', nom: 'Sortie de Dame 2.Dh5 ?!', badge: 'loufoque',
@@ -572,7 +682,10 @@ export const LIGNES = [
     cases: 'd5, c6',
     echanger: 'Fous de cases blanches',
     conserver: 'Centre d5',
-    video: { recherche: 'Caro-Kann 2.Bc4 Hillbilly attack refutation', url: null },
+    video: { recherche: 'Caro-Kann 2.Bc4 Hillbilly attack refutation', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-Sri7x0cwT8', titre: 'The Hillbilly Attack and how to refute it · Caro-Kann Opening Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   // ===================== Fiches ajoutées (série 2) =====================
   {
@@ -584,7 +697,10 @@ export const LIGNES = [
     cases: 'c-colonne, e4 (poussée), c5',
     echanger: 'Fou g5 contre le Cavalier f6',
     conserver: 'Cavalier c3 (le clouage …Fb4 se règle par a3 ou Tc1)',
-    video: { recherche: 'Ragozin Defense Queen\'s Gambit explained', url: null },
+    video: { recherche: 'Ragozin Defense Queen\'s Gambit explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=6oRtSS4lENo', titre: 'Ragozin Defense Opening Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-semi-tarrasch', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Semi-Tarrasch (4…c5) avec 6.e4', badge: 'theorie',
@@ -595,7 +711,10 @@ export const LIGNES = [
     cases: 'd5 (poussée), e5, c-colonne',
     echanger: 'Peu : le centre vaut mieux avec des pièces sur l’échiquier',
     conserver: 'Pions d4/e4, Fou c4',
-    video: { recherche: 'Semi-Tarrasch Defense 6.e4 main line plans', url: null },
+    video: { recherche: 'Semi-Tarrasch Defense 6.e4 main line plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=KNg5A_XZGfY', titre: 'Semi-Tarrasch Defense Opening Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-lasker', rep: 'gd', famille: 'Gambit Dame Refusé', nom: 'Défense Lasker (7…Ce4)', badge: 'theorie',
@@ -606,7 +725,10 @@ export const LIGNES = [
     cases: 'c-colonne, e4, c5',
     echanger: 'Peu de choix : les Noirs forcent les échanges',
     conserver: 'Tour sur la colonne c, Fou d3',
-    video: { recherche: 'Lasker Defense Queen\'s Gambit Declined Ne4', url: null },
+    video: { recherche: 'Lasker Defense Queen\'s Gambit Declined Ne4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VD7tlNhWJGc', titre: 'Lasker Defense in the Queen’s Gambit Declined', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-gda-cf6', rep: 'gd', famille: 'Gambit Dame Accepté', nom: 'GDA 3.e4 Cf6 4.e5', badge: 'theorie',
@@ -617,7 +739,11 @@ export const LIGNES = [
     cases: 'd5, f6, e6 (cases noires faibles)',
     echanger: 'Rien de pressé',
     conserver: 'Pion e5 (espace), Fou b3 sur la diagonale a2-g8',
-    video: { recherche: 'Queen\'s Gambit Accepted 3.e4 Nf6 4.e5 explained', url: null },
+    video: { recherche: 'Queen\'s Gambit Accepted 3.e4 Nf6 4.e5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=kx7-bulFFnA&t=971s', titre: 'Queen\'s Gambit Accepted | Mainlines without 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '16:11 – Black’s move 3…Nf6, Alekhine System' },
+        { url: 'https://www.youtube.com/watch?v=ayGm-TV7z2k', titre: 'Queen\'s Gambit Accepted, Central Variation (3.e4)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gd-tchebanenko', rep: 'gd', famille: 'Défense slave', nom: 'Slave Tchébanenko (4…a6)', badge: 'theorie',
@@ -724,7 +850,10 @@ export const LIGNES = [
     cases: 'e5 (cible), f5, c5',
     echanger: 'Fou b5 contre Cc6 si nécessaire',
     conserver: 'Cavalier f5',
-    video: { recherche: 'Caro-Kann Advance 3...c5 Botvinnik Carls', url: null },
+    video: { recherche: 'Caro-Kann Advance 3...c5 Botvinnik Carls', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Sc6XcMt_o5c', titre: 'Beat Caro Kann Advanced 3.e5 c5 with Hyper-Aggressive 4.dxc5!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ck-panov-cc6', rep: 'ck', famille: 'Variante d’échange', nom: 'Panov avec 5…Cc6 et 6.Fg5', badge: 'theorie',
@@ -735,7 +864,11 @@ export const LIGNES = [
     cases: 'e4 (avant-poste), b6 (levier), c5',
     echanger: 'Fou e7 contre Fou g5 (…Ce4)',
     conserver: 'Cavalier e4',
-    video: { recherche: 'Caro-Kann Panov 5...Nc6 6.Bg5 plan', url: null },
+    video: { recherche: 'Caro-Kann Panov 5...Nc6 6.Bg5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=ruu4d_nG1TE&t=118s', titre: 'The Panov-Botvinnik Attack | Aggressive Play in the Caro-Kann Defense | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:58 6.Bg5' },
+        { url: 'https://www.youtube.com/watch?v=hWLTjQ8LMeE', titre: 'Panov-Botvinnik Attack - Fight the Caro-Kann aggressively ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-classique-cc5', rep: 'ck', famille: 'Variante classique', nom: 'Classique 5.Cc5', badge: 'theorie',
@@ -768,7 +901,10 @@ export const LIGNES = [
     cases: 'g6 (Fou à protéger), c5, e5',
     echanger: 'Fou d6 contre Cf4',
     conserver: 'Structure c6/e6',
-    video: { recherche: 'Caro-Kann 3.Nd2 classical Bf5 plans', url: null },
+    video: { recherche: 'Caro-Kann 3.Nd2 classical Bf5 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=86onnhhKHMg', titre: 'Caro-Kann Defense: Classical Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ck-gambit-fc4', rep: 'ck', famille: 'Déviations agressives', nom: 'Gambit 4.Fc4 ?! (piège …Fg4 ?)', badge: 'piege',
@@ -800,7 +936,11 @@ export const LIGNES = [
     cases: 'e6, f7, g6',
     echanger: 'Cavalier g5 (après …e6, …h6)',
     conserver: 'Pion e6 en place',
-    video: { recherche: 'Caro-Kann Karpov 5.Ng5 Ne6 trap h6', url: null },
+    video: { recherche: 'Caro-Kann Karpov 5.Ng5 Ne6 trap h6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YLEmufSFoGk&t=826s', titre: 'Karpov Variation of the Caro-Kann Defense (B17) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '13:46 5. Ng5 – an aggressive line, but easily dealt with' },
+        { url: 'https://www.youtube.com/watch?v=SlAa08l1Ync&t=979s', titre: '13 Caro-Kann Defense Traps', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '16:19 The Karpov h6 trap (V: Karpov)' },
+      ] },
   },
   {
     id: 'ck-df3', rep: 'ck', famille: 'Déviations agressives', nom: 'Sortie 2.Df3 ?!', badge: 'loufoque',

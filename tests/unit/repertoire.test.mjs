@@ -26,6 +26,48 @@ test('identifiants uniques et champs obligatoires remplis', () => {
   }
 });
 
+test('vidéos choisies : identifiant, titre, chaîne, langue, source ; horodatage seulement depuis un chapitre publié', () => {
+  let fiches = 0;
+  for (const e of LIGNES) {
+    const liens = e.video.liens;
+    if (liens === undefined) continue;
+    assert.ok(Array.isArray(liens) && liens.length >= 1 && liens.length <= 3, `${e.id} : 1 à 3 liens`);
+    fiches++;
+    const ids = new Set();
+    for (const l of liens) {
+      const where = `${e.id} → ${l.url}`;
+      assert.match(l.url, /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}(&t=\d+s)?$/, where);
+      const id = l.url.slice(32, 43);
+      assert.ok(!ids.has(id), `${where} : doublon`);
+      ids.add(id);
+      for (const k of ['titre', 'chaine']) assert.ok(typeof l[k] === 'string' && l[k].trim().length >= 2, `${where} : ${k}`);
+      assert.match(l.langue, /^[a-z]{2}$/, `${where} : langue`);
+      assert.equal(l.verifie, true, `${where} : lien non vérifié`);
+      assert.ok(['recherche web', 'vidéothèque Lichess'].includes(l.source), `${where} : source`);
+      // Un passage précis n'est publié que s'il figure dans les chapitres donnés par l'auteur.
+      if (/&t=/.test(l.url)) {
+        assert.ok(l.chapitre, `${where} : horodatage sans chapitre publié`);
+        const secs = Number(l.url.match(/&t=(\d+)s/)[1]);
+        const stamp = l.chapitre.match(/(\d+:)?\d{1,2}:\d{2}/)[0].split(':').map(Number).reduce((a, b) => a * 60 + b, 0);
+        assert.equal(secs, stamp, `${where} : horodatage différent du chapitre`);
+      } else {
+        assert.equal(l.chapitre, undefined, `${where} : chapitre sans horodatage`);
+      }
+    }
+  }
+  assert.ok(fiches >= 30, `seulement ${fiches} fiches avec vidéo`);
+  // Les liens sont publiés tels quels dans le JSON généré.
+  const byId = Object.fromEntries(generated.entries.map((e) => [e.id, e]));
+  for (const e of LIGNES) assert.deepEqual(byId[e.id].video, e.video, `${e.id} : JSON à régénérer (npm run build)`);
+});
+
+test('les champs vidéo ne changent pas l’empreinte vérifiée par Stockfish', () => {
+  for (const e of LIGNES) {
+    const autre = { ...e, video: { recherche: 'x', url: null, liens: [] } };
+    assert.equal(entryFingerprint(autre), entryFingerprint(e), e.id);
+  }
+});
+
 test('toutes les lignes sont légales et dans le bon répertoire', () => {
   for (const e of LIGNES) {
     const main = playLine(e.ligne);
