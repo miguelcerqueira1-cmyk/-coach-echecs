@@ -455,3 +455,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .ranking { display: flex; flex-direction: column; gap: .3rem; margin: .5rem 0; }
 .ranking p { margin: .2rem 0 0; }
 .rep-filters select[data-sort] { flex: 0 1 260px; }
+.game-info { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; margin: 0 0 .35rem; }
+.game-info .dot { width: .8rem; height: .8rem; border-radius: 50%; border: 1px solid #777; display: inline-block; }
+.game-info .dot.w { background: #fff; }
+.game-info .dot.b { background: #222; }

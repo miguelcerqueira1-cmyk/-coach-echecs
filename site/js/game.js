@@ -57,7 +57,7 @@ export class Game {
     const startFen = headers.FEN && headers.SetUp === '1' ? normalizeFen(headers.FEN) : DEFAULT_POSITION;
     const moves = c.history({ verbose: true }).map((m) => ({ uci: m.lan, san: m.san }));
     const keep = {};
-    for (const k of ['Event', 'Site', 'Date', 'Round', 'White', 'Black']) {
+    for (const k of ['Event', 'Site', 'Date', 'Round', 'White', 'Black', 'WhiteElo', 'BlackElo', 'Result', 'ECO', 'Opening']) {
       if (headers[k] && !/^\?+(\.\?+)*$/.test(headers[k])) keep[k] = headers[k];
     }
     const rec = Game._newRecord({

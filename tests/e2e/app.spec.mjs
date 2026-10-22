@@ -367,3 +367,16 @@ test('position passée : meilleur coup Stockfish calculé pour la position consu
   await expect(advice).not.toContainText('Position consultée');
   await expect(advice).toContainText(/Coup conseillé|Meilleure réponse adverse/, { timeout: 30000 });
 });
+
+test('partie importée : noms et classements des joueurs affichés au-dessus de l’échiquier', async ({ page }) => {
+  await page.goto('./');
+  const pgn = '[Event "Tata Steel"]\n[Site "https://lichess.org/abcdefgh"]\n[Date "2019.01.20"]\n[White "Carlsen, Magnus"]\n[Black "Giri, Anish"]\n[WhiteElo "2835"]\n[BlackElo "2783"]\n[Result "1/2-1/2"]\n\n1. d4 d5 2. c4 c6 1/2-1/2';
+  await newGame(page, { source: 'pgn', text: pgn });
+  const info = page.locator('#game-info');
+  await expect(info).toContainText('Carlsen, Magnus (2835)');
+  await expect(info).toContainText('Giri, Anish (2783)');
+  await expect(info).toContainText('Tata Steel · 2019 · 1/2-1/2');
+  await expect(info.locator('a')).toHaveAttribute('href', 'https://lichess.org/abcdefgh');
+  await newGame(page);
+  await expect(info).toBeHidden();
+});

@@ -367,7 +367,21 @@ function renderAll() {
   renderButtons();
 }
 
+// Joueurs et contexte d'une partie ouverte depuis un PGN (maîtres, Élite, mes parties).
+function renderGameInfo() {
+  const h = state.game.record.headers || {};
+  const el = $('game-info');
+  if (!h.White && !h.Black) { el.classList.add('hidden'); return; }
+  const who = (name, elo) => `${esc(name || '?')}${elo ? ` <span class="muted">(${esc(elo)})</span>` : ''}`;
+  const year = (h.Date || '').slice(0, 4);
+  const extra = [h.Event && !h.Event.startsWith('Test') ? h.Event : '', /^\d{4}$/.test(year) ? year : '', h.Result && h.Result !== '*' ? h.Result : ''].filter(Boolean);
+  const link = /^https:\/\//.test(h.Site || '') ? ` · <a href="${esc(h.Site)}" target="_blank" rel="noopener">partie originale ↗</a>` : '';
+  el.innerHTML = `<span class="dot w"></span> ${who(h.White, h.WhiteElo)} – <span class="dot b"></span> ${who(h.Black, h.BlackElo)}${extra.length ? ` <span class="muted">· ${extra.map(esc).join(' · ')}</span>` : ''}${link}`;
+  el.classList.remove('hidden');
+}
+
 function renderTurn() {
+  renderGameInfo();
   const g = state.game;
   const st = g.status();
   const el = $('turn-banner');
@@ -1169,7 +1183,9 @@ function openSanInBoard(san, color, label, { animate = false, headers = null } =
 function ensureGamesPage() {
   gamesPage ??= new GamesPage({
     el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
-    openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`),
+    openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`, {
+      headers: { White: g.white, Black: g.black, WhiteElo: g.whiteElo ? String(g.whiteElo) : '', BlackElo: g.blackElo ? String(g.blackElo) : '', Site: g.url || '', Date: (g.date || '').slice(0, 10).replace(/-/g, '.'), Result: g.result || '' },
+    }),
   });
   return gamesPage;
 }
