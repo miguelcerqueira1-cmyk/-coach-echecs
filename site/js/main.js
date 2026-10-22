@@ -1168,7 +1168,7 @@ function saveSettingsFromForm() {
 }
 
 // Accès pour les tests automatisés (lecture seule de l'état).
-window.__coach = { state, engine, optimal, lichess, get repertoire() { return repertoirePage; }, get games() { return gamesPage; } };
+window.__coach = { state, engine, optimal, lichess, get repertoire() { return repertoirePage; }, get games() { return gamesPage; }, get training() { return trainingPage; } };
 
 // Ouvre une suite de coups sur l'échiquier comme nouvelle partie (l'ancienne est sauvegardée).
 // animate : rejoue la séquence coup par coup (≈ 400 ms) puis revient à la position finale.

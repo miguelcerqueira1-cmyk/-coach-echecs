@@ -513,9 +513,16 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 /* Recherche par joueur (Répertoire, joueurs-ui.js) */
 .players-card { margin: .5rem 0; }
 .players-card h3 { margin: .1rem 0 .2rem; }
-.players-table .dot { width: .7rem; height: .7rem; border-radius: 50%; border: 1px solid #777; display: inline-block; vertical-align: middle; }
-.players-table .dot.w { background: #fff; }
-.players-table .dot.b { background: #222; }
+.players-games { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: .5rem; }
+.pg { padding: .55rem .7rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); min-width: 0; }
+.pg-top { display: flex; align-items: center; gap: .4rem; }
+.pg-opp { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.pg-res { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pg-meta { margin: .15rem 0 .35rem; overflow-wrap: anywhere; }
+.pg-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; }
+.players-games .dot { width: .75rem; height: .75rem; border-radius: 50%; border: 1px solid #777; display: inline-block; flex: none; }
+.players-games .dot.w { background: #fff; }
+.players-games .dot.b { background: #222; }
 .report h4 { margin: .9rem 0 .3rem; font-size: .95rem; }
 .report ul { margin: .2rem 0; padding-left: 1.1rem; }
 .report li { margin: .2rem 0; }
@@ -525,3 +532,37 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .report-err { padding: .5rem .8rem; margin: .4rem 0; border-radius: 10px; background: var(--surface-2); }
 .report-err p { margin: .25rem 0; font-size: .92rem; }
 .report .link-btn { text-align: left; }
+
+/* Entraînement : accueil, modules, progression */
+.train-hub { display: flex; flex-direction: column; gap: 1rem; }
+.hub-head { display: flex; flex-direction: column; gap: .8rem; }
+.hub-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .6rem; }
+.hub-stats > div { display: flex; flex-direction: column; align-items: flex-start; padding: .5rem .7rem; border-radius: 12px; background: var(--surface-2); }
+.hub-big { font-size: 1.35rem; font-weight: 700; }
+.hub-today { align-self: flex-start; }
+.hub-result { margin: 0; padding: .5rem .7rem; border-radius: 10px; background: var(--surface-2); box-shadow: inset 4px 0 0 var(--accent); font-weight: 600; }
+.hub-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.hub-card h2 { font-size: 1.05rem; }
+.dash-list { list-style: none; margin: .5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
+.dash-row { display: grid; grid-template-columns: minmax(0, 1fr) 120px 3.2rem auto; gap: .5rem; align-items: center; padding: .45rem .6rem; border-radius: 10px; background: var(--surface-2); }
+.dash-name { min-width: 0; overflow-wrap: anywhere; font-size: .92rem; }
+.dash-bar { height: 10px; border-radius: 5px; background: var(--border); overflow: hidden; }
+.dash-bar span { display: block; height: 100%; border-radius: 5px; }
+.dash-bar .lo { background: var(--threat); }
+.dash-bar .mid { background: var(--warn); }
+.dash-bar .hi { background: var(--best); }
+.dash-pct { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.dash-actions { display: flex; gap: .3rem; }
+@media (max-width: 600px) {
+  .dash-row { grid-template-columns: minmax(0, 1fr) 3rem; }
+  .dash-bar { grid-column: 1 / -1; grid-row: 2; }
+  .dash-actions { grid-column: 1 / -1; }
+}
+.drill-timer { height: 10px; border-radius: 5px; background: var(--border); overflow: hidden; margin-bottom: .5rem; }
+.drill-timer span { display: block; height: 100%; width: 100%; background: var(--best); transition: width .1s linear; }
+.drill-timer.low span { background: var(--threat); }
+.drill-fb { padding: .6rem .8rem; border-radius: 10px; background: var(--surface-2); margin: .5rem 0; }
+.drill-fb.ok { box-shadow: inset 4px 0 0 var(--best); }
+.drill-fb.ko { box-shadow: inset 4px 0 0 var(--threat); }
+.drill-fb p { margin: .3rem 0; }
+.dash-more summary { cursor: pointer; margin: .6rem 0 .2rem; color: var(--muted); }

@@ -101,3 +101,72 @@ test('Révision espacée : position ratée revient, réussie s’espace, compteu
   await page.click('[data-stop]');
   await expect(log).toContainText('Révision :');
 });
+
+const status = (page) => page.locator('#page-entrainement [data-status]');
+const openAll = (page) => page.evaluate(() => document.querySelectorAll('.dash-more').forEach((d) => { d.open = true; }));
+async function ours(page, uci) {
+  await expect(status(page)).toContainText('À vous', { timeout: 10000 });
+  await move(page, uci);
+}
+
+test('Lignes : l’application joue l’adversaire, erreur expliquée puis reposée en fin de séance', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  await expect(page.locator('[data-dashboard]')).toContainText('Progression par variante');
+  const line = 'd2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8 g1f3 b8d7 a1c1 c7c6 f1d3 d5c4 d3c4 f6d5'.split(' ');
+  await openAll(page);
+  await page.click('[data-dash-line="gd-orthodoxe"]');
+  const log = page.locator('#page-entrainement [data-log]');
+  await ours(page, 'd2d4');
+  await expect(log).toContainText('✔ d4');
+  // Erreur volontaire au 2e coup : explication du plan, bon coup, puis on continue.
+  await ours(page, 'a2a3');
+  const fb = page.locator('#page-entrainement [data-feedback]');
+  await expect(fb).toContainText('Le bon coup : c4');
+  await expect(fb).toContainText('Plan de la fiche');
+  await page.click('[data-continue]');
+  for (let i = 4; i < line.length; i += 2) await ours(page, line[i]);
+  await expect(log).toContainText('Ligne terminée');
+  // La position ratée revient.
+  await expect(page.locator('#page-entrainement [data-head]')).toContainText('Révision des erreurs', { timeout: 10000 });
+  await ours(page, 'c2c4');
+  await expect(page.locator('.hub-result')).toContainText('Lignes terminées : 0 / 1 sans faute', { timeout: 10000 });
+  // Progression mise à jour : positions révisées → maîtrise > 0 pour cette fiche.
+  const pctTxt = await page.locator('.dash-row', { hasText: 'Variante orthodoxe' }).first().locator('.dash-pct').textContent().catch(() => null);
+  const prog = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')));
+  expect(prog.lignes['gd-orthodoxe']).toMatchObject({ ok: 0, ko: 1 });
+  if (pctTxt) expect(parseInt(pctTxt, 10)).toBeGreaterThan(0);
+});
+
+test('Drill anti-trash : punition réussie dans le temps, puis ratée avec la solution affichée', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  await openAll(page);
+  await page.click('[data-dash-trash="gd-echange"]');
+  const log = page.locator('#page-entrainement [data-log]');
+  await expect(log).toContainText('L’adversaire joue', { timeout: 10000 });
+  await expect(page.locator('#page-entrainement [data-timer]')).toBeVisible();
+  for (const u of ['g5f6', 'd1b3', 'b3b7']) await ours(page, u);
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('+1 point');
+  await page.click('[data-continue]');
+  await expect(page.locator('.hub-result')).toContainText('1 / 1 punition(s) réussie(s)');
+  // Deuxième essai : mauvais coup → solution complète.
+  await openAll(page);
+  await page.click('[data-dash-trash="gd-echange"]');
+  await expect(log).toContainText('L’adversaire joue', { timeout: 10000 });
+  await ours(page, 'a2a3');
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('La punition : 7. Fxf6 Fxf6 8. Db3 c6 9. Dxb7');
+  const prog = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')));
+  expect(prog.drills['gd-echange']).toMatchObject({ ok: 1, ko: 1 });
+  expect(prog.jours.length).toBe(1);
+});
+
+test('Accueil Entraînement sur téléphone @mobile : modules et progression lisibles', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  await expect(page.locator('[data-today]')).toBeVisible();
+  await expect(page.locator('.dash-row').first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  await page.click('[data-dash-rep="ck"]');
+  await expect(page.locator('.dash-row').first()).toContainText(/B1\d/);
+});

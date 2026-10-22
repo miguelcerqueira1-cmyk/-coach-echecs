@@ -9,6 +9,9 @@ import { sanFr, formatScore } from './analysis.js';
 import {
   buildTree, key, weightedPick, verdict, VERDICT_TEXT, cpFrom, cardsFor, schedule, pickCards, revisionStats,
 } from './training-core.js';
+import { DrillRunner } from './drills.js';
+import { trashDrill } from './drills-core.js';
+import { loadProgress, dashboard, pickFiches } from './progress.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
@@ -16,13 +19,14 @@ const REVISION = 'coach-echecs:revision-v1'; // { gd: { cléPosition: état }, c
 const pct = (x) => x.toFixed(0) + ' %';
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
 
-const DEFAULT_PREFS = { rep: 'gd', source: 'lichess', length: 8, mode: 'partie' };
+const DEFAULT_PREFS = { rep: 'gd', source: 'lichess', length: 8, mode: 'partie', lRep: '', lN: 3, tRep: '', tN: 5, tTime: 10 };
 function loadPrefs() {
   try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch { return { ...DEFAULT_PREFS }; }
 }
 function loadRevision() {
   try { return { gd: {}, ck: {}, ...JSON.parse(localStorage.getItem(REVISION) || '{}') }; } catch { return { gd: {}, ck: {} }; }
 }
+const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 export class TrainingPage {
@@ -48,7 +52,7 @@ export class TrainingPage {
         return;
       }
     }
-    if (!this.s) this.renderSetup();
+    if (!this.s && !this.drill) this.renderSetup();
   }
 
   // ---------- Écran de départ ----------
@@ -56,9 +60,41 @@ export class TrainingPage {
   renderSetup() {
     const p = this.prefs;
     const hasLichess = !!this.client.explorerMode();
-    this.el.innerHTML = `<div class="train-setup card">
-      <h2>Entraînement du répertoire</h2>
-      <p class="small">L’application joue l’adversaire ; à vous de trouver le coup de votre répertoire, sans aide. Chaque coup est vérifié (fiche ou Stockfish).</p>
+    this.progress = loadProgress();
+    const board = dashboard(this.data, this.revision, this.progress);
+    const nTrash = this.data.entries.filter((e) => trashDrill(e, this.data.repertoires[e.rep].couleur)).length;
+    const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>Les deux</option><option value="gd" ${cur === 'gd' ? 'selected' : ''}>Gambit Dame</option><option value="ck" ${cur === 'ck' ? 'selected' : ''}>Caro-Kann</option></select>`;
+    const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
+    this.el.innerHTML = `<div class="train-hub">
+      <section class="card hub-head">
+        <div class="hub-stats">
+          <div><span class="hub-big">🔥 ${board.streak}</span><span class="muted small">jour(s) d’affilée</span></div>
+          <div><span class="hub-big">${board.byRep.gd.pct} %</span><span class="muted small">Gambit Dame</span></div>
+          <div><span class="hub-big">${board.byRep.ck.pct} %</span><span class="muted small">Caro-Kann</span></div>
+          <div><span class="hub-big">${board.byRep.gd.due + board.byRep.ck.due}</span><span class="muted small">position(s) à revoir</span></div>
+          <div><span class="hub-big">${board.drillsOk}/${board.drillsTotal}</span><span class="muted small">punitions réussies</span></div>
+        </div>
+        <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span></button>
+      </section>
+      <div class="hub-grid">
+        <section class="card hub-card">
+          <h2>📚 Lignes (répétition espacée)</h2>
+          <p class="small">L’application joue les coups adverses de la fiche ; vous jouez la théorie. En cas d’erreur : le plan, le bon coup, et la position revient en fin de séance. Les fiches à revoir passent d’abord.</p>
+          <label class="row">Répertoire ${repSel('lRep', p.lRep)}</label>
+          <label class="row">Lignes ${opt('lN', [3, 5, 8], p.lN)}</label>
+          <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
+        </section>
+        <section class="card hub-card">
+          <h2>⏱ Drill anti-trash</h2>
+          <p class="small">Un coup douteux de blitz est joué (Englund, Dame trop tôt, pions avancés…). Enchaînez la punition de la fiche avant la fin du chrono. ${nTrash} punitions disponibles.</p>
+          <label class="row">Répertoire ${repSel('tRep', p.tRep)}</label>
+          <label class="row">Exercices ${opt('tN', [5, 10, 20], p.tN)}</label>
+          <label class="row">Temps ${opt('tTime', [10, 20, 30], p.tTime, (v) => `${v} s`)}</label>
+          <div class="actions"><button type="button" class="primary" data-trash>Commencer</button></div>
+        </section>
+        <section class="card hub-card train-setup">
+          <h2>♟ Partie et positions</h2>
+          <p class="small">L’application joue l’adversaire ; à vous de trouver le coup de votre répertoire, sans aide. Chaque coup est vérifié (fiche ou Stockfish).</p>
       <label class="row">Répertoire
         <select data-p="rep">
           <option value="gd" ${p.rep === 'gd' ? 'selected' : ''}>Gambit Dame (vous avez les Blancs)</option>
@@ -83,7 +119,10 @@ export class TrainingPage {
         <select data-p="length">${[5, 8, 12, 16].map((n) => `<option value="${n}" ${Number(p.length) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
       </label>
       <p class="muted small">Le filtre de niveau se règle dans « Coup optimal », page Moteur.</p>
-      <div class="actions"><button type="button" class="primary" data-start>Commencer</button></div>
+            <div class="actions"><button type="button" class="primary" data-start>Commencer</button></div>
+        </section>
+      </div>
+      <section class="card hub-dash" data-dashboard>${this.dashboardHtml(board)}</section>
     </div>`;
     this.el.querySelectorAll('[data-p]').forEach((sel) => sel.addEventListener('change', () => {
       this.prefs[sel.dataset.p] = sel.value;
@@ -91,6 +130,79 @@ export class TrainingPage {
       this.el.querySelector('[data-rev-stats]').innerHTML = this.revisionLine(this.prefs.rep);
     }));
     this.el.querySelector('[data-start]').addEventListener('click', () => this.start());
+    this.el.querySelector('[data-lines]').addEventListener('click', () => {
+      this.runDrill('lignes', pickFiches(board, { rep: this.prefs.lRep || null, n: Number(this.prefs.lN) || 3 }));
+    });
+    this.el.querySelector('[data-trash]').addEventListener('click', () => {
+      const ids = pickFiches(board, { rep: this.prefs.tRep || null, n: 999, needPunition: true })
+        .filter((id) => trashDrill(this.data.entries.find((e) => e.id === id), this.data.repertoires[this.data.entries.find((e) => e.id === id).rep].couleur));
+      this.runDrill('trash', shuffle(ids).slice(0, Number(this.prefs.tN) || 5), { timeLimit: Number(this.prefs.tTime) || 10 });
+    });
+    this.el.querySelector('[data-today]').addEventListener('click', () => {
+      const lines = pickFiches(board, { n: 3 });
+      const trash = shuffle(pickFiches(board, { n: 999, needPunition: true })
+        .filter((id) => { const e = this.data.entries.find((x) => x.id === id); return trashDrill(e, this.data.repertoires[e.rep].couleur); })).slice(0, 3);
+      this.runDrill('lignes', lines, { then: () => this.runDrill('trash', trash, { timeLimit: Number(this.prefs.tTime) || 10 }) });
+    });
+    this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', () => this.runDrill('lignes', [b.dataset.dashLine])));
+    this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 })));
+    this.el.querySelectorAll('[data-dash-rep]').forEach((b) => b.addEventListener('click', () => {
+      this.dashRep = b.dataset.dashRep;
+      this.renderSetup();
+      this.el.querySelector('[data-dashboard]').scrollIntoView({ block: 'start' });
+    }));
+  }
+
+  // ---------- Modules Lignes / Anti-trash ----------
+
+  runDrill(kind, ids, { timeLimit = 10, then = null } = {}) {
+    if (!ids.length) { this.renderSetup(); return; }
+    this.s = null;
+    const tree = { gd: buildTree(this.data.entries, 'gd'), ck: buildTree(this.data.entries, 'ck') };
+    this.drill = new DrillRunner({
+      el: this.el, data: this.data, kind, ids, tree, timeLimit,
+      progress: this.progress || loadProgress(),
+      gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
+      onDone: (r) => {
+        this.drill = null;
+        if (then && r.total) { then(); return; }
+        this.lastResult = r;
+        this.renderSetup();
+        const msg = r.kind === 'trash'
+          ? `Drill terminé : ${r.ok} / ${r.total} punition(s) réussie(s)${r.best ? `, meilleur temps ${(r.best / 1000).toFixed(1).replace('.', ',')} s` : ''}.`
+          : `Lignes terminées : ${r.ok} / ${r.total} sans faute.`;
+        this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
+      },
+    });
+  }
+
+  // Révision espacée d'une position (hors session « Partie »).
+  gradePos(rep, k, ok) {
+    this.revision[rep][k] = schedule(this.revision[rep][k], ok);
+    try { localStorage.setItem(REVISION, JSON.stringify(this.revision)); } catch { /* stockage plein */ }
+  }
+
+  dashboardHtml(board) {
+    const rep = this.dashRep || 'gd';
+    const fiches = board.fiches.filter((f) => f.rep === rep);
+    const r = board.byRep[rep];
+    const tab = (k, label) => `<button type="button" class="chip" data-dash-rep="${k}" aria-pressed="${rep === k}">${label}</button>`;
+    return `<h2>📊 Progression par variante</h2>
+      <div class="chips">${tab('gd', '♙ Gambit Dame')}${tab('ck', '♟ Caro-Kann')}</div>
+      <p class="small">Maîtrise moyenne <strong>${r.pct} %</strong> · ${r.maitrisees} / ${r.total} variante(s) maîtrisée(s) (≥ 80 %) · ${r.due} position(s) à revoir.
+        ${board.bestDrill ? ` · Record anti-trash : ${(board.bestDrill / 1000).toFixed(1).replace('.', ',')} s` : ''}</p>
+      <p class="muted tiny">Maîtrise = positions révisées avec succès (70 %) + réussite aux exercices de la fiche (30 %). Les variantes les plus faibles sont en haut ; ⚠ = vous en êtes sorti dans une vraie partie (Mes parties).</p>
+      ${(() => {
+    const row = (f) => `<li class="dash-row">
+        <div class="dash-name"><span class="badge eco">${esc(f.eco)}</span> ${esc(f.nom)}${f.sorties ? ` <span class="badge err" title="Sortie de répertoire dans vos parties">⚠ ${f.sorties}</span>` : ''}${f.due ? ` <span class="badge">${f.due} à revoir</span>` : ''}</div>
+        <div class="dash-bar" role="img" aria-label="Maîtrise ${f.pct} %"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
+        <div class="dash-pct">${f.pct} %</div>
+        <div class="dash-actions"><button type="button" class="small-btn" data-dash-line="${f.id}">Réviser</button>${f.punition && trashDrill(this.data.entries.find((e) => e.id === f.id), this.data.repertoires[f.rep].couleur) ? `<button type="button" class="small-btn" data-dash-trash="${f.id}">⏱ Drill</button>` : ''}</div>
+      </li>`;
+    const head = fiches.slice(0, 12).map(row).join('');
+    const rest = fiches.slice(12);
+    return `<ul class="dash-list">${head}</ul>${rest.length ? `<details class="dash-more"><summary>Voir les ${rest.length} autres variantes</summary><ul class="dash-list">${rest.map(row).join('')}</ul></details>` : ''}`;
+  })()}`;
   }
 
   // ---------- Révision espacée ----------

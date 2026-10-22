@@ -187,8 +187,8 @@ test('Répertoire : recherche par joueur (Carlsen), suggestions, partie ouverte 
   await expect(card.locator('h3')).toContainText('Magnus Carlsen');
   await expect(card).toContainText('joueur suivi');
   await expect(card).toContainText('DrNykterstein');
-  await expect(card.locator('tbody tr')).toHaveCount(Math.min(games.length, 30));
-  await expect(card.locator('tbody tr').first()).toContainText(games[0].opponent);
+  await expect(card.locator('li.pg')).toHaveCount(Math.min(games.length, 30));
+  await expect(card.locator('li.pg').first()).toContainText(games[0].opponent);
   // Partie en cours vide : ouverte sans confirmation, échiquier du côté du joueur cherché.
   await card.locator('[data-player-game]').first().click();
   await expect(page).toHaveURL(/#\/moteur/);
@@ -232,6 +232,9 @@ test('recherche d’un joueur au clavier sur téléphone @mobile : la saisie res
   await page.keyboard.press('Backspace');
   await page.keyboard.type('n', { delay: 80 });
   await expect(q).toHaveValue('carlsen');
+  // Liste lisible sur téléphone : aucune carte ne dépasse de l'écran.
+  expect(await page.evaluate(() => [...document.querySelectorAll('#rep-players li.pg')].every((li) => li.getBoundingClientRect().right <= innerWidth + 1))).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   // La page répond : on peut encore changer d'ouverture.
   await page.click('[data-view=ck]');
   await expect(page.locator('[data-view=ck]')).toHaveAttribute('aria-pressed', 'true');

@@ -178,6 +178,14 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   pour le coup joué et le meilleur coup (`deepen()` : 2 calculs ≥ 1 s par erreur principale,
   mis en cache avec l'analyse), occasions manquées, rappels « à retenir », exercices (position
   sans flèche, solution sur demande).
+- Entraînement (accueil) : série de jours 🔥, maîtrise par répertoire, « Séance du jour »
+  (3 lignes prioritaires + 3 punitions). Modules (drills.js, logique pure drills-core.js) :
+  « Lignes » (l'app joue les coups adverses de la fiche ; erreur → plan + bon coup, position
+  remise en fin de séance, 3 essais max ; un autre coup du répertoire n'est pas une faute),
+  « Anti-trash » (coup douteux de la punition joué, séquence de punition ≤ 5 de nos coups en
+  10/20/30 s). Tableau de progression (progress.js) : maîtrise = 70 % révision espacée des
+  positions de la fiche + 30 % réussite aux exercices ; sorties de répertoire de « Mes parties »
+  signalées (⚠) et prioritaires. Stockage local `coach-echecs:progression-v1`.
 - Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
   chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page

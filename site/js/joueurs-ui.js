@@ -49,17 +49,18 @@ function playerHtml(data, j) {
   const rows = games.slice(0, MAX_GAMES).map((g) => {
     const res = g.r === '1/2-1/2' ? '½-½' : g.r;
     const date = g.t ? new Date(g.t).toLocaleDateString('fr-FR') : String(g.y || '');
-    return `<tr>
-      <td class="tiny">${esc(date)}</td>
-      <td><span class="dot ${g.side}" title="${g.side === 'w' ? 'Blancs' : 'Noirs'}"></span> contre ${esc(g.opponent)}${g.opponentElo ? ` (${g.opponentElo})` : ''}</td>
-      <td class="num">${esc(res)}</td>
-      <td class="small">${esc(g.source)}</td>
-      <td class="small">${esc(g.eco ? `${g.eco} ${g.n || ''}` : '')}</td>
-      <td><button type="button" class="small-btn" data-player-game="${esc(j.n)}|${esc(g.p)}:${esc(g.id)}">▶ Ouvrir</button> <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Partie d’origine">↗</a></td>
-    </tr>`;
+    const won = (g.r === '1-0' && g.side === 'w') || (g.r === '0-1' && g.side === 'b');
+    const lost = (g.r === '1-0' && g.side === 'b') || (g.r === '0-1' && g.side === 'w');
+    return `<li class="pg">
+      <div class="pg-top"><span class="dot ${g.side}" title="${g.side === 'w' ? 'Blancs' : 'Noirs'}"></span>
+        <span class="pg-opp">contre <strong>${esc(g.opponent)}</strong>${g.opponentElo ? ` <span class="muted">(${g.opponentElo})</span>` : ''}</span>
+        <span class="pg-res ${won ? 'ok' : lost ? 'ko' : ''}">${esc(res)}</span></div>
+      <div class="pg-meta muted small">${esc(date)} · ${esc(g.source)}${g.eco ? ` · ${esc(`${g.eco} ${g.n || ''}`)}` : ''}</div>
+      <div class="pg-actions"><button type="button" class="small-btn" data-player-game="${esc(j.n)}|${esc(g.p)}:${esc(g.id)}">▶ Ouvrir sur l’échiquier</button> <a class="small" href="${esc(g.url)}" target="_blank" rel="noopener">Partie d’origine ↗</a></div>
+    </li>`;
   }).join('');
   return `<div class="card players-card" data-player="${esc(j.n)}">${head}
-    <div class="rep-table-wrap"><table class="players-table"><thead><tr><th>Date</th><th>Adversaire</th><th>Résultat</th><th>Plateforme ou tournoi</th><th>Ouverture</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <ul class="players-games">${rows}</ul>
     ${games.length > MAX_GAMES ? `<p class="muted tiny">Les ${MAX_GAMES} plus récentes sur ${games.length}.</p>` : ''}</div>`;
 }
 

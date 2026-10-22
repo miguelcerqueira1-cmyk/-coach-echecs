@@ -2,6 +2,7 @@
 // sortie du répertoire, analyse Stockfish coup par coup et bilan de chaque partie.
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
+import { loadProgress, saveProgress, recordSortie } from './progress.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
@@ -56,6 +57,16 @@ export class GamesPage {
   }
 
   visible() { return !this.el.classList.contains('hidden'); }
+
+  // Sorties de répertoire réelles → signalées dans la progression de l'Entraînement.
+  noteSorties(games) {
+    const p = loadProgress();
+    for (const g of games) {
+      const d = g.deviation;
+      if (d?.who === 'moi' && d.fiche) recordSortie(p, { gameId: g.id, ficheId: d.fiche.id, rep: d.rep, ply: d.ply, date: g.date });
+    }
+    saveProgress(p);
+  }
 
   // À appeler avant d'afficher la page (l'analyse ne tourne que page visible).
   bilanLocal(game) { this.pendingLocal = localGame(game); }
@@ -121,6 +132,7 @@ export class GamesPage {
     }));
     this.games.sort((a, b) => b.date.localeCompare(a.date));
     for (const g of this.games) g.deviation = repertoireDeviation(g, this.data.entries);
+    this.noteSorties(this.games);
     this.render();
   }
 
