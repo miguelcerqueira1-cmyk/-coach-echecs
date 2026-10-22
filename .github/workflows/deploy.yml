@@ -23,7 +23,7 @@ jobs:
   verify:
     name: Vérification (tests unitaires, Worker, navigateur)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,7 +46,15 @@ jobs:
       - name: Construction du site
         run: npm run build
       - name: Navigateurs de test
-        run: npx playwright install --with-deps chromium webkit
+        # Parfois bloquée côté GitHub (paquets système) : 3 essais de 7 minutes au plus.
+        timeout-minutes: 22
+        run: |
+          for n in 1 2 3; do
+            timeout 7m npx playwright install --with-deps chromium webkit && exit 0
+            echo "::warning::Installation des navigateurs interrompue (essai $n), nouvel essai."
+            sleep 10
+          done
+          exit 1
       - name: Tests de bout en bout (vrai Stockfish, Chromium + WebKit/iPhone)
         run: npx playwright test
         env:
@@ -183,7 +191,7 @@ jobs:
     needs: [pages, worker]
     if: always() && needs.pages.result == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -191,7 +199,16 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
+      - name: Navigateurs de test
+        # Parfois bloquée côté GitHub (paquets système) : 3 essais de 7 minutes au plus.
+        timeout-minutes: 22
+        run: |
+          for n in 1 2 3; do
+            timeout 7m npx playwright install --with-deps chromium webkit && exit 0
+            echo "::warning::Installation des navigateurs interrompue (essai $n), nouvel essai."
+            sleep 10
+          done
+          exit 1
       - name: Fichiers servis sous le chemin réel du dépôt
         env:
           SITE: ${{ needs.pages.outputs.url }}
