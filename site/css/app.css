@@ -447,3 +447,8 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
   .vd-list li { grid-template-columns: 100px 1fr; }
   .vd-thumb img { width: 100px; }
 }
+.auto-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; margin: .4rem 0; }
+.auto-bar #auto-text { flex: 1 1 200px; }
+.ranking { display: flex; flex-direction: column; gap: .3rem; margin: .5rem 0; }
+.ranking p { margin: .2rem 0 0; }
+.rep-filters select[data-sort] { flex: 0 1 260px; }

@@ -137,6 +137,14 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   Statistiques ; parties de maîtres ouvrables (/masters/pgn/{id}, jeton personnel).
 - « Tester cette ligne » : ouvre la séquence sur #/moteur et la rejoue (400 ms/coup) ; pas de
   confirmation si la partie en cours est vide ou est elle-même une ligne testée (Event « Test : … »).
+- Suite automatique (bouton « ⏩ Jouer la suite jusqu’à la fin », lancée après « Tester cette ligne ») :
+  coup le plus joué de la base des maîtres tant que la position y a ≥ 10 parties (jeton requis),
+  puis meilleur coup Stockfish (1 s/coup) pour les deux camps jusqu'au mat, pat, matériel
+  insuffisant, triple répétition / 50 coups ; s'arrête si l'utilisateur joue, navigue ou change
+  de partie. Pas d'explication automatique pendant la suite.
+- Classement des variantes (menu « Classer ») : plus jouées / meilleur score pour mon camp
+  (mon niveau ou maîtres, score = V + ½N, seulement ≥ 50 parties) ou meilleure évaluation
+  Stockfish de fin de ligne ; charge les statistiques de toutes les fiches affichées.
 - Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
   chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page

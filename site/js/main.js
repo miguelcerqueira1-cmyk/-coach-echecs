@@ -121,7 +121,12 @@ async function init() {
   try {
     await engine.load();
   } catch { /* état d'erreur déjà affiché */ }
-  onPositionChanged('init');
+  // Moteur prêt. Si une position passée est affichée (ligne testée en cours de rejeu pendant
+  // le chargement), on la garde : le calcul de la partie reprendra au retour en direct.
+  if (state.viewPly !== null && engine.state === 'ready') {
+    analyzeView(state.viewPly);
+    renderAll();
+  } else onPositionChanged('init');
 }
 
 function restoreGame() {
@@ -166,7 +171,7 @@ function onPositionChanged(reason) {
     renderAdvice();
     return;
   }
-  runAnalysis(BUDGETS[state.settings.budget].movetime);
+  runAnalysis(autoplay.running ? AUTO_MOVETIME : BUDGETS[state.settings.budget].movetime);
 }
 
 let jobCounter = 0;
@@ -235,7 +240,8 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
   }
   renderAdvice();
   renderBoard();
-  if (advice.isPlayerTurn && !deeper && state.settings.autoExplain) explain({ auto: true });
+  if (advice.isPlayerTurn && !deeper && state.settings.autoExplain && !autoplay.running) explain({ auto: true });
+  if (autoplay.running) autoStep();
 }
 
 // Ramène l'échiquier à l'écran s'il n'est plus visible (bouton « Confirmer » ou tableau
@@ -487,6 +493,7 @@ function renderButtons() {
   $('btn-deeper').textContent = state.analysis.status === 'computing' && state.analysis.deeper ? 'Arrêter l’analyse' : 'Analyser davantage';
   $('btn-explain').disabled = !live || over || state.analysis.status !== 'ready';
   $('notation-input').disabled = !live || over;
+  renderAutoplay();
 }
 
 const pct = (permille) => (permille / 10).toFixed(1).replace('.', ',') + ' %';
@@ -908,6 +915,7 @@ function bindUi() {
     runAnalysis(DEEPER_MOVETIME, { deeper: true });
   };
   $('btn-explain').onclick = () => explain();
+  $('btn-auto').onclick = () => (autoplay.running ? stopAutoplay('Suite automatique arrêtée.') : startAutoplay());
   $('btn-export').onclick = openExport;
   $('btn-settings').onclick = openSettings;
   $('btn-live').onclick = () => viewAt(state.game.ply);
@@ -1158,8 +1166,101 @@ function openSanInBoard(san, color, label, { animate = false, headers = null } =
     i++;
     viewAt(i);
     if (i < g.ply) replayTimer = setTimeout(step, 400);
+    else startAutoplay(); // la ligne est jouée : la partie continue jusqu'à la fin
   };
   replayTimer = setTimeout(step, 400);
+}
+
+// ---------- Suite automatique jusqu'à la fin de la partie ----------
+// Coups de la base des maîtres tant que la position y figure (≥ AUTO_MIN_GAMES parties),
+// puis meilleur coup de Stockfish pour les deux camps, jusqu'au mat, au pat ou à une nulle.
+const AUTO_MOVETIME = 1000;
+const AUTO_MIN_GAMES = 10;
+const AUTO_DELAY = 350;
+const autoplay = { running: false, game: null, ply: 0, theory: true, n: { theorie: 0, moteur: 0 }, note: '', timer: null, busy: false };
+
+function startAutoplay() {
+  const g = state.game;
+  if (g.status().over) { renderAutoplay(); return; }
+  Object.assign(autoplay, { running: true, game: g, ply: g.ply, theory: true, n: { theorie: 0, moteur: 0 }, note: '', busy: false });
+  if (state.viewPly !== null) viewAt(g.ply);
+  renderAutoplay();
+  // Le calcul en cours garde son budget ; on repart avec le budget court de la suite automatique.
+  runAnalysis(AUTO_MOVETIME);
+}
+
+function stopAutoplay(note = '') {
+  if (!autoplay.running) return;
+  autoplay.running = false;
+  clearTimeout(autoplay.timer);
+  autoplay.note = note;
+  renderAutoplay();
+}
+
+// Arrêt si l'utilisateur reprend la main (autre partie, coup joué, navigation).
+function autoplayValid() {
+  const g = state.game;
+  if (!autoplay.running) return false;
+  if (g !== autoplay.game || g.ply !== autoplay.ply) { stopAutoplay('Suite automatique arrêtée : la partie a changé.'); return false; }
+  if (state.viewPly !== null) { stopAutoplay('Suite automatique en pause (navigation dans les coups).'); return false; }
+  return true;
+}
+
+async function autoStep() {
+  if (autoplay.busy || !autoplayValid()) return;
+  const g = state.game;
+  const st = g.status();
+  if (st.over || st.claimable.length) { finishAutoplay(st); return; }
+  autoplay.busy = true;
+  let move = null;
+  let source = 'moteur';
+  if (autoplay.theory && lichess.explorerMode()) {
+    try {
+      const r = await lichess.explorer({ fen: g.record.start.fen, play: g.record.moves.map((m) => m.uci), db: 'masters', moves: 5 });
+      const top = (r.moves || []).reduce((a, m) => (!a || m.white + m.draws + m.black > a.white + a.draws + a.black ? m : a), null);
+      const n = top ? top.white + top.draws + top.black : 0;
+      if (n >= AUTO_MIN_GAMES && g.legalMoves().some((m) => m.lan === top.uci)) {
+        move = top.uci;
+        source = 'theorie';
+        autoplay.lastInfo = `théorie des maîtres (${n.toLocaleString('fr-FR')} parties)`;
+      } else autoplay.theory = false; // hors théorie : Stockfish jusqu'à la fin
+    } catch { autoplay.theory = false; }
+  } else autoplay.theory = false;
+  if (!move) {
+    const a = state.analysis;
+    if (a.status !== 'ready' || !g.isCurrent(a.token)) { autoplay.busy = false; return; } // runAnalysis rappellera autoStep
+    move = a.advice.best.lan;
+    autoplay.lastInfo = `Stockfish (${AUTO_MOVETIME / 1000} s par coup)`;
+  }
+  autoplay.timer = setTimeout(() => {
+    autoplay.busy = false;
+    if (!autoplayValid()) return;
+    autoplay.n[source]++;
+    autoplay.ply = g.ply + 1;
+    renderAutoplay();
+    playMove(move, 'auto');
+    autoStep(); // théorie : coup suivant sans attendre ; Stockfish : rappelé par runAnalysis
+  }, AUTO_DELAY);
+}
+
+const END_REASONS = {
+  mat: 'échec et mat', pat: 'pat', materiel: 'matériel insuffisant', quintuple: 'quintuple répétition',
+  '75coups': 'règle des 75 coups', triple: 'triple répétition (nulle)', '50coups': 'règle des 50 coups (nulle)',
+};
+
+function finishAutoplay(st) {
+  const why = st.over ? END_REASONS[st.reason] : END_REASONS[st.claimable[0]];
+  const result = st.over ? st.result : '1/2-1/2';
+  stopAutoplay(`Fin de partie : ${why} — ${result}. ${autoplay.n.theorie} coup(s) de théorie des maîtres, ${autoplay.n.moteur} de Stockfish.`);
+}
+
+function renderAutoplay() {
+  const btn = $('btn-auto');
+  btn.textContent = autoplay.running ? '⏸ Arrêter la suite automatique' : '⏩ Jouer la suite jusqu’à la fin';
+  btn.disabled = !autoplay.running && (state.game.status().over || engine.state === 'error');
+  $('auto-text').textContent = autoplay.running
+    ? `Coup ${Math.floor(state.game.ply / 2) + 1} · ${autoplay.lastInfo || 'calcul…'} · ${autoplay.n.theorie} théorie / ${autoplay.n.moteur} Stockfish`
+    : autoplay.note;
 }
 
 // Télécharge une partie de la base des maîtres et l'ouvre sur l'échiquier.

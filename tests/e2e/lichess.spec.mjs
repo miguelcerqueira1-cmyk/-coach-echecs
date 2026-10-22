@@ -202,6 +202,8 @@ test('Répertoire : « Tester cette ligne » bascule sur le Moteur et rejoue la 
   const g = await page.evaluate(() => ({ moves: window.__coach.state.game.moves.map((m) => m.san), color: window.__coach.state.game.playerColor }));
   expect(g.moves.slice(0, 4)).toEqual(['e4', 'c6', 'd4', 'd5']);
   expect(g.color).toBe('b');
+  // Puis la partie continue seule avec la théorie des maîtres (mock : position connue).
+  await expect(page.locator('#auto-text')).toContainText('théorie des maîtres', { timeout: 30000 });
   // Une ligne testée se remplace sans confirmation.
   let asked = false;
   page.on('dialog', (d) => { asked = true; d.accept(); });
@@ -210,6 +212,39 @@ test('Répertoire : « Tester cette ligne » bascule sur le Moteur et rejoue la 
   await page.click('[data-test="gd-orthodoxe"]');
   await expect.poll(() => page.evaluate(() => window.__coach.state.game.moves[0]?.san)).toBe('d4');
   expect(asked).toBe(false);
+});
+
+test('Tester cette ligne : la partie continue seule jusqu’à la fin (Stockfish), arrêt possible', async ({ page }) => {
+  await mockLichess(page);
+  await setup(page, { token: '' }); // sans jeton : pas de théorie des maîtres, Stockfish directement
+  await page.goto('./#/repertoire');
+  await page.click('[data-test="gd-orthodoxe"]');
+  const len = await page.evaluate(() => window.__coach.repertoire.data.entries.find((e) => e.id === 'gd-orthodoxe').san.length);
+  await expect(page.locator('#btn-auto')).toContainText('Arrêter', { timeout: 30000 });
+  await expect.poll(() => page.evaluate(() => window.__coach.state.game.ply), { timeout: 60000 }).toBeGreaterThan(len + 1);
+  await expect(page.locator('#auto-text')).toContainText('Stockfish');
+  await page.click('#btn-auto');
+  await expect(page.locator('#btn-auto')).toContainText('Jouer la suite');
+  const n = await page.evaluate(() => window.__coach.state.game.ply);
+  await page.waitForTimeout(2500);
+  expect(await page.evaluate(() => window.__coach.state.game.ply)).toBe(n);
+});
+
+test('Répertoire : classement des variantes (plus jouée, meilleur score, évaluation)', async ({ page }) => {
+  await mockLichess(page);
+  await setup(page);
+  await page.goto('./#/repertoire');
+  await expect(page.locator('.rep-table tbody tr[data-id]').first()).toBeVisible();
+  await page.selectOption('[data-sort]', 'joue-niveau');
+  const box = page.locator('[data-ranking]');
+  await expect(box).toContainText('La plus jouée', { timeout: 60000 });
+  await expect(box).toContainText('Meilleur score pour vous');
+  await page.selectOption('[data-sort]', 'eval');
+  await expect(box).toContainText('Meilleure évaluation Stockfish');
+  // Tri décroissant de l'évaluation pour les Blancs.
+  const ids = await page.locator('.rep-table tbody tr[data-id]').evaluateAll((rows) => rows.map((r) => r.dataset.id));
+  const vals = await page.evaluate((ids) => ids.map((id) => window.__coach.repertoire.sortValue(window.__coach.repertoire.data.entries.find((e) => e.id === id))), ids);
+  for (let i = 1; i < vals.length; i++) expect(vals[i - 1]).toBeGreaterThanOrEqual(vals[i]);
 });
 
 test('Répertoire : section Anti-trash Blitz et test d’une punition', async ({ page }) => {
@@ -225,7 +260,7 @@ test('Répertoire : section Anti-trash Blitz et test d’une punition', async ({
   await trash.locator('[data-test-claim="gd-echange:punition"]').click();
   await expect(page.locator('#page-moteur')).toBeVisible();
   const moves = await page.evaluate(() => window.__coach.state.game.moves.map((m) => m.san));
-  expect(moves.slice(-2)).toEqual(['c6', 'Qxb7']);
+  expect(moves.slice(14, 17)).toEqual(['Qb3', 'c6', 'Qxb7']);
 });
 
 test('Répertoire : export PGN importable (chess.js), annotations ?', async ({ page }) => {

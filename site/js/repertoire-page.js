@@ -15,6 +15,7 @@ import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeade
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
+const SCORE_MIN_GAMES = 50; // en dessous, un % de score ne veut rien dire
 const VIDEO_KEY = 'coach-echecs:videos-perso';
 const BADGE_CLASS = { theorie: 'b-theorie', piege: 'b-piege', loufoque: 'b-loufoque' };
 const BADGE_LABEL = { theorie: 'Théorie', piege: 'Piège Blitz', loufoque: 'Coup loufoque à réfuter' };
@@ -89,6 +90,7 @@ export class RepertoirePage {
     this.view = 'gd'; // 'gd' | 'ck' | 'trash'
     this.badge = '';
     this.query = '';
+    this.sort = ''; // '' | 'joue-niveau' | 'score-niveau' | 'joue-maitres' | 'score-maitres' | 'eval'
     this.live = new Map(); // id → { cloud, explorer, masters }
     this.tree = null; // { path, node, source }
     this.treeSource = 'niveau';
@@ -126,8 +128,71 @@ export class RepertoirePage {
 
   entries() {
     const q = norm(this.query.trim());
-    return this.data.entries.filter((e) => (this.view === 'trash' || e.rep === this.view)
+    const list = this.data.entries.filter((e) => (this.view === 'trash' || e.rep === this.view)
       && (!this.badge || e.badge === this.badge) && (!q || e._search.includes(q)));
+    if (!this.sort || this.view === 'trash') return list;
+    // Tri stable : les fiches sans donnée (ou sous le seuil de parties) restent en fin de liste.
+    const val = (e) => this.sortValue(e);
+    return list.map((e, i) => ({ e, i, v: val(e) })).sort((a, b) => (b.v ?? -Infinity) - (a.v ?? -Infinity) || a.i - b.i).map((x) => x.e);
+  }
+
+  // ---------- Classement des variantes ----------
+
+  // Score du camp qui joue la fiche (Blancs pour le Gambit Dame, Noirs pour la Caro-Kann).
+  myScore(e, s) {
+    const mine = this.data.repertoires[e.rep].couleur === 'w' ? s.white : s.black;
+    return mine + s.draws / 2;
+  }
+
+  sortStats(e) {
+    const src = this.sort.endsWith('maitres') ? 'masters' : 'explorer';
+    const x = this.live.get(e.id)?.[src];
+    return x?.status === 'ok' ? x.stats : null;
+  }
+
+  sortValue(e) {
+    if (this.sort === 'eval') {
+      const m = e.verification?.main;
+      if (!m) return null;
+      const w = m.type === 'mate' ? Math.sign(m.value) * 100000 : m.value;
+      return this.data.repertoires[e.rep].couleur === 'w' ? w : -w;
+    }
+    const s = this.sortStats(e);
+    if (!s || !s.total) return null;
+    if (this.sort.startsWith('joue')) return s.total;
+    return s.total >= SCORE_MIN_GAMES ? this.myScore(e, s) : null;
+  }
+
+  // Toutes les données du classement sont-elles arrivées (ok, erreur ou absence de jeton) ?
+  sortPending(list) {
+    if (!this.sort || this.sort === 'eval') return 0;
+    const src = this.sort.endsWith('maitres') ? 'masters' : 'explorer';
+    return list.filter((e) => { const x = this.live.get(e.id)?.[src]; return !x || x.status === 'loading'; }).length;
+  }
+
+  rankingHtml(list) {
+    if (!this.sort || this.view === 'trash') return '';
+    if (!this.client.explorerMode() && this.sort !== 'eval') return '<p class="errbox small">Classement par parties : jeton Lichess requis (⚙ Réglages).</p>';
+    const pending = this.sortPending(list);
+    if (pending) return `<p class="state small"><span class="spinner"></span> Classement : statistiques en cours de chargement (${list.length - pending}/${list.length})…</p>`;
+    const src = this.sort.endsWith('maitres') ? 'maîtres' : 'mon niveau';
+    const name = (e) => `<button type="button" class="link-btn" data-goto="${e.id}">${esc(e.nom)}</button>`;
+    if (this.sort === 'eval') {
+      const top = list.filter((e) => this.sortValue(e) != null).slice(0, 3);
+      return `<div class="card ranking small"><strong>Meilleure évaluation Stockfish pour vous</strong> (fin de la ligne, profondeur ${this.data.moteur.profondeur}) : ${top.map((e) => `${name(e)} (${esc(scoreText(toWhite(e.verification.main, 'w')))})`).join(' · ')}<p class="muted tiny">Évaluation de la position à la fin de la fiche, point de vue des Blancs. Une évaluation moteur n’est pas un taux de victoire.</p></div>`;
+    }
+    const withStats = list.map((e) => ({ e, s: this.sortStats(e) })).filter((x) => x.s?.total);
+    if (!withStats.length) return `<p class="muted small">Aucune statistique (${src}) pour ces fiches.</p>`;
+    const most = withStats.reduce((a, b) => (b.s.total > a.s.total ? b : a));
+    const scored = withStats.filter((x) => x.s.total >= SCORE_MIN_GAMES);
+    const best = scored.length ? scored.reduce((a, b) => (this.myScore(b.e, b.s) > this.myScore(a.e, a.s) ? b : a)) : null;
+    const worst = scored.length ? scored.reduce((a, b) => (this.myScore(b.e, b.s) < this.myScore(a.e, a.s) ? b : a)) : null;
+    return `<div class="card ranking small">
+      <div>📊 <strong>La plus jouée</strong> (${src}) : ${name(most.e)} — ${most.s.total.toLocaleString('fr-FR')} parties</div>
+      ${best ? `<div>🏆 <strong>Meilleur score pour vous</strong> : ${name(best.e)} — ${p1(this.myScore(best.e, best.s))} (${best.s.total.toLocaleString('fr-FR')} parties)</div>` : ''}
+      ${worst && worst !== best ? `<div>⚠️ <strong>Score le plus faible</strong> : ${name(worst.e)} — ${p1(this.myScore(worst.e, worst.s))}</div>` : ''}
+      <p class="muted tiny">Score = victoires + ½ nulles pour votre camp, dans les parties qui ont atteint la position finale de la fiche (au moins ${SCORE_MIN_GAMES} parties pour le score). Fréquences observées, pas une évaluation.</p>
+    </div>`;
   }
 
   // ---------- Rendu ----------
@@ -154,6 +219,9 @@ export class RepertoirePage {
         </div>
         <div class="rep-filters">
           <input type="search" data-q placeholder="Rechercher : nom, coup (Fg4, Bg4, 2…Fg4) ou code ECO (B12)" value="${esc(this.query)}">
+          ${this.view === 'trash' ? '' : `<select data-sort aria-label="Classer les variantes">
+            ${[['', 'Ordre du répertoire'], ['joue-niveau', 'Les plus jouées (mon niveau)'], ['score-niveau', 'Meilleur score pour moi (mon niveau)'], ['joue-maitres', 'Les plus jouées (maîtres)'], ['score-maitres', 'Meilleur score pour moi (maîtres)'], ['eval', 'Meilleure évaluation Stockfish']].map(([v, l]) => `<option value="${v}"${this.sort === v ? ' selected' : ''}>${l}</option>`).join('')}
+          </select>`}
           <details class="export-menu"><summary>⤓ Exporter en PGN</summary>
             <div class="export-box">
               <button type="button" data-export="gd">Gambit Dame (${count((e) => e.rep === 'gd')} fiches)</button>
@@ -165,12 +233,14 @@ export class RepertoirePage {
         </div>
         <p class="small muted">${list.length} fiche(s) affichée(s). Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
       </div>
+      <div data-ranking>${this.rankingHtml(list)}</div>
       ${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}
       <section class="card tree-card" id="rep-tree">${this.treeHtml()}</section>
       <dialog class="video-dlg" data-video-dlg></dialog>
     `;
     this.bind();
     this.observe();
+    if (this.sort && this.sort !== 'eval' && this.view !== 'trash') list.forEach((e) => this.load(e));
   }
 
   tableHtml(list) {
@@ -372,6 +442,16 @@ export class RepertoirePage {
     const live = this.live.get(e.id) || {};
     tr.querySelector('[data-label="Évaluation"]').innerHTML = this.evalCell(e, live);
     tr.querySelector('[data-label="Statistiques"]').innerHTML = this.statsCell(live, e);
+    if (this.sort && this.sort !== 'eval') {
+      clearTimeout(this.sortTimer);
+      this.sortTimer = setTimeout(() => {
+        const list = this.entries();
+        const box = this.el.querySelector('[data-ranking]');
+        if (box) box.innerHTML = this.rankingHtml(list);
+        const order = [...this.el.querySelectorAll('.rep-table tbody tr[data-id]')].map((r) => r.dataset.id).join();
+        if (!this.sortPending(list) && order !== list.map((x) => x.id).join()) this.render();
+      }, 200);
+    }
   }
 
   // ---------- Arbre dynamique ----------
@@ -578,6 +658,11 @@ export class RepertoirePage {
   bind() {
     this.el.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => { this.view = b.dataset.view; this.render(); }));
     this.el.querySelectorAll('[data-badge-chip]').forEach((b) => b.addEventListener('click', () => { this.badge = b.dataset.badgeChip; this.render(); }));
+    this.el.querySelector('[data-sort]')?.addEventListener('change', (ev) => { this.sort = ev.target.value; this.render(); });
+    this.el.querySelector('[data-ranking]').addEventListener('click', (ev) => {
+      const b = ev.target.closest('[data-goto]');
+      if (b) this.el.querySelector(`tr[data-id="${b.dataset.goto}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
     this.el.querySelectorAll('[data-export]').forEach((b) => b.addEventListener('click', () => this.exportPgn(b.dataset.export)));
     const q = this.el.querySelector('[data-q]');
     q.addEventListener('input', () => {
