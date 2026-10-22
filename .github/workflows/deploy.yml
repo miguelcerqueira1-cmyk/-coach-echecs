@@ -4,15 +4,13 @@ name: Vérifier et publier
 # - push sur main (ou lancement manuel) : vérification, déploiement du Worker
 #   Cloudflare (si les secrets sont présents), publication GitHub Pages,
 #   puis test du site réellement publié (chargement du moteur compris).
-# - chaque lundi : même chaîne, pour rafraîchir le jeu de données « Élite »
-#   (parties des meilleurs joueurs Lichess/Chess.com, scripts/elite.mjs).
+# Le jeu de données « Élite » est collecté à part (elite.yml → branche donnees-elite) ;
+# la publication en embarque simplement la dernière copie (repli si le dépôt est injoignable).
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: '17 4 * * 1'
 
 permissions:
   contents: read
@@ -58,32 +56,6 @@ jobs:
         with:
           name: rapport-playwright
           path: playwright-report/
-          retention-days: 7
-
-  # Jeu de données « Élite » : requêtes série vers Lichess et Chess.com (≈ 15 à 30 min).
-  # Seulement le lundi et au lancement manuel : un push ne doit pas attendre la collecte ;
-  # il reprend le fichier déjà en ligne (voir job pages). Une source en échec est notée dans
-  # le fichier ; si aucune partie n'est obtenue, le job échoue et le fichier en ligne est gardé.
-  elite:
-    name: Jeu de données Élite (top blitz/rapide Lichess + Chess.com)
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - name: Télécharger les parties et agréger par position
-        env:
-          LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }} # facultatif (débit Lichess plus élevé)
-        run: node scripts/elite.mjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: elite-json
-          path: site/data/elite.json
           retention-days: 7
 
   worker:
@@ -157,7 +129,7 @@ jobs:
 
   pages:
     name: Publication GitHub Pages
-    needs: [verify, worker, elite]
+    needs: [verify, worker]
     if: always() && github.event_name != 'pull_request' && needs.verify.result == 'success' && needs.worker.result != 'failure'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -181,21 +153,15 @@ jobs:
         id: pages-config
         with:
           enablement: true
-      - name: Jeu de données Élite (job elite)
-        id: elite
-        if: needs.elite.result == 'success'
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: elite-json
-          path: site/data
-      - name: Sinon, reprendre le jeu Élite déjà publié
-        if: steps.elite.outcome != 'success'
+      # Copie de secours embarquée dans le site (l'application lit d'abord la branche directement).
+      - name: Jeu de données Élite (branche donnees-elite, sinon version déjà publiée)
         env:
           SITE: ${{ steps.pages-config.outputs.base_url }}
         run: |
-          if curl -sf --retry 3 "${SITE}/data/elite.json" -o site/data/elite.json; then
-            echo "::notice::Jeu de données Élite non régénéré : version déjà publiée conservée."
+          if git fetch -q --depth=1 origin donnees-elite && git show FETCH_HEAD:elite.json > site/data/elite.json; then
+            echo "Jeu Élite : copie de la branche donnees-elite."
+          elif curl -sf --retry 3 "${SITE}/data/elite.json" -o site/data/elite.json; then
+            echo "::notice::Branche donnees-elite absente : version déjà publiée conservée."
           else
             rm -f site/data/elite.json
             echo "::warning::Jeu de données Élite indisponible : le site est publié sans (bloc « non publié »)."

@@ -1,13 +1,14 @@
 // Jeu de données « Élite blitz/rapide » : généré hors ligne à partir des fixtures
 // (tests/fixtures/elite : réponses Lichess réelles enregistrées + archive Chess.com synthétique),
-// puis servi à la place de data/elite.json. Aucune requête Lichess/Chess.com réelle.
+// puis servi à la place de la branche donnees-elite (raw.githubusercontent.com) et/ou de
+// data/elite.json. Aucune requête Lichess, Chess.com ou GitHub réelle.
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Chess } from '../../site/vendor/chess.js';
-import { lookupElite, splitText } from '../../site/js/elite.js';
+import { lookupElite, splitText, recentInfo, ELITE_LIVE_URL } from '../../site/js/elite.js';
 import { sanFr } from '../../site/js/analysis.js';
 
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
@@ -19,15 +20,21 @@ const fenAfter = (san) => { const c = new Chess(); san.forEach((m) => c.move(m))
 test.beforeAll(() => {
   dir = mkdtempSync(join(tmpdir(), 'elite-e2e-'));
   const out = join(dir, 'elite.json');
-  execFileSync(process.execPath, ['scripts/elite.mjs', '--fixture', 'tests/fixtures/elite', '--top', '2', '--out', out], { cwd: root, stdio: 'pipe' });
+  execFileSync(process.execPath, ['scripts/elite.mjs', '--fixture', 'tests/fixtures/elite', '--top', '2', '--now', '2026-10-22T12:00:00Z', '--out', out], { cwd: root, stdio: 'pipe' });
   dataset = readFileSync(out, 'utf8');
 });
 test.afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-async function setup(page, { elite = 'ok' } = {}) {
-  await page.route('**/data/elite.json', (r) => (elite === 'ok'
-    ? r.fulfill({ contentType: 'application/json', body: dataset })
-    : r.fulfill({ status: 404, body: 'absent' })));
+// elite : copie publiée avec le site (data/elite.json) ; live : branche donnees-elite (raw GitHub).
+async function setup(page, { elite = 'ok', live = null, calls = [] } = {}) {
+  await page.route(ELITE_LIVE_URL, (r) => {
+    calls.push('live');
+    return live ? r.fulfill({ headers: CORS, contentType: 'application/json', body: live }) : r.fulfill({ status: 404, headers: CORS, body: '404: Not Found' });
+  });
+  await page.route('**/data/elite.json', (r) => {
+    calls.push('site');
+    return elite === 'ok' ? r.fulfill({ contentType: 'application/json', body: dataset }) : r.fulfill({ status: 404, body: 'absent' });
+  });
   // Aucune requête Lichess réelle : Cloud Eval « absent », pas de jeton pour l'explorateur.
   await page.route('https://lichess.org/api/cloud-eval**', (r) => r.fulfill({ status: 404, headers: CORS, json: { error: 'Not found' } }));
   await page.addInitScript(() => {
@@ -63,7 +70,8 @@ test('Élite : bloc du Coup optimal, table, parties exemples ouvertes sur l’é
   await expect(block.locator('.mv-elite')).toHaveText(sanFr(x.top.san));
   await expect(block).toContainText(`${x.total} parties`);
   await expect(block).toContainText(splitText(x.split));
-  await expect(block).toContainText('Données du');
+  await expect(block).toContainText('Mis à jour');
+  await expect(block).toContainText('copie publiée avec le site'); // branche absente : repli
   await expect(block).toContainText('récupération partielle'); // archive Chess.com manquante dans les fixtures
 
   await panel.locator('[data-src=elite]').click();
@@ -122,4 +130,36 @@ test('Élite : jeu de données non publié, affiché comme tel', async ({ page }
   await expect(page.locator('#optimal .elite-block')).toContainText('Jeu de données Élite non publié');
   await page.goto('./#/repertoire');
   await expect(page.locator('.rep-table tbody tr[data-id]').first().locator('[data-label="Statistiques"]')).toContainText('Élite : jeu de données non publié');
+});
+
+test('Élite : branche donnees-elite d’abord (fraîcheur affichée), puis repli sur le site', async ({ page }) => {
+  const live = JSON.parse(dataset);
+  live.meta.generatedAt = new Date(Date.now() - 12 * 60000).toISOString();
+  const calls = [];
+  await setup(page, { live: JSON.stringify(live), calls });
+  await page.goto('./');
+  const block = page.locator('#optimal .elite-block');
+  await expect(block.locator('.elite-fresh')).toContainText('Mis à jour il y a 12 min');
+  await expect(block.locator('.elite-fresh')).toContainText('mise à jour continue (branche donnees-elite)');
+  expect(calls).toEqual(['live']); // copie du site non demandée
+});
+
+test('Élite : « Nouvelles parties » du Répertoire ouvrables sur l’échiquier', async ({ page }) => {
+  await setup(page, { live: dataset });
+  await page.goto('./#/repertoire');
+  const data = JSON.parse(dataset);
+  const recent = recentInfo(data);
+  const live = page.locator('#rep-live');
+  await expect(live.locator('.live-list li')).toHaveCount(recent.length);
+  const first = live.locator('.live-list li').first();
+  await expect(first).toContainText(recent[0].label);
+  await expect(first).toContainText(recent[0].opening);
+  await expect(first.locator(`a[href="${recent[0].url}"]`)).toHaveCount(1);
+  await expect(live).toContainText('une partie apparaît au passage suivant sa fin');
+  // Partie en cours vide : ouverte sans confirmation, avec le bon sens de l'échiquier.
+  await first.locator('[data-live-game="0"]').click();
+  await expect(page).toHaveURL(/#\/moteur/);
+  await expect.poll(() => page.evaluate(() => window.__coach.state.game.ply)).toBe(recent[0].san.length);
+  expect(await page.evaluate(() => window.__coach.state.game.record.headers.Site)).toBe(recent[0].url);
+  expect(await page.evaluate(() => window.__coach.state.game.playerColor)).toBe(recent[0].color);
 });

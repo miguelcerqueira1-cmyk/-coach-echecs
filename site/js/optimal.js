@@ -10,7 +10,7 @@ import {
   RATING_BUCKETS, SPEEDS, SPEED_LABELS, PRESETS, bucketLabel, enrichMoves, bestByWinRate,
 } from './lichess.js';
 import { sanFr, formatScore, COLOR_NAMES } from './analysis.js';
-import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders } from './elite.js';
+import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, SOURCE_LABELS } from './elite.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -89,7 +89,7 @@ export class OptimalPanel {
     // Élite : fichier statique publié avec le site (aucun jeton, aucune requête Lichess).
     this.loadEliteData().then((r) => {
       if (isStale()) return;
-      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen), meta: r.data.meta } : r;
+      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen), meta: r.data.meta, source: r.source } : r;
       this.render();
     });
 
@@ -252,7 +252,7 @@ export class OptimalPanel {
       body = `<strong class="mv-elite">${esc(sanFr(e.top.san))}</strong> <span class="eval">${p1(share)} des parties</span>
         <span class="muted small">${e.total.toLocaleString('fr-FR')} parties · score ${turn === 'w' ? 'Blancs' : 'Noirs'} ${p1(e.top.score)} · ${splitText(e.split)}</span>`;
     } else body = '—';
-    const meta = e.meta ? `<p class="muted tiny">${esc(eliteSummary(e.meta))}</p>` : '';
+    const meta = e.meta ? `<p class="muted tiny elite-fresh">${esc(eliteSummary(e.meta))} Source : ${esc(SOURCE_LABELS[e.source] || '?')}.</p>` : '';
     return `<div class="opt-block elite-block"><p class="label">Élite blitz/rapide — top ${e.meta?.filters?.top ?? 50} Lichess et Chess.com</p><p>${body}</p>
       <p class="muted small">Fréquences observées chez les meilleurs joueurs en ligne (blitz/rapide), pas une évaluation moteur.</p>${meta}${this.eliteGames()}</div>`;
   }

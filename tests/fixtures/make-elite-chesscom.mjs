@@ -53,6 +53,7 @@ const arch = (u) => ({ archives: [`https://api.chess.com/pub/player/${u}/games/2
 for (const [u, list] of [['exemple_blitz_a', AB], ['exemple_blitz_b', B], ['exemple_rapide_c', C]]) {
   w(`api.chess.com_pub_player_${u}_games_archives`, arch(u));
   w(`api.chess.com_pub_player_${u}_games_2026_10`, { games: list });
-  // 2026/09 absent pour exemple_rapide_c : erreur notée, la source continue
+  // 2026/09 tronqué pour exemple_rapide_c : erreur notée, les autres mois et joueurs continuent
   if (u !== 'exemple_rapide_c') w(`api.chess.com_pub_player_${u}_games_2026_09`, { games: [] });
+  else writeFileSync(`${dir}/api.chess.com_pub_player_${u}_games_2026_09`, '{"games":[{"url":"tronqu');
 }

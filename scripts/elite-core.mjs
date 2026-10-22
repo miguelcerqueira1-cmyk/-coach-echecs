@@ -1,5 +1,6 @@
 // Logique pure du jeu de données Élite (sans réseau, testée) : lecture des réponses Lichess /
-// Chess.com, filtre du répertoire, agrégation par position et sélection des parties exemples.
+// Chess.com, filtre du répertoire, état persistant (mises à jour incrémentales), agrégation par
+// position et sélection des parties exemples.
 import { Chess } from '../site/vendor/chess.js';
 import { parseLichessGame, parseChessComGame } from '../site/js/games-core.js';
 import { fenKey, repertoireOfSan, ROOTS } from '../site/js/elite.js';
@@ -35,7 +36,7 @@ export function normalizeLichess(g, player, speeds = ['blitz', 'rapid']) {
   if (!p || !RESULTS.includes(p.result)) return null;
   return {
     p: 'li', id: g.id, w: p.white, wr: p.whiteElo, b: p.black, br: p.blackElo,
-    y: new Date(p.date).getUTCFullYear(), r: p.result, s: g.speed, san: p.san,
+    y: new Date(p.date).getUTCFullYear(), t: g.createdAt || 0, r: p.result, s: g.speed, san: p.san,
   };
 }
 
@@ -49,7 +50,7 @@ export function normalizeChessCom(g, player, speeds = ['blitz', 'rapid']) {
   if (!id) return null;
   return {
     p: 'cc', id, w: p.white, wr: p.whiteElo, b: p.black, br: p.blackElo,
-    y: new Date(p.date).getUTCFullYear(), r: p.result, s: g.time_class, san: p.san,
+    y: new Date(p.date).getUTCFullYear(), t: (g.end_time || 0) * 1000, r: p.result, s: g.time_class, san: p.san,
   };
 }
 
@@ -153,5 +154,78 @@ export function dedupe(games) {
     if (seen.has(k)) return false;
     seen.add(k);
     return true;
+  });
+}
+
+// ---------- État persistant (etat.json) ----------
+// owners : pour chaque joueur du top × cadence (« li:pseudo:blitz »), la date de sa partie la plus
+//   récente vue (`last`) et ses `maxGames` dernières parties téléchargées [id, date] (répertoire ou
+//   non) : c'est ce qui définit « ses 100 dernières parties », en mode complet comme incrémental.
+// games : parties du répertoire gardées (clé « plateforme:id », donc sans doublon), avec la liste
+//   des joueurs du top qui les ont fait entrer (`o`).
+// L'agrégat publié est toujours RECALCULÉ à partir de games : ni dérive, ni double comptage.
+
+export const MONTH_MS = 30.44 * 86400000;
+
+export function emptyState() {
+  return { version: 1, updatedAt: null, tops: { li: {}, cc: {} }, owners: {}, etags: {}, games: {} };
+}
+
+export const ownerKey = (p, user, perf) => `${p}:${String(user).toLowerCase()}:${perf}`;
+
+// Ajoute les parties téléchargées pour un joueur × cadence. items : [{ id, t, game|null }].
+// Renvoie le nombre de parties du répertoire inconnues jusque-là.
+export function recordDownload(state, key, items, { maxGames }) {
+  const o = (state.owners[key] ??= { last: 0, recent: [] });
+  const seen = new Set(o.recent.map((r) => r[0]));
+  let added = 0;
+  for (const it of items) {
+    if (!seen.has(it.id)) { o.recent.push([it.id, it.t]); seen.add(it.id); }
+    if (it.t > o.last) o.last = it.t;
+    if (!it.game) continue;
+    const gk = `${it.game.p}:${it.game.id}`;
+    const g = state.games[gk];
+    if (!g) {
+      const { san, y, ...rest } = it.game;
+      state.games[gk] = { ...rest, t: it.t, m: san.join(' '), o: [key] };
+      added++;
+    } else if (!g.o.includes(key)) g.o.push(key);
+  }
+  o.recent.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
+  o.recent = o.recent.slice(0, maxGames);
+  return added;
+}
+
+// Retire : les joueurs sortis du top, les parties hors fenêtre, et celles qui ne font plus partie
+// des `maxGames` dernières parties d'aucun joueur du top. Renvoie le nombre de parties retirées.
+export function pruneState(state, { now, months, activeOwners }) {
+  const start = now - months * MONTH_MS;
+  for (const k of Object.keys(state.owners)) if (!activeOwners.has(k)) delete state.owners[k];
+  const ids = new Map();
+  for (const [k, o] of Object.entries(state.owners)) {
+    o.recent = o.recent.filter((r) => r[1] >= start);
+    ids.set(k, new Set(o.recent.map((r) => r[0])));
+  }
+  let removed = 0;
+  for (const [gk, g] of Object.entries(state.games)) {
+    g.o = g.o.filter((k) => ids.get(k)?.has(g.id));
+    if (!g.o.length || g.t < start) { delete state.games[gk]; removed++; }
+  }
+  return removed;
+}
+
+// Parties de l'état → parties normalisées (pour aggregate).
+export function stateGames(state) {
+  return Object.values(state.games)
+    .sort((a, b) => b.t - a.t || (a.id < b.id ? -1 : 1))
+    .map((g) => ({ ...g, y: new Date(g.t).getUTCFullYear(), san: g.m.split(' ') }));
+}
+
+// Dernières parties gardées, tous joueurs confondus (« Nouvelles parties »).
+// classifyFn(san) → { eco, name } | null (nom d'ouverture, base CC0).
+export function recentGames(state, n = 10, classifyFn = () => null) {
+  return stateGames(state).slice(0, n).map((g) => {
+    const op = classifyFn(g.san);
+    return { p: g.p, id: g.id, w: g.w, wr: g.wr, b: g.b, br: g.br, y: g.y, t: g.t, r: g.r, s: g.s, m: g.m, eco: op?.eco || null, n: op?.name || null };
   });
 }

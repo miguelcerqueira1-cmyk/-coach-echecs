@@ -30,9 +30,12 @@ Pour l'entraînement, l'analyse et les parties où l'assistance est autorisée.
 **Élite blitz/rapide** : coups les plus joués, score, nombre de parties, répartition
 Lichess / Chess.com et parties exemples (ouvrables sur l'échiquier) tirés des parties récentes
 des 50 meilleurs joueurs blitz et rapide de chaque plateforme, limitées à 1.d4 d5 2.c4 et 1.e4 c6.
-Ce sont des fréquences observées, pas une évaluation. Le fichier est régénéré chaque semaine par
-GitHub Actions (`npm run elite` en local ; détails dans CLAUDE.md). Une position absente du jeu de
-données est affichée comme absente.
+Ce sont des fréquences observées, pas une évaluation. Les données sont mises à jour environ toutes
+les 30 minutes par GitHub Actions (nouvelles parties seulement ; reconstruction complète le lundi) ;
+la page Répertoire liste les « 🔴 Nouvelles parties du top ». Une partie apparaît au passage qui
+suit sa fin ; GitHub retarde souvent ces passages de 5 à 20 min, et les désactive après 60 jours
+sans commit sur `main` (Actions → « Données Élite » → Enable workflow). Une position absente du jeu
+de données est affichée comme absente. Détails dans CLAUDE.md.
 
 Mode « Indice d'abord » (⚙) : indice → explication → coup, au lieu d'afficher directement le conseil.
 

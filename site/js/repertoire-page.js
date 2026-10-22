@@ -11,7 +11,7 @@ import { enrichMoves, bucketLabel, SPEED_LABELS } from './lichess.js';
 import { sanFr, formatScore, formatLine } from './analysis.js';
 import { repertoireToPgn } from './repertoire-pgn.js';
 import { LANGS, searchLink, decodeEntities } from './youtube.js';
-import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders } from './elite.js';
+import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago } from './elite.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -85,7 +85,7 @@ export class RepertoirePage {
     this.openGame = openGame;
     this.youtube = youtube;
     this.loadEliteData = loadEliteData;
-    this.elite = { status: 'loading' }; // jeu de données statique (data/elite.json)
+    this.elite = { status: 'loading' }; // jeu Élite (branche donnees-elite ou data/elite.json)
     this.data = null;
     this.view = 'gd'; // 'gd' | 'ck' | 'trash'
     this.badge = '';
@@ -109,12 +109,16 @@ export class RepertoirePage {
         return;
       }
       for (const e of this.data.entries) e._search = searchText(e);
-      this.loadEliteData().then((r) => {
-        this.elite = r;
-        if (this.el.querySelector('.rep-table')) this.data.entries.forEach((e) => this.updateRow(e));
-        if (this.tree?.source === 'elite') this.openTree(this.tree.path);
-      });
     }
+    // À chaque affichage (rechargé au plus toutes les 5 min) : nouvelles parties visibles sans recharger la page.
+    this.loadEliteData().then((r) => {
+      if (r === this.eliteResult) return;
+      this.eliteResult = r;
+      this.elite = r;
+      if (this.el.querySelector('.rep-table')) this.data.entries.forEach((e) => this.updateRow(e));
+      this.renderLive();
+      if (this.tree?.source === 'elite') this.openTree(this.tree.path);
+    });
     const fk = this.filterKey();
     if (this.lastFilterKey && this.lastFilterKey !== fk) { this.live.clear(); this.generation++; }
     this.lastFilterKey = fk;
@@ -235,6 +239,7 @@ export class RepertoirePage {
       </div>
       <div data-ranking>${this.rankingHtml(list)}</div>
       ${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}
+      <section class="card live-card" id="rep-live">${this.liveHtml()}</section>
       <section class="card tree-card" id="rep-tree">${this.treeHtml()}</section>
       <dialog class="video-dlg" data-video-dlg></dialog>
     `;
@@ -563,6 +568,39 @@ export class RepertoirePage {
     });
   }
 
+  // ---------- Nouvelles parties du top (jeu Élite) ----------
+
+  liveHtml() {
+    const el = this.elite;
+    const head = '<h2>🔴 Nouvelles parties du top</h2>';
+    if (el.status === 'loading') return `${head}<p class="state small"><span class="spinner"></span> Chargement…</p>`;
+    if (el.status !== 'ok') return `${head}<p class="muted small">Jeu de données Élite non publié sur ce site.</p>`;
+    const list = recentInfo(el.data);
+    const rows = list.map((g, i) => `<li>
+        <span class="tiny live-when" title="${esc(new Date(g.t).toLocaleString('fr-FR'))}">${esc(ago(g.t))}</span>
+        <button type="button" class="link-btn" data-live-game="${i}">${esc(g.label)}</button>
+        <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}${g.opening ? ` · ${esc(g.opening)}` : ''}</span>
+        <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('');
+    return `${head}
+      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent 1.d4 d5 2.c4 ou 1.e4 c6 ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).</p>
+      ${rows ? `<ul class="live-list">${rows}</ul>` : '<p class="muted small">Aucune partie récente dans le jeu de données.</p>'}
+      <p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p>`;
+  }
+
+  renderLive() {
+    const el = this.el.querySelector('#rep-live');
+    if (!el) return;
+    el.innerHTML = this.liveHtml();
+    this.bindLive(el);
+  }
+
+  bindLive(el) {
+    el.querySelectorAll('[data-live-game]').forEach((b) => b.addEventListener('click', () => {
+      const g = recentInfo(this.elite.data)[Number(b.dataset.liveGame)];
+      if (g) this.openGame?.(g.san, g.color, `la partie ${g.label}`, eliteHeaders(g));
+    }));
+  }
+
   renderTree() {
     const el = this.el.querySelector('#rep-tree');
     if (!el) return;
@@ -707,6 +745,7 @@ export class RepertoirePage {
       }
     });
     this.bindTree(this.el.querySelector('#rep-tree'));
+    this.bindLive(this.el.querySelector('#rep-live'));
   }
 
   bindTree(el) {
