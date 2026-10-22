@@ -15,6 +15,7 @@ import { initRouter } from './router.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
+import { YouTubeClient } from './youtube.js';
 import { TrainingPage } from './training.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
@@ -54,6 +55,7 @@ const optimal = new OptimalPanel({
   getFilter: () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) }),
   setFilter: (f) => { state.settings.explorerFilter = f; store.saveSettings(state.settings); },
   onChange: () => renderBoard(),
+  onOpenMaster: (id) => openMasterGame(id, state.game.playerColor),
   onPlay: (uci) => {
     if (state.viewPly !== null) return;
     const mv = state.game.legalMoves().find((m) => m.lan === uci);
@@ -90,7 +92,9 @@ async function init() {
           el: $('page-repertoire'),
           client: lichess,
           getFilter: () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) }),
-          openLine: openLineInBoard,
+          openSan: (san, color, label) => openSanInBoard(san, color, label, { animate: true }),
+          openMaster: openMasterGame,
+          youtube: new YouTubeClient({ getKey: () => store.getYoutubeKey() }),
         });
         repertoirePage.show();
       }
@@ -982,6 +986,11 @@ function bindUi() {
     $('coach-test-msg').textContent = 'Jeton Lichess effacé de cet appareil.';
     optimal.update(state.game);
   };
+  $('clear-youtube').onclick = () => {
+    store.setYoutubeKey('');
+    $('set-youtube').value = '';
+    $('coach-test-msg').textContent = 'Clé YouTube effacée de cet appareil.';
+  };
   $('clear-code').onclick = () => {
     store.setAccessCode('');
     $('set-code').value = '';
@@ -1085,6 +1094,8 @@ function openSettings() {
   $('coach-test-msg').textContent = '';
   $('set-lichess').value = '';
   $('set-lichess').placeholder = store.getLichessToken() ? 'Jeton enregistré sur cet appareil (laisser vide pour le garder)' : 'lip_… (jeton sans aucune permission)';
+  $('set-youtube').value = '';
+  $('set-youtube').placeholder = store.getYoutubeKey() ? 'Clé enregistrée sur cet appareil (laisser vide pour la garder)' : 'AIza… (clé restreinte à ce site)';
   $('dlg-settings').showModal();
 }
 
@@ -1106,6 +1117,8 @@ function saveSettingsFromForm() {
   if (code) store.setAccessCode(code);
   const tok = $('set-lichess').value.trim();
   if (tok) store.setLichessToken(tok);
+  const yt = $('set-youtube').value.trim();
+  if (yt) store.setYoutubeKey(yt);
   if (tok || code) optimal.update(state.game);
   refreshCoachPill();
   renderCoach();
@@ -1117,16 +1130,50 @@ function saveSettingsFromForm() {
 window.__coach = { state, engine, optimal, lichess, get repertoire() { return repertoirePage; }, get games() { return gamesPage; } };
 
 // Ouvre une suite de coups sur l'échiquier comme nouvelle partie (l'ancienne est sauvegardée).
-function openSanInBoard(san, color, label) {
+// animate : rejoue la séquence coup par coup (≈ 400 ms) puis revient à la position finale.
+let replayTimer = null;
+function openSanInBoard(san, color, label, { animate = false } = {}) {
   const pgn = san.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(' ');
-  if (!window.confirm(`Ouvrir ${label} sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`)) return;
-  store.backupGame();
-  setGame(Game.fromPgn(pgn || '*', { playerColor: color, level: state.settings.level }));
+  const cur = state.game;
+  // Pas de confirmation si la partie en cours est vide ou n'est qu'une ligne testée.
+  const disposable = !cur.ply || String(cur.record.headers?.Event || '').startsWith('Test');
+  if (!disposable && !window.confirm(`Ouvrir ${label} sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`)) return;
+  if (!disposable) store.backupGame();
+  let g;
+  try { g = Game.fromPgn(pgn || '*', { playerColor: color, level: state.settings.level }); } catch (e) { notationMsg(e.message, true); return; }
+  if (animate) g.record.headers = { ...(g.record.headers || {}), Event: `Test : ${label}` };
+  clearTimeout(replayTimer);
+  setGame(g);
   location.hash = '#/moteur';
+  if (!animate || !g.ply) return;
+  viewAt(0);
+  let i = 0;
+  const step = () => {
+    // Abandon si la partie ou la vue a changé entre-temps (autre coup, autre partie).
+    if (state.game !== g || state.viewPly !== i) return;
+    i++;
+    viewAt(i);
+    if (i < g.ply) replayTimer = setTimeout(step, 400);
+  };
+  replayTimer = setTimeout(step, 400);
 }
 
-function openLineInBoard(entry) {
-  openSanInBoard(entry.san, entry.rep === 'gd' ? 'w' : 'b', `« ${entry.nom} »`);
+// Télécharge une partie de la base des maîtres et l'ouvre sur l'échiquier.
+async function openMasterGame(id, color) {
+  let pgn;
+  try {
+    pgn = await lichess.masterPgn(id);
+  } catch (e) {
+    notationMsg(`Partie de maître indisponible : ${e.message}`, true);
+    return;
+  }
+  let g;
+  try { g = Game.fromPgn(pgn, { playerColor: color, level: state.settings.level }); } catch (e) { notationMsg(e.message, true); return; }
+  const h = g.record.headers;
+  if (!window.confirm(`Ouvrir ${h.White || '?'} – ${h.Black || '?'} sur l’échiquier ? La partie en cours sera remplacée (récupérable dans ⚙ Réglages → Avancé).`)) return;
+  store.backupGame();
+  setGame(g);
+  location.hash = '#/moteur';
 }
 
 init();

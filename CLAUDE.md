@@ -21,13 +21,16 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/games-core.js         Mes parties : formats Lichess/Chess.com, sortie de répertoire, erreurs, bilan (pur)
   js/games.js              Page Mes parties (import, analyse Stockfish coup par coup, bilan, revue)
   js/explain-free.js       Explication gratuite sans IA (faits chess.js + calculs Stockfish), utilisée quand Claude n'est pas configuré
-  js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess)
+  js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess, clé YouTube)
   js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
   js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
   js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré)
-  js/repertoire-page.js    Page Répertoire : tableau 9 colonnes, arbre Lichess, liens vidéo perso
+  js/repertoire-page.js    Page Répertoire : filtres, recherche par coup/ECO, tableau 9 colonnes, Anti-trash,
+                           « Tester cette ligne », arbre Lichess (niveau/maîtres), vidéos, export PGN
+  js/repertoire-pgn.js     Export PGN du répertoire (variantes, $2, commentaires ; relu par chess.js en test)
+  js/youtube.js            Recherche YouTube Data v3 par fiche et par langue (clé perso, cache 7 j)
   js/lines.js              Lecture des lignes « 1. d4 d5 2. c4? », index ECO, empreintes
-  data/repertoire.js       38 fiches rédigées (Gambit Dame, Caro-Kann) — source à éditer
+  data/repertoire.js       58 fiches rédigées (Gambit Dame, Caro-Kann) — source à éditer
   data/repertoire.json     GÉNÉRÉ (scripts/repertoire.mjs) : fiches + ECO + vérification
   pieces/                  SVG cburnett (GPLv2+)
   vendor/, engine/         GÉNÉRÉS par scripts/vendor.mjs (postinstall), non versionnés
@@ -119,7 +122,17 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   corrigées ou retirées : ne jamais ajouter une ligne tactique sans la vérifier.
 - Vidéos : aucun lien horodaté n'est inventé. Chaque fiche propose une recherche YouTube ; un lien
   précis n'est publié que s'il est vérifié (`video.url` + `verifie: true`, contrôlé par les tests).
-  L'utilisateur peut enregistrer son propre lien horodaté (stocké sur l'appareil).
+  L'utilisateur peut enregistrer son propre lien horodaté (stocké sur l'appareil). Bouton
+  « Vidéos » : 7 langues (fr, en, es, de, it, pt, ru) ; avec une clé YouTube Data v3 personnelle
+  (search = 100 unités sur 10 000/jour → ≈ 100 recherches/jour, réponses en cache 7 jours),
+  liste titre/chaîne/durée/vues ; sans clé, lien de recherche. L'app ne « regarde » pas les vidéos.
+- Base des maîtres (explorer.lichess.org/masters, jeton requis, relais Worker avec db=masters) :
+  bloc « Maîtres » du Coup optimal, bascule niveau/maîtres du tableau et de l'arbre, colonne
+  Statistiques ; parties de maîtres ouvrables (/masters/pgn/{id}, jeton personnel).
+- « Tester cette ligne » : ouvre la séquence sur #/moteur et la rejoue (400 ms/coup) ; pas de
+  confirmation si la partie en cours est vide ou est elle-même une ligne testée (Event « Test : … »).
+- Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
+  chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page
   peut interrompre le calcul d'une autre ; la page Moteur relance son calcul en revenant.
 - Mode « Indice d'abord » (réglage helpMode) : indice (thème + pièce) → explication sans le coup
@@ -139,8 +152,8 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 ## Phase 2 (non implémenté)
 
 - Liens vidéo horodatés vérifiés pour chaque fiche (à choisir et contrôler à la main).
-- Plus de fiches (le répertoire actuel couvre 38 lignes ; l'arbre Lichess couvre le reste).
-- Statistiques « Masters » et parties d'un joueur précis (endpoints /masters et /player).
+- Plus de fiches (le répertoire actuel couvre 58 lignes ; l'arbre Lichess couvre le reste).
+- Parties d'un joueur précis (endpoint /player).
 
 - Bilan de la partie jouée sur la page Moteur (aujourd'hui : via « Mes parties » ou Exporter).
 - Comparaison facultative de trois candidats (MultiPV 3), avec indication du coût de calcul.

@@ -68,6 +68,20 @@ Deux façons de l'utiliser (une seule suffit) :
 
 Cloud Eval (évaluations Stockfish de Lichess) ne demande aucun jeton.
 
+## 3 ter. Clé YouTube (facultatif : liste des vidéos en 7 langues)
+
+Sans clé, le bouton « 🎬 Vidéos » ouvre une recherche YouTube dans la langue choisie.
+Avec une clé gratuite, la liste (titre, chaîne, durée, vues) s'affiche dans l'application.
+Quota gratuit : environ 100 recherches par jour (résultats gardés 7 jours sur l'appareil).
+
+1. Ouvrez <https://console.cloud.google.com> (compte Google) → créez un projet `coach-echecs`.
+2. « API et services » → « Bibliothèque » → **YouTube Data API v3** → **Activer**.
+3. « Identifiants » → « Créer des identifiants » → **Clé API**.
+4. Modifiez la clé : *Restrictions d'application* → **Sites web** →
+   `https://miguelcerqueira1-cmyk.github.io/*` ; *Restrictions d'API* → YouTube Data API v3.
+5. Dans l'application : ⚙ Réglages → « Clé API YouTube Data v3 » → Enregistrer.
+   Elle reste sur l'appareil (ne la collez jamais dans une conversation).
+
 ## 4. Enregistrer les secrets dans GitHub
 
 Dépôt → **Settings** → **Secrets and variables** → **Actions** → onglet **Secrets** →

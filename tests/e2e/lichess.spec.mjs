@@ -70,18 +70,23 @@ test('Coup optimal : Stockfish local, Cloud Eval et meilleur % de victoire avec 
   expect(best.uci).toBe(legal[1].lan); // 70 % sur 1000 parties, pas le 100 % sur 5 parties
   await expect(panel.locator('tr.small-sample')).toHaveCount(1);
   await expect(page.locator('.board-arrows line.arrow-stat')).toHaveCount(1);
+  // Base des maîtres : coup le plus joué (le mock donne 1000 parties au 2e coup sur 1505).
+  await expect(panel.locator('.mv-master')).toBeVisible();
+  await expect(panel).toContainText('des parties');
+  expect(calls.some((c) => c.url.startsWith('https://explorer.lichess.org/masters') && !c.url.includes('ratings='))).toBe(true);
   // Filtre par défaut : blitz, < 1000 et 1000–1199 ; jeton envoyé en Bearer.
-  expect(calls[0].url).toContain('speeds=blitz');
-  expect(calls[0].url).toContain('ratings=0%2C1000');
-  expect(calls[0].auth).toBe('Bearer lip_test');
+  const lc = calls.find((c) => c.url.startsWith('https://explorer.lichess.org/lichess'));
+  expect(lc.url).toContain('speeds=blitz');
+  expect(lc.url).toContain('ratings=0%2C1000');
+  expect(lc.auth).toBe('Bearer lip_test');
   // Changer de préréglage relance la requête avec le nouveau filtre.
   await panel.locator('summary').click();
   await panel.locator('[data-f=preset]').selectOption('fort');
-  await expect.poll(() => calls.at(-1).url).toContain('ratings=2200%2C2500');
+  await expect.poll(() => calls.some((c) => c.url.includes('ratings=2200%2C2500'))).toBe(true);
   // Après un coup, les statistiques suivent la nouvelle position (play=...).
   await page.fill('#notation-input', 'd4');
   await page.press('#notation-input', 'Enter');
-  await expect.poll(() => calls.at(-1).url).toContain('play=d2d4');
+  await expect.poll(() => calls.some((c) => c.url.includes('play=d2d4'))).toBe(true);
 });
 
 test('Coup optimal : position absente du cache, explorateur sans jeton, erreur explicite', async ({ page }) => {
@@ -113,33 +118,60 @@ test('navigation entre les pages @smoke : la partie et l’analyse sont conserv�
   expect(moves).toEqual(['e4']);
 });
 
-test('Répertoire : 9 colonnes, deux répertoires, filtres, vérification Stockfish affichée', async ({ page }) => {
-  await mockLichess(page);
+test('Répertoire : 9 colonnes, filtres rapides, vérification Stockfish, stats niveau + maîtres', async ({ page }) => {
+  const calls = [];
+  await mockLichess(page, { explorerCalls: calls });
   await setup(page);
   await page.goto('./#/repertoire');
   const rows = page.locator('.rep-table tbody tr[data-id]');
   await expect(rows.first()).toBeVisible();
   await expect(page.locator('.rep-table thead th')).toHaveCount(9);
   const nGd = await rows.count();
-  expect(nGd).toBeGreaterThan(15);
+  expect(nGd).toBeGreaterThan(25);
   await expect(page.locator('.rep-table tbody')).toContainText('D67');
   await expect(page.locator('.badge.ok').first()).toContainText('Stockfish');
   await expect(page.locator('.badge.err')).toHaveCount(0);
-  // Colonnes dynamiques remplies depuis le (faux) Lichess.
-  await expect(rows.first().locator('[data-label="Statistiques"]')).toContainText('parties');
+  // Colonnes dynamiques remplies depuis le (faux) Lichess : mon niveau ET base des maîtres.
+  const stats = rows.first().locator('[data-label="Statistiques"]');
+  await expect(stats).toContainText('Mon niveau');
+  await expect(stats).toContainText('Maîtres');
+  await expect(stats.locator('.stat-line')).toHaveCount(2);
+  expect(calls.some((c) => c.url.startsWith('https://explorer.lichess.org/masters'))).toBe(true);
   await expect(rows.first().locator('[data-label="Évaluation"]')).toContainText('Cloud Eval');
-  await page.click('[data-rep=ck]');
+  await page.click('[data-view=ck]');
   await expect(page.locator('.rep-table tbody')).toContainText('B17');
-  await page.selectOption('[data-badge]', 'loufoque');
+  await page.click('[data-badge-chip=loufoque]');
   const badges = await page.locator('.rep-table tbody .badge.b-loufoque').count();
   expect(badges).toBe(await rows.count());
+  await page.click('[data-badge-chip=""]');
   await page.fill('[data-q]', 'Karpov');
-  await page.selectOption('[data-badge]', '');
-  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toBeVisible();
+  await expect.poll(() => rows.count()).toBeLessThan(5);
+  await expect(page.locator('tr[data-id="ck-karpov"]')).toBeVisible();
 });
 
-test('Répertoire : arbre Lichess navigable et ouverture d’une ligne sur l’échiquier', async ({ page }) => {
+test('Répertoire : recherche par coup (français ou anglais) et par code ECO', async ({ page }) => {
   await mockLichess(page);
+  await setup(page);
+  await page.goto('./#/repertoire');
+  const rows = page.locator('.rep-table tbody tr[data-id]');
+  await expect(rows.first()).toBeVisible();
+  await page.click('[data-view=ck]');
+  await page.fill('[data-q]', '4...Fg4');
+  await expect.poll(() => rows.count()).toBeGreaterThan(0);
+  const fr = await rows.count();
+  await page.fill('[data-q]', '4...Bg4');
+  await expect.poll(() => rows.count()).toBe(fr);
+  await page.fill('[data-q]', 'B12');
+  await expect.poll(() => rows.count()).toBeGreaterThan(0);
+  expect(await rows.locator('.badge.eco').allTextContents()).toContain('B12');
+  await page.fill('[data-q]', 'zzzz');
+  await expect(rows).toHaveCount(0);
+});
+
+test('Répertoire : arbre Lichess navigable (niveau et maîtres)', async ({ page }) => {
+  const calls = [];
+  await mockLichess(page, { explorerCalls: calls });
   await setup(page);
   await page.goto('./#/repertoire');
   await page.click('[data-tree="gd-orthodoxe"]');
@@ -150,26 +182,96 @@ test('Répertoire : arbre Lichess navigable et ouverture d’une ligne sur l’�
   await expect.poll(() => page.evaluate(() => window.__coach.repertoire.tree.path.length)).toBe(before + 1);
   await tree.locator('[data-crumb="0"]').click();
   await expect.poll(() => page.evaluate(() => window.__coach.repertoire.tree.path.length)).toBe(0);
-
-  await page.click('[data-rep=ck]');
-  page.once('dialog', (d) => d.accept());
-  await page.click('[data-open="ck-karpov"]');
-  await expect(page.locator('#page-moteur')).toBeVisible();
-  const g = await page.evaluate(() => ({ moves: window.__coach.state.game.moves.map((m) => m.san), color: window.__coach.state.game.playerColor }));
-  expect(g.moves.slice(0, 4)).toEqual(['e4', 'c6', 'd4', 'd5']);
-  expect(g.color).toBe('b');
+  const n = calls.length;
+  await tree.locator('[data-tree-src=maitres]').click();
+  await expect.poll(() => calls.slice(n).some((c) => c.url.startsWith('https://explorer.lichess.org/masters'))).toBe(true);
+  await expect(tree.locator('.tree-table tbody tr')).toHaveCount(3);
 });
 
-test('Répertoire : lien vidéo horodaté personnel', async ({ page }) => {
+test('Répertoire : « Tester cette ligne » bascule sur le Moteur et rejoue la séquence', async ({ page }) => {
   await mockLichess(page);
   await setup(page);
   await page.goto('./#/repertoire');
-  const answers = ['https://youtu.be/dQw4w9WgXcQ', '1:30'];
-  page.on('dialog', (d) => d.accept(answers.shift()));
-  await page.click('[data-video-add="gd-orthodoxe"]');
-  const link = page.locator('tr[data-id="gd-orthodoxe"] a', { hasText: 'Mon lien horodaté' });
-  await expect(link).toHaveAttribute('href', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=90s');
-  await expect(page.locator('tr[data-id="gd-orthodoxe"] a', { hasText: 'Rechercher sur YouTube' })).toHaveAttribute('href', /youtube\.com\/results\?search_query=/);
+  await page.click('[data-view=ck]');
+  // Partie vide : pas de confirmation demandée.
+  await page.click('[data-test="ck-karpov"]');
+  await expect(page.locator('#page-moteur')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.__coach.state.viewPly)).not.toBe(null);
+  // Fin de l'animation : retour à la position actuelle (vue « en direct »).
+  await expect.poll(() => page.evaluate(() => window.__coach.state.viewPly), { timeout: 15000 }).toBe(null);
+  const g = await page.evaluate(() => ({ moves: window.__coach.state.game.moves.map((m) => m.san), color: window.__coach.state.game.playerColor }));
+  expect(g.moves.slice(0, 4)).toEqual(['e4', 'c6', 'd4', 'd5']);
+  expect(g.color).toBe('b');
+  // Une ligne testée se remplace sans confirmation.
+  let asked = false;
+  page.on('dialog', (d) => { asked = true; d.accept(); });
+  await page.click('.tabs a[data-page=repertoire]');
+  await page.click('[data-view=gd]');
+  await page.click('[data-test="gd-orthodoxe"]');
+  await expect.poll(() => page.evaluate(() => window.__coach.state.game.moves[0]?.san)).toBe('d4');
+  expect(asked).toBe(false);
+});
+
+test('Répertoire : section Anti-trash Blitz et test d’une punition', async ({ page }) => {
+  await mockLichess(page);
+  await setup(page);
+  await page.goto('./#/repertoire');
+  await page.click('[data-view=trash]');
+  const trash = page.locator('.trash');
+  await expect(trash).toContainText('Coups adverses à punir');
+  await expect(trash).toContainText('Pièges à ne pas commettre');
+  expect(await trash.locator('.trash-card.punition').count()).toBeGreaterThan(10);
+  expect(await trash.locator('.trash-card.piege').count()).toBeGreaterThan(3);
+  await trash.locator('[data-test-claim="gd-echange:punition"]').click();
+  await expect(page.locator('#page-moteur')).toBeVisible();
+  const moves = await page.evaluate(() => window.__coach.state.game.moves.map((m) => m.san));
+  expect(moves.slice(-2)).toEqual(['c6', 'Qxb7']);
+});
+
+test('Répertoire : export PGN importable (chess.js), annotations ?', async ({ page }) => {
+  await mockLichess(page);
+  await setup(page);
+  await page.goto('./#/repertoire');
+  await page.locator('.export-menu summary').click();
+  const dl = page.waitForEvent('download');
+  await page.click('[data-export=gd]');
+  expect((await dl).suggestedFilename()).toBe('repertoire-gambit-dame.pgn');
+  const pgn = await page.evaluate(() => window.__coach.repertoire.lastExport);
+  expect(pgn).toContain('[Event "');
+  expect(pgn).toContain('$2');
+  const games = pgn.split(/\n(?=\[Event )/);
+  expect(games.length).toBeGreaterThan(25);
+  for (const g of games) new Chess().loadPgn(g);
+});
+
+test('Répertoire : vidéos multilingues sans clé (lien de recherche) et avec clé (API simulée)', async ({ page }) => {
+  await mockLichess(page);
+  const ytCalls = [];
+  await page.route('https://www.googleapis.com/youtube/v3/**', (r) => {
+    const u = new URL(r.request().url());
+    ytCalls.push(u);
+    if (u.pathname.endsWith('/search')) {
+      return r.fulfill({ headers: CORS, json: { items: [{ id: { videoId: 'abc123def45' }, snippet: { title: 'Gambit Dame : l&#39;Orthodoxe', channelTitle: 'Chaîne test', publishedAt: '2024-01-02T00:00:00Z', thumbnails: {} } }] } });
+    }
+    return r.fulfill({ headers: CORS, json: { items: [{ id: 'abc123def45', contentDetails: { duration: 'PT12M5S' }, statistics: { viewCount: '12345' } }] } });
+  });
+  await setup(page);
+  await page.goto('./#/repertoire');
+  await page.click('[data-videos="gd-orthodoxe"]');
+  const dlg = page.locator('[data-video-dlg]');
+  await expect(dlg.locator('a.primary-link')).toHaveAttribute('href', /youtube\.com\/results\?search_query=/);
+  await dlg.locator('[data-vlang=es]').click();
+  await expect(dlg.locator('a.primary-link')).toHaveAttribute('href', /ajedrez/);
+  await dlg.locator('[data-vclose]').click();
+  // Avec une clé : liste avec chaîne, durée et vues ; horodatage personnel conservé.
+  await page.evaluate(() => localStorage.setItem('coach-echecs:cle-youtube', 'AIza-test'));
+  await page.click('[data-videos="gd-orthodoxe"]');
+  await expect(dlg.locator('.vd-title')).toHaveText("Gambit Dame : l'Orthodoxe");
+  await expect(dlg).toContainText('12:05');
+  expect(ytCalls[0].searchParams.get('relevanceLanguage')).toBe('es');
+  page.once('dialog', (d) => d.accept('1:30'));
+  await dlg.locator('[data-vkeep]').click();
+  await expect(page.locator('tr[data-id="gd-orthodoxe"] a', { hasText: 'Mon lien horodaté' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=abc123def45&t=90s');
 });
 
 test('Répertoire sur téléphone @mobile : cartes lisibles, pas de défilement horizontal', async ({ page }) => {
@@ -210,7 +312,7 @@ test('Répertoire : toucher une étiquette filtre les fiches de ce type', async 
   await setup(page);
   await page.goto('./#/repertoire');
   await page.locator('[data-badge-filter="loufoque"]').first().click();
-  await expect(page.locator('[data-badge]')).toHaveValue('loufoque');
+  await expect(page.locator('[data-badge-chip="loufoque"]')).toHaveAttribute('aria-pressed', 'true');
   const rows = page.locator('.rep-table tbody tr[data-id]');
   expect(await rows.count()).toBe(await page.locator('.rep-table tbody .b-loufoque').count());
 });

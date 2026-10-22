@@ -22,7 +22,10 @@ function uciToSan(fen, uci) {
 }
 
 export class OptimalPanel {
-  constructor({ el, client, getFilter, setFilter, onChange = () => {}, onPlay = null }) {
+  constructor({ el, client, getFilter, setFilter, onChange = () => {}, onPlay = null, onOpenMaster = null }) {
+    this.onOpenMaster = onOpenMaster;
+    this.masters = { status: 'idle' };
+    this.tableSource = 'niveau'; // 'niveau' | 'maitres'
     this.el = el;
     this.client = client;
     this.getFilter = getFilter;
@@ -67,11 +70,13 @@ export class OptimalPanel {
     if (st.over) {
       this.cloud = { status: 'idle' };
       this.explorer = { status: 'idle' };
+      this.masters = { status: 'idle' };
       this.render();
       return;
     }
     this.cloud = { status: 'loading' };
     this.explorer = this.client.explorerMode() ? { status: 'loading' } : { status: 'notoken' };
+    this.masters = this.client.explorerMode() ? { status: 'loading' } : { status: 'notoken' };
     this.render();
 
     this.client.cloudEval(fen, { isStale }).then((r) => {
@@ -91,6 +96,19 @@ export class OptimalPanel {
     });
 
     if (this.explorer.status === 'notoken') return;
+    // Base des maîtres : coups joués par les joueurs titrés + parties de référence.
+    this.client.explorer({ fen: game.startFen, play: game.moves.map((m) => m.uci), db: 'masters', moves: 15, topGames: 6, isStale }).then((r) => {
+      if (r.stale || isStale()) return;
+      const turn = game.turn();
+      const moves = enrichMoves(r.moves, turn).filter((m) => uciToSan(fen, m.uci));
+      const top = moves.slice().sort((a, b) => b.stats.total - a.stats.total)[0] || null;
+      this.masters = { status: 'ok', moves, total: r.stats.total, stats: r.stats, opening: r.opening, top, games: r.topGames || [], turn };
+      this.render();
+    }).catch((e) => {
+      if (isStale()) return;
+      this.masters = { status: 'error', error: e.message };
+      this.render();
+    });
     const f = this.getFilter();
     this.client.explorer({
       fen: game.startFen,
@@ -133,6 +151,7 @@ export class OptimalPanel {
         ${this.blockEngine()}
         ${this.blockCloud()}
         ${this.blockStats(turn)}
+        ${this.blockMasters(turn)}
       </div>
       ${this.filters(f)}
       ${this.table(fen)}
@@ -181,6 +200,33 @@ export class OptimalPanel {
       <p class="muted small">Fréquence observée à ce niveau, pas une évaluation : un coup peut gagner souvent parce que l’adversaire se trompe.</p></div>`;
   }
 
+  blockMasters(turn) {
+    const m = this.masters;
+    let body;
+    if (m.status === 'loading') body = '<span class="state"><span class="spinner"></span>Base des maîtres…</span>';
+    else if (m.status === 'notoken') body = '<span class="muted">Jeton Lichess requis (⚙ Réglages).</span>';
+    else if (m.status === 'error') body = `<span class="error-text">${esc(m.error)}</span>`;
+    else if (m.status === 'ok') {
+      if (!m.total || !m.top) body = '<span class="muted">Position jamais atteinte dans les parties de maîtres : vous êtes hors de la théorie.</span>';
+      else {
+        const share = (100 * m.top.stats.total) / m.total;
+        body = `<strong class="mv-master">${esc(sanFr(m.top.san))}</strong> <span class="eval">${p1(share)} des parties</span>
+          <span class="muted small">${m.total.toLocaleString('fr-FR')} parties · score ${turn === 'w' ? 'Blancs' : 'Noirs'} ${p1(m.top.score)}</span>`;
+      }
+    } else body = '—';
+    return `<div class="opt-block"><p class="label">Coup des maîtres — joueurs titrés 2200+ FIDE</p><p>${body}</p>${this.masterGames()}</div>`;
+  }
+
+  masterGames() {
+    const m = this.masters;
+    if (m.status !== 'ok' || !m.games.length) return '';
+    const res = (g) => (g.winner === 'white' ? '1-0' : g.winner === 'black' ? '0-1' : '½-½');
+    return `<details class="master-games"><summary>Parties de référence (${m.games.length})</summary><ul>
+      ${m.games.map((g) => `<li><button type="button" class="link-btn" data-master="${esc(g.id)}">${esc(g.white.name)} (${g.white.rating}) – ${esc(g.black.name)} (${g.black.rating})</button>
+        <span class="muted small">${res(g)}, ${esc(String(g.year))}${g.uci ? ' · ' + esc(sanFr(uciToSan(this.game.fen(), g.uci) || g.uci)) : ''}</span></li>`).join('')}
+    </ul><p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p></details>`;
+  }
+
   filters(f) {
     const presetOpts = Object.entries(PRESETS).map(([k, v]) => `<option value="${k}" ${f.preset === k ? 'selected' : ''}>${esc(v.label)}</option>`).join('');
     return `<details class="opt-filters" ${f.open ? 'open' : ''}>
@@ -208,8 +254,16 @@ export class OptimalPanel {
   }
 
   table(fen) {
-    const e = this.explorer;
-    if (e.status !== 'ok' || !e.moves.length) return '';
+    const src = this.tableSource;
+    const e = src === 'maitres' ? this.masters : this.explorer;
+    const toggle = `<div class="seg" role="tablist">
+      <button type="button" data-src="niveau" aria-selected="${src === 'niveau'}">Mon niveau</button>
+      <button type="button" data-src="maitres" aria-selected="${src === 'maitres'}">Maîtres</button></div>`;
+    if (e.status !== 'ok' || !e.moves.length) {
+      return (this.explorer.status === 'ok' || this.masters.status === 'ok')
+        ? `<div class="opt-table">${toggle}<p class="muted small">${src === 'maitres' ? 'Aucune partie de maître dans cette position.' : 'Aucune partie à ce niveau.'}</p></div>` : '';
+    }
+    if (src === 'maitres') e.filter = { minGames: 1 };
     const opening = e.opening ? `<p class="small"><span class="badge">${esc(e.opening.eco)}</span> ${esc(e.opening.name)}</p>` : '';
     const rows = e.moves.map((m) => {
       const s = m.stats;
@@ -226,17 +280,20 @@ export class OptimalPanel {
     }).join('');
     const total = e.stats;
     return `<div class="opt-table">
+      ${toggle}
       ${opening}
-      <p class="muted small">${e.total.toLocaleString('fr-FR')} parties dans cette position (Blancs ${p1(total.white)} · nulles ${p1(total.draws)} · Noirs ${p1(total.black)}). Source : ${e.mode === 'relais' ? 'relais Cloudflare' : 'jeton personnel'}.</p>
+      <p class="muted small">${e.total.toLocaleString('fr-FR')} parties ${src === 'maitres' ? 'de maîtres ' : ''}dans cette position (Blancs ${p1(total.white)} · nulles ${p1(total.draws)} · Noirs ${p1(total.black)}).${src === 'maitres' ? ' Base Lichess des parties à la cadence classique de joueurs titrés.' : ` Source : ${e.mode === 'relais' ? 'relais Cloudflare' : 'jeton personnel'}.`}</p>
       <table>
         <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <p class="muted small">Grisé : moins de ${e.filter.minGames} parties. Toucher un coup le joue sur l’échiquier.</p>
+      <p class="muted small">${src === 'maitres' ? '' : `Grisé : moins de ${e.filter.minGames} parties. `}Toucher un coup le joue sur l’échiquier.</p>
     </div>`;
   }
 
   bind() {
+    this.el.querySelectorAll('[data-src]').forEach((b) => b.addEventListener('click', () => { this.tableSource = b.dataset.src; this.render(); }));
+    this.el.querySelectorAll('[data-master]').forEach((b) => b.addEventListener('click', () => this.onOpenMaster?.(b.dataset.master)));
     const f = { ...this.getFilter() };
     const apply = (patch) => {
       this.setFilter({ ...f, ...patch, open: true });

@@ -1,7 +1,7 @@
 {
  "engine": "Stockfish 18 Lite WASM",
  "depth": 18,
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "entries": {
   "gd-orthodoxe": {
    "fp": "8ba06a94",
@@ -280,7 +280,7 @@
    }
   },
   "gd-slave": {
-   "fp": "f34a0f9d",
+   "fp": "613d99c7",
    "depth": 18,
    "main": {
     "type": "cp",
@@ -294,6 +294,31 @@
      "Be7",
      "Ne5"
     ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 12,
+    "errorSan": "Nxb5",
+    "final": {
+     "type": "cp",
+     "value": -275,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -287,
+     "best": "cxb5",
+     "pv": [
+      "cxb5",
+      "a4",
+      "e6",
+      "axb5",
+      "Nb6",
+      "Bd2"
+     ]
+    },
     "pov": "w"
    }
   },
@@ -1328,6 +1353,516 @@
      "Be7",
      "c3",
      "Nc6"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-ragozine": {
+   "fp": "ef90c0f3",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 21,
+    "best": "dxc4",
+    "pv": [
+     "dxc4",
+     "Bxc4",
+     "c5",
+     "O-O",
+     "cxd4",
+     "Nxd4"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-semi-tarrasch": {
+   "fp": "f4343bea",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 42,
+    "best": "Nd7",
+    "pv": [
+     "Nd7",
+     "O-O",
+     "b6",
+     "d5",
+     "Nf6",
+     "Qf4"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-lasker": {
+   "fp": "6ba50b48",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 29,
+    "best": "dxc4",
+    "pv": [
+     "dxc4",
+     "Rxc4",
+     "Nd7",
+     "Bb1",
+     "e5",
+     "Qc2"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-gda-cf6": {
+   "fp": "e2737c3e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 41,
+    "best": "Bf5",
+    "pv": [
+     "Bf5",
+     "Nbc3",
+     "e6",
+     "O-O",
+     "Qd7",
+     "Be3"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-tchebanenko": {
+   "fp": "719942fe",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 51,
+    "best": "Bxf3",
+    "pv": [
+     "Bxf3",
+     "Qxf3",
+     "e6",
+     "Bd2",
+     "Bb4",
+     "Bd3"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-marshall-gambit": {
+   "fp": "420c5ce3",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 8,
+    "best": "Ba5",
+    "pv": [
+     "Ba5",
+     "b6",
+     "Qd6",
+     "Bd7",
+     "Bc3",
+     "f6"
+    ],
+    "pov": "w"
+   }
+  },
+  "gd-dxd4-gaffe": {
+   "fp": "2b3a162e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 508,
+    "best": "e5",
+    "pv": [
+     "e5",
+     "Qd1",
+     "Nc6",
+     "Be3",
+     "Nf6",
+     "Nc3"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 5,
+    "errorSan": "Qxd4",
+    "final": {
+     "type": "cp",
+     "value": 508,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 515,
+     "best": "Qxd4",
+     "pv": [
+      "Qxd4",
+      "Nc6",
+      "Qd1",
+      "e5",
+      "Be3",
+      "Be6"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "gd-h5": {
+   "fp": "29a0dd23",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 150,
+    "best": "Bg4",
+    "pv": [
+     "Bg4",
+     "Bd2",
+     "Bxf3",
+     "gxf3",
+     "e6",
+     "e4"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 120,
+    "errorPly": 3,
+    "errorSan": "h5",
+    "final": {
+     "type": "cp",
+     "value": 150,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 110,
+     "best": "cxd5",
+     "pv": [
+      "cxd5",
+      "Nf6",
+      "Nc3",
+      "Nxd5",
+      "e4",
+      "Nxc3"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "gd-dd6": {
+   "fp": "cc703f55",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 152,
+    "best": "e5",
+    "pv": [
+     "e5",
+     "Bd2",
+     "c6",
+     "dxe5",
+     "Qxe5",
+     "Nf3"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 120,
+    "errorPly": 3,
+    "errorSan": "Qd6",
+    "final": {
+     "type": "cp",
+     "value": 152,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 101,
+     "best": "cxd5",
+     "pv": [
+      "cxd5",
+      "Nf6",
+      "Nf3",
+      "g6",
+      "h4",
+      "Bf5"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "gd-polonaise": {
+   "fp": "979af85b",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 64,
+    "best": "c6",
+    "pv": [
+     "c6",
+     "Ba4",
+     "Qa5+",
+     "Nc3",
+     "Nf6",
+     "O-O"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 50,
+    "errorPly": 1,
+    "errorSan": "b5",
+    "final": {
+     "type": "cp",
+     "value": 64,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 100,
+     "best": "Nd2",
+     "pv": [
+      "Nd2",
+      "Bb7",
+      "e4",
+      "a6",
+      "a4",
+      "b4"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "ck-avance-fe3": {
+   "fp": "5eeeb2e0",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 29,
+    "best": "Be2",
+    "pv": [
+     "Be2",
+     "h6",
+     "Nb3",
+     "g5",
+     "a4",
+     "Bg6"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-avance-c5": {
+   "fp": "d2f5f85d",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 45,
+    "best": "c3",
+    "pv": [
+     "c3",
+     "Nf5",
+     "Bd4",
+     "Bd7",
+     "Bxc6",
+     "Bxc6"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-panov-cc6": {
+   "fp": "b284ade3",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 7,
+    "best": "Ne4",
+    "pv": [
+     "Ne4",
+     "Bxe7",
+     "Nxe7",
+     "Rc1",
+     "b6",
+     "O-O"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-classique-cc5": {
+   "fp": "1c3b241e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 15,
+    "best": "Nf3",
+    "pv": [
+     "Nf3",
+     "Nf6",
+     "c3",
+     "Nbd7",
+     "Be2",
+     "O-O"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-deux-cavaliers-cf6": {
+   "fp": "9ce20510",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 20,
+    "best": "Bd3",
+    "pv": [
+     "Bd3",
+     "O-O",
+     "O-O",
+     "Bg4",
+     "Re1",
+     "Nd7"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-cd2": {
+   "fp": "9242c7a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 20,
+    "best": "O-O",
+    "pv": [
+     "O-O",
+     "O-O",
+     "Nxg6",
+     "hxg6",
+     "Re1",
+     "Nbd7"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-gambit-fc4": {
+   "fp": "244f9da5",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -8,
+    "best": "Be7",
+    "pv": [
+     "Be7",
+     "Qe1",
+     "Nbd7",
+     "a4",
+     "Nf8",
+     "Bg5"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 120,
+    "errorPly": 11,
+    "errorSan": "Bg4",
+    "final": {
+     "type": "cp",
+     "value": -161,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -129,
+     "best": "Bxf7+",
+     "pv": [
+      "Bxf7+",
+      "Kxf7",
+      "Ne5+",
+      "Kg8",
+      "Nxg4",
+      "Nbd7"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "ck-cg5-ce6": {
+   "fp": "2373d58a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 46,
+    "best": "N1f3",
+    "pv": [
+     "N1f3",
+     "Bd6",
+     "Qe2",
+     "h6",
+     "Ne4",
+     "Nxe4"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 70,
+    "errorPly": 11,
+    "errorSan": "h6",
+    "final": {
+     "type": "cp",
+     "value": -73,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -65,
+     "best": "Ne6",
+     "pv": [
+      "Ne6",
+      "Qb6",
+      "Qe2",
+      "Qb4+",
+      "c3",
+      "Qd6"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "ck-df3": {
+   "fp": "b836b0bc",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -39,
+    "best": "Qd1",
+    "pv": [
+     "Qd1",
+     "Bf5",
+     "Nf3",
+     "h6",
+     "Bd3",
+     "Bxd3"
+    ],
+    "pov": "w"
+   }
+  },
+  "ck-gambit-aile": {
+   "fp": "a5aa2053",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -38,
+    "best": "Nf3",
+    "pv": [
+     "Nf3",
+     "Nc6",
+     "c3",
+     "f6",
+     "Bb5",
+     "Qb6"
     ],
     "pov": "w"
    }

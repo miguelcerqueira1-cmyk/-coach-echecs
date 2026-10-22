@@ -8,6 +8,8 @@
 
 export const CLOUD_EVAL_URL = 'https://lichess.org/api/cloud-eval';
 export const EXPLORER_URL = 'https://explorer.lichess.org/lichess';
+// Base des maîtres : parties à la cadence classique de joueurs titrés (2200+ FIDE).
+export const MASTERS_URL = 'https://explorer.lichess.org/masters';
 
 export const RATING_BUCKETS = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500];
 export const SPEEDS = ['ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence'];
@@ -150,12 +152,18 @@ export class LichessClient {
   }
 
   // fen : position de départ ; play : coups UCI depuis cette position (nécessaire pour le nom d'ouverture).
-  async explorer({ fen, play = [], ratings, speeds, moves = 15, isStale } = {}) {
+  // db : 'lichess' (parties en ligne, filtrables par classement/cadence) ou 'masters'.
+  async explorer({ fen, play = [], ratings, speeds, moves = 15, topGames = 0, db = 'lichess', isStale } = {}) {
     const mode = this.explorerMode();
     if (!mode) throw new LichessError('Jeton Lichess requis pour l’Opening Explorer (Réglages).', 'token');
-    const qs = new URLSearchParams({ variant: 'standard', fen, play: play.join(','), moves: String(moves), topGames: '0', recentGames: '0' });
-    if (ratings?.length) qs.set('ratings', ratings.join(','));
-    if (speeds?.length) qs.set('speeds', speeds.join(','));
+    const qs = new URLSearchParams({ fen, play: play.join(','), moves: String(moves), topGames: String(topGames) });
+    if (db === 'masters') qs.set('db', 'masters');
+    else {
+      qs.set('variant', 'standard');
+      qs.set('recentGames', '0');
+      if (ratings?.length) qs.set('ratings', ratings.join(','));
+      if (speeds?.length) qs.set('speeds', speeds.join(','));
+    }
     const key = qs.toString();
     const hit = this.cache.get(key);
     if (hit) return hit;
@@ -166,7 +174,9 @@ export class LichessClient {
       url = `${p.url.replace(/\/+$/, '')}/v1/explorer?${key}`;
       init.headers.authorization = 'Bearer ' + p.code;
     } else {
-      url = `${EXPLORER_URL}?${key}`;
+      const direct = new URLSearchParams(qs);
+      direct.delete('db');
+      url = `${db === 'masters' ? MASTERS_URL : EXPLORER_URL}?${direct}`;
       init.headers.authorization = 'Bearer ' + this.getToken();
     }
     const r = await this.queue.run(url, init, { isStale });
@@ -176,8 +186,16 @@ export class LichessClient {
     }
     if (!r.res.ok) throw new LichessError(`Opening Explorer : erreur HTTP ${r.res.status}`, 'server');
     const data = await r.res.json();
-    const out = { ...data, mode, stats: nodeStats(data) };
+    const out = { ...data, mode, db, stats: nodeStats(data) };
     this.cache.set(key, out);
     return out;
+  }
+
+  // PGN d'une partie de la base des maîtres (jeton personnel requis).
+  async masterPgn(id) {
+    if (!this.getToken()) throw new LichessError('Jeton Lichess personnel requis pour télécharger une partie de maître.', 'token');
+    const r = await this.queue.run(`${MASTERS_URL}/pgn/${encodeURIComponent(id)}`, { headers: { authorization: 'Bearer ' + this.getToken() } });
+    if (!r.res.ok) throw new LichessError(`Partie introuvable (HTTP ${r.res.status})`, 'server');
+    return r.res.text();
   }
 }

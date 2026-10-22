@@ -5,6 +5,7 @@ const KEY_CORRUPT = 'coach-echecs:partie-illisible';
 const KEY_SETTINGS = 'coach-echecs:reglages:v1';
 const KEY_CODE = 'coach-echecs:code-acces';
 const KEY_LICHESS = 'coach-echecs:jeton-lichess';
+const KEY_YOUTUBE = 'coach-echecs:cle-youtube';
 
 function get(key) {
   try { return localStorage.getItem(key); } catch { return null; }
@@ -56,3 +57,7 @@ export function setAccessCode(code) { if (code) set(KEY_CODE, code); else del(KE
 // Jeton Lichess personnel (créé SANS aucune permission) pour l'Opening Explorer.
 export function getLichessToken() { return get(KEY_LICHESS) || ''; }
 export function setLichessToken(t) { if (t) set(KEY_LICHESS, t); else del(KEY_LICHESS); }
+
+// Clé API YouTube Data v3 personnelle (restreinte au site par référent HTTP).
+export function getYoutubeKey() { return get(KEY_YOUTUBE) || ''; }
+export function setYoutubeKey(k) { if (k) set(KEY_YOUTUBE, k); else del(KEY_YOUTUBE); }

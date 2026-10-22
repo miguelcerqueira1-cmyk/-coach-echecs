@@ -16,9 +16,12 @@ Pour l'entraînement, l'analyse et les parties où l'assistance est autorisée.
   « Coup optimal » qui sépare trois sources : Stockfish (sur l'appareil), Lichess Cloud Eval,
   et le coup au meilleur % de victoire dans les parties Lichess du niveau choisi
   (ex. Blitz autour de 1000).
-- **Répertoire** : Gambit Dame (Blancs) et Caro-Kann (Noirs) — 38 fiches avec code ECO, plan,
+- **Répertoire** : Gambit Dame (Blancs) et Caro-Kann (Noirs) — 58 fiches avec code ECO, plan,
   structure, punition des coups adverses, pièges à éviter (tous vérifiés par Stockfish),
-  statistiques et évaluations Lichess, et un arbre qui explore tous les coups réellement joués.
+  statistiques Lichess (votre niveau + base des maîtres), évaluations Cloud Eval, et un arbre qui
+  explore tous les coups réellement joués. Filtres rapides, recherche par nom, coup (Fg4 / Bg4) ou
+  code ECO, section « Anti-trash Blitz », bouton « Tester cette ligne » (rejouée sur l'échiquier),
+  vidéos YouTube en 7 langues et export PGN pour Lichess / Chess.com.
 - **Entraînement** : l'application joue l'adversaire (coups tirés des vraies parties de votre
   niveau) ; vous devez trouver le coup de votre répertoire, vérifié par Stockfish.
 - **Mes parties** : import de vos dernières parties Lichess et Chess.com, sortie du répertoire,

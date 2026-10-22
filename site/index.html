@@ -168,6 +168,14 @@
       <div class="dlg-actions left">
         <button type="button" id="clear-lichess">Effacer le jeton de cet appareil</button>
       </div>
+      <h3>Vidéos YouTube (facultatif)</h3>
+      <label>Clé API YouTube Data v3
+        <input id="set-youtube" type="password" autocomplete="off" spellcheck="false">
+      </label>
+      <p class="muted small">Gratuite (≈ 100 recherches par jour). console.cloud.google.com → créer un projet → « API et services » → activer <strong>YouTube Data API v3</strong> → Identifiants → Créer une clé API → restreindre la clé aux <strong>référents HTTP</strong> <code>https://miguelcerqueira1-cmyk.github.io/*</code> et à l’API YouTube. Elle reste sur cet appareil. Sans clé, l’application propose des liens de recherche YouTube par langue.</p>
+      <div class="dlg-actions left">
+        <button type="button" id="clear-youtube">Effacer la clé de cet appareil</button>
+      </div>
       <details>
         <summary>Avancé</summary>
         <label>Adresse de l’API (laisser vide pour la valeur publiée)

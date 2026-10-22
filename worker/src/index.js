@@ -10,6 +10,7 @@ import { SYSTEM_PROMPT, buildUserMessage, validatePayload } from './prompt.js';
 
 const MAX_BODY = 16 * 1024;
 const EXPLORER_URL = 'https://explorer.lichess.org/lichess';
+const MASTERS_URL = 'https://explorer.lichess.org/masters';
 const EXPLORER_PARAMS = ['variant', 'fen', 'play', 'speeds', 'ratings', 'since', 'until', 'moves', 'topGames', 'recentGames'];
 // Modèles acceptant le repli serveur `fallbacks: "default"` (refus des classifieurs de sécurité).
 const FALLBACK_MODELS = new Set(['claude-opus-5-5', 'claude-opus-5', 'claude-fable-5-1', 'claude-sonnet-5-5']);
@@ -102,7 +103,8 @@ async function explorerRelay(url, env, gate, headers) {
   }
   const qs = new URLSearchParams();
   for (const k of EXPLORER_PARAMS) if (url.searchParams.has(k)) qs.set(k, url.searchParams.get(k).slice(0, 2000));
-  const target = `${env.EXPLORER_URL || EXPLORER_URL}?${qs}`;
+  const masters = url.searchParams.get('db') === 'masters';
+  const target = `${masters ? (env.MASTERS_URL || MASTERS_URL) : (env.EXPLORER_URL || EXPLORER_URL)}?${qs}`;
   const cache = typeof caches !== 'undefined' ? caches.default : null;
   const cacheKey = new Request(target);
   const hit = cache && (await cache.match(cacheKey));
