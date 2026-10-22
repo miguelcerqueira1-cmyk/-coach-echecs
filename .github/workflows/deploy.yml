@@ -23,7 +23,7 @@ jobs:
   verify:
     name: Vérification (tests unitaires, Worker, navigateur)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,20 +45,28 @@ jobs:
         working-directory: worker
       - name: Construction du site
         run: npm run build
-      - name: Navigateurs de test
-        # Parfois bloquée côté GitHub (paquets système) : 3 essais de 7 minutes au plus.
-        timeout-minutes: 22
-        run: |
-          for n in 1 2 3; do
-            timeout 7m npx playwright install --with-deps chromium webkit && exit 0
-            echo "::warning::Installation des navigateurs interrompue (essai $n), nouvel essai."
-            sleep 10
-          done
-          exit 1
-      - name: Tests de bout en bout (vrai Stockfish, Chromium + WebKit/iPhone)
+
+  # Navigateurs déjà installés dans l'image officielle de Playwright (même version que
+  # package.json) : plus d'installation de paquets système, qui se bloquait sur GitHub.
+  e2e:
+    name: Tests de bout en bout (vrai Stockfish, Chromium + WebKit/iPhone)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Tests de bout en bout
         run: npx playwright test
         env:
           WITH_WEBKIT: '1'
+          HOME: /root
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -137,8 +145,8 @@ jobs:
 
   pages:
     name: Publication GitHub Pages
-    needs: [verify, worker]
-    if: always() && github.event_name != 'pull_request' && needs.verify.result == 'success' && needs.worker.result != 'failure'
+    needs: [verify, e2e, worker]
+    if: always() && github.event_name != 'pull_request' && needs.verify.result == 'success' && needs.e2e.result == 'success' && needs.worker.result != 'failure'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -192,6 +200,10 @@ jobs:
     if: always() && needs.pages.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -199,34 +211,31 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Navigateurs de test
-        # Parfois bloquée côté GitHub (paquets système) : 3 essais de 7 minutes au plus.
-        timeout-minutes: 22
-        run: |
-          for n in 1 2 3; do
-            timeout 7m npx playwright install --with-deps chromium webkit && exit 0
-            echo "::warning::Installation des navigateurs interrompue (essai $n), nouvel essai."
-            sleep 10
-          done
-          exit 1
       - name: Fichiers servis sous le chemin réel du dépôt
         env:
           SITE: ${{ needs.pages.outputs.url }}
         run: |
-          for f in "" config.json engine/manifest.json engine/stockfish.js engine/stockfish.wasm vendor/chess.js js/main.js; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 10 --retry-all-errors "${SITE}${f}")
-            echo "${SITE}${f} -> $code"
-            [ "$code" = "200" ] || exit 1
-          done
-          curl -s "${SITE}config.json"
+          node -e '
+            const site = process.env.SITE;
+            const files = ["", "config.json", "engine/manifest.json", "engine/stockfish.js", "engine/stockfish.wasm", "vendor/chess.js", "js/main.js"];
+            (async () => {
+              for (const f of files) {
+                let code = 0;
+                for (let n = 0; n < 6 && code !== 200; n++) {
+                  try { code = (await fetch(site + f)).status; } catch { code = 0; }
+                  if (code !== 200) await new Promise((r) => setTimeout(r, 10000));
+                }
+                console.log(`${site}${f} -> ${code}`);
+                if (code !== 200) process.exit(1);
+              }
+              console.log(await (await fetch(site + "config.json")).text());
+            })();'
       - name: API Claude en ligne et protégée (sans code → 401)
         if: needs.worker.outputs.url != ''
         env:
           API: ${{ needs.worker.outputs.url }}
         run: |
-          code=$(curl -s -o /dev/null -w '%{http_code}' "${API}/v1/status")
-          echo "Sans code : $code"
-          [ "$code" = "401" ]
+          node -e 'fetch(process.env.API + "/v1/status").then((r) => { console.log("Sans code :", r.status); process.exit(r.status === 401 ? 0 : 1); })'
       - name: Liens vidéo du répertoire (oEmbed YouTube ; avertissements seulement, jamais bloquant)
         continue-on-error: true
         timeout-minutes: 5
