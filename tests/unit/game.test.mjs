@@ -190,3 +190,20 @@ test('import PGN tolérant : BOM et fins de ligne Windows, plusieurs parties, no
   assert.throws(() => G.fromPgn('1. e4 e5 2. Ke3 Ke6 3. Qxh8'), /Coup illégal ou non reconnu/);
   assert.throws(() => G.fromPgn('{{{ ceci n’est pas un pgn'), /pas un PGN lisible/);
 });
+
+test('import PGN Lichess avec pendules, commentaires consécutifs et commentaire tronqué', async () => {
+  const { Game: G } = await import('../../site/js/game.js');
+  const lichess = `[Event "Rated blitz game"]
+[Site "https://lichess.org/abcd1234"]
+[White "LeugiMC"]
+[Black "Adv"]
+[Result "1-0"]
+
+1. d4 { [%clk 0:03:00] } 1... d5 { [%clk 0:03:00] } 2. c4 { [%clk 0:02:58] } 2... e6 { [%eval 0.2] } { Queen's Gambit Declined } 3. Nc3 { [%clk 0:02:50] } 1-0 { Black resigns. }`;
+  const g = G.fromPgn(lichess);
+  assert.equal(g.ply, 5);
+  assert.equal(g.record.headers.White, 'LeugiMC');
+  assert.equal(G.fromPgn('1. e4 { [%clk 0:03:00] } 1... e5 { [%clk 0:0').ply, 2);
+  // Le point-virgule (commentaire de fin de ligne) est aussi ignoré.
+  assert.equal(G.fromPgn('1. e4 ; ouverture\n1... c6 2. d4').ply, 3);
+});

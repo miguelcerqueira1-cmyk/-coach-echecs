@@ -270,6 +270,16 @@ export function cleanPgn(text) {
   const second = t.search(/\n\s*\n\s*\[Event /);
   const firstMoves = t.search(/\n\s*\n\s*[^[\s]/);
   if (second > 0 && firstMoves > 0 && second > firstMoves) t = t.slice(0, second).trim();
+  // Commentaires { … } (pendules [%clk], évaluations [%eval], texte) retirés de la partie
+  // « coups » : inutiles ici, et chess.js refuse deux commentaires consécutifs ou un
+  // commentaire tronqué (PGN Lichess fréquents). Les en-têtes [ … ] ne sont pas touchés.
+  const lines = t.split('\n');
+  const headerEnd = lines.findIndex((l) => l.trim() && !/^\s*\[.*\]\s*$/.test(l));
+  if (headerEnd >= 0) {
+    const moves = lines.slice(headerEnd).join('\n').replace(/\{[^}]*\}/g, ' ').replace(/\{[^}]*$/, ' ')
+      .replace(/;[^\n]*/g, ' ').replace(/[ \t]+/g, ' ');
+    t = [...lines.slice(0, headerEnd), moves].join('\n').trim();
+  }
   return t;
 }
 
@@ -287,7 +297,8 @@ export function frenchToEnglishPgn(text) {
 
 export function loadPgnTolerant(raw) {
   const text = cleanPgn(raw);
-  if (!text) throw new Error('Le texte est vide : collez le PGN de la partie.');
+  if (!String(raw || '').trim()) throw new Error('Le texte est vide : collez le PGN de la partie.');
+  if (!text) throw new Error('Ce texte n’est pas un PGN lisible (aucun coup trouvé).');
   if (/^https?:\/\//i.test(text)) {
     throw new Error('Vous avez collé un lien. Collez plutôt le texte PGN : sur Lichess, « Partager & exporter » → PGN ; sur Chess.com, « Partager » → onglet PGN → Copier.');
   }
