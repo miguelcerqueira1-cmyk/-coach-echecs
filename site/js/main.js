@@ -12,7 +12,11 @@ import { LichessClient } from './lichess.js';
 import { OptimalPanel, DEFAULT_FILTER } from './optimal.js';
 import { initRouter } from './router.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
+import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
+import { TrainingPage } from './training.js';
+import { GamesPage } from './games.js';
+import { SPEED_LABELS, bucketLabel } from './lichess.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -56,6 +60,16 @@ const optimal = new OptimalPanel({
   },
 });
 let repertoirePage = null;
+let trainingPage = null;
+let gamesPage = null;
+
+const currentFilter = () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) });
+function filterLabel() {
+  const f = currentFilter();
+  const sp = f.speeds.length ? f.speeds.map((x) => SPEED_LABELS[x]).join(', ') : 'toutes cadences';
+  const r = f.ratings.length ? f.ratings.map(bucketLabel).join(', ') : 'tous classements';
+  return `${sp} · ${r}`;
+}
 
 async function init() {
   fillSelects();
@@ -78,6 +92,22 @@ async function init() {
           openLine: openLineInBoard,
         });
         repertoirePage.show();
+      }
+      if (page === 'entrainement') {
+        trainingPage ??= new TrainingPage({ el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel });
+        trainingPage.show();
+      }
+      if (page === 'parties') {
+        gamesPage ??= new GamesPage({
+          el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
+          openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`),
+        });
+        gamesPage.show();
+      }
+      // Le moteur est partagé : en revenant sur la page Moteur, on relance le calcul si
+      // une autre page l'a interrompu.
+      if (page === 'moteur' && state.game && state.analysis.status !== 'ready' && !state.game.status().over && engine.state === 'ready') {
+        runAnalysis(BUDGETS[state.settings.budget].movetime);
       }
     },
   });
@@ -115,7 +145,9 @@ function onPositionChanged(reason) {
   abortCoach();
   state.coach = { status: 'idle', token: null, html: '', error: null, abort: null, meta: null };
   state.analysis = { status: 'waiting-engine', token: null, live: null, advice: null, error: null, deeper: false };
+  state.reveal = 0;
   renderAll();
+  optimal.setHidden(false);
   optimal.setEngine(engine.state === 'error' ? 'error' : 'computing', null);
   optimal.update(g);
   const st = g.status();
@@ -178,6 +210,7 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
     return;
   }
   state.analysis = { ...state.analysis, status: 'ready', advice, live: null };
+  optimal.setHidden(moveHidden());
   optimal.setEngine('ready', advice);
   if (!advice.isPlayerTurn) {
     state.expectation = { gameId: g.id, revision: g.revision, ply: g.ply, uci: advice.best.lan, san: advice.best.san };
@@ -266,15 +299,21 @@ async function explain({ auto = false } = {}) {
   }
   if (!g.isCurrent(token) || ctrl.signal.aborted) return;
 
+  // Version masquée (sans le coup) pour le mode « Indice d'abord », calculée dans tous les cas.
+  const masked = advice.isPlayerTurn
+    ? renderExplication(explicationGratuite({ game: g, advice, threat, deviation: state.deviation, masquer: true })) : '';
+  state.hintThreat = { token, threat };
   if (free) {
     const sections = explicationGratuite({ game: g, advice, threat, deviation: state.deviation });
     // La flèche rouge n'est dessinée que pour une menace sérieuse.
     const shown = menaceSerieuse(advice, threat, g.playerColor) ? threat : null;
-    state.coach = { status: 'ready', mode: 'free', token, html: renderExplication(sections), error: null, abort: null, meta: { depth: advice.depth, threat: shown } };
+    state.coach = { status: 'ready', mode: 'free', token, html: renderExplication(sections), htmlMasked: masked, error: null, abort: null, meta: { depth: advice.depth, threat: shown } };
     renderCoach();
+    renderAdvice();
     if (threat) renderBoard();
     return;
   }
+  state.coach.htmlMasked = masked;
 
   const payload = buildCoachPayload({
     game: g, advice, threat, level: g.record.level,
@@ -338,13 +377,15 @@ function renderBoard() {
   });
   const arrows = [];
   const a = state.analysis;
-  if (live && a.advice && g.isCurrent(a.advice.token) && a.status !== 'engine-error') {
+  const hide = moveHidden();
+  board.setHint(hide && (state.reveal || 0) >= 2 && !a.advice.best.san.startsWith('O-O') ? a.advice.best.from : null);
+  if (live && a.advice && g.isCurrent(a.advice.token) && a.status !== 'engine-error' && !hide) {
     if (a.advice.isPlayerTurn) arrows.push({ from: a.advice.best.from, to: a.advice.best.to, kind: 'best' });
     else if (state.settings.showOpponentArrow) arrows.push({ from: a.advice.best.from, to: a.advice.best.to, kind: 'reply' });
     const th = state.coach.meta?.threat;
     if (th && state.coach.token && g.isCurrent(state.coach.token)) arrows.push({ from: th.move.from, to: th.move.to, kind: 'threat' });
   }
-  if (live) {
+  if (live && !hide) {
     const stat = optimal.statArrow((t) => g.isCurrent(t));
     // Flèche bleue seulement si le coup statistique diffère du coup moteur déjà fléché.
     if (stat && !arrows.some((x) => x.from === stat.from && x.to === stat.to)) arrows.push(stat);
@@ -465,6 +506,7 @@ function renderMini() {
   if (a.status === 'over') el.textContent = '';
   else if (a.status === 'engine-error') el.innerHTML = '<span class="error-text">Moteur indisponible : aucun conseil.</span>';
   else if (!adv) el.innerHTML = '<span class="muted">Stockfish calcule…</span>';
+  else if (adv.isPlayerTurn && moveHidden()) el.innerHTML = '<span class="muted">Mode indice : à vous de trouver le coup.</span>';
   else if (adv.isPlayerTurn) el.innerHTML = `Conseil : <strong class="best">${esc(sanFr(adv.best.san))}</strong> — ${esc(adv.bestDescription)} <span class="muted">(${esc(adv.scoreText)})</span>`;
   else el.innerHTML = `Meilleure réponse adverse calculée : <strong class="reply">${esc(sanFr(adv.best.san))}</strong> <span class="muted">— saisissez le coup réel</span>`;
 }
@@ -507,6 +549,21 @@ function renderAdvice() {
   let body = '';
   if (!adv) {
     body = `<div class="state"><span class="spinner"></span><span id="live-text">Stockfish calcule…</span></div>`;
+  } else if (adv.isPlayerTurn && moveHidden()) {
+    const r = state.reveal || 0;
+    const th = state.hintThreat && state.game.isCurrent(state.hintThreat.token) ? state.hintThreat.threat : null;
+    const hints = [];
+    if (r >= 1) hints.push(...indicesNiveau1(adv, th, state.game.playerColor));
+    if (r >= 2) hints.push(indiceNiveau2(adv));
+    body = `<p class="label">À vous de trouver le meilleur coup</p>
+      ${hints.length ? `<ul class="hints">${hints.map((h) => `<li>${h}</li>`).join('')}</ul>` : '<p class="desc">Réfléchissez, puis demandez de l’aide si besoin.</p>'}
+      <dl>${evalBlock(adv)}</dl>
+      <div class="actions hint-actions">
+        <button type="button" id="btn-hint1" ${r >= 1 ? 'disabled' : ''}>💡 Indice</button>
+        <button type="button" id="btn-hint2" ${r >= 2 ? 'disabled' : ''}>📖 Explication</button>
+        <button type="button" class="primary" id="btn-hint3">👁 Montrer le coup</button>
+      </div>
+      <p class="muted small">Jouez votre coup directement sur l’échiquier quand vous l’avez trouvé : il sera comparé au calcul du moteur.</p>`;
   } else if (adv.isPlayerTurn) {
     body = `<p class="label">Coup conseillé par le moteur</p>
       <p class="move-big best">${esc(sanFr(adv.best.san))}</p>
@@ -529,6 +586,21 @@ function renderAdvice() {
   }
   const liveLine = computing && adv ? `<p class="small muted" id="live-text"></p>` : '';
   el.innerHTML = `<p>${badge}</p>${deviationNote()}${claimNote}${body}${liveLine}${adv ? techDetails(adv, a) : ''}`;
+  $('btn-hint1')?.addEventListener('click', () => setReveal(1));
+  $('btn-hint2')?.addEventListener('click', () => setReveal(2));
+  $('btn-hint3')?.addEventListener('click', () => setReveal(3));
+  const modeLink = document.createElement('p');
+  modeLink.className = 'small';
+  modeLink.innerHTML = `<button type="button" class="link-btn" id="btn-toggle-help">${hintMode() ? 'Passer en conseil direct' : 'Passer en mode « Indice d’abord »'}</button>`;
+  if (adv && adv.isPlayerTurn) el.appendChild(modeLink);
+  $('btn-toggle-help')?.addEventListener('click', () => {
+    state.settings.helpMode = hintMode() ? 'direct' : 'indice';
+    store.saveSettings(state.settings);
+    optimal.setHidden(moveHidden());
+    renderAdvice();
+    renderCoach();
+    renderBoard();
+  });
   const pb = $('btn-play-best');
   if (pb) pb.onclick = () => playMove(adv.best.lan, 'confirm');
   renderLive();
@@ -545,6 +617,31 @@ function renderLive() {
   el.textContent = `Stockfish calcule… profondeur ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · éval. provisoire ' + sc : ''}`;
 }
 
+// ---------- Mode « Indice d'abord » ----------
+// reveal : 0 rien, 1 indice, 2 explication sans le coup, 3 coup montré.
+
+function currentAdvice() {
+  const a = state.analysis;
+  return a.advice && state.game.isCurrent(a.advice.token) ? a.advice : null;
+}
+
+function hintMode() { return state.settings.helpMode === 'indice'; }
+
+// Vrai tant que le coup conseillé doit rester caché.
+function moveHidden() {
+  const adv = currentAdvice();
+  return hintMode() && state.viewPly === null && !!adv && adv.isPlayerTurn && (state.reveal || 0) < 3;
+}
+
+function setReveal(level) {
+  state.reveal = Math.max(state.reveal || 0, level);
+  if (level >= 2 && state.coach.status === 'idle') explain({ auto: true });
+  optimal.setHidden(moveHidden());
+  renderAdvice();
+  renderCoach();
+  renderBoard();
+}
+
 // Fait apparaître le panneau d'explication s'il est hors de l'écran (demande explicite).
 function revealCoach() {
   const r = $('coach').getBoundingClientRect();
@@ -558,6 +655,12 @@ function renderCoach() {
   const head = missing ? '<h2>Explication <span class="badge">calculée · gratuite</span></h2>' : '<h2>Explication de l’entraîneur (Claude)</h2>';
   if (c.status === 'loading' && c.mode === 'free') {
     el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>Stockfish cherche la menace adverse…</span></div>`;
+    return;
+  }
+  if (moveHidden() && c.token && state.game.isCurrent(c.token) && c.status !== 'loading') {
+    el.innerHTML = state.reveal >= 2 && c.htmlMasked
+      ? `<h2>Explication <span class="badge">sans le coup</span></h2><div class="text">${c.htmlMasked}</div><p class="muted small">Le coup conseillé reste caché jusqu’à « Montrer le coup ».</p>`
+      : '<h2>Explication</h2><p class="muted small">Mode « Indice d’abord » : l’explication s’affiche au 2e niveau d’aide.</p>';
     return;
   }
   if (c.status === 'ready' && c.mode === 'free' && c.token && state.game.isCurrent(c.token)) {
@@ -857,6 +960,7 @@ function openSettings() {
   $('set-budget').value = s.budget;
   $('set-level').value = state.game.record.level || s.level;
   $('set-auto').checked = s.autoExplain;
+  $('set-help').value = s.helpMode || 'direct';
   $('set-opp-arrow').checked = s.showOpponentArrow;
   $('set-api').value = s.apiUrl;
   $('set-code').value = '';
@@ -873,6 +977,9 @@ function saveSettingsFromForm() {
   s.budget = $('set-budget').value;
   s.level = $('set-level').value;
   s.autoExplain = $('set-auto').checked;
+  s.helpMode = $('set-help').value;
+  optimal.setHidden(moveHidden());
+  renderAdvice();
   s.showOpponentArrow = $('set-opp-arrow').checked;
   s.apiUrl = $('set-api').value.trim();
   store.saveSettings(s);
@@ -890,16 +997,19 @@ function saveSettingsFromForm() {
 }
 
 // Accès pour les tests automatisés (lecture seule de l'état).
-window.__coach = { state, engine, optimal, lichess, get repertoire() { return repertoirePage; } };
+window.__coach = { state, engine, optimal, lichess, get repertoire() { return repertoirePage; }, get games() { return gamesPage; } };
 
-// Ouvre une ligne du répertoire sur l'échiquier comme nouvelle partie (l'ancienne est sauvegardée).
-function openLineInBoard(entry) {
-  const color = entry.rep === 'gd' ? 'w' : 'b';
-  const pgn = entry.san.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(' ');
-  if (!window.confirm(`Ouvrir « ${entry.nom} » sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`)) return;
+// Ouvre une suite de coups sur l'échiquier comme nouvelle partie (l'ancienne est sauvegardée).
+function openSanInBoard(san, color, label) {
+  const pgn = san.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(' ');
+  if (!window.confirm(`Ouvrir ${label} sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`)) return;
   store.backupGame();
-  setGame(Game.fromPgn(pgn, { playerColor: color, level: state.settings.level }));
+  setGame(Game.fromPgn(pgn || '*', { playerColor: color, level: state.settings.level }));
   location.hash = '#/moteur';
+}
+
+function openLineInBoard(entry) {
+  openSanInBoard(entry.san, entry.rep === 'gd' ? 'w' : 'b', `« ${entry.nom} »`);
 }
 
 init();

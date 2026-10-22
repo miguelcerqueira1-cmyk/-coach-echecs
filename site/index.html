@@ -15,6 +15,8 @@
     <nav class="tabs" aria-label="Pages">
       <a href="#/moteur" data-page="moteur">Moteur</a>
       <a href="#/repertoire" data-page="repertoire">Répertoire</a>
+      <a href="#/entrainement" data-page="entrainement">Entraînement</a>
+      <a href="#/parties" data-page="parties">Mes parties</a>
     </nav>
     <div class="pills">
       <span id="engine-pill" class="pill" title="État du moteur Stockfish">Moteur…</span>
@@ -71,6 +73,8 @@
   </main>
 
   <main id="page-repertoire" class="page repertoire hidden" aria-label="Répertoire d’ouvertures"></main>
+  <main id="page-entrainement" class="page training hidden" aria-label="Entraînement du répertoire"></main>
+  <main id="page-parties" class="page games hidden" aria-label="Mes parties"></main>
 
   <footer class="foot muted small">
     Pour l’entraînement, l’analyse et les parties où l’assistance est autorisée.
@@ -138,6 +142,12 @@
       <p class="muted small">Le moteur joue toujours à pleine force ; le budget fixe seulement le temps de réflexion. La profondeur atteinte dépend de l’appareil.</p>
       <label class="row">Niveau des explications
         <select id="set-level"></select>
+      </label>
+      <label class="row">Mode d’aide
+        <select id="set-help">
+          <option value="direct">Conseil direct (coup affiché)</option>
+          <option value="indice">Indice d’abord (Indice → Explication → Montrer le coup)</option>
+        </select>
       </label>
       <label class="check"><input type="checkbox" id="set-auto"> Explication Claude automatique à mon tour</label>
       <label class="check"><input type="checkbox" id="set-opp-arrow"> Montrer la meilleure réponse adverse calculée sur l’échiquier</label>

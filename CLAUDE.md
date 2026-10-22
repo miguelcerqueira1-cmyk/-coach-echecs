@@ -15,6 +15,11 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/analysis.js           Validation des variantes, points de vue des scores, descriptions FR
   js/board.js              Échiquier DOM (clic, glisser, flèches SVG, choix de promotion)
   js/coach.js              Client de l'API Claude + vérification des coups cités
+  js/hints.js              Mode « Indice d'abord » : indices progressifs tirés du coup calculé
+  js/training-core.js      Entraînement : arbre des fiches, tirage pondéré, verdicts (pur, testé)
+  js/training.js           Page Entraînement (adversaire tiré de Lichess ou des fiches, jugé par Stockfish)
+  js/games-core.js         Mes parties : formats Lichess/Chess.com, sortie de répertoire, erreurs, bilan (pur)
+  js/games.js              Page Mes parties (import, analyse Stockfish coup par coup, bilan, revue)
   js/explain-free.js       Explication gratuite sans IA (faits chess.js + calculs Stockfish), utilisée quand Claude n'est pas configuré
   js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess)
   js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
@@ -115,6 +120,20 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - Vidéos : aucun lien horodaté n'est inventé. Chaque fiche propose une recherche YouTube ; un lien
   précis n'est publié que s'il est vérifié (`video.url` + `verifie: true`, contrôlé par les tests).
   L'utilisateur peut enregistrer son propre lien horodaté (stocké sur l'appareil).
+- Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page
+  peut interrompre le calcul d'une autre ; la page Moteur relance son calcul en revenant.
+- Mode « Indice d'abord » (réglage helpMode) : indice (thème + pièce) → explication sans le coup
+  (case de départ entourée) → coup montré ; flèches et « Coup optimal » masqués jusque-là.
+- Entraînement : coups adverses tirés au hasard pondéré par les parties Lichess du filtre
+  (sinon par les fiches) ; nos coups : « répertoire » si présents dans les fiches, sinon jugés
+  par Stockfish (perte ≤ 0,4 bon, ≤ 1,2 imprécision, ≤ 3 erreur, au-delà gaffe) ; pièges signalés.
+- Mes parties : export Lichess `/api/games/user/{pseudo}` (NDJSON). Depuis l'environnement de
+  développement, cet export répond 404 sans jeton (même pour des comptes connus) : l'application
+  envoie le jeton personnel s'il existe. Chess.com : API publique `pub/player/{pseudo}/games/…`
+  (CORS non vérifié localement ; test @online en CI). Analyse : une position = un calcul de
+  `precision` ms, évaluations bornées à ±10 pions, mises en cache (40 parties) ; erreurs classées
+  par perte (≥ 0,5 imprécision, ≥ 1,2 erreur, ≥ 3 gaffe) ; bilan = règles factuelles (sortie de
+  répertoire, pièce laissée en prise, gaffe adverse non exploitée, phase la plus coûteuse).
 - Interface en mode sombre par défaut (`:root[data-theme="light"]` pour le clair).
 
 ## Phase 2 (non implémenté)
@@ -123,8 +142,7 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - Plus de fiches (le répertoire actuel couvre 38 lignes ; l'arbre Lichess couvre le reste).
 - Statistiques « Masters » et parties d'un joueur précis (endpoints /masters et /player).
 
-- Modes « indice » → « explication » → « montrer le coup », en plus du conseil direct.
-- Bilan de fin de partie : moments décisifs, erreurs principales, trois pistes de travail.
+- Bilan de la partie jouée sur la page Moteur (aujourd'hui : via « Mes parties » ou Exporter).
 - Comparaison facultative de trois candidats (MultiPV 3), avec indication du coût de calcul.
 - Exploration de variantes d'analyse (`analysisBranches`) séparée de la partie réelle ;
   analyse d'une position passée de l'historique.

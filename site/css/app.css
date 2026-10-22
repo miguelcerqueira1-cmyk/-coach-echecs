@@ -338,3 +338,62 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .board-col .coach { margin-top: .6rem; }
 .coach .text p { margin: .35rem 0; }
 .coach h2 .badge { vertical-align: middle; }
+
+/* Mode « Indice d'abord » */
+.sq.hint { box-shadow: inset 0 0 0 4px var(--stat); }
+.hints { margin: .3rem 0 .5rem; padding-left: 1.1rem; }
+.hints li { margin: .25rem 0; }
+.hint-actions button { flex: 1 1 auto; }
+
+/* ---------- Entraînement ---------- */
+.training, .games { max-width: 1200px; margin: 0 auto; padding: .75rem 16px 1.5rem; }
+.train-setup { max-width: 560px; margin: 0 auto; }
+.train-setup label.row { display: grid; grid-template-columns: 1fr 1.4fr; gap: .5rem; align-items: center; margin: .6rem 0; }
+.train-layout { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .train-layout { grid-template-columns: minmax(0, min(78vh, 600px)) minmax(300px, 1fr); align-items: start; } }
+.train-status { font-weight: 650; padding: .55rem .8rem; margin-bottom: .6rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); display: flex; gap: .5rem; align-items: center; }
+.train-status.player { box-shadow: inset 4px 0 0 var(--accent); }
+.train-status.opponent { box-shadow: inset 4px 0 0 var(--reply); }
+.train-log { list-style: none; padding: 0; margin: .5rem 0 0; display: flex; flex-direction: column; gap: .35rem; max-height: 60vh; overflow: auto; }
+.train-log li { padding: .45rem .6rem; border-radius: 8px; background: var(--surface-2); font-size: .92rem; }
+.train-log li.ok { box-shadow: inset 3px 0 0 var(--best); }
+.train-log li.ko { box-shadow: inset 3px 0 0 var(--threat); }
+.train-log li.warn { color: var(--warn); background: var(--warn-bg); }
+.train-log li.end { background: var(--accent); color: var(--accent-contrast); }
+.train-log li.muted { color: var(--muted); }
+.train-layout .actions { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+
+/* ---------- Mes parties ---------- */
+.games-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .5rem .8rem; }
+.games-inputs label { display: flex; flex-direction: column; gap: .2rem; font-size: .85rem; color: var(--muted); }
+.games-status { list-style: none; padding: 0; margin: .5rem 0; display: flex; flex-direction: column; gap: .2rem; }
+.games-status li { display: flex; gap: .4rem; align-items: center; }
+.games-summary, .games-form, .analysis-card { margin-bottom: .9rem; }
+.games-summary ul { margin: .3rem 0; padding-left: 1.1rem; }
+.games-list { display: grid; gap: .7rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.game-card p { margin: .3rem 0; }
+.game-card.selected { box-shadow: 0 0 0 2px var(--accent); }
+.game-top { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.game-card .dot { display: inline-block; width: .8rem; height: .8rem; border-radius: 50%; border: 1px solid #777; vertical-align: -1px; }
+.game-card .dot.w { background: #fff; } .game-card .dot.b { background: #111; }
+.res { font-weight: 700; text-transform: capitalize; }
+.ok { color: var(--best); } .ko { color: var(--threat); }
+.game-card .actions, .games-form .actions { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; margin-top: .4rem; }
+.progress { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+.eval-graph { width: 100%; height: 90px; display: block; border-radius: 8px; margin-top: .5rem; }
+.eval-graph .g-white { fill: #d9d4c7; } .eval-graph .g-black { fill: #2a2f2c; }
+.eval-graph .g-line { fill: none; stroke: var(--stat); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.analysis-grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); margin-top: .6rem; }
+@media (min-width: 900px) { .analysis-grid { grid-template-columns: minmax(0, 420px) 1fr; } }
+.analysis-card h3 { margin-top: .8rem; }
+.analysis-card ul, .analysis-card ol { padding-left: 1.2rem; margin: .3rem 0; }
+.analysis-card li { margin: .25rem 0; }
+.moves-annot { display: flex; flex-wrap: wrap; gap: .2rem; }
+.moves-annot .m { min-height: 0; padding: .15rem .35rem; font-size: .85rem; border: 0; background: none; border-radius: 5px; }
+.moves-annot .m.mine { font-weight: 600; }
+.moves-annot .m.c-imprecision { color: var(--warn); }
+.moves-annot .m.c-erreur { color: var(--reply); }
+.moves-annot .m.c-gaffe { color: var(--threat); }
+.moves-annot .m.current { background: var(--accent); color: var(--accent-contrast); }
+@media (max-width: 520px) { .tabs a { padding: .35rem .3rem; font-size: .8rem; } }

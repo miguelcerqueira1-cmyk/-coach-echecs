@@ -10,7 +10,7 @@ et, si l'API est configurée, une explication rédigée par **Claude** à partir
 
 Pour l'entraînement, l'analyse et les parties où l'assistance est autorisée.
 
-## Deux pages
+## Quatre pages
 
 - **Moteur** : échiquier, conseil Stockfish après chaque coup réellement joué, et panneau
   « Coup optimal » qui sépare trois sources : Stockfish (sur l'appareil), Lichess Cloud Eval,
@@ -19,6 +19,12 @@ Pour l'entraînement, l'analyse et les parties où l'assistance est autorisée.
 - **Répertoire** : Gambit Dame (Blancs) et Caro-Kann (Noirs) — 38 fiches avec code ECO, plan,
   structure, punition des coups adverses, pièges à éviter (tous vérifiés par Stockfish),
   statistiques et évaluations Lichess, et un arbre qui explore tous les coups réellement joués.
+- **Entraînement** : l'application joue l'adversaire (coups tirés des vraies parties de votre
+  niveau) ; vous devez trouver le coup de votre répertoire, vérifié par Stockfish.
+- **Mes parties** : import de vos dernières parties Lichess et Chess.com, sortie du répertoire,
+  analyse Stockfish coup par coup et bilan (moments décisifs, erreurs, trois pistes de travail).
+
+Mode « Indice d'abord » (⚙) : indice → explication → coup, au lieu d'afficher directement le conseil.
 
 ## Utilisation
 

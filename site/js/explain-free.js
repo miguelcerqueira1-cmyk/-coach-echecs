@@ -100,7 +100,8 @@ export function menaceSerieuse(advice, threat, color) {
 }
 
 // Construit l'explication (liste de sections { titre, html }).
-export function explicationGratuite({ game, advice, threat, deviation }) {
+// masquer : version sans le coup conseillé ni la suite (mode « Indice d'abord »).
+export function explicationGratuite({ game, advice, threat, deviation, masquer = false }) {
   const sections = [];
   const color = game.playerColor;
   const fen = advice.fen;
@@ -121,6 +122,7 @@ export function explicationGratuite({ game, advice, threat, deviation }) {
 
   if (advice.isPlayerTurn) {
     // 2. Pourquoi ce coup
+    if (!masquer) {
     const raisons = raisonsDuCoup(fen, advice.best);
     let p = `${mv(advice.best.san)} — ${esc(advice.bestDescription)}.`;
     if (raisons.length) p += ` Ce coup ${raisons.join(' ; ')}.`;
@@ -128,6 +130,7 @@ export function explicationGratuite({ game, advice, threat, deviation }) {
     p += ` Évaluation du moteur : ${evalTxt}.`;
     if (advice.reply) p += ` Meilleure réponse adverse calculée : ${mv(advice.reply.san)}.`;
     sections.push({ titre: 'Pourquoi ce coup', html: p });
+    }
 
     // 3. Menace
     const m = [];
@@ -151,7 +154,8 @@ export function explicationGratuite({ game, advice, threat, deviation }) {
     // 4. Plan (faits vérifiables + suite calculée)
     const plan = planFactuel(fen, color);
     let pl = plan.length ? `${plan.map((x) => x[0].toUpperCase() + x.slice(1)).join('. ')}. ` : '';
-    pl += `Suite calculée par le moteur : <span class="line">${esc(advice.lineText)}</span>.`;
+    if (!masquer) pl += `Suite calculée par le moteur : <span class="line">${esc(advice.lineText)}</span>.`;
+    else if (!plan.length) pl = `Évaluation actuelle : ${evalTxt}. Cherchez le coup qui améliore votre position.`;
     sections.push({ titre: 'Plan', html: pl });
   } else {
     // Tour de l'adversaire

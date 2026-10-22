@@ -40,6 +40,7 @@ export const DEFAULT_SETTINGS = {
   budget: 'standard',
   level: 'intermediaire',
   autoExplain: true,
+  helpMode: 'direct', // 'direct' : conseil affiché ; 'indice' : Indice → Explication → Montrer le coup
   showOpponentArrow: true,
   apiUrl: '', // vide = valeur publiée dans config.json
 };

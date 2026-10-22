@@ -313,3 +313,32 @@ test('téléphone @mobile : jouer un coup ne fait pas défiler la page loin de l
   await expect.poll(async () => (await page.locator('#turn-banner').boundingBox()).y, { timeout: 5000 }).toBeLessThan(200);
   await expect.poll(async () => (await page.locator('#turn-banner').boundingBox()).y).toBeGreaterThanOrEqual(0);
 });
+
+test('mode « Indice d’abord » : coup caché jusqu’à « Montrer le coup »', async ({ page }) => {
+  await setup(page, { helpMode: 'indice' });
+  await page.goto('./');
+  const s = await waitAdvice(page);
+  const advice = page.locator('#advice');
+  await expect(advice).toContainText('À vous de trouver le meilleur coup');
+  await expect(page.locator('.board-arrows line')).toHaveCount(0);
+  await expect(page.locator('#optimal')).toContainText('Masqué');
+  await expect(page.locator('#advice-mini')).toContainText('Mode indice');
+  await page.click('#btn-hint1');
+  await expect(advice).toContainText('Pièce à jouer');
+  await expect(page.locator('.board-arrows line')).toHaveCount(0);
+  await page.click('#btn-hint2');
+  const from = s.best.slice(0, 2);
+  await expect(page.locator(`[data-sq="${from}"]`)).toHaveClass(/hint/);
+  await expect(page.locator('#coach')).toContainText('sans le coup', { timeout: 15000 });
+  await expect(page.locator('#coach')).not.toContainText('Pourquoi ce coup');
+  await page.click('#btn-hint3');
+  await expect(advice).toContainText('Coup conseillé par le moteur');
+  await expect(page.locator('.board-arrows line.arrow-best')).toHaveCount(1);
+  // Coup suivant : le masquage reprend à zéro.
+  await page.click('#btn-play-best');
+  await waitAdvice(page);
+  await page.fill('#notation-input', (await page.evaluate(() => window.__coach.state.analysis.advice.best.lan)));
+  await page.press('#notation-input', 'Enter');
+  await waitAdvice(page);
+  await expect(advice).toContainText('À vous de trouver le meilleur coup');
+});

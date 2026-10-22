@@ -39,8 +39,15 @@ export class OptimalPanel {
   // Coup au meilleur % de victoire (pour la flèche bleue), seulement pour la position courante.
   statArrow(isCurrent) {
     const e = this.explorer;
-    if (e.status !== 'ok' || !isCurrent(this.token) || !e.best) return null;
+    if (this.hidden || e.status !== 'ok' || !isCurrent(this.token) || !e.best) return null;
     return { from: e.best.uci.slice(0, 2), to: e.best.uci.slice(2, 4), kind: 'stat' };
+  }
+
+  // Mode « Indice d'abord » : aucun coup n'est affiché tant que l'utilisateur ne l'a pas demandé.
+  setHidden(hidden) {
+    if (this.hidden === hidden) return;
+    this.hidden = hidden;
+    this.render();
   }
 
   setEngine(status, advice) {
@@ -115,6 +122,11 @@ export class OptimalPanel {
     const fen = this.game.fen();
     const turn = this.game.turn();
     const side = COLOR_NAMES[turn];
+    if (this.hidden) {
+      this.el.innerHTML = `<h2>Coup optimal <span class="muted small">— trait aux ${side}</span></h2>
+        <p class="muted">Masqué en mode « Indice d’abord » : touchez « Montrer le coup » pour voir le coup du moteur et les statistiques.</p>`;
+      return;
+    }
     this.el.innerHTML = `
       <h2>Coup optimal <span class="muted small">— trait aux ${side}</span></h2>
       <div class="opt-grid">

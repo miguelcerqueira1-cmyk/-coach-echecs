@@ -95,6 +95,13 @@ export class Board {
     this.render();
   }
 
+  // Case entourée (indice de niveau 2 : pièce à jouer, sans dire où).
+  setHint(square) {
+    if (square === this.hint) return;
+    this.hint = square;
+    for (const [name, sq] of Object.entries(this.squares)) sq.classList.toggle('hint', name === square);
+  }
+
   setArrows(arrows) {
     this.arrows = arrows || [];
     this._renderArrows();
@@ -109,6 +116,7 @@ export class Board {
       sq.classList.toggle('last', !!this.lastMove && (this.lastMove.from === name || this.lastMove.to === name));
       sq.classList.toggle('selected', this.selected === name);
       sq.classList.toggle('check', this.checkSquare === name);
+      sq.classList.toggle('hint', this.hint === name);
       sq.classList.toggle('target', targets.has(name));
       sq.classList.toggle('capture', targets.has(name) && !!pieceAt[name]);
       let pc = sq.querySelector('.piece');
