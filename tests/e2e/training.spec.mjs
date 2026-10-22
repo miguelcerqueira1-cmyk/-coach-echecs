@@ -166,7 +166,11 @@ test('Accueil Entraînement sur téléphone @mobile : modules et progression lis
   await page.goto('./#/entrainement');
   await expect(page.locator('[data-today]')).toBeVisible();
   await expect(page.locator('.dash-row').first()).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  // En cas d'échec, le message liste les éléments qui dépassent (diagnostic Safari).
+  const wide = await page.evaluate(() => [...document.querySelectorAll('body *')]
+    .filter((el) => el.getBoundingClientRect().right > innerWidth + 1 && el.getBoundingClientRect().width > 0)
+    .slice(0, 8).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).replace(/ /g, '.')} [${Math.round(el.getBoundingClientRect().left)}→${Math.round(el.getBoundingClientRect().right)}] ${(el.textContent || '').trim().slice(0, 40)}`));
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), wide.join(' | ')).toBeLessThanOrEqual(0);
   await page.click('[data-dash-rep="ck"]');
   await expect(page.locator('.dash-row').first()).toContainText(/B1\d/);
 });
