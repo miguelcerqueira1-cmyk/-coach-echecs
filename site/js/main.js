@@ -186,6 +186,17 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
   if (advice.isPlayerTurn && !deeper && state.settings.autoExplain && coach.configured()) explain();
 }
 
+// Ramène l'échiquier à l'écran s'il n'est plus visible (bouton « Confirmer » ou tableau
+// de statistiques situés plus bas sur téléphone). Ne fait rien s'il est déjà visible.
+function revealBoard() {
+  const el = $('turn-banner');
+  const r = el.getBoundingClientRect();
+  if (r.top < 0 || r.top > window.innerHeight * 0.5) {
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: window.scrollY + r.top - 8, behavior: smooth ? 'smooth' : 'auto' });
+  }
+}
+
 function playMove(input, source) {
   const g = state.game;
   if (state.viewPly !== null) return;
@@ -218,6 +229,7 @@ function playMove(input, source) {
     state.expectation = null;
   }
   onPositionChanged('move');
+  if (source === 'confirm' || source === 'explorer') revealBoard();
   return true;
 }
 
@@ -364,7 +376,14 @@ function renderMoves() {
   }
   ol.innerHTML = html || '<li class="muted small" style="grid-column:1/-1">Aucun coup joué.</li>';
   const curBtn = ol.querySelector('.current');
-  if (curBtn) curBtn.scrollIntoView({ block: 'nearest' });
+  // Fait défiler la liste des coups elle-même, jamais la page (sinon, sur téléphone,
+  // chaque coup ferait descendre l'écran loin de l'échiquier).
+  if (curBtn) {
+    const lr = ol.getBoundingClientRect();
+    const br = curBtn.getBoundingClientRect();
+    if (br.bottom > lr.bottom) ol.scrollTop += br.bottom - lr.bottom + 4;
+    else if (br.top < lr.top) ol.scrollTop -= lr.top - br.top + 4;
+  }
   const notes = [];
   if (g.record.start.type === 'fen') notes.push('Départ depuis une FEN.');
   if (g.record.start.type === 'pgn') notes.push('Partie importée depuis un PGN.');

@@ -20,9 +20,10 @@
   --reply: #f08a24;
   --threat: #ef5350;
   --stat: #4aa3ff;
-  --w-bar: #e9e6dd;
-  --d-bar: #8a918d;
-  --b-bar: #3b3f3d;
+  --w-bar: #f1ede2;
+  --d-bar: #8d969a;
+  --b-bar: #000000;
+  --bar-edge: #9aa3a0;
   --radius: 12px;
   --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
   color-scheme: dark;
@@ -49,6 +50,7 @@
   --w-bar: #ffffff;
   --d-bar: #a9a9a9;
   --b-bar: #333;
+  --bar-edge: #6d736f;
   --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 14px rgba(0, 0, 0, .05);
   color-scheme: light;
 }
@@ -322,4 +324,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .wdl-bar span.w { background: var(--w-bar); }
 .wdl-bar span.d { background: var(--d-bar); }
 .wdl-bar span.b { background: var(--b-bar); }
+/* Barres Blancs / nulles / Noirs : contour net pour que la part « Noirs » reste visible sur fond sombre. */
+.wdl-bar:has(span.w) { border-color: var(--bar-edge); height: 12px; gap: 1px; background: var(--bar-edge); }
 .rep-tabs button[aria-selected="true"] .muted { color: inherit; opacity: .75; }
+.opt-table td .tiny, .tree-table td .tiny { white-space: nowrap; font-size: .7rem; }

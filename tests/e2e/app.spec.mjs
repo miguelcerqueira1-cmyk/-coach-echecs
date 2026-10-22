@@ -293,3 +293,23 @@ test('téléphone @mobile : pas de défilement horizontal, saisie au toucher', a
   expect((await snap(page)).moves).toEqual(['e4']);
   await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
 });
+
+test('téléphone @mobile : jouer un coup ne fait pas défiler la page loin de l’échiquier', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await waitAdvice(page);
+  // Plusieurs coups pour que la liste des coups doive défiler.
+  for (const [a, b] of [['e2', 'e4'], ['e7', 'e5'], ['g1', 'f3'], ['b8', 'c6'], ['f1', 'b5'], ['a7', 'a6'], ['b5', 'a4'], ['g8', 'f6']]) {
+    const before = await page.evaluate(() => window.scrollY);
+    await page.locator(`[data-sq="${a}"]`).tap();
+    await page.locator(`[data-sq="${b}"]`).tap();
+    await page.waitForTimeout(150);
+    expect(await page.evaluate(() => window.scrollY)).toBe(before);
+  }
+  // « Confirmer » est sous l'échiquier : après le coup, l'échiquier revient à l'écran.
+  await waitAdvice(page);
+  await page.locator('#btn-play-best').scrollIntoViewIfNeeded();
+  await page.locator('#btn-play-best').tap();
+  await expect.poll(async () => (await page.locator('#turn-banner').boundingBox()).y, { timeout: 5000 }).toBeLessThan(200);
+  await expect.poll(async () => (await page.locator('#turn-banner').boundingBox()).y).toBeGreaterThanOrEqual(0);
+});
