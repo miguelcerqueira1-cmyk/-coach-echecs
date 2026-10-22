@@ -52,12 +52,7 @@ export class Game {
   }
 
   static fromPgn(pgn, { playerColor = 'w', level = 'intermediaire' } = {}) {
-    const c = new Chess();
-    try {
-      c.loadPgn(pgn);
-    } catch (e) {
-      throw new Error('PGN illisible : ' + e.message);
-    }
+    const c = loadPgnTolerant(pgn);
     const headers = c.getHeaders();
     const startFen = headers.FEN && headers.SetUp === '1' ? normalizeFen(headers.FEN) : DEFAULT_POSITION;
     const moves = c.history({ verbose: true }).map((m) => ({ uci: m.lan, san: m.san }));
@@ -263,6 +258,52 @@ export function uciToMoveObj(uci) {
   const o = { from: uci.slice(0, 2), to: uci.slice(2, 4) };
   if (uci.length === 5) o.promotion = uci[4];
   return o;
+}
+
+// ---------- Import PGN tolérant ----------
+
+// Nettoie un PGN collé : caractères invisibles, fins de ligne Windows, espaces insécables.
+// Si plusieurs parties sont collées, seule la première est gardée.
+export function cleanPgn(text) {
+  let t = String(text || '').replace(/^\uFEFF/, '').replace(/[\u200B-\u200D\u2060]/g, '')
+    .replace(/\u00A0/g, ' ').replace(/\r\n?/g, '\n').trim();
+  const second = t.search(/\n\s*\n\s*\[Event /);
+  const firstMoves = t.search(/\n\s*\n\s*[^[\s]/);
+  if (second > 0 && firstMoves > 0 && second > firstMoves) t = t.slice(0, second).trim();
+  return t;
+}
+
+// Notation française (R, D, T, F, C) → anglaise, uniquement dans la partie « coups »
+// (hors en-têtes et commentaires).
+export function frenchToEnglishPgn(text) {
+  const map = { R: 'K', D: 'Q', T: 'R', F: 'B', C: 'N' };
+  const lines = text.split('\n');
+  return lines.map((line) => {
+    if (/^\s*\[/.test(line)) return line;
+    return line.replace(/(\{[^}]*\})|(^|[\s.)(])([RDTFC])(?=[a-h1-8x]*[a-h][1-8])/g, (all, comment, pre, piece) => (comment ? comment : pre + map[piece]))
+      .replace(/=([DTFC])/g, (_, p) => '=' + map[p]);
+  }).join('\n');
+}
+
+export function loadPgnTolerant(raw) {
+  const text = cleanPgn(raw);
+  if (!text) throw new Error('Le texte est vide : collez le PGN de la partie.');
+  if (/^https?:\/\//i.test(text)) {
+    throw new Error('Vous avez collé un lien. Collez plutôt le texte PGN : sur Lichess, « Partager & exporter » → PGN ; sur Chess.com, « Partager » → onglet PGN → Copier.');
+  }
+  let firstError;
+  for (const candidate of [text, frenchToEnglishPgn(text)]) {
+    const c = new Chess();
+    try {
+      c.loadPgn(candidate);
+      return c;
+    } catch (e) {
+      firstError ??= e;
+    }
+  }
+  const m = String(firstError?.message || '').match(/Invalid move in PGN: (\S+)/);
+  if (m) throw new Error(`Coup illégal ou non reconnu dans le PGN : « ${m[1]} ». Vérifiez que le PGN est complet et commence bien à la position initiale (ou contient l’en-tête FEN).`);
+  throw new Error('Ce texte n’est pas un PGN lisible. Copiez le PGN complet depuis Lichess (« Partager & exporter » → PGN) ou Chess.com (« Partager » → PGN).');
 }
 
 // ---------- Saisie en notation ----------

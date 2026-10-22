@@ -175,3 +175,18 @@ test('saisie en notation : français, anglais, UCI, roque, promotion, ambiguït�
   const r = parseMoveText(amb, 'Rd1');
   assert.equal(r.length, 2);
 });
+
+test('import PGN tolérant : BOM et fins de ligne Windows, plusieurs parties, notation française, lien', async () => {
+  const { Game: G, cleanPgn } = await import('../../site/js/game.js');
+  assert.equal(G.fromPgn('﻿[Event "x"]\r\n[Result "*"]\r\n\r\n1. e4 c6 2. d4 d5 *').ply, 4);
+  const two = G.fromPgn('[Event "a"]\n\n1. e4 e5 *\n\n[Event "b"]\n\n1. d4 d5 2. c4 *');
+  assert.equal(two.ply, 2, 'seule la première partie est importée');
+  assert.match(cleanPgn('a b'), /^a b$/);
+  const fr = G.fromPgn('1. e4 c6 2. d4 d5 3. Cc3 dxe4 4. Cxe4 Ff5 5. Cg3 Fg6 6. Dh5 Dd7 7. a4 { Tour en a3 } 7... e5 8. Ta3');
+  assert.equal(fr.moves.at(-1).san, 'Ra3');
+  const promo = G.fromPgn('[SetUp "1"]\n[FEN "8/P6k/8/8/8/8/8/K7 w - - 0 1"]\n\n1. a8=D');
+  assert.equal(promo.moves[0].san, 'a8=Q');
+  assert.throws(() => G.fromPgn('https://lichess.org/abcd1234'), /collé un lien/);
+  assert.throws(() => G.fromPgn('1. e4 e5 2. Ke3 Ke6 3. Qxh8'), /Coup illégal ou non reconnu/);
+  assert.throws(() => G.fromPgn('{{{ ceci n’est pas un pgn'), /pas un PGN lisible/);
+});
