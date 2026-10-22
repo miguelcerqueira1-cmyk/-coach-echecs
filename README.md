@@ -22,7 +22,7 @@ Pour l'entraînement, l'analyse et les parties où l'assistance est autorisée.
 
 ## Utilisation
 
-1. Ouvrez le site (adresse : `https://<votre-compte>.github.io/coach-echecs/`).
+1. Ouvrez le site : <https://miguelcerqueira1-cmyk.github.io/-coach-echecs/>
 2. « Nouvelle partie » : choisissez votre couleur (ou importez un PGN / une FEN).
 3. À votre tour : une flèche verte montre le coup conseillé. Touchez « Confirmer » pour le jouer, ou jouez autre chose sur l'échiquier.
 4. Au tour de l'adversaire : saisissez le coup **qu'il a réellement joué** (échiquier ou notation : `Cf3`, `Nf3`, `g1f3`…).
