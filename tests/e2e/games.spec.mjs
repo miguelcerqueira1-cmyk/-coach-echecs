@@ -128,3 +128,27 @@ test('Mes parties : revenir sur Moteur pendant une analyse ne bloque pas le calc
   await page.click('.tabs a[data-page=parties]');
   await expect(page.locator('.analysis-card')).toContainText('Trois pistes de travail', { timeout: 90000 });
 });
+
+test('Bilan de la partie de l’échiquier : analyse Stockfish et pistes sur la page Mes parties', async ({ page }) => {
+  await page.route(/https:\/\/(lichess\.org|explorer\.lichess\.org)\//, (r) => r.abort());
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('e2e-init')) {
+      localStorage.clear();
+      localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
+      sessionStorage.setItem('e2e-init', '1');
+    }
+  });
+  await page.goto('./');
+  await page.waitForFunction(() => window.__coach?.engine.state === 'ready', null, { timeout: 60000 });
+  for (const m of ['d4', 'd5', 'c4', 'e6', 'Nc3', 'Nf6', 'Bg5', 'Be7']) {
+    await page.fill('#notation-input', m);
+    await page.press('#notation-input', 'Enter');
+    await expect.poll(() => page.evaluate(() => window.__coach.state.game.moves.at(-1)?.san)).toBe(m);
+  }
+  await page.click('#btn-bilan');
+  await expect(page.locator('#page-parties')).toBeVisible();
+  const box = page.locator('#page-parties [data-analysis]');
+  await expect(box).toContainText('Trois pistes de travail', { timeout: 60000 });
+  await expect(box).toContainText('Répertoire suivi');
+  await expect(page.locator('#page-parties .game-card').first()).toContainText('Échiquier');
+});

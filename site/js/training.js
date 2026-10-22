@@ -6,16 +6,24 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { START_FEN } from './lines.js';
 import { sanFr, formatScore } from './analysis.js';
-import { buildTree, key, weightedPick, verdict, VERDICT_TEXT, cpFrom } from './training-core.js';
+import {
+  buildTree, key, weightedPick, verdict, VERDICT_TEXT, cpFrom, cardsFor, schedule, pickCards, revisionStats,
+} from './training-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
+const REVISION = 'coach-echecs:revision-v1'; // { gd: { cléPosition: état }, ck: { … } }
 const pct = (x) => x.toFixed(0) + ' %';
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
 
+const DEFAULT_PREFS = { rep: 'gd', source: 'lichess', length: 8, mode: 'partie' };
 function loadPrefs() {
-  try { return { rep: 'gd', source: 'lichess', length: 8, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch { return { rep: 'gd', source: 'lichess', length: 8 }; }
+  try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch { return { ...DEFAULT_PREFS }; }
 }
+function loadRevision() {
+  try { return { gd: {}, ck: {}, ...JSON.parse(localStorage.getItem(REVISION) || '{}') }; } catch { return { gd: {}, ck: {} }; }
+}
+const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 export class TrainingPage {
   constructor({ el, engine, client, getFilter, filterLabel }) {
@@ -27,6 +35,7 @@ export class TrainingPage {
     this.data = null;
     this.s = null; // session en cours
     this.prefs = loadPrefs();
+    this.revision = loadRevision();
     this.sessionNo = 0;
   }
 
@@ -56,6 +65,13 @@ export class TrainingPage {
           <option value="ck" ${p.rep === 'ck' ? 'selected' : ''}>Caro-Kann (vous avez les Noirs)</option>
         </select>
       </label>
+      <label class="row">Mode
+        <select data-p="mode">
+          <option value="partie" ${p.mode !== 'revision' ? 'selected' : ''}>Partie contre l’adversaire</option>
+          <option value="revision" ${p.mode === 'revision' ? 'selected' : ''}>Révision espacée (positions à revoir)</option>
+        </select>
+      </label>
+      <p class="small" data-rev-stats>${this.revisionLine(p.rep)}</p>
       <label class="row">Coups de l’adversaire
         <select data-p="source">
           <option value="lichess" ${p.source === 'lichess' ? 'selected' : ''} ${hasLichess ? '' : 'disabled'}>Parties réelles Lichess (${esc(this.filterLabel())})</option>
@@ -63,7 +79,7 @@ export class TrainingPage {
         </select>
       </label>
       ${hasLichess ? '' : '<p class="muted small">Pour des adversaires tirés des vraies parties de votre niveau, ajoutez votre jeton Lichess (⚙).</p>'}
-      <label class="row">Nombre de vos coups
+      <label class="row">Nombre de vos coups <span class="muted small">(ou de positions en révision)</span>
         <select data-p="length">${[5, 8, 12, 16].map((n) => `<option value="${n}" ${Number(p.length) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
       </label>
       <p class="muted small">Le filtre de niveau se règle dans « Coup optimal », page Moteur.</p>
@@ -72,8 +88,45 @@ export class TrainingPage {
     this.el.querySelectorAll('[data-p]').forEach((sel) => sel.addEventListener('change', () => {
       this.prefs[sel.dataset.p] = sel.value;
       try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* rien */ }
+      this.el.querySelector('[data-rev-stats]').innerHTML = this.revisionLine(this.prefs.rep);
     }));
     this.el.querySelector('[data-start]').addEventListener('click', () => this.start());
+  }
+
+  // ---------- Révision espacée ----------
+
+  revisionLine(rep) {
+    const cards = cardsFor(buildTree(this.data.entries, rep));
+    const st = revisionStats(cards, this.revision[rep]);
+    return `📅 Révision : <strong>${st.due}</strong> position(s) à revoir maintenant · ${st.fresh} jamais vue(s) · ${st.learned} / ${st.total} apprise(s). <span class="muted">Chaque position ratée revient plus souvent ; réussie, elle s’espace (1 j, 3 j, 8 j…).</span>`;
+  }
+
+  // Note une position du répertoire (première tentative de la session seulement).
+  grade(k, ok) {
+    const s = this.s;
+    if (s.graded.has(k)) return;
+    s.graded.add(k);
+    this.revision[s.rep][k] = schedule(this.revision[s.rep][k], ok);
+    try { localStorage.setItem(REVISION, JSON.stringify(this.revision)); } catch { /* stockage plein */ }
+  }
+
+  nextCard() {
+    const s = this.s;
+    if (!this.alive(s)) return;
+    if (s.cardIndex >= s.cards.length) { this.finish('Révision terminée.'); return; }
+    const card = s.cards[s.cardIndex++];
+    s.chess = new Chess();
+    s.path = [];
+    for (const u of card.path) this.play(u);
+    const fiche = s.tree.ours.get(card.k)?.values().next().value?.[0];
+    const st = this.revision[s.rep][card.k];
+    this.msg(`Position ${s.cardIndex} / ${s.cards.length}${fiche ? ` — fiche « ${esc(fiche.nom)} »` : ''}${st ? (st.lapses ? ` <span class="muted">(ratée ${st.lapses} fois)</span>` : '') : ' <span class="muted">(nouvelle)</span>'} : trouvez votre coup.`, 'muted');
+    this.render();
+  }
+
+  next() {
+    if (this.s.mode === 'revision') setTimeout(() => this.nextCard(), 700);
+    else setTimeout(() => this.opponentMove(), 450);
   }
 
   // ---------- Session ----------
@@ -86,8 +139,13 @@ export class TrainingPage {
     this.s = {
       id: `entrainement-${this.sessionNo}`, rep: p.rep, color, source, length: Number(p.length) || 8,
       chess: new Chess(), path: [], ours: 0, results: [], log: [], busy: false, done: false, pending: null, rev: 0,
-      tree: buildTree(this.data.entries, p.rep),
+      tree: buildTree(this.data.entries, p.rep), mode: p.mode === 'revision' ? 'revision' : 'partie', graded: new Set(),
     };
+    if (this.s.mode === 'revision') {
+      this.s.cards = pickCards(cardsFor(this.s.tree), this.revision[p.rep], { max: this.s.length });
+      this.s.cardIndex = 0;
+      this.s.length = this.s.cards.length;
+    }
     this.el.innerHTML = `<div class="train-layout">
       <section><div class="train-status" data-status></div><div class="board-wrap" data-board></div>
         <div class="actions"><button type="button" data-stop>Arrêter</button><button type="button" data-restart>Recommencer</button></div></section>
@@ -98,7 +156,12 @@ export class TrainingPage {
     this.el.querySelector('[data-stop]').addEventListener('click', () => this.finish('Session arrêtée.'));
     this.el.querySelector('[data-restart]').addEventListener('click', () => this.start());
     this.render();
-    if (color === 'b') this.opponentMove();
+    if (this.s.mode === 'revision') {
+      if (!this.s.cards.length) {
+        const next = Math.min(...Object.values(this.revision[p.rep]).map((x) => x.due));
+        this.finish(`Rien à réviser : tout est à jour ✔ Prochaine révision : ${dateFr(next)}.`);
+      } else this.nextCard();
+    } else if (color === 'b') this.opponentMove();
   }
 
   token() { return { gameId: this.s.id, branchId: 'entrainement', revision: ++this.s.rev, ply: this.s.path.length }; }
@@ -118,12 +181,12 @@ export class TrainingPage {
     st.innerHTML = s.done ? 'Session terminée'
       : s.busy ? '<span class="spinner"></span> ' + esc(s.busy)
       : s.pending ? 'Choisissez : réessayer ou continuer'
-      : myTurn ? `À vous (${s.color === 'w' ? 'Blancs' : 'Noirs'}) : trouvez le coup de votre répertoire` : 'L’adversaire réfléchit…';
+      : myTurn ? `À vous (${s.color === 'w' ? 'Blancs' : 'Noirs'}) : trouvez le coup de votre répertoire` : s.mode === 'revision' ? 'Position suivante…' : 'L’adversaire réfléchit…';
     const ok = s.results.filter((r) => r.ok).length;
     const book = s.results.filter((r) => r.level === 'repertoire').length;
     this.el.querySelector('[data-score]').innerHTML = `<h2>Score : ${ok} / ${s.results.length}</h2>
-      <p class="small muted">${book} coup(s) du répertoire · coup ${s.ours} / ${s.length} · adversaire : ${s.source === 'lichess' ? 'parties Lichess (' + esc(this.filterLabel()) + ')' : 'lignes des fiches'}</p>
-      ${s.pending ? `<div class="actions"><button type="button" data-retry>↺ Réessayer</button><button type="button" class="primary" data-fix>Continuer avec ${esc(sanFr(s.pending.bestSan))}</button></div>` : ''}
+      <p class="small muted">${s.mode === 'revision' ? `Révision espacée · position ${s.ours} / ${s.length} réussie(s) ou passée(s)` : `${book} coup(s) du répertoire · coup ${s.ours} / ${s.length} · adversaire : ${s.source === 'lichess' ? 'parties Lichess (' + esc(this.filterLabel()) + ')' : 'lignes des fiches'}`}</p>
+      ${s.pending ? `<div class="actions"><button type="button" data-retry>↺ Réessayer</button><button type="button" class="primary" data-fix>${s.mode === 'revision' ? 'Voir le bon coup et passer à la suite' : 'Continuer avec'} ${esc(sanFr(s.pending.bestSan))}</button></div>` : ''}
       ${s.done ? '<div class="actions"><button type="button" class="primary" data-again>Nouvelle session</button><button type="button" data-setup>Changer de réglages</button></div>' : ''}`;
     this.el.querySelector('[data-log]').innerHTML = s.log.map((l) => `<li class="${l.cls}">${l.html}</li>`).join('');
     this.el.querySelector('[data-retry]')?.addEventListener('click', () => this.retry());
@@ -226,8 +289,11 @@ export class TrainingPage {
       s.path.pop();
       s.busy = false;
     }
-    const v = verdict({ inBook: !!book, isBookMove, isTrap, loss });
+    const v0 = verdict({ inBook: !!book, isBookMove, isTrap, loss });
+    // En révision, on apprend le répertoire : un bon coup hors fiche reste à revoir.
+    const v = s.mode === 'revision' && book && !isBookMove && v0.ok ? { level: 'bon-hors-fiche', ok: false } : v0;
     s.results.push({ ...v, san: mv.san });
+    if (book) this.grade(k, v.level === 'repertoire'); // révision espacée : seul le coup du répertoire compte
     let html = `Vous : <strong>${esc(sanFr(mv.san))}</strong> — ${esc(VERDICT_TEXT[v.level])}`;
     if (loss != null && v.level !== 'repertoire') html += ` <span class="muted">(perte ≈ ${(loss / 100).toFixed(1).replace('.', ',')})</span>`;
     const bookMoves = book ? [...book.keys()] : [];
@@ -251,7 +317,7 @@ export class TrainingPage {
     this.play(uci);
     s.ours++;
     this.render();
-    setTimeout(() => this.opponentMove(), 450);
+    this.next();
   }
 
   retry() {
@@ -271,9 +337,9 @@ export class TrainingPage {
     const mv = this.play(s.pending.bestUci);
     s.pending = null;
     s.ours++;
-    this.msg(`On continue avec <strong>${esc(sanFr(mv.san))}</strong>.`, 'muted');
+    this.msg(`${s.mode === 'revision' ? 'Bon coup' : 'On continue avec'} <strong>${esc(sanFr(mv.san))}</strong>.`, 'muted');
     this.render();
-    setTimeout(() => this.opponentMove(), 450);
+    this.next();
   }
 
   finish(reason) {
@@ -284,7 +350,7 @@ export class TrainingPage {
     const ok = s.results.filter((r) => r.ok).length;
     const n = s.results.length;
     const fautes = s.results.filter((r) => !r.ok).map((r) => sanFr(r.san));
-    this.msg(`<strong>${esc(reason)}</strong> Score : ${ok}/${n}${n ? ` (${Math.round((100 * ok) / n)} %)` : ''}.${fautes.length ? ` À revoir : ${fautes.map(esc).join(', ')}.` : ''}`, 'end');
+    this.msg(`<strong>${esc(reason)}</strong> Score : ${ok}/${n}${n ? ` (${Math.round((100 * ok) / n)} %)` : ''}.${fautes.length ? ` À revoir : ${fautes.map(esc).join(', ')}.` : ''}<br><span class="small">${this.revisionLine(s.rep)}</span>`, 'end');
     this.render();
   }
 }

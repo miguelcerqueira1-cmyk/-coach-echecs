@@ -53,3 +53,33 @@ test('verdicts', () => {
   assert.ok(cpFrom({ type: 'mate', value: 2 }, 'w', 'w') > 9000);
   assert.ok(cpFrom({ type: 'mate', value: -1 }, 'w', 'w') < -9000);
 });
+
+import { cardsFor, schedule, pickCards, revisionStats, RELEARN_MS } from '../../site/js/training-core.js';
+
+test('révision espacée : intervalles, erreurs et choix des cartes', () => {
+  const t0 = Date.UTC(2026, 0, 1);
+  let c = schedule(undefined, true, t0);
+  assert.equal(c.interval, 1);
+  c = schedule(c, true, t0);
+  assert.equal(c.interval, 3);
+  c = schedule(c, true, t0);
+  assert.equal(c.interval, 8); // 3 × 2,5 arrondi
+  const f = schedule(c, false, t0);
+  assert.equal(f.due, t0 + RELEARN_MS);
+  assert.equal(f.reps, 0);
+  assert.equal(f.lapses, 1);
+  assert.ok(f.ease < c.ease);
+  const cards = [{ k: 'a', path: ['a'] }, { k: 'b', path: ['b'] }, { k: 'c', path: ['c', 'd'] }, { k: '', path: [] }];
+  const states = { a: { due: t0 - 1, lapses: 0 }, b: { due: t0 - 1, lapses: 3 }, c: { due: t0 + 1e9, lapses: 0, reps: 2 } };
+  const pick = pickCards(cards, states, { now: t0, max: 10, newMax: 1 });
+  assert.deepEqual(pick.map((x) => x.k), ['b', 'a', '']);
+  assert.deepEqual(revisionStats(cards, states, t0), { total: 4, due: 2, learned: 1, fresh: 1 });
+});
+
+test('révision espacée : une carte par position à jouer du répertoire', () => {
+  const tree = buildTree(data.entries, 'gd');
+  const cards = cardsFor(tree);
+  assert.ok(cards.length > 20);
+  assert.ok(cards.some((c) => c.k === ''));
+  for (const c of cards) assert.equal(c.path.length % 2, 0); // Blancs : toujours un nombre pair de demi-coups
+});

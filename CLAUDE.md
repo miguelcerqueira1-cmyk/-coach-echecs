@@ -145,6 +145,13 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - Classement des variantes (menu « Classer ») : plus jouées / meilleur score pour mon camp
   (mon niveau ou maîtres, score = V + ½N, seulement ≥ 50 parties) ou meilleure évaluation
   Stockfish de fin de ligne ; charge les statistiques de toutes les fiches affichées.
+- Révision espacée (Entraînement, mode « Révision ») : une carte = une position du répertoire
+  où c'est à nous de jouer ; notée à la 1re tentative de chaque session (seul le coup de la fiche
+  compte), y compris en mode Partie. Réussie : 1 j, 3 j, puis × facilité (2,5) ; ratée : revient
+  10 min plus tard, facilité −0,2 (min 1,3). Stockage local `coach-echecs:revision-v1`.
+- Bilan de la partie (page Moteur, bouton « Bilan ») : la partie est envoyée à « Mes parties »
+  (`localGame`, id dérivé des coups → cache d'analyse réutilisé) et analysée comme une partie
+  importée ; exclue de la vue d'ensemble. Indisponible pour une partie commencée depuis un FEN.
 - Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
   chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page
@@ -188,7 +195,6 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - Plus de fiches (le répertoire actuel couvre 58 lignes ; l'arbre Lichess couvre le reste).
 - Parties d'un joueur précis (endpoint /player).
 
-- Bilan de la partie jouée sur la page Moteur (aujourd'hui : via « Mes parties » ou Exporter).
 - Comparaison facultative de trois candidats (MultiPV 3), avec indication du coût de calcul.
 - Exploration de variantes d'analyse (`analysisBranches`) séparée de la partie réelle ;
   analyse d'une position passée de l'historique.

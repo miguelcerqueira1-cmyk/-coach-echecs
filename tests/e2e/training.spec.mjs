@@ -73,3 +73,31 @@ test('Entraînement (Lichess) : adversaire tiré des parties réelles, avec sa f
   await expect(log).toContainText(/parties de ce niveau/, { timeout: 10000 });
   expect(calls.some((p) => p === 'e2e4,c7c6')).toBe(true);
 });
+
+test('Révision espacée : position ratée revient, réussie s’espace, compteur mis à jour', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches', length: 5, mode: 'revision' } });
+  await page.goto('./#/entrainement');
+  await engineReady(page);
+  await expect(page.locator('[data-rev-stats]')).toContainText('0 / ');
+  await page.click('[data-start]');
+  const log = page.locator('[data-log]');
+  // 1re carte : position de départ (nouvelle), coup du répertoire 1.d4.
+  await expect(log).toContainText('Position 1 / 5');
+  await move(page, 'd2d4');
+  await expect(log).toContainText('Coup du répertoire');
+  // 2e carte : on se trompe exprès (a2-a4) → proposition du bon coup.
+  await expect(log).toContainText('Position 2 / 5', { timeout: 10000 });
+  await move(page, 'a2a4');
+  await expect(page.locator('[data-fix]')).toBeVisible({ timeout: 20000 });
+  await page.click('[data-fix]');
+  await expect(log).toContainText('Position 3 / 5', { timeout: 10000 });
+  const st = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:revision-v1')).gd);
+  const vals = Object.values(st);
+  expect(vals.length).toBe(2);
+  const ok = vals.find((x) => x.reps === 1);
+  const ko = vals.find((x) => x.lapses === 1);
+  expect(ok.due - ok.seen).toBe(86400000); // revient dans 1 jour
+  expect(ko.due - ko.seen).toBe(600000); // revient dans 10 minutes
+  await page.click('[data-stop]');
+  await expect(log).toContainText('Révision :');
+});

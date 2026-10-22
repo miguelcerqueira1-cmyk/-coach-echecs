@@ -4,7 +4,7 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
-  parseLichessGame, parseChessComGame, repertoireDeviation, analyseGame, bilan, whiteCp, moveNo,
+  parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo,
 } from './games-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -37,6 +37,18 @@ export class GamesPage {
     if (!this.data) {
       try { this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json(); } catch { this.data = { entries: [] }; }
     }
+    if (this.pendingLocal) {
+      // Bilan demandé depuis la page Moteur : la partie passe en tête de liste et s'analyse.
+      const g = this.pendingLocal;
+      this.pendingLocal = null;
+      g.deviation = repertoireDeviation(g, this.data.entries);
+      this.games = [g, ...this.games.filter((x) => x.id !== g.id)];
+      this.selected = g.id;
+      this.render();
+      this.el.querySelector('[data-analysis]')?.scrollIntoView({ block: 'start' });
+      if (!this.cache[g.id]) this.analyse(g);
+      return;
+    }
     if (!this.rendered) this.render();
     // Reprise automatique d'une analyse mise en pause quand on avait quitté la page.
     const paused = this.games.find((g) => g.id === this.selected && g.paused);
@@ -44,6 +56,9 @@ export class GamesPage {
   }
 
   visible() { return !this.el.classList.contains('hidden'); }
+
+  // À appeler avant d'afficher la page (l'analyse ne tourne que page visible).
+  bilanLocal(game) { this.pendingLocal = localGame(game); }
 
   // ---------- Import ----------
 
@@ -111,7 +126,7 @@ export class GamesPage {
 
   filtered() {
     const sp = this.prefs.speed;
-    return this.games.filter((g) => sp === 'toutes' || g.speed.toLowerCase() === { blitz: 'blitz', rapide: 'rapide', bullet: 'bullet' }[sp]);
+    return this.games.filter((g) => g.local || sp === 'toutes' || g.speed.toLowerCase() === { blitz: 'blitz', rapide: 'rapide', bullet: 'bullet' }[sp]);
   }
 
   // ---------- Analyse ----------
@@ -205,7 +220,7 @@ export class GamesPage {
   }
 
   summaryHtml() {
-    const list = this.filtered();
+    const list = this.filtered().filter((g) => !g.local);
     if (!list.length) return '';
     const by = (fn) => { const g = list.filter(fn); const w = g.filter((x) => x.outcome === 'victoire').length; const d = g.filter((x) => x.outcome === 'nulle').length; return { n: g.length, w, d, l: g.length - w - d }; };
     const fmt = (s) => (s.n ? `${s.n} partie(s) : ${s.w} V · ${s.d} N · ${s.l} D` : 'aucune');
@@ -278,7 +293,7 @@ export class GamesPage {
         <div class="actions">
           <button type="button" class="${done ? '' : 'primary'}" data-analyse="${esc(g.id)}">${done ? 'Voir l’analyse' : 'Analyser'}</button>
           <button type="button" data-open="${esc(g.id)}">Ouvrir sur l’échiquier</button>
-          <a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">Sur ${esc(g.site)}</a>
+          ${g.url ? `<a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">Sur ${esc(g.site)}</a>` : ''}
         </div>
       </article>`;
     }).join('')}</div>`;

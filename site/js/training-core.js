@@ -83,3 +83,54 @@ export function cpFrom(score, turn, color) {
   const v = score.type === 'mate' ? Math.sign(score.value || -1) * (10000 - Math.abs(score.value)) : score.value;
   return turn === color ? v : -v;
 }
+
+// ---------- Révision espacée ----------
+// Une « carte » = une position du répertoire où c'est à nous de jouer (clé = chemin UCI).
+// Planification inspirée de SM-2, simplifiée : bonne réponse → intervalle × facilité ;
+// erreur → la carte revient le jour même et sa facilité baisse.
+
+const DAY = 86400000;
+export const RELEARN_MS = 10 * 60000; // une position ratée revient 10 minutes plus tard
+
+export function cardsFor(tree) {
+  return [...tree.ours.keys()].map((k) => ({ k, path: k ? k.split(',') : [] }));
+}
+
+export function schedule(prev, ok, now = Date.now()) {
+  const c = { interval: 0, ease: 2.5, reps: 0, lapses: 0, due: now, seen: 0, ...prev };
+  c.seen = now;
+  if (ok) {
+    c.reps++;
+    c.interval = c.reps === 1 ? 1 : c.reps === 2 ? 3 : Math.round(c.interval * c.ease);
+    c.due = now + c.interval * DAY;
+  } else {
+    c.reps = 0;
+    c.lapses++;
+    c.ease = Math.max(1.3, c.ease - 0.2);
+    c.interval = 0;
+    c.due = now + RELEARN_MS;
+  }
+  return c;
+}
+
+// Cartes à réviser : d'abord les échues (les plus en retard et les plus ratées d'abord),
+// puis au plus `newMax` positions jamais vues, dans l'ordre des lignes (de la plus courte).
+export function pickCards(cards, states, { now = Date.now(), max = 10, newMax = 5 } = {}) {
+  const due = cards.filter((c) => states[c.k] && states[c.k].due <= now)
+    .sort((a, b) => (states[b.k].lapses - states[a.k].lapses) || (states[a.k].due - states[b.k].due));
+  const fresh = cards.filter((c) => !states[c.k]).sort((a, b) => a.path.length - b.path.length);
+  return [...due, ...fresh.slice(0, newMax)].slice(0, max);
+}
+
+export function revisionStats(cards, states, now = Date.now()) {
+  let due = 0; let learned = 0; let fresh = 0;
+  for (const c of cards) {
+    const s = states[c.k];
+    if (!s) fresh++;
+    else {
+      if (s.due <= now) due++;
+      if (s.reps >= 2) learned++;
+    }
+  }
+  return { total: cards.length, due, learned, fresh };
+}

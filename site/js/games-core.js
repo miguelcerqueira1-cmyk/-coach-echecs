@@ -64,6 +64,19 @@ export function parseChessComGame(g, username) {
   };
 }
 
+// Partie jouée sur la page Moteur → même forme qu'une partie importée, pour le bilan.
+// L'identifiant dépend des coups : la même partie réutilise son analyse en cache.
+export function localGame({ san, color, result = '*', white, black, opening = '' }) {
+  let h = 0;
+  for (const ch of san.join(' ')) h = (Math.imul(h, 31) + ch.charCodeAt(0)) | 0;
+  return {
+    site: 'Échiquier', id: `moteur-${san.length}-${(h >>> 0).toString(36)}`, url: null, local: true,
+    date: new Date().toISOString(), speed: 'Partie de l’échiquier', rated: false, color,
+    white: white || (color === 'w' ? 'Moi' : 'Adversaire'), black: black || (color === 'b' ? 'Moi' : 'Adversaire'),
+    whiteElo: null, blackElo: null, result, outcome: result === '*' ? 'en cours' : resultFor(result, color), opening, san: san.slice(),
+  };
+}
+
 // Répertoire concerné par la partie (null si hors répertoire).
 export function repertoireOf(game) {
   if (game.color === 'w') return game.san[0] === 'd4' ? 'gd' : null;

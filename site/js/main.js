@@ -1,7 +1,7 @@
 // Contrôleur principal. Principe : l'état de partie (game.js) est la source de vérité ;
 // Stockfish calcule ; chess.js valide ; Claude explique les résultats calculés.
 import { Game, parseMoveText } from './game.js';
-import { Chess } from '../vendor/chess.js';
+import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
 import { Engine } from './engine.js';
 import { Board } from './board.js';
 import {
@@ -104,13 +104,7 @@ async function init() {
         trainingPage ??= new TrainingPage({ el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel });
         trainingPage.show();
       }
-      if (page === 'parties') {
-        gamesPage ??= new GamesPage({
-          el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
-          openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`),
-        });
-        gamesPage.show();
-      }
+      if (page === 'parties') ensureGamesPage().show();
       // Le moteur est partagé : en revenant sur la page Moteur, on relance le calcul si
       // une autre page l'a interrompu.
       if (page === 'moteur' && state.game && state.analysis.status !== 'ready' && !state.game.status().over && engine.state === 'ready') {
@@ -915,6 +909,7 @@ function bindUi() {
     runAnalysis(DEEPER_MOVETIME, { deeper: true });
   };
   $('btn-explain').onclick = () => explain();
+  $('btn-bilan').onclick = () => openBilan();
   $('btn-auto').onclick = () => (autoplay.running ? stopAutoplay('Suite automatique arrêtée.') : startAutoplay());
   $('btn-export').onclick = openExport;
   $('btn-settings').onclick = openSettings;
@@ -1169,6 +1164,29 @@ function openSanInBoard(san, color, label, { animate = false, headers = null } =
     else startAutoplay(); // la ligne est jouée : la partie continue jusqu'à la fin
   };
   replayTimer = setTimeout(step, 400);
+}
+
+function ensureGamesPage() {
+  gamesPage ??= new GamesPage({
+    el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
+    openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`),
+  });
+  return gamesPage;
+}
+
+// Bilan de la partie de l'échiquier : analysée coup par coup sur la page « Mes parties ».
+function openBilan() {
+  const g = state.game;
+  if (!g.ply) { notationMsg('Jouez au moins un coup avant de demander un bilan.', true); return; }
+  if (g.record.start.fen !== DEFAULT_POSITION) { notationMsg('Bilan indisponible pour une partie commencée depuis une position (FEN).', true); return; }
+  stopAutoplay();
+  const st = g.status();
+  const h = g.record.headers || {};
+  ensureGamesPage().bilanLocal({
+    san: g.moves.map((m) => m.san), color: g.playerColor, result: st.over ? st.result : '*',
+    white: h.White, black: h.Black, opening: h.Opening || '',
+  });
+  location.hash = '#/parties';
 }
 
 // ---------- Suite automatique jusqu'à la fin de la partie ----------
