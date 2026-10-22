@@ -169,7 +169,7 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   navigateurs) : c'était la cause des 404 « sans jeton » observés ; api.chess.com est bloqué depuis
   l'environnement de développement (fixtures Chess.com synthétiques). Node 22 n'utilise le proxy de
   l'environnement qu'avec `NODE_USE_ENV_PROXY=1` : le script se relance lui-même ainsi.
-  CI : job `elite` (hors pull request) → artefact → job pages ; sans artefact, le fichier déjà
+  CI : job `elite` (lundi + lancement manuel seulement) → artefact → job pages ; sinon le fichier déjà
   publié est repris ; déclenchement hebdomadaire (lundi). Fichier non versionné (comme
   repertoire.json) : régénéré chaque semaine, un instantané figerait des données datées et
   alourdirait l'historique. Sans fichier, l'interface affiche « non publié ».

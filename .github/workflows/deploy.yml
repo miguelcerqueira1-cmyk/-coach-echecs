@@ -61,11 +61,12 @@ jobs:
           retention-days: 7
 
   # Jeu de données « Élite » : requêtes série vers Lichess et Chess.com (≈ 15 à 30 min).
-  # Une source en échec est notée dans le fichier ; si aucune partie n'est obtenue, le job échoue
-  # et la publication reprend le fichier déjà en ligne (voir job pages).
+  # Seulement le lundi et au lancement manuel : un push ne doit pas attendre la collecte ;
+  # il reprend le fichier déjà en ligne (voir job pages). Une source en échec est notée dans
+  # le fichier ; si aucune partie n'est obtenue, le job échoue et le fichier en ligne est gardé.
   elite:
     name: Jeu de données Élite (top blitz/rapide Lichess + Chess.com)
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
