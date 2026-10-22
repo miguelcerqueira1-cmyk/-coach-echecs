@@ -234,12 +234,12 @@ test('panne du moteur affichée, aucun conseil fabriqué', async ({ page }) => {
   expect((await snap(page)).moves).toEqual(['e4']);
 });
 
-test('sans API Claude : explication clairement indiquée comme indisponible', async ({ page }) => {
+test('sans API Claude : explication gratuite calculée, Claude indiqué comme indisponible', async ({ page }) => {
   await setup(page);
   await page.goto('./');
   await waitAdvice(page);
   await expect(page.locator('#coach-pill')).toHaveText('Claude : indisponible');
-  await expect(page.locator('#coach')).toContainText('indisponible');
+  await expect(page.locator('#coach')).toContainText('calculée · gratuite');
   await expect(page.locator('#advice')).toContainText('Coup conseillé');
 });
 

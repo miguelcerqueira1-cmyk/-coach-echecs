@@ -215,11 +215,24 @@ test('Répertoire : toucher une étiquette filtre les fiches de ce type', async 
   expect(await rows.count()).toBe(await page.locator('.rep-table tbody .b-loufoque').count());
 });
 
-test('Expliquer sans API Claude : message visible sous l’échiquier', async ({ page }) => {
+test('Expliquer sans API Claude : explication gratuite sous l’échiquier', async ({ page }) => {
   await mockLichess(page);
   await setup(page);
   await page.goto('./');
   await waitEngine(page);
   await page.click('#btn-explain');
-  await expect(page.locator('#notation-msg')).toContainText('Explications Claude non activées');
+  const coach = page.locator('.board-col #coach');
+  await expect(coach).toContainText('Pourquoi ce coup', { timeout: 15000 });
+  await expect(coach).toContainText('Menace à surveiller');
+  await expect(coach).toContainText('Suite calculée');
+  await expect(coach).not.toContainText('undefined');
+  // La navigation ⏮ ◀ ▶ ⏭ est sous l'échiquier et indique la position affichée.
+  await page.fill('#notation-input', 'e4');
+  await page.press('#notation-input', 'Enter');
+  await expect(page.locator('#nav-label')).toContainText('1. e4');
+  await page.click('.board-nav [data-nav=prev]');
+  await expect(page.locator('#nav-label')).toContainText('départ');
+  await expect(page.locator('#view-banner')).toBeVisible();
+  await page.click('.board-nav [data-nav=end]');
+  await expect(page.locator('#view-banner')).toBeHidden();
 });

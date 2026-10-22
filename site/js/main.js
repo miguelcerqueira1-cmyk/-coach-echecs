@@ -11,6 +11,7 @@ import * as store from './storage.js';
 import { LichessClient } from './lichess.js';
 import { OptimalPanel, DEFAULT_FILTER } from './optimal.js';
 import { initRouter } from './router.js';
+import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { RepertoirePage } from './repertoire-page.js';
 
 const $ = (id) => document.getElementById(id);
@@ -183,7 +184,7 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
   }
   renderAdvice();
   renderBoard();
-  if (advice.isPlayerTurn && !deeper && state.settings.autoExplain && coach.configured()) explain();
+  if (advice.isPlayerTurn && !deeper && state.settings.autoExplain) explain({ auto: true });
 }
 
 // Ramène l'échiquier à l'écran s'il n'est plus visible (bouton « Confirmer » ou tableau
@@ -239,23 +240,19 @@ function abortCoach() {
   if (state.coach.abort) state.coach.abort.abort();
 }
 
-async function explain() {
+// Explication du conseil : rédigée par Claude si l'API est configurée, sinon explication
+// gratuite construite uniquement à partir des calculs (explain-free.js).
+async function explain({ auto = false } = {}) {
   const g = state.game;
   const advice = state.analysis.advice;
   if (!advice || !g.isCurrent(advice.token)) return;
-  const missing = coach.missing();
-  if (missing) {
-    state.coach = { ...state.coach, status: 'unavailable', error: missing };
-    renderCoach();
-    // Message visible juste sous l'échiquier (le panneau Claude est loin en bas sur téléphone).
-    notationMsg(`Explications Claude non activées : ${missing} Le conseil de Stockfish ci-dessus reste disponible.`, true);
-    return;
-  }
+  const free = !!coach.missing();
   abortCoach();
   const token = advice.token;
   const ctrl = new AbortController();
-  state.coach = { status: 'loading', token, html: '', error: null, abort: ctrl, meta: null };
+  state.coach = { status: 'loading', mode: free ? 'free' : 'claude', token, html: '', error: null, abort: ctrl, meta: null };
   renderCoach();
+  if (!auto) revealCoach();
 
   // Menace : coup que l'adversaire jouerait s'il avait le trait (calcul réel, court).
   let threat = null;
@@ -268,6 +265,16 @@ async function explain() {
     } catch { threat = null; }
   }
   if (!g.isCurrent(token) || ctrl.signal.aborted) return;
+
+  if (free) {
+    const sections = explicationGratuite({ game: g, advice, threat, deviation: state.deviation });
+    // La flèche rouge n'est dessinée que pour une menace sérieuse.
+    const shown = menaceSerieuse(advice, threat, g.playerColor) ? threat : null;
+    state.coach = { status: 'ready', mode: 'free', token, html: renderExplication(sections), error: null, abort: null, meta: { depth: advice.depth, threat: shown } };
+    renderCoach();
+    if (threat) renderBoard();
+    return;
+  }
 
   const payload = buildCoachPayload({
     game: g, advice, threat, level: g.record.level,
@@ -357,7 +364,20 @@ function moveLabel(i) {
   return `${no}${m.color === 'w' ? '.' : '…'} ${sanFr(m.san)}`;
 }
 
+// Barre ⏮ ◀ ▶ ⏭ sous l'échiquier : indique la position affichée.
+function renderNav() {
+  const g = state.game;
+  const cur = state.viewPly ?? g.ply;
+  const live = state.viewPly === null;
+  $('nav-label').textContent = cur === 0 ? (g.ply ? 'Position de départ' : 'Aucun coup joué')
+    : `${live ? 'Actuelle · ' : ''}après ${moveLabel(cur - 1)}`;
+  $('nav-label').classList.toggle('viewing', !live);
+  document.querySelectorAll('[data-nav=start], [data-nav=prev]').forEach((b) => { b.disabled = cur === 0; });
+  document.querySelectorAll('[data-nav=next], [data-nav=end]').forEach((b) => { b.disabled = live; });
+}
+
 function renderMoves() {
+  renderNav();
   const g = state.game;
   const ol = $('moves');
   const startNo = Number(g.startFen.split(' ')[5] || 1);
@@ -525,11 +545,26 @@ function renderLive() {
   el.textContent = `Stockfish calcule… profondeur ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · éval. provisoire ' + sc : ''}`;
 }
 
+// Fait apparaître le panneau d'explication s'il est hors de l'écran (demande explicite).
+function revealCoach() {
+  const r = $('coach').getBoundingClientRect();
+  if (r.top > window.innerHeight - 80 || r.bottom < 0) $('coach').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
 function renderCoach() {
   const el = $('coach');
   const c = state.coach;
-  const head = '<h2>Explication de l’entraîneur (Claude)</h2>';
   const missing = coach.missing();
+  const head = missing ? '<h2>Explication <span class="badge">calculée · gratuite</span></h2>' : '<h2>Explication de l’entraîneur (Claude)</h2>';
+  if (c.status === 'loading' && c.mode === 'free') {
+    el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>Stockfish cherche la menace adverse…</span></div>`;
+    return;
+  }
+  if (c.status === 'ready' && c.mode === 'free' && c.token && state.game.isCurrent(c.token)) {
+    el.innerHTML = `${head}<div class="text">${c.html}</div>
+      <p class="muted small">Construite uniquement à partir des calculs de Stockfish (profondeur ${c.meta?.depth ?? '—'}) et des règles du jeu, sans IA. Flèche rouge pointillée (si présente) : une menace sérieuse de l’adversaire. Pour un texte rédigé par Claude, activez l’API (⚙ Réglages).</p>`;
+    return;
+  }
   if (c.status === 'loading') {
     el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>Claude rédige une explication à partir des calculs du moteur…</span></div>`;
     return;
@@ -547,7 +582,7 @@ function renderCoach() {
     return;
   }
   if (missing) {
-    el.innerHTML = `${head}<p class="muted">Explication conversationnelle indisponible : ${esc(missing)} Le conseil calculé par Stockfish reste disponible.</p>`;
+    el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? 'L’explication s’affiche automatiquement quand c’est à vous de jouer.' : 'Touchez « Expliquer » pour une explication du conseil.'} Version gratuite, calculée sans IA.</p>`;
     return;
   }
   el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? 'L’explication arrive automatiquement quand c’est à vous de jouer.' : 'Touchez « Expliquer » pour une explication du conseil.'}</p>`;

@@ -27,6 +27,13 @@
     <section class="board-col">
       <div id="turn-banner" class="turn-banner" aria-live="polite"></div>
       <div id="board" class="board-wrap"></div>
+      <div class="board-nav" aria-label="Navigation dans les coups">
+        <button type="button" data-nav="start" aria-label="Début de la partie">⏮</button>
+        <button type="button" data-nav="prev" aria-label="Coup précédent">◀</button>
+        <span id="nav-label" class="nav-label"></span>
+        <button type="button" data-nav="next" aria-label="Coup suivant">▶</button>
+        <button type="button" data-nav="end" aria-label="Position actuelle">⏭</button>
+      </div>
       <p id="advice-mini" class="advice-mini" aria-hidden="true"></p>
       <div id="view-banner" class="view-banner hidden">
         <span id="view-text"></span>
@@ -47,21 +54,15 @@
         <button type="submit">Jouer</button>
       </form>
       <p id="notation-msg" class="notation-msg" role="status"></p>
+      <article id="coach" class="card coach" aria-live="polite"></article>
     </section>
 
     <section class="side-col">
       <article id="advice" class="card advice" aria-live="polite"></article>
       <article id="optimal" class="card optimal" aria-live="polite"></article>
-      <article id="coach" class="card coach" aria-live="polite"></article>
       <article class="card moves-card">
         <div class="moves-head">
           <h2>Coups joués</h2>
-          <div class="nav-btns">
-            <button type="button" data-nav="start" aria-label="Début">⏮</button>
-            <button type="button" data-nav="prev" aria-label="Coup précédent">◀</button>
-            <button type="button" data-nav="next" aria-label="Coup suivant">▶</button>
-            <button type="button" data-nav="end" aria-label="Position actuelle">⏭</button>
-          </div>
         </div>
         <p id="start-note" class="muted small"></p>
         <ol id="moves" class="moves"></ol>

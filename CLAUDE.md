@@ -15,6 +15,7 @@ site/                      Site statique servi par GitHub Pages (aucune étape d
   js/analysis.js           Validation des variantes, points de vue des scores, descriptions FR
   js/board.js              Échiquier DOM (clic, glisser, flèches SVG, choix de promotion)
   js/coach.js              Client de l'API Claude + vérification des coups cités
+  js/explain-free.js       Explication gratuite sans IA (faits chess.js + calculs Stockfish), utilisée quand Claude n'est pas configuré
   js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess)
   js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
   js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
@@ -87,7 +88,11 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   8 appels/min, plafond quotidien (`DAILY_LIMIT`), CORS limité à l'origine Pages, corps ≤ 16 Ko,
   compteurs dans un Durable Object SQLite (offre gratuite). Modèle par défaut
   `claude-opus-5-5`, effort `low`, `fallbacks: "default"` (bêta `server-side-fallback-2026-07-01`).
-- Sans API ou sans code : tout fonctionne sauf l'explication, indiquée comme indisponible.
+- Sans API ou sans code : « Expliquer » produit une explication gratuite construite uniquement
+  à partir des calculs (coup conseillé, variante, menace « coup nul », pièces en prise, roque,
+  développement) ; aucune interprétation stratégique n'y est inventée.
+- Téléphone : la liste des coups défile en interne (jamais la page) ; navigation ⏮ ◀ ▶ ⏭ et
+  explication placées sous l'échiquier.
 - **Lichess** (vérifié dans la spécification officielle lichess-org/api, oct. 2026) :
   Cloud Eval est public (`security: []`, CORS `*`, 404 si position absente du cache).
   L'Opening Explorer est sur `explorer.lichess.org` (plus `.ovh`) et exige un jeton OAuth2 :
