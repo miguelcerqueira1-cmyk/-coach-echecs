@@ -167,9 +167,21 @@ test('Accueil Entraînement sur téléphone @mobile : modules et progression lis
   await expect(page.locator('[data-today]')).toBeVisible();
   await expect(page.locator('.dash-row').first()).toBeVisible();
   // En cas d'échec, le message liste les éléments qui dépassent (diagnostic Safari).
-  const wide = await page.evaluate(() => [...document.querySelectorAll('body *')]
-    .filter((el) => el.getBoundingClientRect().right > innerWidth + 1 && el.getBoundingClientRect().width > 0)
-    .slice(0, 8).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).replace(/ /g, '.')} [${Math.round(el.getBoundingClientRect().left)}→${Math.round(el.getBoundingClientRect().right)}] ${(el.textContent || '').trim().slice(0, 40)}`));
+  const wide = await page.evaluate(() => {
+    const out = [];
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n && out.length < 6; n = w.nextNode()) {
+      if (!n.textContent.trim()) continue;
+      const r = document.createRange(); r.selectNodeContents(n);
+      for (const b of r.getClientRects()) if (b.right > innerWidth + 1) { out.push(`texte « ${n.textContent.trim().slice(0, 30)} » dans ${n.parentElement.tagName.toLowerCase()}.${n.parentElement.className} → ${Math.round(b.right)}`); break; }
+    }
+    for (const el of document.querySelectorAll('body *')) {
+      if (out.length >= 10) break;
+      const st = getComputedStyle(el);
+      if (el.scrollWidth > el.clientWidth + 1 && st.overflowX === 'visible' && el.clientWidth > 0) out.push(`contenu plus large que ${el.tagName.toLowerCase()}.${el.className} (${el.scrollWidth} > ${el.clientWidth})`);
+    }
+    return out;
+  });
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), wide.join(' | ')).toBeLessThanOrEqual(0);
   await page.click('[data-dash-rep="ck"]');
   await expect(page.locator('.dash-row').first()).toContainText(/B1\d/);
