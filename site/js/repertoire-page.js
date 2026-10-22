@@ -152,7 +152,7 @@ export class RepertoirePage {
     const mainEval = v ? `<div class="small">Stockfish (vérif.) : <strong>${esc(scoreText(toWhite(v.main, v.main.pov)))}</strong></div>` : '';
     return `<tr data-id="${e.id}">
       <td data-label="ECO · Nom">
-        <span class="badge eco">${esc(e.eco)}</span> <span class="badge ${BADGE_CLASS[e.badge]}">${esc(this.badgeLabel(e.badge))}</span>
+        <span class="badge eco">${esc(e.eco)}</span> <button type="button" class="badge badge-btn ${BADGE_CLASS[e.badge]}" data-badge-filter="${e.badge}" title="Afficher toutes les fiches de ce type">${esc(this.badgeLabel(e.badge))}</button>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
         <div class="row-actions">
@@ -389,6 +389,12 @@ export class RepertoirePage {
       const b = ev.target.closest('button');
       if (!b) return;
       const entry = (id) => this.data.entries.find((x) => x.id === id);
+      if (b.dataset.badgeFilter) {
+        this.badge = b.dataset.badgeFilter;
+        this.render();
+        this.el.querySelector('.rep-head').scrollIntoView({ block: 'start' });
+        return;
+      }
       if (b.dataset.open) this.openLine(entry(b.dataset.open));
       if (b.dataset.tree) {
         this.openTree(entry(b.dataset.tree).uci);

@@ -204,3 +204,22 @@ test('@online Opening Explorer réel avec jeton personnel (CORS depuis le site p
   expect(ex.error || '').toBe('');
   expect(ex.total).toBeGreaterThan(1000);
 });
+
+test('Répertoire : toucher une étiquette filtre les fiches de ce type', async ({ page }) => {
+  await mockLichess(page);
+  await setup(page);
+  await page.goto('./#/repertoire');
+  await page.locator('[data-badge-filter="loufoque"]').first().click();
+  await expect(page.locator('[data-badge]')).toHaveValue('loufoque');
+  const rows = page.locator('.rep-table tbody tr[data-id]');
+  expect(await rows.count()).toBe(await page.locator('.rep-table tbody .b-loufoque').count());
+});
+
+test('Expliquer sans API Claude : message visible sous l’échiquier', async ({ page }) => {
+  await mockLichess(page);
+  await setup(page);
+  await page.goto('./');
+  await waitEngine(page);
+  await page.click('#btn-explain');
+  await expect(page.locator('#notation-msg')).toContainText('Explications Claude non activées');
+});

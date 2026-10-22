@@ -247,6 +247,8 @@ async function explain() {
   if (missing) {
     state.coach = { ...state.coach, status: 'unavailable', error: missing };
     renderCoach();
+    // Message visible juste sous l'échiquier (le panneau Claude est loin en bas sur téléphone).
+    notationMsg(`Explications Claude non activées : ${missing} Le conseil de Stockfish ci-dessus reste disponible.`, true);
     return;
   }
   abortCoach();
