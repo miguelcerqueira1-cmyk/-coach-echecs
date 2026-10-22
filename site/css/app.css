@@ -120,6 +120,8 @@ button:disabled { opacity: .45; cursor: default; }
 button.primary { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); font-weight: 600; }
 input[type=text], input[type=url], input[type=password], input[type=search], input[type=number], textarea, select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -283,7 +285,7 @@ dialog { border: 1px solid var(--border); border-radius: 14px; background: var(-
 dialog::backdrop { background: rgba(0, 0, 0, .45); }
 dialog fieldset { border: 1px solid var(--border); border-radius: 8px; margin: 0 0 .7rem; display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
 dialog label { display: block; margin: .5rem 0; }
-dialog label.row { display: grid; grid-template-columns: 1fr 1.3fr; align-items: center; gap: .5rem; }
+dialog label.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: center; gap: .5rem; }
 dialog fieldset label, dialog label.check { display: flex; align-items: center; gap: .4rem; margin: .2rem 0; }
 .dlg-actions { display: flex; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
 .dlg-actions.left { justify-content: flex-start; margin-top: .3rem; }
@@ -322,7 +324,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .opt-filters summary { cursor: pointer; color: var(--muted); }
 .opt-filters fieldset { border: 1px solid var(--border); border-radius: 8px; display: flex; flex-wrap: wrap; gap: .2rem .8rem; margin: .4rem 0; }
 .opt-filters fieldset label { display: flex; gap: .3rem; align-items: center; }
-.opt-filters label.row { display: grid; grid-template-columns: 1fr 1.2fr; gap: .5rem; align-items: center; margin: .4rem 0; }
+.opt-filters label.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: .5rem; align-items: center; margin: .4rem 0; }
 .opt-table table, .tree-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-top: .3rem; }
 .opt-table th, .opt-table td, .tree-table th, .tree-table td { padding: .3rem .35rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
 .opt-table th, .tree-table th { color: var(--muted); font-weight: 500; font-size: .78rem; }
@@ -387,7 +389,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 /* ---------- Entraînement ---------- */
 .training, .games { max-width: 1200px; margin: 0 auto; padding: .75rem 16px 1.5rem; }
 .train-setup { max-width: 560px; margin: 0 auto; }
-.train-setup label.row { display: grid; grid-template-columns: 1fr 1.4fr; gap: .5rem; align-items: center; margin: .6rem 0; }
+.train-setup label.row, .hub-card label.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: .5rem; align-items: center; margin: .6rem 0; }
 .train-layout { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 900px) { .train-layout { grid-template-columns: minmax(0, min(78vh, 600px)) minmax(300px, 1fr); align-items: start; } }
 .train-status { font-weight: 650; padding: .55rem .8rem; margin-bottom: .6rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); display: flex; gap: .5rem; align-items: center; }
@@ -541,6 +543,10 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .hub-big { font-size: 1.35rem; font-weight: 700; }
 .hub-today { align-self: flex-start; }
 .hub-result { margin: 0; padding: .5rem .7rem; border-radius: 10px; background: var(--surface-2); box-shadow: inset 4px 0 0 var(--accent); font-weight: 600; }
+.hub-grid > *, .hub-stats > * { min-width: 0; }
+/* Safari donne à un <select> la largeur de sa plus longue option : on l'autorise à rétrécir. */
+.train-hub select { min-width: 0; max-width: 100%; text-overflow: ellipsis; }
+.hub-today { white-space: normal; text-align: left; max-width: 100%; }
 .hub-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 .hub-card h2 { font-size: 1.05rem; }
 .dash-list { list-style: none; margin: .5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
