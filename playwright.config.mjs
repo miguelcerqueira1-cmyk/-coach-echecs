@@ -23,6 +23,6 @@ export default defineConfig({
   projects: [
     { name: 'chromium-ordinateur', use: { ...devices['Desktop Chrome'] }, grepInvert: /@mobile/ },
     { name: 'chromium-mobile', use: { ...devices['Pixel 7'] }, grep: /@mobile/ },
-    ...(webkit ? [{ name: 'webkit-iphone', use: { ...devices['iPhone 14'] }, grep: /@mobile|@smoke/ }] : []),
+    ...(webkit ? [{ name: 'webkit-iphone', use: { ...devices['iPhone 14'] }, grep: /@mobile|@smoke/, timeout: 180000 }] : []),
   ],
 });

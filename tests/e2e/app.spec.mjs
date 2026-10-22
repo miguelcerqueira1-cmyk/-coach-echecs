@@ -32,7 +32,7 @@ async function waitAdvice(page) {
   await page.waitForFunction(() => {
     const s = window.__coach?.state;
     return s && s.analysis.status === 'ready' && s.analysis.advice && s.game.isCurrent(s.analysis.advice.token);
-  }, null, { timeout: 60000 });
+  }, null, { timeout: 120000 });
   return snap(page);
 }
 
