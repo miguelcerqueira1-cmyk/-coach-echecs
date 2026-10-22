@@ -572,3 +572,9 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .drill-fb.ko { box-shadow: inset 4px 0 0 var(--threat); }
 .drill-fb p { margin: .3rem 0; }
 .dash-more summary { cursor: pointer; margin: .6rem 0 .2rem; color: var(--muted); }
+/* Sur téléphone, Safari ne laisse pas un <select> rétrécir dans une grille : libellé au-dessus,
+   menu en pleine largeur (bloc), qui lui ne déborde pas. */
+@media (max-width: 600px) {
+  .train-hub label.row { display: block; }
+  .train-hub label.row select { display: block; width: 100%; margin-top: .25rem; }
+}
