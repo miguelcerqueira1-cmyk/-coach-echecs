@@ -31,7 +31,7 @@ test('vidéos choisies : identifiant, titre, chaîne, langue, source ; horodatag
   for (const e of LIGNES) {
     const liens = e.video.liens;
     if (liens === undefined) continue;
-    assert.ok(Array.isArray(liens) && liens.length >= 1 && liens.length <= 3, `${e.id} : 1 à 3 liens`);
+    assert.ok(Array.isArray(liens) && liens.length >= 1 && liens.length <= 4, `${e.id} : 1 à 4 liens`);
     fiches++;
     const ids = new Set();
     for (const l of liens) {
@@ -40,7 +40,11 @@ test('vidéos choisies : identifiant, titre, chaîne, langue, source ; horodatag
       const id = l.url.slice(32, 43);
       assert.ok(!ids.has(id), `${where} : doublon`);
       ids.add(id);
-      for (const k of ['titre', 'chaine']) assert.ok(typeof l[k] === 'string' && l[k].trim().length >= 2, `${where} : ${k}`);
+      assert.ok(typeof l.titre === 'string' && l.titre.trim().length >= 2, `${where} : titre`);
+      // Chaîne obligatoire, sauf pour un résultat de recherche web qui ne l'affichait pas :
+      // null explicite, la CI (oEmbed) indique alors la vraie chaîne à recopier.
+      if (l.chaine === null) assert.equal(l.source, 'recherche web', `${where} : chaîne inconnue hors recherche web`);
+      else assert.ok(typeof l.chaine === 'string' && l.chaine.trim().length >= 2, `${where} : chaîne`);
       assert.match(l.langue, /^[a-z]{2}$/, `${where} : langue`);
       assert.equal(l.verifie, true, `${where} : lien non vérifié`);
       assert.ok(['recherche web', 'vidéothèque Lichess'].includes(l.source), `${where} : source`);
@@ -55,7 +59,19 @@ test('vidéos choisies : identifiant, titre, chaîne, langue, source ; horodatag
       }
     }
   }
-  assert.ok(fiches >= 30, `seulement ${fiches} fiches avec vidéo`);
+  assert.ok(fiches >= 45, `seulement ${fiches} fiches avec vidéo`);
+  // Vidéos en français : au moins une par grande famille d'ouverture.
+  const fr = (pred) => LIGNES.some((e) => pred(e) && e.video.liens?.some((l) => l.langue === 'fr'));
+  for (const [nom, pred] of Object.entries({
+    'Gambit Dame Refusé': (e) => e.famille === 'Gambit Dame Refusé',
+    'Gambit Dame Accepté': (e) => e.famille === 'Gambit Dame Accepté',
+    'Slave / Semi-Slave': (e) => /Slave/.test(e.famille),
+    'Caro-Kann Avance': (e) => e.famille === 'Variante d’avance',
+    'Caro-Kann Classique': (e) => e.famille === 'Variante classique',
+    'Caro-Kann Échange/Panov': (e) => e.famille === 'Variante d’échange',
+    'Caro-Kann Deux Cavaliers': (e) => e.famille === 'Deux Cavaliers',
+    'Caro-Kann Fantaisie': (e) => e.famille === 'Attaque Fantaisie',
+  })) assert.ok(fr(pred), `aucune vidéo en français : ${nom}`);
   // Les liens sont publiés tels quels dans le JSON généré.
   const byId = Object.fromEntries(generated.entries.map((e) => [e.id, e]));
   for (const e of LIGNES) assert.deepEqual(byId[e.id].video, e.video, `${e.id} : JSON à régénérer (npm run build)`);

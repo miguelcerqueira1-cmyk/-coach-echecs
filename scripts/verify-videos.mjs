@@ -37,7 +37,8 @@ export function collectLinks(lignes) {
 
 // Résultat par vidéo : ok | mort (404/400 : supprimée, privée ou identifiant faux) |
 // restreinte (401/403 : intégration désactivée ou accès limité) | changement (titre ou chaîne
-// différents) | erreur (réseau, 5xx, 429 : non concluant).
+// différents) | a-completer (vidéo trouvée, chaîne non confirmée lors du choix : la vraie est
+// indiquée) | erreur (réseau, 5xx, 429 : non concluant).
 export async function checkVideo(v, fetchImpl = fetch) {
   const url = `${OEMBED}?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${v.id}`)}&format=json`;
   let res;
@@ -53,8 +54,10 @@ export async function checkVideo(v, fetchImpl = fetch) {
   try { data = await res.json(); } catch { return { ...v, etat: 'erreur', detail: 'réponse non JSON' }; }
   const diffs = [];
   if (!sameish(data.title, v.titre)) diffs.push(`titre « ${data.title} » (attendu « ${v.titre} »)`);
-  if (!sameish(data.author_name, v.chaine)) diffs.push(`chaîne « ${data.author_name} » (attendu « ${v.chaine} »)`);
-  return { ...v, etat: diffs.length ? 'changement' : 'ok', detail: diffs.join(' ; '), titreReel: data.title, chaineReelle: data.author_name };
+  if (v.chaine == null) diffs.push(`chaîne à renseigner : « ${data.author_name} »`);
+  else if (!sameish(data.author_name, v.chaine)) diffs.push(`chaîne « ${data.author_name} » (attendu « ${v.chaine} »)`);
+  const etat = diffs.length === 0 ? 'ok' : (v.chaine == null && diffs.length === 1 ? 'a-completer' : 'changement');
+  return { ...v, etat, detail: diffs.join(' ; '), titreReel: data.title, chaineReelle: data.author_name };
 }
 
 export async function checkAll(videos, { fetchImpl = fetch, pauseMs = 200 } = {}) {
@@ -74,7 +77,7 @@ export function report(results, { github = false } = {}) {
     lines.push(github ? `::warning title=Vidéo ${r.etat}::${msg.replace(/\r?\n/g, ' ')}` : msg);
   }
   const n = (k) => results.filter((r) => r.etat === k).length;
-  lines.push(`vidéos : ${results.length} contrôlées — ${n('ok')} ok, ${n('mort')} mortes, ${n('restreinte')} restreintes, ${n('changement')} modifiées, ${n('erreur')} non concluantes`);
+  lines.push(`vidéos : ${results.length} contrôlées — ${n('ok')} ok, ${n('mort')} mortes, ${n('restreinte')} restreintes, ${n('changement')} modifiées, ${n('a-completer')} chaînes à renseigner, ${n('erreur')} non concluantes`);
   return lines.join('\n');
 }
 

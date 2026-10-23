@@ -31,6 +31,9 @@ test('oEmbed simulé : ok, mort, restreinte, changement, erreur réseau', async 
   const changed = await checkVideo(v, async () => reply(200, { title: 'Something else entirely', author_name: 'Hanging Pawns' }));
   assert.equal(changed.etat, 'changement');
   assert.match(changed.detail, /titre/);
+  const inconnue = await checkVideo({ ...v, chaine: null }, async () => reply(200, { title: "Exchange Variation of the Queen's Gambit Declined", author_name: 'Hanging Pawns' }));
+  assert.equal(inconnue.etat, 'a-completer');
+  assert.match(inconnue.detail, /chaîne à renseigner : « Hanging Pawns »/);
   assert.equal((await checkVideo(v, async () => { throw new Error('ECONNRESET'); })).etat, 'erreur');
   assert.equal((await checkVideo(v, async () => reply(503, null))).etat, 'erreur');
 });
