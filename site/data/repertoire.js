@@ -50,7 +50,7 @@ export const LIGNES = [
     conserver: 'Fou de cases blanches (pression sur h7 et d5), Cavalier f3',
     video: { recherche: 'Queen\'s Gambit Declined orthodox Capablanca freeing maneuver explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=RajtCtk9xwM', titre: 'Classical Variation of the Queen’s Gambit Declined', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=TSTnJNs9wdw&t=560s', titre: 'Queen\'s Gambit Declined | Modern & Exchange Variation | Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '9:20 4.Bg5, Modern Variation' },
       ] },
@@ -89,7 +89,7 @@ export const LIGNES = [
     conserver: 'Tours sur b1/c1 pour l’attaque de minorité, Cavalier c3 (pression sur d5)',
     video: { recherche: 'Carlsbad structure minority attack Queen\'s Gambit Exchange explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5_d3NArXpL8', titre: 'Comprendre le gambit dame refusé, variante d\'échange #2 : les plans détaillés avec le cavalier en f3', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5_d3NArXpL8', titre: 'Comprendre le gambit dame refusé, variante d\'échange #2 : les plans détaillés avec le cavalier en f3', chaine: 'L\'école des échecs', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=G2F8inwFmk0', titre: 'Exchange Variation of the Queen’s Gambit Declined', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=TSTnJNs9wdw&t=35s', titre: 'Queen\'s Gambit Declined | Modern & Exchange Variation | Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '00:35 4.cxd5, Exchange Variation' },
         { url: 'https://www.youtube.com/watch?v=0FVrbaMszUc', titre: 'Be alert when you have this Pawn Structure on the Board | Carlsbad Structure | GM Alex Lenderman', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
@@ -128,7 +128,7 @@ export const LIGNES = [
     conserver: 'Pion e4 (domination centrale), Dame active sur b3',
     video: { recherche: 'Queen\'s Gambit Accepted central variation 3.e4 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=1fVq2w0_fNY', titre: 'Comprendre les enjeux du Gambit Dame accepté', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1fVq2w0_fNY', titre: 'Comprendre les enjeux du Gambit Dame accepté', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=ayGm-TV7z2k', titre: 'Queen\'s Gambit Accepted, Central Variation (3.e4)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=kx7-bulFFnA&t=295s', titre: 'Queen\'s Gambit Accepted | Mainlines without 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '4:55 – Queen’s Gambit Accepted: Central Variation 3.e4' },
       ] },
@@ -145,7 +145,7 @@ export const LIGNES = [
     conserver: 'Fou d3/Fou c2 sur la diagonale b1-h7, Cavalier pouvant aller en e5',
     video: { recherche: 'Queen\'s Gambit Accepted classical main line plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=1fVq2w0_fNY', titre: 'Comprendre les enjeux du Gambit Dame accepté', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1fVq2w0_fNY', titre: 'Comprendre les enjeux du Gambit Dame accepté', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=DXPrQwSRiBw', titre: 'Queen\'s Gambit Accepted, Main Line (3.Nf3)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=xCTnlxo-zRQ&t=604s', titre: 'Queen\'s Gambit Accepted | Mainlines with 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '10:04 Black’s move: 6…c5, Classical, Main line' },
       ] },
@@ -165,7 +165,7 @@ export const LIGNES = [
     conserver: 'Dame prête à aller en f3',
     video: { recherche: 'Queen\'s Gambit Accepted trap Qf3 b5 c6 axb5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=eLzqWx8TsGY', titre: 'Piège d\'ouverture (1/2) : Gambit-Dame accepté', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eLzqWx8TsGY', titre: 'Piège d\'ouverture (1/2) : Gambit-Dame accepté', chaine: 'Echecs - SpeedDrunk', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=crTU1QVefWY', titre: 'Chess Traps #8: A Trap in the Queen\'s Gambit Accepted', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=oRfGbul6MUs&t=446s', titre: 'Learn the Queen\'s Gambit Chess Opening: TRAPS & Errors', chaine: 'Remote Chess Academy', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '07:26 Queen\'s Gambit Accepted: Q-side pawns trap' },
         { url: 'https://www.youtube.com/watch?v=6r_VKSdpRH8', titre: '5 Queen\'s Gambit Traps Every Chess Player Should Know', chaine: 'Eric Rosen', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
@@ -186,7 +186,6 @@ export const LIGNES = [
     conserver: 'Pion a4 (empêche …b5), Dame e2 qui soutient e4',
     video: { recherche: 'Slav Defense main line 5.a4 Bf5 plans for White', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=roK1kPXjpmU', titre: 'Leçon Europe-Echecs — Défense Slave (extrait gratuit)', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=tVsSmTj46b0&t=4280s', titre: 'Top 8 Most Popular Queen\'s Gambit Variations', chaine: 'Jonathan Schrantz', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:11:20 Slav Defense' },
         { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
@@ -218,7 +217,7 @@ export const LIGNES = [
     conserver: 'Fou d3 (diagonale vers h7), Tours centralisées',
     video: { recherche: 'Semi-Slav Meran variation explained 10.e4 c5 11.d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=xPn-x09G0G0', titre: 'Partie pédagogique #34 - Semi-slave Méran', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xPn-x09G0G0', titre: 'Partie pédagogique #34 - Semi-slave Méran', chaine: 'Échecs - Sylvain Ravot', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=AdiwIMRwPSk', titre: 'The Complete Semi-Slav Part 2: The Modern Meran (8...Bb7)', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -252,7 +251,7 @@ export const LIGNES = [
     conserver: 'Pion e5, Fou g2 (diagonale vers b7)',
     video: { recherche: 'Albin Countergambit Lasker trap underpromotion explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=TG40sLtmUVQ', titre: 'Ouverture d\'échecs Contre-Gambit albin, piège de Lasker', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TG40sLtmUVQ', titre: 'Ouverture d\'échecs Contre-Gambit albin, piège de Lasker', chaine: 'Echecs - luc pitallier', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=s_ED8vrQQlM', titre: 'Chess Traps #3: Lasker Trap - Albin Counter Gambit', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=VDfjsMXlcek', titre: 'Chess Openings- Albin Counter Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=6r_VKSdpRH8&t=251s', titre: '5 Queen\'s Gambit Traps Every Chess Player Should Know', chaine: 'Eric Rosen', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '4:11 Albin Counter Gambit Trap -- Promote to a knight!' },
@@ -342,7 +341,7 @@ export const LIGNES = [
     conserver: 'Pion e5, Cavalier c3 qui défend b1/d5',
     video: { recherche: 'Englund Gambit trap Qc1 mate how to avoid', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=3MHElZnnRt4', titre: 'Jeu d\'échec : Pièges et réfutation du Gambit Englund', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3MHElZnnRt4', titre: 'Jeu d\'échec : Pièges et réfutation du Gambit Englund', chaine: 'Cooldown', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=rAgux17jnZU', titre: 'The Englund Gambit | Mainline and Traps | Chess Openings | Gambits | IM Andrey Ostrovskiy', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=vrZ3WwAXBsQ', titre: 'Ending the Englund Gambit', chaine: 'Daniel Naroditsky', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
@@ -362,7 +361,7 @@ export const LIGNES = [
     conserver: 'Pion e5, Cavaliers actifs',
     video: { recherche: 'Englund Gambit Qh4 Qb4+ refutation for White', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=3MHElZnnRt4', titre: 'Jeu d\'échec : Pièges et réfutation du Gambit Englund', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3MHElZnnRt4', titre: 'Jeu d\'échec : Pièges et réfutation du Gambit Englund', chaine: 'Cooldown', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=vrZ3WwAXBsQ', titre: 'Ending the Englund Gambit', chaine: 'Daniel Naroditsky', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -435,8 +434,8 @@ export const LIGNES = [
     conserver: 'Fou de cases noires pour le contrôle de d4',
     video: { recherche: 'Caro-Kann Advance Variation Short system 4.Nf3 e6 5.Be2 c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=UHw8iRLbvlo', titre: 'MAÎTRISER LA CARO-KANN - Répertoire Complet (4) : variante d\'avance', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=PiMswlCna_k', titre: 'Introduction à la défense Caro Kann variante d\'avance (échecs)', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=UHw8iRLbvlo', titre: 'MAÎTRISER LA CARO-KANN - Répertoire Complet (4) : variante d\'avance', chaine: 'Antoine Ducos', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=PiMswlCna_k', titre: 'Introduction à la défense Caro Kann variante d\'avance (échecs)', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=kRmwIRYnm8A&t=1016s', titre: 'Caro-Kann Defense | Advance Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '16:56 4.Nf3, Short Variation' },
       ] },
   },

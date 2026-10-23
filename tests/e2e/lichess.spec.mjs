@@ -307,7 +307,7 @@ test('Répertoire : vidéos multilingues sans clé (lien de recherche) et avec c
   await expect(curated).toHaveCount(3);
   await expect(curated.nth(0)).toHaveAttribute('href', 'https://www.youtube.com/watch?v=xZ6pb498C0s');
   await expect(curated.nth(0)).toHaveAttribute('target', '_blank');
-  await expect(page.locator('tr[data-id="gd-orthodoxe"] [data-curated] > div').nth(0)).toContainText('(FR)');
+  await expect(page.locator('tr[data-id="gd-orthodoxe"] [data-curated] > div').nth(0)).toContainText(/FR\)/);
   await expect(curated.nth(1)).toHaveAttribute('href', 'https://www.youtube.com/watch?v=RajtCtk9xwM');
   await expect(curated.nth(1)).toContainText('▶ Classical Variation of the Queen’s Gambit Declined');
   await expect(page.locator('tr[data-id="gd-orthodoxe"] [data-curated] > div').nth(1)).toContainText('(Hanging Pawns, EN)');

@@ -72,10 +72,10 @@ export async function checkAll(videos, { fetchImpl = fetch, pauseMs = 200 } = {}
 export function report(results, { github = false } = {}) {
   const lines = [];
   const bad = results.filter((r) => r.etat !== 'ok');
-  for (const r of bad) {
-    const msg = `${r.etat} : https://www.youtube.com/watch?v=${r.id} (${r.fiches.join(', ')}) ${r.detail}`.trim();
-    lines.push(github ? `::warning title=Vidéo ${r.etat}::${msg.replace(/\r?\n/g, ' ')}` : msg);
-  }
+  const msgs = bad.map((r) => `${r.etat} : https://www.youtube.com/watch?v=${r.id} (${r.fiches.join(', ')}) ${r.detail}`.trim().replace(/\r?\n/g, ' '));
+  // GitHub n'affiche que 10 annotations par étape : sur GitHub, une seule annotation multiligne.
+  if (github && msgs.length) lines.push(`::warning title=Vidéos à vérifier (${msgs.length})::${msgs.join('%0A')}`);
+  else lines.push(...msgs);
   const n = (k) => results.filter((r) => r.etat === k).length;
   lines.push(`vidéos : ${results.length} contrôlées — ${n('ok')} ok, ${n('mort')} mortes, ${n('restreinte')} restreintes, ${n('changement')} modifiées, ${n('a-completer')} chaînes à renseigner, ${n('erreur')} non concluantes`);
   return lines.join('\n');

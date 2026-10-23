@@ -45,7 +45,9 @@ test('rapport : annotations GitHub « warning » pour les liens à revoir seulem
   ];
   const results = await checkAll(vids, { pauseMs: 0, fetchImpl: async (url) => (url.includes('aaaaaaaaaaa') ? reply(200, { title: 'A', author_name: 'C' }) : reply(404, null)) });
   const out = report(results, { github: true });
-  assert.match(out, /^::warning title=Vidéo mort::mort : https:\/\/www\.youtube\.com\/watch\?v=bbbbbbbbbbb \(ck-b, ck-c\)/m);
+  // Une seule annotation multiligne (GitHub n'en affiche que 10 par étape).
+  assert.match(out, /^::warning title=Vidéos à vérifier \(1\)::mort : https:\/\/www\.youtube\.com\/watch\?v=bbbbbbbbbbb \(ck-b, ck-c\)/m);
+  assert.equal(out.split('\n').filter((l) => l.startsWith('::warning')).length, 1);
   assert.doesNotMatch(out, /aaaaaaaaaaa/);
   assert.match(out, /2 contrôlées — 1 ok, 1 mortes/);
 });
