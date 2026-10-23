@@ -34,7 +34,7 @@ export function playersSectionHtml(idx, query, ficheCount) {
     const m = idx.data.meta || {};
     const suivis = (m.suivis || []).map((s) => s.nom);
     return `<div class="card players-card players-none small"><p><strong>Aucun joueur « ${esc(query.trim())} » dans les données collectées.</strong></p>
-      <p class="muted">Couvert : les joueurs du top 50 blitz et rapide de Lichess et de Chess.com, les joueurs suivis (${esc(suivis.join(', ') || 'aucun')} ; comptes en ligne vérifiés seulement) et les tournois retransmis sur Lichess (${(m.tournois || []).length} tournois, joueurs 2600+ ou suivis) — seulement leurs parties récentes qui commencent par 1.d4 d5 2.c4 ou 1.e4 c6.</p></div>`;
+      <p class="muted">Couvert : les joueurs du top 50 blitz et rapide de Lichess et de Chess.com, les joueurs suivis (${esc(suivis.join(', ') || 'aucun')} ; comptes en ligne vérifiés seulement) et les tournois retransmis sur Lichess (${(m.tournois || []).length} tournois, joueurs 2600+ ou suivis) — seulement leurs parties récentes qui atteignent nos ouvertures (Gambit Dame, Caro-Kann), transpositions comprises.</p></div>`;
   }
   return found.slice(0, MAX_PLAYERS).map((j) => playerHtml(idx.data, j)).join('')
     + (found.length > MAX_PLAYERS ? `<p class="muted tiny">${found.length - MAX_PLAYERS} autre(s) joueur(s) correspondent : précisez le nom.</p>` : '');
@@ -44,7 +44,7 @@ function playerHtml(data, j) {
   const games = playerGames(data, j);
   const accounts = (j.c || []).map((c) => `${PLATFORM_LABELS[c.p] || c.p} ${c.u}`).join(', ');
   const head = `<h3>${esc(j.n)}${j.s ? ' <span class="badge">joueur suivi</span>' : ''}</h3>
-    <p class="muted tiny">${accounts ? `Comptes : ${esc(accounts)} · ` : ''}${games.length} partie(s) dans nos ouvertures (1.d4 d5 2.c4, 1.e4 c6) parmi les parties collectées.</p>`;
+    <p class="muted tiny">${accounts ? `Comptes : ${esc(accounts)} · ` : ''}${games.length} partie(s) dans nos ouvertures (Gambit Dame, Caro-Kann, transpositions comprises) parmi les parties collectées.</p>`;
   if (!games.length) return `<div class="card players-card" data-player="${esc(j.n)}">${head}<p class="muted small">Aucune partie récente de ce joueur dans nos ouvertures.</p></div>`;
   const rows = games.slice(0, MAX_GAMES).map((g) => {
     const res = g.r === '1/2-1/2' ? '½-½' : g.r;

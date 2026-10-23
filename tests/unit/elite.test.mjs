@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { Chess } from '../../site/vendor/chess.js';
 import {
   firstSans, normalizeLichess, normalizeChessCom, parseNdjson, aggregate, compact, dedupe, countGames,
+  repertoireEntry, buildRepertoireIndex, TRANSPO_PLIES,
   emptyState, ownerKey, recordDownload, pruneState, stateGames, recentGames, MONTH_MS,
 } from '../../scripts/elite-core.mjs';
 import { parseArgs, fixtureName, Http, run, buildDataset, DEFAULTS, LICHESS_OVERLAP_MS } from '../../scripts/elite.mjs';
@@ -36,7 +37,7 @@ test('premiers coups d’un PGN Chess.com (horloges, numéros 1...)', () => {
 
 test('Lichess : seules les parties classées blitz/rapide du répertoire, terminées, sont gardées', () => {
   const g = normalizeLichess(li('abcd1234', 'd4 d5 c4 e6 Nc3'), 'TopA');
-  assert.deepEqual(g, { p: 'li', id: 'abcd1234', w: 'TopA', wr: 3000, b: 'Adv', br: 2800, y: 2026, t: Date.UTC(2026, 9, 1), r: '1-0', s: 'blitz', san: ['d4', 'd5', 'c4', 'e6', 'Nc3'] });
+  assert.deepEqual(g, { p: 'li', id: 'abcd1234', w: 'TopA', wr: 3000, b: 'Adv', br: 2800, y: 2026, t: Date.UTC(2026, 9, 1), r: '1-0', s: 'blitz', san: ['d4', 'd5', 'c4', 'e6', 'Nc3'], rp: 'gd', e: 3 });
   assert.equal(normalizeLichess(li('x', 'e4 c6 d4', { winner: undefined, status: 'draw' }), 'TopA').r, '1/2-1/2');
   assert.equal(normalizeLichess(li('x', 'd4 Nf6 c4'), 'TopA'), null, 'hors répertoire');
   assert.equal(normalizeLichess(li('x', 'd4 d5 c4', { speed: 'bullet' }), 'TopA'), null, 'bullet');
@@ -537,4 +538,59 @@ test('tournois en incrémental : seules les rondes terminées depuis le passage 
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+// ---------- Transpositions ----------
+
+const sanOf = (s) => s.split(' ');
+
+test('transpositions : entrée dans le répertoire par position, quel que soit l’ordre des coups', () => {
+  // Ordre littéral : entrée à la racine.
+  assert.deepEqual(repertoireEntry(sanOf('d4 d5 c4 e6 Nc3 Nf6')), { rep: 'gd', ply: 3 });
+  assert.deepEqual(repertoireEntry(sanOf('e4 c6 d4 d5')), { rep: 'ck', ply: 2 });
+  // Gambit Dame par transposition : la Variante orthodoxe (fiche) est atteinte au 6e demi-coup.
+  assert.deepEqual(repertoireEntry(sanOf('d4 Nf6 c4 e6 Nc3 d5 Bg5 Be7')), { rep: 'gd', ply: 6 });
+  assert.deepEqual(repertoireEntry(sanOf('c4 e6 Nc3 d5 d4 Nf6 Bg5')), { rep: 'gd', ply: 5 }, '= 1.d4 d5 2.c4 e6 3.Cc3, Noirs au trait');
+  assert.deepEqual(repertoireEntry(sanOf('Nf3 d5 d4 Nf6 c4 e6 Nc3 Be7')).rep, 'gd');
+  // Caro-Kann par transposition : 1.c4 c6 2.e4 d5 / 1.Cc3 c6 2.e4 d5 rejoignent des fiches Caro-Kann.
+  assert.equal(repertoireEntry(sanOf('Nc3 c6 e4 d5 Nf3 Bg4'))?.rep, 'ck');
+  assert.equal(repertoireEntry(sanOf('Nc3 d5 e4 c6 Nf3 Bg4'))?.rep, 'ck', 'deux ordres, même position');
+  // Mauvais camp au trait : même placement des pièces mais trait aux Blancs → pas la racine.
+  const idx = buildRepertoireIndex([]);
+  assert.equal(repertoireEntry(sanOf('d4 d5 Nf3 Nf6 c4'), { index: idx }), null, 'pièces différentes');
+  assert.equal(idx.size, 2, 'sans fiche : les deux racines seulement');
+  assert.equal(repertoireEntry(sanOf('c4 d5 d4'), { index: idx })?.rep, 'gd', '1.c4 d5 2.d4 = 1.d4 d5 2.c4, Noirs au trait');
+  assert.equal(repertoireEntry(sanOf('c4 d5 d4 Nf6 Nc3'), { index: idx })?.ply, 3);
+  assert.equal(repertoireEntry(sanOf('e4 c6 Nf3 Nf6 Ng1 Ng8'), { index: idx })?.ply, 2);
+  // Position de la racine avec l'autre camp au trait (coups de va-et-vient) : refusée.
+  assert.equal(repertoireEntry(sanOf('e3 c6 e4'), { index: idx }), null, '1.e3 c6 2.e4 : mêmes pièces que 1.e4 c6 mais Noirs au trait');
+  // Jamais dans le répertoire, ou trop tard.
+  assert.equal(repertoireEntry(sanOf('e4 e5 Nf3 Nc6 Bb5 a6')), null);
+  assert.equal(repertoireEntry(sanOf('d4 Nf6 c4 g6 Nc3 Bg7')), null);
+  const late = 'Nf3 Nf6 Ng1 Ng8 Nf3 Nf6 Ng1 Ng8 Nf3 Nf6 Ng1 Ng8 Nf3 Nf6 Ng1 Ng8 d4 d5 c4';
+  assert.equal(repertoireEntry(sanOf(late)), null, `au-delà de ${TRANSPO_PLIES} demi-coups`);
+  assert.equal(repertoireEntry(sanOf(late), { maxPlies: 20 })?.ply, 19);
+  assert.equal(repertoireEntry(sanOf('d4 Ke3')), null, 'coup illégal');
+  // Cache des préfixes : un début déjà vu puis un coup illégal, puis le même début légal.
+  assert.equal(repertoireEntry(sanOf('Nf3 d5 Ke3 Nf6')), null);
+  assert.equal(repertoireEntry(sanOf('Nf3 d5 d4 Nf6 c4 e6 Nc3 Be7'))?.rep, 'gd');
+  assert.equal(repertoireEntry(sanOf('d4 d5 c4!? e6?! Nc3'))?.ply, 3, 'annotations ignorées');
+});
+
+test('transpositions : collecte et agrégation à partir de l’entrée dans le répertoire', () => {
+  const g = normalizeLichess(li('tr1', 'd4 Nf6 c4 e6 Nc3 d5 Bg5 Be7'), 'TopA');
+  assert.deepEqual([g.rp, g.e], ['gd', 6]);
+  const agg = aggregate([{ ...game('li', 'tr1', 'd4 Nf6 c4 e6 Nc3 d5 Bg5 Be7', '1-0'), rp: 'gd', e: 6 },
+    game('cc', 'lit', 'd4 d5 c4 e6 Nc3 Nf6 Bg5 Be7', '0-1')], { plies: 10, minPositionGames: 1 });
+  // Positions d'avant l'entrée (1.d4 Cf6, 2.c4 e6…) : jamais comptées.
+  assert.equal(agg.positions.has(fenKey(fenAfter(['d4', 'Nf6']))), false);
+  assert.equal(agg.positions.has(fenKey(fenAfter(['d4', 'Nf6', 'c4', 'e6']))), false);
+  // Position commune après 3.Cc3 : les deux parties s'y rejoignent.
+  const joined = agg.positions.get(fenKey(fenAfter(['d4', 'd5', 'c4', 'e6', 'Nc3', 'Nf6'])));
+  const bg5 = joined.moves.get('Bg5');
+  assert.deepEqual([bg5.w, bg5.b, bg5.li, bg5.cc], [1, 1, 1, 1]);
+  assert.equal(countGames(agg.games).gd, 2);
+  // État ancien sans rp/e : entrée recalculée.
+  const old = { ...game('li', 'x', 'c4 e6 Nc3 d5 d4 Nf6 Bg5', '1-0') };
+  assert.equal(aggregate([old], { plies: 10, minPositionGames: 1 }).games.length, 1);
 });

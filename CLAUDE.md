@@ -207,9 +207,16 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - **Élite blitz/rapide** (`scripts/elite.mjs` → `site/data/elite.json`) : top 50 blitz et rapide
   Lichess (`/api/player/top/{n}/{perf}`, export `/api/games/user/{u}` NDJSON, `perfType`, 100 parties
   max sur 3 mois) et Chess.com (`/pub/leaderboards` live_blitz/live_rapid, archives mensuelles,
-  3 mois max). Parties classées gardées si 1.d4 d5 2.c4 ou 1.e4 c6 (ordre littéral), quel que soit le
-  camp du joueur du top ; agrégation par FEN sans compteurs, de la racine du répertoire jusqu'au
-  demi-coup 24 (les fiches vont jusqu'à 24) ; par coup : Blancs/nulles/Noirs, Elo moyen du joueur qui le joue,
+  3 mois max). Parties classées gardées si elles atteignent **par position** l'arbre du répertoire
+  dans les 16 premiers demi-coups (`repertoireEntry`, scripts/elite-core.mjs) : positions des lignes
+  des fiches (principale, punition, piège) à partir de la racine de leur ouverture, plus les racines
+  1.d4 d5 2.c4 et 1.e4 c6 ; clé FEN sans compteurs, camp au trait compris (1.c4 e6 2.Cc3 d5 3.d4 ou
+  1.d4 Cf6 2.c4 e6 3.Cc3 d5 entrent dans le Gambit Dame, 1.Cc3 c6 2.e4 d5 dans la Caro-Kann). Aucune
+  règle de couleur : la partie compte quel que soit le camp du joueur du top (inchangé). Les parties
+  transposées déjà vues et écartées par un état ancien ne reviennent qu'à la reconstruction complète. Ouverture et
+  demi-coup d'entrée notés sur la partie (`rp`, `e`) ; agrégation par FEN sans compteurs, à partir de
+  la première position du répertoire atteinte (les coups d'avant ne sont pas comptés ; clé FEN
+  des préfixes de coups mise en cache) jusqu'au demi-coup 24 (les fiches vont jusqu'à 24) ; par coup : Blancs/nulles/Noirs, Elo moyen du joueur qui le joue,
   Lichess/Chess.com ; 3 parties exemples (meilleure moyenne Elo) avec leurs coups pour l'échiquier.
   Positions de moins de 2 parties retirées (seuil relevé automatiquement au-delà de 1,5 Mo).
   Requêtes série, pause de 60 s sur 429, User-Agent avec l'adresse du dépôt ; `LICHESS_TOKEN`
@@ -256,8 +263,7 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   export `/api/broadcast/{id}.pgn` (toutes les rondes) ; incrémental : page 1 (en cours et tout juste
   finis) et seulement les rondes terminées non lues (`/api/broadcast/round/{id}.pgn`). Parties
   gardées : les deux joueurs 2600+ (Elo FIDE de la retransmission) ou un joueur suivi (nom FIDE
-  « Carlsen, Magnus », mots entiers). Ordre littéral 1.d4 d5 2.c4 / 1.e4 c6 : beaucoup de parties
-  classiques arrivent au Gambit Dame par 1.d4 Cf6 2.c4 e6 3.Cf3 d5 et ne sont donc pas retenues.
+  « Carlsen, Magnus », mots entiers), répertoire atteint par position (transpositions comprises).
   Les exports de retransmission sont lents (≈ 10 s par ronde) : la reconstruction hebdomadaire prend
   plusieurs dizaines de minutes (délai du job : 90 min).
 - **Recherche par joueur** (barre `data-q` du Répertoire) : `joueurs.json` (branche donnees-elite,
