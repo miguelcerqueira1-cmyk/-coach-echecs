@@ -9,6 +9,10 @@ mat ou pourcentage ne doit venir du modèle de langage.
 ```
 site/                      Site statique servi par GitHub Pages (aucune étape de compilation)
   index.html, css/app.css
+  sw.js                    Service worker (hors connexion) ; BUILD et PRECACHE remplis par build.mjs
+  manifest.webmanifest     Application installable (URLs relatives : portée /-coach-echecs/)
+  icons/                   PNG versionnés, générés par scripts/icons.mjs (Playwright) depuis pieces/wN.svg
+  js/pwa.js                Enregistrement du SW, bandeau « Nouvelle version disponible », aide à l'installation
   js/main.js               Contrôleur : cycle coup → calcul → conseil → explication
   js/game.js               Modèle de partie = source de vérité (rejeu, règles de fin, PGN/FEN, jetons)
   js/engine.js             Client UCI : Web Worker, file d'un calcul, annulation, chien de garde
@@ -90,7 +94,20 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   Multithread non activé (GitHub Pages n'envoie pas COOP/COEP ; coi-serviceworker non testé
   sur Safari iOS publié). Évolution possible : moteur natif sur un serveur (hors GitHub Pages).
 - Le WASM est téléchargé par la page (progression réelle), conservé dans Cache Storage
-  (clé = hash du WASM), puis passé au Worker via `stockfish.js#<blob-url>`. Pas de service worker.
+  (clé = hash du WASM), puis passé au Worker via `stockfish.js#<blob-url>`.
+- **Application installable / hors connexion** (`sw.js`, `pwa.js`) : pré-cache de tout dist/ sauf le
+  WASM (déjà dans le cache du moteur, jamais dupliqué), elite.json/joueurs.json et la source du
+  répertoire ; cache `coach-echecs-app-<build>-<empreinte du contenu>`, anciens caches supprimés à
+  l'activation (le cache `coach-echecs-moteur-*` n'est jamais touché). Réseau d'abord pour la
+  navigation, config.json et engine/manifest.json (délai 6 s puis cache) ; stale-while-revalidate
+  pour le reste de la même origine ; aucune requête d'une autre origine (Lichess, raw.githubusercontent,
+  Google Fonts, Worker) n'est interceptée. Le script du Worker Stockfish est renvoyé dans une
+  réponse reconstruite (sans URL) : une réponse de cache garde son URL sans le fragment `#blob:…`,
+  et stockfish.js retéléchargerait alors stockfish.wasm (échec hors connexion). Pas de skipWaiting
+  automatique : bandeau « Nouvelle version disponible — Recharger » → SKIP_WAITING → rechargement.
+  Tests : `serviceWorkers: 'block'` dans playwright.config (les page.route des autres tests doivent
+  voir toutes les requêtes) ; `tests/e2e/pwa.spec.mjs` l'autorise (hors ligne réel via
+  `context.setOffline`, bandeau de mise à jour en réécrivant dist/sw.js, local seulement).
 - `position startpos|fen … moves …` : l'historique complet est toujours transmis au moteur.
 - **Jetons** `{gameId, branchId, revision, ply}` : `revision` croît à chaque modification
   (coup, annulation, import) ; toute réponse moteur/Claude dont le jeton n'est plus courant
@@ -295,4 +312,3 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 - Option multithread (coi-serviceworker) seulement après test réussi sur le site publié,
   Safari iOS compris, avec repli automatique monothread.
 - Réclamation explicite d'une nulle / abandon dans l'interface.
-- Mode hors ligne (service worker) pour l'interface.

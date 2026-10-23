@@ -14,7 +14,9 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  use: { baseURL, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  // Service worker bloqué par défaut : sinon les interceptions page.route() ne verraient pas les
+  // requêtes servies par son cache. tests/e2e/pwa.spec.mjs l'autorise (test.use).
+  use: { baseURL, trace: 'retain-on-failure', screenshot: 'only-on-failure', serviceWorkers: 'block' },
   webServer: external ? undefined : {
     command: 'node scripts/serve.mjs 4173 dist /coach-echecs/',
     url: 'http://localhost:4173/coach-echecs/',
