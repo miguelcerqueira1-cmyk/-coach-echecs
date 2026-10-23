@@ -182,10 +182,12 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
 
 ## 9. Reste à faire / idées
 
-- **Vidéos** : renseigner les chaînes « à renseigner » restantes signalées par la CI (≈ 20) ;
-  trouver des vidéos pour les 11 fiches sans vidéo (gd-g5, gd-dame-precoce, gd-fg4, gd-h5, gd-dd6,
-  gd-dxd4-gaffe, ck-avance-fd3, ck-avance-fe3, ck-dh5, ck-fd3, ck-df3) ; quelques liens douteux
-  à confirmer (gd-gda-b5, ck-classique-cc5, gd-polonaise, gd-marshall-gambit).
+- **Vidéos** : chaînes toutes renseignées (rapport oEmbed de la CI du 2026-10-23). 9 fiches sans
+  vidéo (gd-g5, gd-fg4, gd-h5, gd-dd6, ck-avance-fd3, ck-avance-fe3, ck-dh5, ck-fd3, ck-df3) :
+  aucune vidéo trouvée dans la vidéothèque Lichess ni par recherche web (lignes trop rares).
+  Contenu à confirmer en regardant la vidéo : ck-classique-cc5 (« Classical … Sidelines » couvre-t-il
+  5.Cc5 ?) et gd-marshall-gambit (« Marshall Gambit Madness » : Gambit Marshall du GD ou attaque
+  Marshall de l'Espagnole ?).
 - **À vérifier par l'utilisateur** : installation sur iPhone (icône, hors connexion après une
   visite), bouton d'installation sur Android.
 - **Explications Claude** : inactives tant que les 4 secrets GitHub (ANTHROPIC_API_KEY,

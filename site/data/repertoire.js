@@ -393,7 +393,10 @@ export const LIGNES = [
     cases: 'd5, b5 (sauts du Cavalier), c7',
     echanger: 'Rien : chasser la Dame',
     conserver: 'Avance de développement',
-    video: { recherche: 'Queen\'s Gambit early queen moves punishment', url: null },
+    video: { recherche: 'Queen\'s Gambit early queen moves punishment', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=kx7-bulFFnA&t=1750s', titre: 'Queen\'s Gambit Accepted | Mainlines without 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '29:10 Queen’s Gambit Accepted: Old Variation 3.e3' },
+      ] },
   },
   {
     id: 'gd-fg4', rep: 'gd', famille: 'Déviation au 2e coup', nom: 'Sortie hâtive …Fg4 (b7 abandonné)', badge: 'loufoque',
@@ -499,7 +502,7 @@ export const LIGNES = [
     conserver: 'Cavalier pour l’avant-poste e4',
     video: { recherche: 'Caro-Kann Exchange Variation 4.Bd3 plans for Black minority attack', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2EotecOBVbU', titre: 'MAÎTRISER LA CARO-KANN - RÉPERTOIRE COMPLET (2) : 3.exd5 la variante d\'échange + Panov', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2EotecOBVbU', titre: 'MAÎTRISER LA CARO-KANN - RÉPERTOIRE COMPLET (2) : 3.exd5 la variante d\'échange + Panov', chaine: 'Antoine Ducos', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=SMIhNIXoMNk', titre: 'Caro-Kann Defense – Exchange Variation (and how to punish it!) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=oif3zWWJm1k', titre: 'Caro-Kann Defense | Exchange Variation ⎸Chess Openings | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
@@ -519,8 +522,8 @@ export const LIGNES = [
     conserver: 'Cavalier en d5',
     video: { recherche: 'Caro-Kann Panov Attack plan against isolated queen pawn', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2EotecOBVbU', titre: 'MAÎTRISER LA CARO-KANN - RÉPERTOIRE COMPLET (2) : 3.exd5 la variante d\'échange + Panov', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=XmeXBDLbmq0', titre: 'Ma Caro-Kann résiste à l\'attaque Panov', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2EotecOBVbU', titre: 'MAÎTRISER LA CARO-KANN - RÉPERTOIRE COMPLET (2) : 3.exd5 la variante d\'échange + Panov', chaine: 'Antoine Ducos', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=XmeXBDLbmq0', titre: 'Ma Caro-Kann résiste à l\'attaque Panov', chaine: 'Samatsa ♟️', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=hWLTjQ8LMeE', titre: 'Panov-Botvinnik Attack - Fight the Caro-Kann aggressively ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
         { url: 'https://www.youtube.com/watch?v=YLA7uhFgInE', titre: 'How to play with or against an isolated pawn #1 The basics', chaine: 'Blitzstream', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
@@ -540,8 +543,8 @@ export const LIGNES = [
     conserver: 'Structure c6/e6 compacte, Cavalier f6',
     video: { recherche: 'Caro-Kann Classical 4...Bf5 main line plans for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=jxkYiwydIro', titre: 'Caro-Kann 4 ... Ff5 - La leçon du jeu déchecs', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lncrvma80h0', titre: 'Partie pédagogique #6 : Caro-Kann 3.Cc3 avec Ff5', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=jxkYiwydIro', titre: 'Caro-Kann 4 ... Ff5 - La leçon du jeu déchecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lncrvma80h0', titre: 'Partie pédagogique #6 : Caro-Kann 3.Cc3 avec Ff5', chaine: 'Échecs - Sylvain Ravot', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=86onnhhKHMg&t=75s', titre: 'Caro-Kann Defense: Classical Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:15 4…Bf5, Classical Variation (Mainline)' },
         { url: 'https://www.youtube.com/watch?v=3KvEdj_TcM4', titre: 'Caro-Kann Main Line in depth ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
@@ -561,7 +564,7 @@ export const LIGNES = [
     conserver: 'Souplesse : …Cgf6 seulement quand c’est sûr',
     video: { recherche: 'Caro-Kann Karpov 4...Nd7 Qe2 Nd6 smothered mate trap', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=yQUc_ebc6Uw', titre: 'La Caro-Kann 4 ... Cd7 - Leçon du jeu d\'échecs', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=yQUc_ebc6Uw', titre: 'La Caro-Kann 4 ... Cd7 - Leçon du jeu d\'échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=YLEmufSFoGk&t=105s', titre: 'Karpov Variation of the Caro-Kann Defense (B17) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:45 5.Nf3' },
         { url: 'https://www.youtube.com/watch?v=SlAa08l1Ync&t=1078s', titre: '13 Caro-Kann Defense Traps', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '17:58 The Nd6# trap (V: Karpov, Two Knights)' },
       ] },
@@ -578,8 +581,8 @@ export const LIGNES = [
     conserver: 'Paire de Fous',
     video: { recherche: 'Caro-Kann Tartakower 5...exf6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=9or6GceHgBc', titre: 'Analyse de progression n°149: Une défense Caro-Kann Tartakower variante Forgacs (5...exf6)', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=-nXUoWhvTjE', titre: 'Caro-Kann, Tartakower Variation (exf6) · Complete Chess Openings', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9or6GceHgBc', titre: 'Analyse de progression n°149: Une défense Caro-Kann Tartakower variante Forgacs (5...exf6)', chaine: 'GMI Manuel Apicella Vidéos d\'échecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-nXUoWhvTjE', titre: 'Caro-Kann, Tartakower Variation (exf6) · Complete Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -597,7 +600,7 @@ export const LIGNES = [
     conserver: 'Solidité de e6/d5',
     video: { recherche: 'Caro-Kann Fantasy Variation 3.f3 e6 plan for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=y1dDG4JZlSI', titre: 'Ivanchuk - Jobava 2010 - Caro-Kann 3.f3', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=y1dDG4JZlSI', titre: 'Ivanchuk - Jobava 2010 - Caro-Kann 3.f3', chaine: 'Échecs - Sylvain Ravot', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=0yMkAJ6Pyig&t=450s', titre: 'Fantasy Variation of the Caro-Kann ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '3…e6 – 07:30' },
         { url: 'https://www.youtube.com/watch?v=ssLCThsdWcw', titre: 'Caro-Kann Defense | Fantasy Variation ⎸Chess Openings | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
@@ -614,7 +617,7 @@ export const LIGNES = [
     conserver: 'Structure d5/e6',
     video: { recherche: 'Caro-Kann Two Knights 3...Bg4 4.h3 Bxf3 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=S1C63FlhCWs', titre: 'Défense Caro-Kann : Variante des deux Cavaliers', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=S1C63FlhCWs', titre: 'Défense Caro Kann (5) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=S5OjT1K_s58', titre: 'Two Knights Variation of the Caro-Kann (B11) ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
   },
@@ -695,7 +698,7 @@ export const LIGNES = [
     conserver: 'Pion supplémentaire, structure c6/e6',
     video: { recherche: 'Caro-Kann vs Blackmar-Diemer style gambit 4.f3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=54aTSbPQIHI', titre: 'Гамбит Блэкмара Димера (Защита Зиглера). Blackmar-Diemer Gambit, Ziegler Defense.', chaine: null, langue: 'ru', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=54aTSbPQIHI', titre: 'Гамбит Блэкмара Димера (Защита Зиглера). Blackmar-Diemer Gambit, Ziegler Defense.', chaine: 'Пешка, универсальный шахматный портал', langue: 'ru', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -782,8 +785,8 @@ export const LIGNES = [
     conserver: 'Pion b3 qui soutient c4',
     video: { recherche: 'Chebanenko Slav 4...a6 how to play as White', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=OuQI3MGZjuM', titre: 'Blitz commenté niveau 2000 Elo #8 (Défense slave caméléon) (échecs)', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=YX5bLrN2Yxo', titre: 'Slav Defense: a6 Chebanenko Variation', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=OuQI3MGZjuM', titre: 'Blitz commenté niveau 2000 Elo #8 (Défense slave caméléon) (échecs)', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YX5bLrN2Yxo', titre: 'Slav Defense: a6 Chebanenko Variation', chaine: 'GMBenjaminFinegold', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -797,7 +800,7 @@ export const LIGNES = [
     conserver: 'Fou de cases noires',
     video: { recherche: 'Marshall Gambit Semi-Slav 4.e4 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Lvi3O2HknCQ', titre: 'Marshall Gambit Madness', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Lvi3O2HknCQ', titre: 'Marshall Gambit Madness', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -813,7 +816,10 @@ export const LIGNES = [
     cases: 'd4 (pion défendu par la Dame d1)',
     echanger: 'Dame contre Dame… avec une Dame de plus',
     conserver: 'Tout',
-    video: { recherche: 'Queen\'s Gambit Accepted blunders beginners', url: null },
+    video: { recherche: 'Queen\'s Gambit Accepted blunders beginners', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=kx7-bulFFnA&t=295s', titre: 'Queen\'s Gambit Accepted | Mainlines without 3.Nf3, Plans & Strategies | Chess Openings', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '4:55 Queen’s Gambit Accepted: Central Variation 3.e4' },
+      ] },
   },
   {
     id: 'gd-h5', rep: 'gd', famille: 'Déviation au 2e coup', nom: 'Poussée 2…h5 ?! (« pion de tour »)', badge: 'loufoque',
@@ -863,7 +869,7 @@ export const LIGNES = [
     conserver: 'Avance de développement',
     video: { recherche: 'Polish Defense 1...b5 refutation', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=It2wpUWkJHc', titre: 'The Polish Defense (1. d4 b5)', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=It2wpUWkJHc', titre: 'The Polish Defense (1. d4 b5)', chaine: 'ChessGeek', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -902,7 +908,7 @@ export const LIGNES = [
     conserver: 'Cavalier e4',
     video: { recherche: 'Caro-Kann Panov 5...Nc6 6.Bg5 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2EotecOBVbU', titre: 'MAÎTRISER LA CARO-KANN - RÉPERTOIRE COMPLET (2) : 3.exd5 la variante d\'échange + Panov', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2EotecOBVbU', titre: 'MAÎTRISER LA CARO-KANN - RÉPERTOIRE COMPLET (2) : 3.exd5 la variante d\'échange + Panov', chaine: 'Antoine Ducos', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=ruu4d_nG1TE&t=118s', titre: 'The Panov-Botvinnik Attack | Aggressive Play in the Caro-Kann Defense | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess', chapitre: '1:58 6.Bg5' },
         { url: 'https://www.youtube.com/watch?v=hWLTjQ8LMeE', titre: 'Panov-Botvinnik Attack - Fight the Caro-Kann aggressively ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
@@ -918,7 +924,7 @@ export const LIGNES = [
     conserver: 'Initiative',
     video: { recherche: 'Caro-Kann Classical 5.Nc5 e5 response', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=WRTEwB9LjJc', titre: 'Caro-Kann Defense: Classical Variation (4... Bf5) - Sidelines', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=WRTEwB9LjJc', titre: 'Caro-Kann Defense: Classical Variation (4... Bf5) - Sidelines', chaine: 'Chess Openings', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -932,8 +938,8 @@ export const LIGNES = [
     conserver: 'Paire de Fous',
     video: { recherche: 'Caro-Kann Two Knights 3...dxe4 4.Nxe4 Nf6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=BPElYEIzZDk', titre: 'Smash the Caro-Kann with the Two Knights (part 4) The Nf6 game. All lines and ideas', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=RsC-Hnv7V4o', titre: 'Caro-Kann Defense: The Nf6 and Nxf6 exf6 Variation Demystified', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=BPElYEIzZDk', titre: 'Smash the Caro-Kann with the Two Knights (part 4) The Nf6 game. All lines and ideas', chaine: 'Endgame Strategies', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=RsC-Hnv7V4o', titre: 'Caro-Kann Defense: The Nf6 and Nxf6 exf6 Variation Demystified', chaine: 'Rafi Chowdhury', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -947,7 +953,7 @@ export const LIGNES = [
     conserver: 'Structure c6/e6',
     video: { recherche: 'Caro-Kann 3.Nd2 classical Bf5 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=jxkYiwydIro', titre: 'Caro-Kann 4 ... Ff5 - La leçon du jeu déchecs', chaine: null, langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=jxkYiwydIro', titre: 'Caro-Kann 4 ... Ff5 - La leçon du jeu déchecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=86onnhhKHMg', titre: 'Caro-Kann Defense: Classical Variation | Ideas, Plans & Strategies ⎸Chess Openings | Astaneh Chess', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
   },
@@ -967,7 +973,7 @@ export const LIGNES = [
     conserver: 'Pion e6 qui protège f7',
     video: { recherche: 'Caro-Kann gambit Bc4 f3 trap', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dQVgIHD6-9Q', titre: 'REFUTE The Von Hennig Gambit - Caro Kann Players MUST Know', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dQVgIHD6-9Q', titre: 'REFUTE The Von Hennig Gambit - Caro Kann Players MUST Know', chaine: 'Chess Centurion', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -1012,7 +1018,7 @@ export const LIGNES = [
     conserver: 'Fou f5 hors de la chaîne',
     video: { recherche: 'Caro-Kann wing gambit 2.b4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=TEzGi1UYnGw', titre: 'Labahn Attack against the Caro-Kann', chaine: null, langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TEzGi1UYnGw', titre: 'Labahn Attack against the Caro-Kann', chaine: 'Offbeat Gambits', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 
