@@ -28,6 +28,7 @@ test('Entraînement (fiches) : coup du répertoire validé, erreur détectée pa
   await setup(page, { prefs: { rep: 'gd', source: 'fiches', length: 5 } });
   await page.goto('./#/entrainement');
   await engineReady(page);
+  await page.evaluate(() => { document.querySelector('[data-other-modes]').open = true; });
   await page.click('[data-start]');
   const log = page.locator('[data-log]');
   // 1.d4 : coup du répertoire.
@@ -64,6 +65,7 @@ test('Entraînement (Lichess) : adversaire tiré des parties réelles, avec sa f
   });
   await page.goto('./#/entrainement');
   await engineReady(page);
+  await page.evaluate(() => { document.querySelector('[data-other-modes]').open = true; });
   await page.click('[data-start]');
   const log = page.locator('[data-log]');
   // Caro-Kann : 1.e4 imposé, puis notre 1…c6 (répertoire).
@@ -79,6 +81,7 @@ test('Révision espacée : position ratée revient, réussie s’espace, compteu
   await page.goto('./#/entrainement');
   await engineReady(page);
   await expect(page.locator('[data-rev-stats]')).toContainText('0 / ');
+  await page.evaluate(() => { document.querySelector('[data-other-modes]').open = true; });
   await page.click('[data-start]');
   const log = page.locator('[data-log]');
   // 1re carte : position de départ (nouvelle), coup du répertoire 1.d4.
@@ -185,4 +188,40 @@ test('Accueil Entraînement sur téléphone @mobile : modules et progression lis
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), wide.join(' | ')).toBeLessThanOrEqual(0);
   await page.click('[data-dash-rep="ck"]');
   await expect(page.locator('.dash-row').first()).toContainText(/B1\d/);
+});
+
+test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, puis pratique guidée avec indice', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  await page.click('[data-course="gd"]');
+  await expect(page.locator('.course-item.next')).toContainText('Variante orthodoxe');
+  await page.click('[data-lesson="gd-orthodoxe"]');
+  // 1. Présentation
+  await expect(page.locator('[data-panel]')).toContainText('Nom officiel');
+  await expect(page.locator('[data-panel]')).toContainText('Défense orthodoxe');
+  await page.click('[data-panel] [data-next]');
+  // 2. Les coups : 2.c4 = « Gambit Dame », 4.Fg5 cloue le Cavalier.
+  for (let i = 0; i < 3; i++) await page.click('[data-step]');
+  await expect(page.locator('[data-under]')).toContainText('2. c4');
+  await expect(page.locator('[data-name]')).toContainText('Gambit Dame');
+  for (let i = 0; i < 4; i++) await page.click('[data-step]');
+  await expect(page.locator('[data-under]')).toContainText('Cloue le Cavalier en f6 sur la Dame en d8');
+  await page.click('[data-panel] [data-ply="17"]');
+  await page.click('[data-under] [data-next]');
+  // 3. À retenir
+  await expect(page.locator('[data-panel]')).toContainText('Cases et pièces clés');
+  await expect(page.locator('[data-panel]')).toContainText('Le piège à éviter');
+  await page.click('[data-panel] [data-next]');
+  // 4. Pratique guidée : erreur → indice (case entourée), puis le bon coup.
+  await ours(page, 'd2d4');
+  await ours(page, 'a2a3');
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('Indice');
+  await expect(page.locator('#page-entrainement .sq.hint')).toHaveCount(1);
+  await ours(page, 'c2c4');
+  const line = 'd2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8 g1f3 b8d7 a1c1 c7c6 f1d3 d5c4 d3c4 f6d5'.split(' ');
+  for (let i = 4; i < line.length; i += 2) await ours(page, line[i]);
+  await expect(page.locator('.hub-result')).toContainText('Leçon « Variante orthodoxe', { timeout: 15000 });
+  await expect(page.locator('.course-item', { hasText: 'Variante orthodoxe' })).toContainText('Leçon suivie');
+  const prog = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')));
+  expect(prog.cours['gd-orthodoxe'].n).toBe(1);
 });

@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LIGNES, REPERTOIRES } from '../site/data/repertoire.js';
-import { playLine, buildEcoIndex, classify, entryFingerprint } from '../site/js/lines.js';
+import { playLine, buildEcoIndex, classify, entryFingerprint, epd } from '../site/js/lines.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tsv = 'abcde'.split('').map((f) => readFileSync(join(root, `data/chess-openings/${f}.tsv`), 'utf8'));
@@ -21,12 +21,19 @@ const entries = LIGNES.map((e) => {
   const main = playLine(e.ligne);
   const eco = classify(index, main.fens);
   if (!eco) throw new Error(`Aucun code ECO trouvé pour ${e.id}`);
+  // Nom d'ouverture atteint coup par coup (pour les cours) : seulement quand il change.
+  const noms = [];
+  main.fens.slice(1).forEach((f, i) => {
+    const hit = index.get(epd(f));
+    if (hit && hit.name !== noms.at(-1)?.name) noms.push({ ply: i, eco: hit.eco, name: hit.name });
+  });
   const v = verif.entries[e.id];
   const fresh = v && v.fp === entryFingerprint(e);
   return {
     ...e,
     eco: eco.eco,
     ecoNom: eco.name,
+    noms,
     san: main.san,
     uci: main.uci,
     fenFinale: main.fens.at(-1),

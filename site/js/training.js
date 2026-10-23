@@ -11,7 +11,9 @@ import {
 } from './training-core.js';
 import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
-import { loadProgress, dashboard, pickFiches } from './progress.js';
+import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson } from './progress.js';
+import { LessonView } from './cours.js';
+import { courseOrder } from './lesson-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
@@ -52,12 +54,14 @@ export class TrainingPage {
         return;
       }
     }
-    if (!this.s && !this.drill) this.renderSetup();
+    if (!this.s && !this.drill && !this.lesson) this.renderSetup();
   }
 
   // ---------- Écran de départ ----------
 
   renderSetup() {
+    this.lesson = null;
+    if (this.view === 'cours') { this.renderCourse(this.courseRep || 'gd'); return; }
     const p = this.prefs;
     const hasLichess = !!this.client.explorerMode();
     this.progress = loadProgress();
@@ -65,6 +69,9 @@ export class TrainingPage {
     const nTrash = this.data.entries.filter((e) => trashDrill(e, this.data.repertoires[e.rep].couleur)).length;
     const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>Les deux</option><option value="gd" ${cur === 'gd' ? 'selected' : ''}>Gambit Dame</option><option value="ck" ${cur === 'ck' ? 'selected' : ''}>Caro-Kann</option></select>`;
     const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
+    const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id]);
+    const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
+    const total = (rep) => this.data.entries.filter((e) => e.rep === rep).length;
     this.el.innerHTML = `<div class="train-hub">
       <section class="card hub-head">
         <div class="hub-stats">
@@ -72,28 +79,45 @@ export class TrainingPage {
           <div><span class="hub-big">${board.byRep.gd.pct} %</span><span class="muted small">Gambit Dame</span></div>
           <div><span class="hub-big">${board.byRep.ck.pct} %</span><span class="muted small">Caro-Kann</span></div>
           <div><span class="hub-big">${board.byRep.gd.due + board.byRep.ck.due}</span><span class="muted small">position(s) à revoir</span></div>
-          <div><span class="hub-big">${board.drillsOk}/${board.drillsTotal}</span><span class="muted small">punitions réussies</span></div>
         </div>
         <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span></button>
       </section>
+      <p class="hub-path muted small">Le parcours conseillé : <strong>1. Apprendre</strong> une variante (leçon), <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux en blitz.</p>
       <div class="hub-grid">
+        <section class="card hub-card hub-learn">
+          <h2>📖 1. Apprendre</h2>
+          <p class="small">Des leçons pas à pas : le nom de chaque variante, les coups expliqués un par un, ce qu’il faut retenir, puis vous rejouez la ligne avec des indices.</p>
+          <div class="hub-courses">
+            ${['gd', 'ck'].map((rep) => {
+              const n = next(rep);
+              return `<button type="button" class="hub-course" data-course="${rep}">
+                <strong>${rep === 'gd' ? '♙ Gambit Dame' : '♟ Caro-Kann'}</strong>
+                <span class="small muted">${seen(rep)} / ${total(rep)} leçon(s) suivie(s)</span>
+                ${n ? `<span class="small">Prochaine : ${esc(n.nom)}</span>` : '<span class="small">Toutes les leçons sont suivies ✔</span>'}
+              </button>`;
+            }).join('')}
+          </div>
+        </section>
         <section class="card hub-card">
-          <h2>📚 Lignes (répétition espacée)</h2>
-          <p class="small">L’application joue les coups adverses de la fiche ; vous jouez la théorie. En cas d’erreur : le plan, le bon coup, et la position revient en fin de séance. Les fiches à revoir passent d’abord.</p>
+          <h2>📚 2. S’entraîner</h2>
+          <p class="small">L’application joue l’adversaire, vous jouez la théorie de mémoire. Erreur : le plan et le bon coup, et la position revient en fin de séance.</p>
           <label class="row">Répertoire ${repSel('lRep', p.lRep)}</label>
           <label class="row">Lignes ${opt('lN', [3, 5, 8], p.lN)}</label>
           <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
         </section>
         <section class="card hub-card">
-          <h2>⏱ Drill anti-trash</h2>
-          <p class="small">Un coup douteux de blitz est joué (Englund, Dame trop tôt, pions avancés…). Enchaînez la punition de la fiche avant la fin du chrono. ${nTrash} punitions disponibles.</p>
+          <h2>⏱ 3. Réflexes anti-trash</h2>
+          <p class="small">Un coup douteux de blitz est joué : enchaînez la punition avant la fin du chrono. ${nTrash} exercices.</p>
           <label class="row">Répertoire ${repSel('tRep', p.tRep)}</label>
           <label class="row">Exercices ${opt('tN', [5, 10, 20], p.tN)}</label>
           <label class="row">Temps ${opt('tTime', [10, 20, 30], p.tTime, (v) => `${v} s`)}</label>
           <div class="actions"><button type="button" class="primary" data-trash>Commencer</button></div>
         </section>
-        <section class="card hub-card train-setup">
-          <h2>♟ Partie et positions</h2>
+      </div>
+      <section class="card hub-dash" data-dashboard>${this.dashboardHtml(board)}</section>
+      <details class="card hub-other" data-other-modes>
+        <summary>Autres modes : partie contre l’adversaire, positions isolées</summary>
+        <div class="train-setup">
           <p class="small">L’application joue l’adversaire ; à vous de trouver le coup de votre répertoire, sans aide. Chaque coup est vérifié (fiche ou Stockfish).</p>
       <label class="row">Répertoire
         <select data-p="rep">
@@ -119,10 +143,9 @@ export class TrainingPage {
         <select data-p="length">${[5, 8, 12, 16].map((n) => `<option value="${n}" ${Number(p.length) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
       </label>
       <p class="muted small">Le filtre de niveau se règle dans « Coup optimal », page Moteur.</p>
-            <div class="actions"><button type="button" class="primary" data-start>Commencer</button></div>
-        </section>
-      </div>
-      <section class="card hub-dash" data-dashboard>${this.dashboardHtml(board)}</section>
+                  <div class="actions"><button type="button" class="primary" data-start>Commencer</button></div>
+        </div>
+      </details>
     </div>`;
     this.el.querySelectorAll('[data-p]').forEach((sel) => sel.addEventListener('change', () => {
       this.prefs[sel.dataset.p] = sel.value;
@@ -130,22 +153,22 @@ export class TrainingPage {
       this.el.querySelector('[data-rev-stats]').innerHTML = this.revisionLine(this.prefs.rep);
     }));
     this.el.querySelector('[data-start]').addEventListener('click', () => this.start());
+    this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
     this.el.querySelector('[data-lines]').addEventListener('click', () => {
       this.runDrill('lignes', pickFiches(board, { rep: this.prefs.lRep || null, n: Number(this.prefs.lN) || 3 }));
     });
+    const trashIds = (rep) => pickFiches(board, { rep, n: 999, needPunition: true })
+      .filter((id) => { const e = this.data.entries.find((x) => x.id === id); return trashDrill(e, this.data.repertoires[e.rep].couleur); });
     this.el.querySelector('[data-trash]').addEventListener('click', () => {
-      const ids = pickFiches(board, { rep: this.prefs.tRep || null, n: 999, needPunition: true })
-        .filter((id) => trashDrill(this.data.entries.find((e) => e.id === id), this.data.repertoires[this.data.entries.find((e) => e.id === id).rep].couleur));
-      this.runDrill('trash', shuffle(ids).slice(0, Number(this.prefs.tN) || 5), { timeLimit: Number(this.prefs.tTime) || 10 });
+      this.runDrill('trash', shuffle(trashIds(this.prefs.tRep || null)).slice(0, Number(this.prefs.tN) || 5), { timeLimit: Number(this.prefs.tTime) || 10 });
     });
     this.el.querySelector('[data-today]').addEventListener('click', () => {
-      const lines = pickFiches(board, { n: 3 });
-      const trash = shuffle(pickFiches(board, { n: 999, needPunition: true })
-        .filter((id) => { const e = this.data.entries.find((x) => x.id === id); return trashDrill(e, this.data.repertoires[e.rep].couleur); })).slice(0, 3);
-      this.runDrill('lignes', lines, { then: () => this.runDrill('trash', trash, { timeLimit: Number(this.prefs.tTime) || 10 }) });
+      const trash = shuffle(trashIds(null)).slice(0, 3);
+      this.runDrill('lignes', pickFiches(board, { n: 3 }), { then: () => this.runDrill('trash', trash, { timeLimit: Number(this.prefs.tTime) || 10 }) });
     });
     this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', () => this.runDrill('lignes', [b.dataset.dashLine])));
     this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 })));
+    this.el.querySelectorAll('[data-dash-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.dashLesson)));
     this.el.querySelectorAll('[data-dash-rep]').forEach((b) => b.addEventListener('click', () => {
       this.dashRep = b.dataset.dashRep;
       this.renderSetup();
@@ -153,20 +176,87 @@ export class TrainingPage {
     }));
   }
 
+  // ---------- Module Apprendre (cours) ----------
+
+  renderCourse(rep) {
+    this.progress = loadProgress();
+    const board = dashboard(this.data, this.revision, this.progress);
+    const byId = Object.fromEntries(board.fiches.map((f) => [f.id, f]));
+    const list = courseOrder(this.data.entries, rep);
+    const next = list.find((e) => !this.progress.cours?.[e.id]);
+    const groups = [];
+    for (const e of list) {
+      const g = `${e.badge === 'theorie' ? '' : `${({ piege: 'Pièges', loufoque: 'Coups loufoques à punir' })[e.badge]} · `}${e.famille}`;
+      if (!groups.length || groups.at(-1).g !== g) groups.push({ g, items: [] });
+      groups.at(-1).items.push(e);
+    }
+    let n = 0;
+    this.el.innerHTML = `<div class="course">
+      <div class="lesson-top">
+        <button type="button" class="small-btn" data-back>← Accueil Entraînement</button>
+        <div class="chips">${['gd', 'ck'].map((r) => `<button type="button" class="chip" data-crep="${r}" aria-pressed="${r === rep}">${r === 'gd' ? '♙ Gambit Dame (Blancs)' : '♟ Caro-Kann (Noirs)'}</button>`).join('')}</div>
+      </div>
+      <h2>📖 Cours : ${rep === 'gd' ? 'le Gambit Dame avec les Blancs' : 'la Caro-Kann avec les Noirs'}</h2>
+      <p class="small muted">Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques. Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
+      ${groups.map(({ g, items }) => `<h3 class="course-group">${esc(g)}</h3><ol class="course-list" start="${n + 1}">${items.map((e) => {
+        n++;
+        const f = byId[e.id];
+        const isNext = next?.id === e.id;
+        return `<li class="course-item ${isNext ? 'next' : ''}">
+          <div class="course-main"><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
+            <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %</div></div>
+          <div class="dash-bar"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
+          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
+        </li>`;
+      }).join('')}</ol>`).join('')}
+    </div>`;
+    this.el.querySelector('[data-back]').addEventListener('click', () => { this.view = null; this.renderSetup(); window.scrollTo(0, 0); });
+    this.el.querySelectorAll('[data-crep]').forEach((b) => b.addEventListener('click', () => { this.courseRep = b.dataset.crep; this.renderCourse(this.courseRep); }));
+    this.el.querySelectorAll('[data-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.lesson)));
+  }
+
+  openLesson(id) {
+    const entry = this.data.entries.find((e) => e.id === id);
+    if (!entry) return;
+    this.s = null;
+    this.view = 'cours';
+    this.courseRep = entry.rep;
+    window.scrollTo(0, 0);
+    this.lesson = new LessonView({
+      el: this.el, data: this.data, entry,
+      onClose: () => { this.lesson = null; this.renderSetup(); },
+      onPractice: (fid) => this.runDrill('lignes', [fid], {
+        guided: true,
+        then: () => {
+          const p = loadProgress();
+          recordLesson(p, fid);
+          saveProgress(p);
+          this.renderCourse(entry.rep);
+          const e2 = this.data.entries.find((e) => e.id === fid);
+          const drill = trashDrill(e2, this.data.repertoires[e2.rep].couleur);
+          this.el.querySelector('.course').insertAdjacentHTML('afterbegin', `<div class="hub-result">Leçon « ${esc(e2.nom)} » terminée ✔ Elle reviendra dans vos révisions (module S’entraîner).
+            ${drill ? `<button type="button" class="small-btn" data-after-drill="${fid}">⏱ Tester la punition</button>` : ''}</div>`);
+          this.el.querySelector('[data-after-drill]')?.addEventListener('click', () => this.runDrill('trash', [fid], { timeLimit: 20 }));
+        },
+      }),
+    });
+  }
+
   // ---------- Modules Lignes / Anti-trash ----------
 
-  runDrill(kind, ids, { timeLimit = 10, then = null } = {}) {
+  runDrill(kind, ids, { timeLimit = 10, then = null, guided = false } = {}) {
     if (!ids.length) { this.renderSetup(); return; }
     this.s = null;
     const tree = { gd: buildTree(this.data.entries, 'gd'), ck: buildTree(this.data.entries, 'ck') };
     this.drill = new DrillRunner({
-      el: this.el, data: this.data, kind, ids, tree, timeLimit,
+      el: this.el, data: this.data, kind, ids, tree, timeLimit, guided,
       progress: this.progress || loadProgress(),
       gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
       onDone: (r) => {
         this.drill = null;
         if (then && r.total) { then(); return; }
         this.lastResult = r;
+        this.view = null;
         this.renderSetup();
         const msg = r.kind === 'trash'
           ? `Drill terminé : ${r.ok} / ${r.total} punition(s) réussie(s)${r.best ? `, meilleur temps ${(r.best / 1000).toFixed(1).replace('.', ',')} s` : ''}.`
@@ -194,10 +284,10 @@ export class TrainingPage {
       <p class="muted tiny">Maîtrise = positions révisées avec succès (70 %) + réussite aux exercices de la fiche (30 %). Les variantes les plus faibles sont en haut ; ⚠ = vous en êtes sorti dans une vraie partie (Mes parties).</p>
       ${(() => {
     const row = (f) => `<li class="dash-row">
-        <div class="dash-name"><span class="badge eco">${esc(f.eco)}</span> ${esc(f.nom)}${f.sorties ? ` <span class="badge err" title="Sortie de répertoire dans vos parties">⚠ ${f.sorties}</span>` : ''}${f.due ? ` <span class="badge">${f.due} à revoir</span>` : ''}</div>
+        <div class="dash-name"><span class="badge eco">${esc(f.eco)}</span> ${esc(f.nom)}${f.cours ? ' <span title="Leçon suivie">📖</span>' : ''}${f.sorties ? ` <span class="badge err" title="Sortie de répertoire dans vos parties">⚠ ${f.sorties}</span>` : ''}${f.due ? ` <span class="badge">${f.due} à revoir</span>` : ''}</div>
         <div class="dash-bar" role="img" aria-label="Maîtrise ${f.pct} %"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
         <div class="dash-pct">${f.pct} %</div>
-        <div class="dash-actions"><button type="button" class="small-btn" data-dash-line="${f.id}">Réviser</button>${f.punition && trashDrill(this.data.entries.find((e) => e.id === f.id), this.data.repertoires[f.rep].couleur) ? `<button type="button" class="small-btn" data-dash-trash="${f.id}">⏱ Drill</button>` : ''}</div>
+        <div class="dash-actions"><button type="button" class="small-btn" data-dash-lesson="${f.id}" title="Leçon">📖</button><button type="button" class="small-btn" data-dash-line="${f.id}">Réviser</button>${f.punition && trashDrill(this.data.entries.find((e) => e.id === f.id), this.data.repertoires[f.rep].couleur) ? `<button type="button" class="small-btn" data-dash-trash="${f.id}">⏱ Drill</button>` : ''}</div>
       </li>`;
     const head = fiches.slice(0, 12).map(row).join('');
     const rest = fiches.slice(12);

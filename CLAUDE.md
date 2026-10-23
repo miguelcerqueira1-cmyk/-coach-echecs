@@ -186,6 +186,12 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   10/20/30 s). Tableau de progression (progress.js) : maîtrise = 70 % révision espacée des
   positions de la fiche + 30 % réussite aux exercices ; sorties de répertoire de « Mes parties »
   signalées (⚠) et prioritaires. Stockage local `coach-echecs:progression-v1`.
+- Cours (module « Apprendre », cours.js + lesson-core.js) : leçon par fiche en 4 étapes
+  (présentation, coups un par un, à retenir, pratique guidée). À chaque coup : nom officiel
+  atteint (`noms` calculé au build depuis la base CC0, traduit par `nomFr`) et commentaires
+  factuels chess.js (centre, développement, roque, prise, attaque, clouage, échec) ; aucune
+  intention inventée (le plan vient de la fiche). Pratique guidée = module Lignes `guided`
+  (indice : case de départ, puis le coup). Leçon suivie → `progress.cours`.
 - Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
   chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page

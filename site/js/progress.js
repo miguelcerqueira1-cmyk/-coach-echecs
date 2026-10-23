@@ -11,7 +11,13 @@ export const PROGRESS_KEY = 'coach-echecs:progression-v1';
 const DAY = 86400000;
 
 export function emptyProgress() {
-  return { lignes: {}, drills: {}, jours: [], sorties: [] };
+  return { lignes: {}, drills: {}, jours: [], sorties: [], cours: {} };
+}
+
+// Leçon suivie jusqu'au bout (module « Apprendre »).
+export function recordLesson(p, id, now = Date.now()) {
+  p.cours = { ...(p.cours || {}), [id]: { vue: now, n: ((p.cours || {})[id]?.n || 0) + 1 } };
+  return touchDay(p, now);
 }
 
 export function loadProgress(storage = globalThis.localStorage) {
@@ -93,7 +99,7 @@ export function dashboard(data, revision, p, now = Date.now()) {
     const color = data.repertoires[e.rep].couleur;
     const m = mastery(e, color, revision[e.rep] || {}, p, now);
     const sorties = p.sorties.filter((x) => x.ficheId === e.id).length;
-    return { id: e.id, rep: e.rep, nom: e.nom, eco: e.eco, badge: e.badge, punition: !!e.punition, sorties, ...m };
+    return { id: e.id, rep: e.rep, nom: e.nom, eco: e.eco, badge: e.badge, punition: !!e.punition, sorties, cours: !!(p.cours || {})[e.id], ...m };
   });
   const byRep = {};
   for (const rep of Object.keys(data.repertoires)) {

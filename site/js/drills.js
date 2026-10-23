@@ -19,7 +19,9 @@ const MAX_RETRY = 3;
 
 export class DrillRunner {
   // kind : 'lignes' | 'trash' ; ids : fiches à travailler ; onDone(résumé) : retour au menu.
-  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, onDone }) {
+  // guided : pratique guidée d'une leçon (indice, puis le coup ; pas de pénalité ni de reprise).
+  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, onDone }) {
+    this.guided = guided;
     this.el = el;
     this.data = data;
     this.kind = kind;
@@ -43,7 +45,7 @@ export class DrillRunner {
   colorOf(e) { return this.data.repertoires[e.rep].couleur; }
 
   layout() {
-    const title = this.kind === 'trash' ? '⏱ Drill anti-trash' : '📚 Lignes du répertoire';
+    const title = this.kind === 'trash' ? '⏱ Drill anti-trash' : this.guided ? '📖 À vous : pratique guidée' : '📚 Lignes du répertoire';
     this.el.innerHTML = `<div class="train-layout drill" data-drill="${this.kind}">
       <section>
         <div class="train-status" data-status></div>
@@ -95,7 +97,9 @@ export class DrillRunner {
     const c = this.cur;
     c.steps = lineSteps(c.e, c.color);
     this.chess = new Chess();
-    this.log(`Ligne « ${esc(c.e.nom)} » : l’application joue l’adversaire, à vous les coups ${c.color === 'w' ? 'blancs' : 'noirs'}.`, 'muted');
+    this.log(this.guided
+      ? `Rejouez la ligne que vous venez d’apprendre. En cas d’hésitation : un indice, puis le coup.`
+      : `Ligne « ${esc(c.e.nom)} » : l’application joue l’adversaire, à vous les coups ${c.color === 'w' ? 'blancs' : 'noirs'}.`, 'muted');
     this.advance();
   }
 
@@ -128,7 +132,9 @@ export class DrillRunner {
     const k = key(c.steps.slice(0, c.i).map((s) => s.uci));
     const t = this.tree[c.e.rep];
     if (mv.lan === step.uci) {
-      if (!c.retryItem) this.gradePos(c.e.rep, k, true);
+      this.board.setHint(null);
+      this.feedback('');
+      if (!c.retryItem && !(this.guided && c.hints?.ply === c.i)) this.gradePos(c.e.rep, k, true);
       this.chess.move(toObj(step.uci));
       this.log(`✔ ${esc(sanFr(mv.san))}`, 'ok');
       c.i++;
@@ -148,6 +154,7 @@ export class DrillRunner {
     }
     c.errors++;
     if (!c.retryItem) this.gradePos(c.e.rep, k, false);
+    if (this.guided) { this.guide(c, step, mv, arrow); return; }
     const trap = t.traps.get(k);
     const isTrap = trap?.uci === mv.lan;
     const plan = c.e.plan ? `<p class="small"><strong>Plan de la fiche :</strong> ${esc(c.e.plan)}</p>` : '';
@@ -173,11 +180,29 @@ export class DrillRunner {
     });
   }
 
+  // Pratique guidée : 1re erreur → indice (pièce et case de départ) ; 2e → le coup (flèche).
+  guide(c, step, mv, arrow) {
+    c.hints = c.hints?.ply === c.i ? { ply: c.i, n: c.hints.n + 1 } : { ply: c.i, n: 1 };
+    const from = step.uci.slice(0, 2);
+    const piece = new Chess(this.chess.fen()).get(from);
+    const NOM = { p: 'un pion', n: 'un Cavalier', b: 'un Fou', r: 'une Tour', q: 'la Dame', k: 'le Roi' };
+    if (c.hints.n === 1) {
+      this.board.setHint(from);
+      this.feedback(`<div class="drill-fb"><p>Pas tout à fait (${esc(sanFr(mv.san))}). <strong>Indice :</strong> on joue ${NOM[piece?.type] || 'une pièce'} — la case de départ est entourée.</p></div>`);
+      this.log(`↺ ${esc(sanFr(mv.san))} — indice donné`, 'muted');
+    } else {
+      this.board.setHint(null);
+      this.feedback(`<div class="drill-fb"><p>Le coup de la ligne est <strong>${esc(sanFr(step.san))}</strong> (flèche verte) : jouez-le pour continuer.</p></div>`);
+      this.draw({ interactive: true, arrows: [arrow] });
+      return;
+    }
+    this.draw({ interactive: true });
+  }
+
   endLine() {
     const c = this.cur;
     const ok = c.errors === 0;
-    recordLine(this.progress, c.e.id, ok);
-    saveProgress(this.progress);
+    if (!this.guided) { recordLine(this.progress, c.e.id, ok); saveProgress(this.progress); }
     this.results.push({ id: c.e.id, ok });
     this.log(ok ? `<strong>Ligne réussie sans faute ✔</strong>` : `<strong>Ligne terminée</strong> avec ${c.errors} erreur(s).`, ok ? 'ok' : 'warn');
     this.status(ok ? 'Ligne réussie ✔' : 'Ligne terminée', ok ? 'player' : 'opponent');
