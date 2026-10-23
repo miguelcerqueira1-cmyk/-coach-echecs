@@ -73,15 +73,17 @@ export function buildVideoLink(url, time) {
   else if (t) return null;
   return `https://www.youtube.com/watch?v=${m[1]}${secs ? `&t=${secs}s` : ''}`;
 }
-// Vidéos choisies à la main (video.liens) : « ▶ Titre (chaîne, EN) », ouvertes dans un nouvel onglet.
+// Vidéos choisies à la main (video.liens) : « ▶ Titre (chaîne, EN) », ouvertes dans un nouvel onglet,
+// en français d'abord, puis en anglais, puis les autres langues. Chaîne omise si non confirmée (null).
 // Un horodatage n'existe que s'il vient d'un chapitre publié par l'auteur (champ `chapitre`).
 function curatedVideosHtml(e, cls = 'vd-curated') {
-  const liens = e.video?.liens || [];
+  const rank = (l) => ({ fr: 0, en: 1 }[l.langue] ?? 2);
+  const liens = (e.video?.liens || []).map((l, i) => [l, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([l]) => l);
   if (!liens.length) return '';
   return `<div class="${cls}" data-curated="${esc(e.id)}">${liens.map((l) => {
     const debut = l.chapitre ? (l.url.match(/&t=(\d+)s/) || [])[1] : null;
     const at = debut ? ` · dès ${Math.floor(debut / 60)}:${String(debut % 60).padStart(2, '0')}` : '';
-    return `<div class="small"><a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener"${l.chapitre ? ` title="Chapitre : ${esc(l.chapitre)}"` : ''}>▶ ${esc(l.titre)}</a> <span class="muted tiny">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())}${at})</span></div>`;
+    return `<div class="small"><a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener"${l.chapitre ? ` title="Chapitre : ${esc(l.chapitre)}"` : ''}>▶ ${esc(l.titre)}</a> <span class="muted tiny">(${l.chaine ? `${esc(l.chaine)}, ` : ''}${esc(String(l.langue).toUpperCase())}${at})</span></div>`;
   }).join('')}</div>`;
 }
 function loadVideos() { try { return JSON.parse(localStorage.getItem(VIDEO_KEY) || '{}'); } catch { return {}; } }

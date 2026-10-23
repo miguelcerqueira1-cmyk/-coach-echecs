@@ -140,17 +140,21 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   « Vidéos » : 7 langues (fr, en, es, de, it, pt, ru) ; avec une clé YouTube Data v3 personnelle
   (search = 100 unités sur 10 000/jour → ≈ 100 recherches/jour, réponses en cache 7 jours),
   liste titre/chaîne/durée/vues ; sans clé, lien de recherche. L'app ne « regarde » pas les vidéos.
-- **Vidéos choisies** (`video.liens`, 38 fiches sur 58 en oct. 2026) : 1 à 3 par fiche, affichées
-  dans la cellule Vidéo (« ▶ Titre (chaîne, EN) », nouvel onglet) et en tête du dialogue. Règle :
+- **Vidéos choisies** (`video.liens`, 47 fiches sur 58, oct. 2026, dont 21 avec une vidéo en
+  français) : 1 à 4 par fiche, affichées dans la cellule Vidéo (« ▶ Titre (chaîne, FR) », nouvel
+  onglet) et en tête du dialogue, **français d'abord**, puis anglais, puis autres langues. Règle :
   seulement une vidéo trouvée telle quelle dans un résultat réel — vidéothèque Lichess
-  (lichess.org/video, identifiant YouTube, titre et auteur publiés, joignable depuis le dev) ou
-  recherche web (titre et chaîne nommés dans le résultat). Jamais d'identifiant reconstruit ou
-  deviné ; `&t=` seulement si l'auteur publie ce chapitre (recopié dans `chapitre`, contrôlé par
-  les tests). Sans vidéo spécifique sûre : aucune (mieux vaut la recherche par langue). Les
-  champs vidéo n'entrent pas dans l'empreinte Stockfish. youtube.com et l'oEmbed étant bloqués
-  depuis l'environnement de développement, `scripts/verify-videos.mjs` tourne dans le job
-  « online » de deploy.yml : oEmbed par vidéo, 404/400 = morte, 401/403 = restreinte, titre ou
-  chaîne différents = modifiée ; annotations « warning », étape `continue-on-error` (jamais bloquante).
+  (lichess.org/video, identifiant YouTube, titre et auteur publiés, joignable depuis le dev ;
+  aucune vidéo en français) ou recherche web (titre recopié). Jamais d'identifiant reconstruit
+  ou deviné ; `&t=` seulement si l'auteur publie ce chapitre (recopié dans `chapitre`, contrôlé
+  par les tests). Les résultats de recherche n'affichent souvent pas la chaîne (cas des vidéos
+  FR) : `chaine: null` (permis seulement pour `source: 'recherche web'`), rien n'est deviné ; la
+  CI donne la vraie chaîne (« chaîne à renseigner ») à recopier ensuite. Sans vidéo spécifique
+  sûre : aucune (mieux vaut la recherche par langue). Les champs vidéo n'entrent pas dans
+  l'empreinte Stockfish. youtube.com et l'oEmbed étant bloqués depuis l'environnement de
+  développement, `scripts/verify-videos.mjs` tourne dans le job « online » de deploy.yml : oEmbed
+  par vidéo, 404/400 = morte, 401/403 = restreinte, titre ou chaîne différents = modifiée,
+  chaîne null = à renseigner ; annotations « warning », étape `continue-on-error` (jamais bloquante).
 - Base des maîtres (explorer.lichess.org/masters, jeton requis, relais Worker avec db=masters) :
   bloc « Maîtres » du Coup optimal, bascule niveau/maîtres du tableau et de l'arbre, colonne
   Statistiques ; parties de maîtres ouvrables (/masters/pgn/{id}, jeton personnel).
@@ -277,8 +281,8 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
 
 ## Phase 2 (non implémenté)
 
-- Vidéos pour les 20 fiches restantes (surtout coups loufoques et sidelines Caro-Kann) et vidéos
-  en français : chaînes FR non confirmables depuis le dev, à ajouter après contrôle.
+- Vidéos pour les 11 fiches restantes (gaffes et sorties loufoques sans vidéo dédiée, Avance
+  4.Fd3/4.Fe3) ; recopier les chaînes « à renseigner » signalées par la CI.
 - Plus de fiches (le répertoire actuel couvre 58 lignes ; l'arbre Lichess couvre le reste).
 - Parties d'un joueur précis (endpoint /player).
 
