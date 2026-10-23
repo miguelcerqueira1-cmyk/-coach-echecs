@@ -616,7 +616,7 @@ export class RepertoirePage {
         <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}${g.opening ? ` · ${esc(g.opening)}` : ''}</span>
         <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('');
     return `${head}
-      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent 1.d4 d5 2.c4 ou 1.e4 c6 ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).</p>
+      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent votre répertoire (Gambit Dame ou Caro-Kann, quel que soit l’ordre des coups) ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).</p>
       ${rows ? `<ul class="live-list">${rows}</ul>` : '<p class="muted small">Aucune partie récente dans le jeu de données.</p>'}
       <p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p>`;
   }
