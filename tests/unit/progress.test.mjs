@@ -70,3 +70,15 @@ test('exercices : ligne complète et drill anti-trash', () => {
   }
   assert.ok(n >= 10, `${n} drills`);
 });
+
+import { seuilAutreCoup } from '../../site/js/drills-core.js';
+
+test('drill : seuil d’un autre coup calé sur la punition vérifiée', () => {
+  const mk = (value, type = 'cp') => ({ verification: { punition: { final: { type, value } } } });
+  assert.equal(seuilAutreCoup(mk(300), 'w'), 150); // grosse punition : il faut au moins +1,5
+  assert.equal(seuilAutreCoup(mk(160), 'w'), 100);
+  assert.equal(seuilAutreCoup(mk(80), 'w'), 50); // petit gain de pion : plancher +0,5
+  assert.equal(seuilAutreCoup(mk(-200), 'b'), 140); // Noirs : point de vue inversé
+  assert.equal(seuilAutreCoup(mk(3, 'mate'), 'w'), 150);
+  assert.equal(seuilAutreCoup({}, 'w'), 150);
+});

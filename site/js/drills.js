@@ -7,8 +7,8 @@
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
-import { key } from './training-core.js';
-import { lineSteps, trashDrill } from './drills-core.js';
+import { key, cpFrom } from './training-core.js';
+import { lineSteps, trashDrill, seuilAutreCoup } from './drills-core.js';
 import { lineText } from './games-core.js';
 import { recordLine, recordDrill, saveProgress } from './progress.js';
 
@@ -20,8 +20,9 @@ const MAX_RETRY = 3;
 export class DrillRunner {
   // kind : 'lignes' | 'trash' ; ids : fiches à travailler ; onDone(résumé) : retour au menu.
   // guided : pratique guidée d'une leçon (indice, puis le coup ; pas de pénalité ni de reprise).
-  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, onDone }) {
+  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, onDone }) {
     this.guided = guided;
+    this.engine = engine; // Stockfish : accepte un autre coup gagnant dans le drill anti-trash
     this.el = el;
     this.data = data;
     this.kind = kind;
@@ -262,7 +263,7 @@ export class DrillRunner {
 
   tick() {
     const c = this.cur;
-    if (!c?.t0 || c.over) return;
+    if (!c?.t0 || c.over || c.wait) return;
     const left = 1 - (performance.now() - c.t0) / (this.timeLimit * 1000);
     this.setTimer(left);
     if (left <= 0) this.endTrash(false, 'temps écoulé');
@@ -285,16 +286,48 @@ export class DrillRunner {
 
   onTrashMove(input) {
     const c = this.cur;
-    if (c.over) return;
+    if (c.over || c.wait) return;
     const step = c.steps[c.i];
     if (!step?.ours) return;
     let mv;
     try { mv = new Chess(this.chess.fen()).move(input); } catch { return; }
-    if (mv.lan !== step.uci) { this.endTrash(false, `${sanFr(mv.san)} au lieu de ${sanFr(step.san)}`); return; }
+    if (mv.lan !== step.uci) { this.checkOther(mv, step); return; }
     this.chess.move(toObj(step.uci));
     this.log(`✔ ${esc(sanFr(mv.san))}`, 'ok');
     c.i++;
     this.advanceTrash();
+  }
+
+  // Autre coup que celui de la fiche : Stockfish vérifie s'il gagne presque autant que la
+  // punition de la fiche (seuilAutreCoup). Le chrono est suspendu pendant la vérification.
+  async checkOther(mv, step) {
+    const c = this.cur;
+    if (!this.engine || this.engine.state !== 'ready') { this.endTrash(false, `${sanFr(mv.san)} au lieu de ${sanFr(step.san)}`); return; }
+    c.wait = true;
+    const paused = performance.now();
+    this.status('<span class="spinner"></span> Autre coup : Stockfish vérifie…', 'opponent');
+    const after = new Chess(this.chess.fen());
+    after.move(mv.san);
+    let cp = null;
+    if (after.isCheckmate()) cp = 10000;
+    else {
+      try {
+        const r = await this.engine.analyze({ position: `position fen ${after.fen()}`, movetime: 700, token: { gameId: 'drill', branchId: 'drill', revision: Date.now(), ply: 0 } });
+        if (!r.cancelled) cp = cpFrom(r.info?.score, after.turn(), c.color);
+      } catch { /* moteur indisponible : coup refusé */ }
+    }
+    if (!this.alive || c.over) return;
+    c.t0 += performance.now() - paused; // le temps de calcul n'est pas compté
+    c.wait = false;
+    const seuil = seuilAutreCoup(c.e, c.color);
+    if (cp != null && cp >= seuil) {
+      this.chess.move(mv.san);
+      this.log(`✔ ${esc(sanFr(mv.san))} — autre coup gagnant (Stockfish : ${cp >= 9000 ? 'mat' : `+${(cp / 100).toFixed(1).replace('.', ',')}`})`, 'ok');
+      c.alt = `${sanFr(mv.san)} (la fiche jouait ${sanFr(step.san)})`;
+      this.endTrash(true);
+      return;
+    }
+    this.endTrash(false, `${sanFr(mv.san)} au lieu de ${sanFr(step.san)}${cp != null ? ` (Stockfish : ${(cp / 100).toFixed(1).replace('.', ',')} pour vous, la punition de la fiche fait mieux)` : ''}`);
   }
 
   endTrash(ok, why = '') {
@@ -313,7 +346,7 @@ export class DrillRunner {
     if (ok) {
       this.status(`✔ Puni en ${sec(ms)} !`, 'player');
       this.draw();
-      body = `<p><strong>+1 point</strong> — séquence trouvée en ${sec(ms)}${best === ms ? ' (record personnel 🏆)' : best ? ` (record : ${sec(best)})` : ''}.</p>`;
+      body = `<p><strong>+1 point</strong> — ${c.alt ? `autre coup gagnant ${esc(c.alt)}, ` : 'séquence trouvée '}en ${sec(ms)}${best === ms ? ' (record personnel 🏆)' : best ? ` (record : ${sec(best)})` : ''}.</p>${c.alt ? `<p class="small">La punition de la fiche : <span class="line">${esc(seq)}</span></p>` : ''}`;
     } else {
       this.status(`✘ Raté : ${esc(why)}`, 'opponent');
       const step = c.steps[c.i];

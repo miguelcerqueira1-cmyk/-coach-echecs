@@ -31,3 +31,13 @@ export function trashDrill(entry, color, maxOurs = 5) {
     texte: p.texte,
   };
 }
+
+// Seuil pour accepter un autre coup que celui de la fiche : presque aussi bon que la punition
+// vérifiée par Stockfish (au plus 0,6 pion de moins), jamais sous +0,5, plafonné à +1,5.
+export function seuilAutreCoup(entry, color) {
+  const f = entry.verification?.punition?.final;
+  if (!f) return 150;
+  const v = f.type === 'mate' ? (f.value > 0 ? 10000 : -10000) : f.value; // point de vue des Blancs
+  const mine = color === 'w' ? v : -v;
+  return Math.max(50, Math.min(150, mine - 60));
+}

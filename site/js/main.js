@@ -18,6 +18,7 @@ import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
 import { YouTubeClient } from './youtube.js';
 import { THEMES, BOARDS, applyAppearance } from './theme.js';
+import { exportData, importData, describe } from './transfer.js';
 import { TrainingPage } from './training.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
@@ -989,6 +990,33 @@ function bindUi() {
     $('set-accent').value = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
   };
   $('dlg-settings').addEventListener('close', () => applyAppearance(state.settings));
+  // Mes données : export / import par fichier (sans les secrets).
+  $('data-export').onclick = () => {
+    const dump = exportData();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(dump)], { type: 'application/json' }));
+    a.download = `coach-echecs-donnees-${dump.exportedAt.slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    $('data-msg').textContent = `Fichier créé : ${describe(dump)}. Ouvrez l’appli sur l’autre appareil → ⚙ Réglages → Importer.`;
+  };
+  $('data-import').onchange = async (ev) => {
+    const f = ev.target.files?.[0];
+    ev.target.value = '';
+    if (!f) return;
+    try {
+      const dump = JSON.parse(await f.text());
+      if (!window.confirm(`Importer ${describe(dump)} (export du ${new Date(dump.exportedAt).toLocaleString('fr-FR')}) ? Les données actuelles de cet appareil seront remplacées.`)) return;
+      store.backupGame();
+      const n = importData(dump);
+      $('data-msg').textContent = `${n} élément(s) importé(s). Rechargement…`;
+      setTimeout(() => location.reload(), 600);
+    } catch (e) {
+      $('data-msg').textContent = e instanceof SyntaxError ? 'Fichier illisible (JSON attendu).' : e.message;
+    }
+  };
   $('form-settings').addEventListener('submit', (e) => {
     if (e.submitter?.value !== 'ok') return;
     saveSettingsFromForm();

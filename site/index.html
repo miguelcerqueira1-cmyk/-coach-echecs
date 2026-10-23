@@ -216,6 +216,13 @@
       <div class="dlg-actions left">
         <button type="button" id="clear-youtube">Effacer la clé de cet appareil</button>
       </div>
+      <h3>Mes données (changer d’appareil)</h3>
+      <p class="muted small">Exportez votre progression, vos révisions, vos réglages et vos analyses dans un fichier, puis importez-le sur votre autre appareil (téléphone ↔ ordinateur). Le jeton Lichess, le code d’accès et la clé YouTube ne sont jamais exportés : ressaisissez-les ici.</p>
+      <div class="dlg-actions left">
+        <button type="button" id="data-export">⤓ Exporter mes données</button>
+        <label class="file-btn"><input type="file" id="data-import" accept=".json,application/json" hidden>⤒ Importer un fichier</label>
+      </div>
+      <p id="data-msg" class="muted small" role="status"></p>
       <details>
         <summary>Avancé</summary>
         <label>Adresse de l’API (laisser vide pour la valeur publiée)

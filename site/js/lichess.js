@@ -79,6 +79,42 @@ class MemoCache {
   }
 }
 
+// Cache local (12 h) des réponses Cloud Eval / Opening Explorer : la page Répertoire
+// redemande les mêmes positions à chaque visite ; on évite de solliciter Lichess pour rien.
+const PERSIST_KEY = 'coach-echecs:lichess-cache-v1';
+const PERSIST_TTL = 12 * 3600 * 1000;
+const PERSIST_MAX = 400;
+export class PersistCache {
+  constructor(storage = globalThis.localStorage, now = () => Date.now()) {
+    this.storage = storage;
+    this.now = now;
+    this.map = null;
+    this.timer = null;
+  }
+  load() {
+    if (this.map) return;
+    try { this.map = new Map(Object.entries(JSON.parse(this.storage?.getItem(PERSIST_KEY) || '{}'))); } catch { this.map = new Map(); }
+  }
+  get(k) {
+    this.load();
+    const e = this.map.get(k);
+    if (!e) return undefined;
+    if (this.now() - e.t > PERSIST_TTL) { this.map.delete(k); return undefined; }
+    return e.v;
+  }
+  set(k, v) {
+    this.load();
+    this.map.delete(k);
+    this.map.set(k, { t: this.now(), v });
+    while (this.map.size > PERSIST_MAX) this.map.delete(this.map.keys().next().value);
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.flush(), 500);
+  }
+  flush() {
+    try { this.storage?.setItem(PERSIST_KEY, JSON.stringify(Object.fromEntries(this.map))); } catch { /* stockage plein : cache mémoire seul */ }
+  }
+}
+
 // ---------- Calculs sur les statistiques ----------
 
 export function pct(n, total) { return total ? (100 * n) / total : 0; }
@@ -124,7 +160,8 @@ export function parseCloudEval(data) {
 // ---------- Client ----------
 
 export class LichessClient {
-  constructor({ getToken = () => '', getProxy = () => null, queue = new RequestQueue() } = {}) {
+  constructor({ getToken = () => '', getProxy = () => null, queue = new RequestQueue(), persist = new PersistCache() } = {}) {
+    this.persist = persist;
     this.getToken = getToken;
     this.getProxy = getProxy; // { url, code } du Worker si le relais est disponible
     this.queue = queue;
@@ -139,7 +176,7 @@ export class LichessClient {
 
   async cloudEval(fen, { multiPv = 1, isStale } = {}) {
     const url = `${CLOUD_EVAL_URL}?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
-    const hit = this.cache.get(url);
+    const hit = this.cache.get(url) || this.persist?.get(url);
     if (hit) return hit;
     const r = await this.queue.run(url, {}, { isStale });
     if (r.stale) return { stale: true };
@@ -148,6 +185,7 @@ export class LichessClient {
     else if (!r.res.ok) throw new LichessError(`Cloud Eval : erreur HTTP ${r.res.status}`, 'server');
     else out = { status: 'ok', ...parseCloudEval(await r.res.json()) };
     this.cache.set(url, out);
+    this.persist?.set(url, out);
     return out;
   }
 
@@ -165,7 +203,7 @@ export class LichessClient {
       if (speeds?.length) qs.set('speeds', speeds.join(','));
     }
     const key = qs.toString();
-    const hit = this.cache.get(key);
+    const hit = this.cache.get(key) || this.persist?.get(`${mode}|${key}`);
     if (hit) return hit;
     let url;
     const init = { headers: {} };
@@ -188,6 +226,7 @@ export class LichessClient {
     const data = await r.res.json();
     const out = { ...data, mode, db, stats: nodeStats(data) };
     this.cache.set(key, out);
+    this.persist?.set(`${mode}|${key}`, out);
     return out;
   }
 

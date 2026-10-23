@@ -89,3 +89,21 @@ test('Opening Explorer : jeton requis, envoi du jeton, ou relais du Worker', asy
   const bad = new LichessClient({ getToken: () => 't', queue: new RequestQueue({ minIntervalMs: 0, fetchImpl: async () => resp(401, {}) }) });
   await assert.rejects(bad.explorer({ fen: 'z' }), (e) => e.kind === 'token');
 });
+
+import { PersistCache } from '../../site/js/lichess.js';
+
+test('cache local Lichess : 12 h, partagé entre les visites, borné', async () => {
+  const store = new Map();
+  const storage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) };
+  let t = 0;
+  const a = new PersistCache(storage, () => t);
+  a.set('x', { status: 'ok', n: 1 });
+  a.flush();
+  const b = new PersistCache(storage, () => t); // « nouvelle visite »
+  assert.deepEqual(b.get('x'), { status: 'ok', n: 1 });
+  t = 13 * 3600 * 1000;
+  assert.equal(b.get('x'), undefined);
+  for (let i = 0; i < 450; i++) b.set(`k${i}`, i);
+  assert.ok(b.map.size <= 400);
+  assert.equal(b.get('k449'), 449);
+});

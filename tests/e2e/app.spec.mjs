@@ -404,3 +404,29 @@ test('apparence : Nuit néon par défaut, choix du thème et de l’échiquier, 
   await expect(root).toHaveAttribute('data-board', 'marbre');
   expect(await sq()).toBe('rgb(236, 233, 228)');
 });
+
+test('mes données : export (sans secrets) puis import sur un autre appareil', async ({ page, browser }) => {
+  await page.goto('./');
+  await page.evaluate(() => {
+    localStorage.setItem('coach-echecs:progression-v1', JSON.stringify({ lignes: { 'gd-orthodoxe': { ok: 2, ko: 0 } }, drills: {}, jours: ['2026-10-22'], sorties: [], cours: {} }));
+    localStorage.setItem('coach-echecs:jeton-lichess', 'lip_secret');
+  });
+  await page.click('#btn-settings');
+  const dl = page.waitForEvent('download');
+  await page.click('#data-export');
+  const file = await (await dl).path();
+  const { readFileSync } = await import('node:fs');
+  const dump = JSON.parse(readFileSync(file, 'utf8'));
+  expect(dump.data['coach-echecs:progression-v1']).toContain('gd-orthodoxe');
+  expect(dump.data['coach-echecs:jeton-lichess']).toBeUndefined();
+  // « Autre appareil » : nouveau contexte vierge.
+  const other = await (await browser.newContext()).newPage();
+  await other.goto(page.url());
+  await other.click('#btn-settings');
+  other.once('dialog', (d) => d.accept());
+  await other.setInputFiles('#data-import', file);
+  await other.waitForLoadState('load');
+  await expect.poll(() => other.evaluate(() => localStorage.getItem('coach-echecs:progression-v1'))).toContain('gd-orthodoxe');
+  expect(await other.evaluate(() => localStorage.getItem('coach-echecs:jeton-lichess'))).toBeNull();
+  await other.context().close();
+});

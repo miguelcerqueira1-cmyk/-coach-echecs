@@ -249,7 +249,7 @@ export class TrainingPage {
     this.s = null;
     const tree = { gd: buildTree(this.data.entries, 'gd'), ck: buildTree(this.data.entries, 'ck') };
     this.drill = new DrillRunner({
-      el: this.el, data: this.data, kind, ids, tree, timeLimit, guided,
+      el: this.el, data: this.data, kind, ids, tree, timeLimit, guided, engine: this.engine,
       progress: this.progress || loadProgress(),
       gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
       onDone: (r) => {

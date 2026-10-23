@@ -213,6 +213,14 @@ la suite proposée par le moteur) plutôt que baisser le seuil.
   factuels chess.js (centre, développement, roque, prise, attaque, clouage, échec) ; aucune
   intention inventée (le plan vient de la fiche). Pratique guidée = module Lignes `guided`
   (indice : case de départ, puis le coup). Leçon suivie → `progress.cours`.
+- Mes données (⚙ Réglages, transfer.js) : export/import d'un fichier JSON de toutes les clés
+  `coach-echecs:*` SAUF les secrets (jeton Lichess, code d'accès, clé YouTube), jamais exportés
+  ni écrasés par un import. Caches exclus.
+- Drill anti-trash : un autre coup que la fiche est vérifié par Stockfish (700 ms, chrono
+  suspendu) et accepté s'il gagne presque autant que la punition vérifiée (`seuilAutreCoup`).
+- Mes parties : chargement automatique à la première ouverture si des pseudos sont enregistrés,
+  analyse de la plus récente partie non analysée, badge « Nouveau » depuis le dernier chargement.
+- Cache local Lichess (`PersistCache`, 12 h, 400 entrées) pour Cloud Eval et l'Opening Explorer.
 - Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
   chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
 - Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page

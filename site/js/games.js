@@ -51,6 +51,15 @@ export class GamesPage {
       return;
     }
     if (!this.rendered) this.render();
+    // Chargement automatique à la première ouverture si des pseudos sont enregistrés, puis
+    // analyse de la plus récente partie non encore analysée.
+    if (!this.autoDone && (this.prefs.lichess || this.prefs.chesscom) && !this.games.length) {
+      this.autoDone = true;
+      await this.importAll();
+      const fresh = this.filtered().find((g) => !g.local && !this.cache[g.id]);
+      if (fresh && this.visible() && !this.selected) this.analyse(fresh);
+      return;
+    }
     // Reprise automatique d'une analyse mise en pause quand on avait quitté la page.
     const paused = this.games.find((g) => g.id === this.selected && g.paused);
     if (paused) this.analyse(paused);
@@ -132,6 +141,10 @@ export class GamesPage {
     }));
     this.games.sort((a, b) => b.date.localeCompare(a.date));
     for (const g of this.games) g.deviation = repertoireDeviation(g, this.data.entries);
+    // « Nouveau » : parties terminées depuis le dernier chargement.
+    const last = this.prefs.lastSeen || '';
+    for (const g of this.games) g.isNew = !!last && g.date > last;
+    if (this.games.length) { this.prefs.lastSeen = this.games[0].date; save(PREFS, this.prefs); }
     this.noteSorties(this.games);
     this.render();
   }
@@ -334,7 +347,7 @@ export class GamesPage {
       const opp = g.color === 'w' ? `${g.black} (${g.blackElo ?? '?'})` : `${g.white} (${g.whiteElo ?? '?'})`;
       const done = this.cache[g.id];
       return `<article class="card game-card ${g.id === this.selected ? 'selected' : ''}">
-        <div class="game-top"><span class="badge">${esc(g.site)}</span> <span class="badge">${esc(g.speed)}</span>
+        <div class="game-top">${g.isNew ? '<span class="badge ok">Nouveau</span> ' : ''}<span class="badge">${esc(g.site)}</span> <span class="badge">${esc(g.speed)}</span>
           <span class="res ${g.outcome === 'victoire' ? 'ok' : g.outcome === 'défaite' ? 'ko' : ''}">${esc(g.outcome)}</span>
           <span class="muted small">${new Date(g.date).toLocaleDateString('fr-FR')}</span></div>
         <p><span class="dot ${g.color}"></span> ${g.color === 'w' ? 'Blancs' : 'Noirs'} contre <strong>${esc(opp)}</strong> · ${Math.ceil(g.san.length / 2)} coups</p>
