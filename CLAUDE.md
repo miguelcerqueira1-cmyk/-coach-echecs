@@ -1,328 +1,201 @@
-# CLAUDE.md — Coach Échecs
+# CLAUDE.md — Coach Échecs (synthèse du projet, mise à jour le 2026-10-23)
 
-Entraîneur d'échecs web en français. Principe non négociable :
-**Stockfish calcule, chess.js valide, Claude explique.** Aucune évaluation, variante,
-mat ou pourcentage ne doit venir du modèle de langage.
+À lire en premier dans toute nouvelle session. Le code complet est dans le dépôt : ce fichier
+explique le but, l'organisation, les choix et les règles. Ne pas y recopier de code.
 
-## Architecture
+## 1. Objectif
 
-```
-site/                      Site statique servi par GitHub Pages (aucune étape de compilation)
-  index.html, css/app.css
-  sw.js                    Service worker (hors connexion) ; BUILD et PRECACHE remplis par build.mjs
-  manifest.webmanifest     Application installable (URLs relatives : portée /-coach-echecs/)
-  icons/                   PNG versionnés, générés par scripts/icons.mjs (Playwright) depuis pieces/wN.svg
-  js/pwa.js                Enregistrement du SW, bandeau « Nouvelle version disponible », aide à l'installation
-  js/main.js               Contrôleur : cycle coup → calcul → conseil → explication
-  js/game.js               Modèle de partie = source de vérité (rejeu, règles de fin, PGN/FEN, jetons)
-  js/engine.js             Client UCI : Web Worker, file d'un calcul, annulation, chien de garde
-  js/analysis.js           Validation des variantes, points de vue des scores, descriptions FR
-  js/board.js              Échiquier DOM (clic, glisser, flèches SVG, choix de promotion)
-  js/coach.js              Client de l'API Claude + vérification des coups cités
-  js/hints.js              Mode « Indice d'abord » : indices progressifs tirés du coup calculé
-  js/training-core.js      Entraînement : arbre des fiches, tirage pondéré, verdicts (pur, testé)
-  js/training.js           Page Entraînement (adversaire tiré de Lichess ou des fiches, jugé par Stockfish)
-  js/games-core.js         Mes parties : formats Lichess/Chess.com, sortie de répertoire, erreurs, bilan (pur)
-  js/games.js              Page Mes parties (import, analyse Stockfish coup par coup, bilan, revue)
-  js/explain-free.js       Explication gratuite sans IA (faits chess.js + calculs Stockfish), utilisée quand Claude n'est pas configuré
-  js/storage.js            localStorage (partie, sauvegarde précédente, réglages, code d'accès, jeton Lichess, clé YouTube)
-  js/router.js             Navigation #/moteur ↔ #/repertoire (sans rechargement)
-  js/lichess.js            Cloud Eval + Opening Explorer : file série, pause 60 s sur 429, cache, %
-  js/optimal.js            Panneau « Coup optimal » (Stockfish local / Cloud Eval / meilleur % filtré / maîtres / Élite)
-  js/joueurs.js            Recherche par joueur : noms normalisés, index joueurs.json (pur, testé)
-  js/joueurs-ui.js         Section « Parties de joueurs » de la recherche du Répertoire
-  js/elite.js              Jeu « Élite » : chargement (branche donnees-elite puis data/elite.json), clé FEN,
-                           lecture d'une position, « Nouvelles parties » (pur, testé)
-  js/repertoire-page.js    Page Répertoire : filtres, recherche par coup/ECO, tableau 9 colonnes, Anti-trash,
-                           « Tester cette ligne », arbre Lichess (niveau/maîtres), vidéos, export PGN
-  js/repertoire-pgn.js     Export PGN du répertoire (variantes, $2, commentaires ; relu par chess.js en test)
-  js/youtube.js            Recherche YouTube Data v3 par fiche et par langue (clé perso, cache 7 j)
-  js/lines.js              Lecture des lignes « 1. d4 d5 2. c4? », index ECO, empreintes
-  data/repertoire.js       58 fiches rédigées (Gambit Dame, Caro-Kann) — source à éditer
-  data/repertoire.json     GÉNÉRÉ (scripts/repertoire.mjs) : fiches + ECO + vérification
-  data/elite.json          GÉNÉRÉ (scripts/elite.mjs, réseau) : copie de secours embarquée par deploy.yml, non versionnée
-  pieces/                  SVG cburnett (GPLv2+)
-  vendor/, engine/         GÉNÉRÉS par scripts/vendor.mjs (postinstall), non versionnés
-worker/                    API Cloudflare Worker (Claude) : src/index.js, src/prompt.js
-scripts/                   vendor.mjs, build.mjs (→ dist/ + config.json), serve.mjs,
-                           repertoire.mjs (ECO + JSON), verify-repertoire.mjs + uci-node.mjs (Stockfish Node),
-                           elite.mjs (téléchargement) + elite-core.mjs (lecture, filtre, agrégation ; pur),
-                           verify-videos.mjs (oEmbed YouTube des vidéos choisies ; CI seulement)
-data/chess-openings/       Base ECO CC0 de lichess-org/chess-openings (TSV)
-data/verification.json     Résultats Stockfish (profondeur 18) des punitions/pièges, par empreinte de fiche
-tests/unit/                node:test (règles, continuité, import/export)
-tests/e2e/                 Playwright, vrai Stockfish ; API Claude simulée par interception
-tests/fixtures/elite/      Réponses enregistrées pour `elite.mjs --fixture` (Lichess réelles, Chess.com synthétiques)
-.github/workflows/deploy.yml  vérif → Worker → Pages → test du site publié
-.github/workflows/elite.yml   collecte Élite toutes les 30 min (incrémentale) + lundi (complète) → branche donnees-elite
-```
+Application web **en français** d'entraînement aux échecs, pour un joueur de club/blitz (~1000–1400
+Elo) qui joue le **Gambit Dame avec les Blancs** et la **Caro-Kann avec les Noirs**.
+Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans rien installer.
 
-Trois mondes distincts :
-1. **Développement/déploiement** : GitHub Actions (aucun serveur permanent).
-2. **Calcul** : Stockfish WASM dans le navigateur de l'utilisateur.
-3. **Explications** : Cloudflare Worker → API Anthropic (clé uniquement dans les secrets du Worker).
+- Site publié : https://miguelcerqueira1-cmyk.github.io/-coach-echecs/
+- Dépôt : github.com/miguelcerqueira1-cmyk/-coach-echecs (branche `main` ; branche de données
+  `donnees-elite` gérée par un workflow).
+- Pseudos de l'utilisateur : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
 
-## Commandes de vérification
+### Principes non négociables
+1. **Stockfish calcule, chess.js valide, Claude explique.** Aucune évaluation, variante, mat,
+   statistique ou pourcentage ne vient d'un modèle de langage. Rien d'inventé : vidéos, comptes de
+   joueurs, lignes tactiques, noms d'ouverture → toujours issus d'une source vérifiable.
+2. **Secrets** : la clé API Anthropic n'existe que dans les secrets du Worker Cloudflare (jamais
+   dans le dépôt, le HTML ou le bundle). Le jeton Lichess, le code d'accès et la clé YouTube restent
+   sur l'appareil (localStorage) et ne sont jamais exportés. Ne jamais demander un secret en clair
+   dans la conversation.
+3. **Continuité de la partie** : le modèle `Game` est la source de vérité ; tout résultat moteur
+   ou Claude obsolète (jeton périmé) est ignoré.
+4. Toute ligne tactique (punition, piège) est **vérifiée par Stockfish** avant publication.
+
+## 2. Ce que fait l'application (4 pages, navigation par hash)
+
+| Page | Contenu |
+|---|---|
+| `#/moteur` | Échiquier ; conseil Stockfish après chaque coup réellement joué (confirmer pour l'enregistrer) ; panneau « Coup optimal » (Stockfish local, Lichess Cloud Eval, meilleur % de victoire à mon niveau, coup des maîtres, coup de l'Élite) ; navigation ⏮◀▶⏭ et analyse des positions passées ; explication gratuite sans IA (ou Claude si configuré) ; mode « Indice d'abord » ; noms/Elo des joueurs au-dessus de l'échiquier ; « Jouer la suite jusqu'à la fin » (théorie des maîtres puis Stockfish) ; « Bilan de la partie » ; import/export PGN/FEN. |
+| `#/repertoire` | 58 fiches (31 Gambit Dame, 27 Caro-Kann) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
+| `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **⚡ Séance du jour**, **📊 progression** par variante (maîtrise %, série 🔥, sorties réelles ⚠). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
+| `#/parties` | Import des dernières parties Lichess/Chess.com (automatique à l'ouverture si pseudos enregistrés, badge « Nouveau »), sortie du répertoire, analyse Stockfish coup par coup, courbe, bilan, **rapport détaillé écrit** (note, déroulement, bons coups, erreurs expliquées avec la suite du moteur, occasions manquées, à retenir, exercices). |
+
+⚙ Réglages : budget moteur, niveau des explications, mode d'aide, **apparence** (thème, échiquier,
+couleur principale, aperçu direct), code Claude, jeton Lichess, clé YouTube, **Mes données**
+(exporter/importer un fichier entre appareils), installation de l'appli, avancé.
+
+## 3. Arborescence
 
 ```
-npm ci                 # installe et copie chess.js / Stockfish dans site/
-npm test               # tests unitaires
-npm run build          # dist/ (COACH_API_URL=... pour l'adresse de l'API)
-npx playwright test    # bout en bout (sert dist/ sous /coach-echecs/) ; WITH_WEBKIT=1 en CI
-BASE_URL=https://…/coach-echecs/ npx playwright test -g "parcours complet"   # site publié
-cd worker && npm ci && npm test   # Worker + faux serveur Anthropic (wrangler dev)
-cd worker && npm run check        # wrangler deploy --dry-run
-npm run verify:repertoire         # après modification d'une fiche : recalcule data/verification.json
-node scripts/verify-videos.mjs    # réseau (youtube.com bloqué en dev) : liens vidéo morts/modifiés ; --strict → échec
-node scripts/verify-repertoire.mjs --all --dry   # CI : tout recalculer sans écrire
-npm run elite                     # réseau : site/data/elite.json (≈ 10 min pour Lichess ; options en tête du script)
-node scripts/elite.mjs --state d/etat.json --out d/elite.json         # complet + état
-node scripts/elite.mjs --incremental d/etat.json --out d/elite.json   # nouvelles parties seulement
-node scripts/elite.mjs --fixture tests/fixtures/elite --top 2 --now 2026-10-22T12:00:00Z --out /tmp/elite.json   # hors ligne
+site/                         Site statique (GitHub Pages), modules ES, aucun bundler
+  index.html                  Coquille + dialogues ; petit script de tête qui applique l'apparence avant affichage
+  css/app.css                 Thèmes (variables CSS), styles d'échiquier, toutes les pages
+  sw.js, manifest.webmanifest, icons/   Appli installable / hors connexion (sw.js complété par build.mjs)
+  js/main.js        (1369 l.) Contrôleur page Moteur : cycle coup → calcul → conseil → explication,
+                              réglages, routeur, ouverture de lignes/parties, suite automatique, bilan, export/import
+  js/game.js                  Modèle de partie (rejeu, fins de partie FIDE, PGN/FEN tolérants, jetons)
+  js/engine.js                Client UCI Stockfish (Web Worker, une tâche à la fois, annulation, chien de garde)
+  js/analysis.js              Conseils : validation des variantes, scores, notation française (sanFr)
+  js/board.js                 Échiquier DOM (clic/glisser, flèches SVG, promotion, setHint)
+  js/coach.js                 Client API Claude (Worker) + vérification des coups cités
+  js/explain-free.js          Explication gratuite sans IA (faits chess.js + calculs Stockfish)
+  js/hints.js                 Indices progressifs (mode « Indice d'abord »)
+  js/optimal.js               Panneau « Coup optimal »
+  js/lichess.js               Cloud Eval, Opening Explorer (niveau/maîtres), file série, pause 429,
+                              cache mémoire + PersistCache (localStorage, 12 h)
+  js/repertoire-page.js (818 l.) Page Répertoire (rendu, recherche, classement, arbre, vidéos, export)
+  js/repertoire-pgn.js        Export PGN (variantes, $2, commentaires)
+  js/lines.js                 Lecture des lignes, index ECO, empreintes de fiche
+  js/youtube.js               Recherche YouTube Data v3 (clé perso facultative, cache 7 j)
+  js/elite.js                 Données Élite : chargement (raw GitHub → copie du site), lecture par FEN
+  js/joueurs.js, joueurs-ui.js  Recherche par nom de joueur (index joueurs.json) et affichage en cartes
+  js/training.js   (558 l.)  Page Entraînement : accueil, cours, modules, tableau de progression, anciens modes
+  js/training-core.js         Arbre du répertoire, tirage pondéré, verdicts, révision espacée (SM-2 simplifié)
+  js/drills.js / drills-core.js  Modules Lignes (+ mode guidé) et Anti-trash ; seuilAutreCoup
+  js/cours.js / lesson-core.js   Leçons : étapes, nomFr (traduction des noms ECO), commentaires factuels, ordre du cours
+  js/progress.js              Progression (lignes, drills, jours, sorties, cours), maîtrise, tableau de bord
+  js/games.js / games-core.js Mes parties : formats, sortie de répertoire, analyse, bilan, rapport détaillé
+  js/storage.js               localStorage (partie, réglages, secrets locaux)
+  js/theme.js                 Thèmes / styles d'échiquier / couleur principale
+  js/transfer.js              Export/import des données (sans secrets)
+  js/pwa.js                   Service worker, bandeau de mise à jour, aide à l'installation
+  js/router.js                Navigation par hash
+  data/repertoire.js          **Source des 58 fiches** (à éditer) ; repertoire.json, elite.json, joueurs.json GÉNÉRÉS
+  pieces/                     SVG cburnett ; vendor/ et engine/ GÉNÉRÉS (postinstall)
+worker/src/                   Cloudflare Worker (API Claude, relais explorer) : index.js, prompt.js
+scripts/                      vendor, build (→ dist/), serve, icons, repertoire (ECO + noms par coup → JSON),
+                              verify-repertoire (+ uci-node, Stockfish Node), probe-line,
+                              elite.mjs / elite-core.mjs / elite-suivis.mjs (collecte Élite), verify-videos
+data/chess-openings/          Base ECO CC0 (lichess-org/chess-openings)
+data/verification.json        Résultats Stockfish (profondeur 18) par empreinte de fiche
+tests/unit/ (13 fichiers)     node:test — npm test
+tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, games, training, pwa
+.github/workflows/deploy.yml  vérification → tests e2e (image Playwright) → Worker → Pages → contrôle du site publié
+.github/workflows/elite.yml   collecte Élite (≈ toutes les heures, complète le lundi) → branche donnees-elite
 ```
 
-Modifier le répertoire : éditer `site/data/repertoire.js` (coups en SAN anglaise, « ? » sur le
-coup fautif des punitions/pièges), puis `npm run verify:repertoire`. Une fiche dont la
-vérification n'est pas confirmée fait échouer les tests : corriger la ligne (le script affiche
-la suite proposée par le moteur) plutôt que baisser le seuil.
+## 4. Choix de design
 
-## Décisions
+- **Thème par défaut « Nuit néon »** choisi par l'utilisateur : fond `#0b0d1e`, surfaces
+  `#15183a`, accent violet `#9d8cff`, police **Space Grotesk** (Google Fonts), échiquier lavande /
+  indigo (`#c7caf0` / `#5c61b8`) avec halo, dernier coup turquoise. Autres thèmes : Sombre classique,
+  Clair. 9 styles d'échiquier (Néon, Érable, Noyer, Marbre, Ardoise bleue, Sapin, Corail, Encre et
+  papier, Classique) ; couleur principale personnalisable (contraste calculé). Maquettes d'origine :
+  canvas Design « Coach Échecs — propositions de design » (claude.ai/artifact/FVadLdy7QBZ4Gj1ZvpcJDx).
+- Couleurs = variables CSS sur `:root[data-theme]` et `:root[data-board]` ; flèches : vert = meilleur
+  coup, orange = réponse, rouge = menace/coup fautif, bleu = statistique.
+- **Téléphone d'abord** : aucun défilement horizontal (testé en Chromium et WebKit/iPhone). Pièges
+  connus : Safari ne laisse pas un `<select>` rétrécir dans une grille (sur téléphone, menus en
+  pleine largeur sous leur libellé) ; ne jamais recréer la case de recherche pendant la frappe
+  (Safari perd la saisie) ; listes de suggestions courtes (≤ 12) ; tableaux larges → cartes.
+- Textes : français, notation française (C, F, T, D, R), ton direct ; chiffres toujours sourcés
+  (« fréquence observée, pas une évaluation »).
 
-- **Stockfish 18 « lite » monothread** (stockfish.js 18.0.8, WASM 7,3 Mo, réseau NNUE réduit
-  intégré). Pleine force : aucun `Skill Level`/`UCI_LimitStrength`. La version complète
-  (wasm 113 Mo) dépasse la limite de 100 Mo par fichier de GitHub : non proposée.
-  Multithread non activé (GitHub Pages n'envoie pas COOP/COEP ; coi-serviceworker non testé
-  sur Safari iOS publié). Évolution possible : moteur natif sur un serveur (hors GitHub Pages).
-- Le WASM est téléchargé par la page (progression réelle), conservé dans Cache Storage
-  (clé = hash du WASM), puis passé au Worker via `stockfish.js#<blob-url>`.
-- **Application installable / hors connexion** (`sw.js`, `pwa.js`) : pré-cache de tout dist/ sauf le
-  WASM (déjà dans le cache du moteur, jamais dupliqué), elite.json/joueurs.json et la source du
-  répertoire ; cache `coach-echecs-app-<build>-<empreinte du contenu>`, anciens caches supprimés à
-  l'activation (le cache `coach-echecs-moteur-*` n'est jamais touché). Réseau d'abord pour la
-  navigation, config.json et engine/manifest.json (délai 6 s puis cache) ; stale-while-revalidate
-  pour le reste de la même origine ; aucune requête d'une autre origine (Lichess, raw.githubusercontent,
-  Google Fonts, Worker) n'est interceptée. Le script du Worker Stockfish est renvoyé dans une
-  réponse reconstruite (sans URL) : une réponse de cache garde son URL sans le fragment `#blob:…`,
-  et stockfish.js retéléchargerait alors stockfish.wasm (échec hors connexion). Pas de skipWaiting
-  automatique : bandeau « Nouvelle version disponible — Recharger » → SKIP_WAITING → rechargement.
-  Tests : `serviceWorkers: 'block'` dans playwright.config (les page.route des autres tests doivent
-  voir toutes les requêtes) ; `tests/e2e/pwa.spec.mjs` l'autorise (hors ligne réel via
-  `context.setOffline`, bandeau de mise à jour en réécrivant dist/sw.js, local seulement).
-- `position startpos|fen … moves …` : l'historique complet est toujours transmis au moteur.
-- **Jetons** `{gameId, branchId, revision, ply}` : `revision` croît à chaque modification
-  (coup, annulation, import) ; toute réponse moteur/Claude dont le jeton n'est plus courant
-  est ignorée. Une comparaison de FEN ne suffit pas (annuler puis rejouer = même FEN).
-- `record.moves` = coups réellement joués ; `record.analysisBranches` réservé aux variantes
-  d'analyse (Phase 2). Un conseil n'est enregistré qu'après « Confirmer ».
-- Fins de partie : chess.js compte triple répétition et 50 coups dans `isGameOver()` ; ici ce
-  sont des **nulles réclamables** (la partie continue). Fins automatiques : mat, pat,
-  matériel insuffisant (cas reconnus par chess.js, pas toutes les positions mortes),
-  quintuple répétition, 75 coups. Import FEN : historique antérieur signalé inconnu.
-- Scores UCI (camp au trait) convertis au point de vue des Blancs ; mats traités à part ;
-  WDL affiché seulement s'il est fourni (`UCI_ShowWDL`), avec avertissement de portée.
-- Menace = analyse « coup nul » courte (800 ms), seulement si le camp au trait n'est pas en échec.
-- Claude cite les coups entre crochets ; le client marque ceux absents des variantes
-  calculées (⚠) ou seulement légaux (non évalués).
-- Worker : code d'accès (SHA-256 + `timingSafeEqual`), verrouillage 10 échecs/h/IP et 30/h,
-  8 appels/min, plafond quotidien (`DAILY_LIMIT`), CORS limité à l'origine Pages, corps ≤ 16 Ko,
-  compteurs dans un Durable Object SQLite (offre gratuite). Modèle par défaut
-  `claude-opus-5-5`, effort `low`, `fallbacks: "default"` (bêta `server-side-fallback-2026-07-01`).
-- Sans API ou sans code : « Expliquer » produit une explication gratuite construite uniquement
-  à partir des calculs (coup conseillé, variante, menace « coup nul », pièces en prise, roque,
-  développement) ; aucune interprétation stratégique n'y est inventée.
-- Téléphone : la liste des coups défile en interne (jamais la page) ; navigation ⏮ ◀ ▶ ⏭ et
-  explication placées sous l'échiquier.
-- **Lichess** (vérifié dans la spécification officielle lichess-org/api, oct. 2026) :
-  Cloud Eval est public (`security: []`, CORS `*`, 404 si position absente du cache).
-  L'Opening Explorer est sur `explorer.lichess.org` (plus `.ovh`) et exige un jeton OAuth2 :
-  jeton personnel sans permission (stocké sur l'appareil) ou relais Worker `/v1/explorer`
-  (secret `LICHESS_TOKEN`, cache 24 h, 60 req/min). CORS vérifié le 2026-10-22 : le preflight
-  de l'explorateur renvoie `access-control-allow-origin: *` et autorise `Authorization` ; les 401
-  (explorateur) et 404 (Cloud Eval) portent aussi les en-têtes CORS. Le mode « jeton sur
-  l'appareil » fonctionne donc directement depuis GitHub Pages ; le relais reste une option.
-  Une requête Lichess à la fois, une minute de pause après un 429 (règles d'usage Lichess).
-- **Chess.com** n'expose pas de statistiques d'ouvertures agrégées : seules les tranches de
-  classement Lichess sont proposées, avec l'avertissement qu'elles ne correspondent pas à Chess.com.
-- « Meilleur % de victoire » : seulement parmi les coups ayant au moins N parties (50 par défaut),
-  toujours présenté comme une fréquence observée, distincte de l'évaluation moteur.
-- Répertoire : codes ECO et noms attribués automatiquement (position la plus profonde reconnue
-  dans la base CC0) ; il n'existe pas de nomenclature FIDE officielle des variantes.
-  Plans/structures = texte rédigé (interprétation) ; punitions/pièges = lignes vérifiées par
-  Stockfish (punition ≥ +1,5 par défaut, ou seuil plus bas explicite pour un gain de pion).
-  Lors de l'écriture initiale, 16 lignes rédigées de mémoire ont été rejetées par le moteur et
-  corrigées ou retirées : ne jamais ajouter une ligne tactique sans la vérifier.
-- Vidéos : aucun lien horodaté n'est inventé. Chaque fiche propose une recherche YouTube ; un lien
-  précis n'est publié que s'il est vérifié (`video.url` + `verifie: true`, contrôlé par les tests).
-  L'utilisateur peut enregistrer son propre lien horodaté (stocké sur l'appareil). Bouton
-  « Vidéos » : 7 langues (fr, en, es, de, it, pt, ru) ; avec une clé YouTube Data v3 personnelle
-  (search = 100 unités sur 10 000/jour → ≈ 100 recherches/jour, réponses en cache 7 jours),
-  liste titre/chaîne/durée/vues ; sans clé, lien de recherche. L'app ne « regarde » pas les vidéos.
-- **Vidéos choisies** (`video.liens`, 47 fiches sur 58, oct. 2026, dont 21 avec une vidéo en
-  français) : 1 à 4 par fiche, affichées dans la cellule Vidéo (« ▶ Titre (chaîne, FR) », nouvel
-  onglet) et en tête du dialogue, **français d'abord**, puis anglais, puis autres langues. Règle :
-  seulement une vidéo trouvée telle quelle dans un résultat réel — vidéothèque Lichess
-  (lichess.org/video, identifiant YouTube, titre et auteur publiés, joignable depuis le dev ;
-  aucune vidéo en français) ou recherche web (titre recopié). Jamais d'identifiant reconstruit
-  ou deviné ; `&t=` seulement si l'auteur publie ce chapitre (recopié dans `chapitre`, contrôlé
-  par les tests). Les résultats de recherche n'affichent souvent pas la chaîne (cas des vidéos
-  FR) : `chaine: null` (permis seulement pour `source: 'recherche web'`), rien n'est deviné ; la
-  CI donne la vraie chaîne (« chaîne à renseigner ») à recopier ensuite. Sans vidéo spécifique
-  sûre : aucune (mieux vaut la recherche par langue). Les champs vidéo n'entrent pas dans
-  l'empreinte Stockfish. youtube.com et l'oEmbed étant bloqués depuis l'environnement de
-  développement, `scripts/verify-videos.mjs` tourne dans le job « online » de deploy.yml : oEmbed
-  par vidéo, 404/400 = morte, 401/403 = restreinte, titre ou chaîne différents = modifiée,
-  chaîne null = à renseigner ; annotations « warning », étape `continue-on-error` (jamais bloquante).
-- Base des maîtres (explorer.lichess.org/masters, jeton requis, relais Worker avec db=masters) :
-  bloc « Maîtres » du Coup optimal, bascule niveau/maîtres du tableau et de l'arbre, colonne
-  Statistiques ; parties de maîtres ouvrables (/masters/pgn/{id}, jeton personnel).
-- « Tester cette ligne » : ouvre la séquence sur #/moteur et la rejoue (400 ms/coup) ; pas de
-  confirmation si la partie en cours est vide ou est elle-même une ligne testée (Event « Test : … »).
-- Suite automatique (bouton « ⏩ Jouer la suite jusqu’à la fin », lancée après « Tester cette ligne ») :
-  coup le plus joué de la base des maîtres tant que la position y a ≥ 10 parties (jeton requis),
-  puis meilleur coup Stockfish (1 s/coup) pour les deux camps jusqu'au mat, pat, matériel
-  insuffisant, triple répétition / 50 coups ; s'arrête si l'utilisateur joue, navigue ou change
-  de partie. Pas d'explication automatique pendant la suite.
-- Classement des variantes (menu « Classer ») : plus jouées / meilleur score pour mon camp
-  (mon niveau ou maîtres, score = V + ½N, seulement ≥ 50 parties) ou meilleure évaluation
-  Stockfish de fin de ligne ; charge les statistiques de toutes les fiches affichées.
-- Révision espacée (Entraînement, mode « Révision ») : une carte = une position du répertoire
-  où c'est à nous de jouer ; notée à la 1re tentative de chaque session (seul le coup de la fiche
-  compte), y compris en mode Partie. Réussie : 1 j, 3 j, puis × facilité (2,5) ; ratée : revient
-  10 min plus tard, facilité −0,2 (min 1,3). Stockage local `coach-echecs:revision-v1`.
-- Bilan de la partie (page Moteur, bouton « Bilan ») : la partie est envoyée à « Mes parties »
-  (`localGame`, id dérivé des coups → cache d'analyse réutilisé) et analysée comme une partie
-  importée ; exclue de la vue d'ensemble. Indisponible pour une partie commencée depuis un FEN.
-- Rapport détaillé (Mes parties, sous l'analyse) : `rapport()` dans games-core.js, sans IA.
-  Note globale (perte moyenne, gaffes), déroulement par phase, bons coups (erreurs adverses
-  sanctionnées, séries sans faute), erreurs expliquées (pièce en prise via chess.js, motifs
-  détectés sur la variante de réfutation : mat, fourchette, matériel), variantes de Stockfish
-  pour le coup joué et le meilleur coup (`deepen()` : 2 calculs ≥ 1 s par erreur principale,
-  mis en cache avec l'analyse), occasions manquées, rappels « à retenir », exercices (position
-  sans flèche, solution sur demande).
-- Entraînement (accueil) : série de jours 🔥, maîtrise par répertoire, « Séance du jour »
-  (3 lignes prioritaires + 3 punitions). Modules (drills.js, logique pure drills-core.js) :
-  « Lignes » (l'app joue les coups adverses de la fiche ; erreur → plan + bon coup, position
-  remise en fin de séance, 3 essais max ; un autre coup du répertoire n'est pas une faute),
-  « Anti-trash » (coup douteux de la punition joué, séquence de punition ≤ 5 de nos coups en
-  10/20/30 s). Tableau de progression (progress.js) : maîtrise = 70 % révision espacée des
-  positions de la fiche + 30 % réussite aux exercices ; sorties de répertoire de « Mes parties »
-  signalées (⚠) et prioritaires. Stockage local `coach-echecs:progression-v1`.
-- Cours (module « Apprendre », cours.js + lesson-core.js) : leçon par fiche en 4 étapes
-  (présentation, coups un par un, à retenir, pratique guidée). À chaque coup : nom officiel
-  atteint (`noms` calculé au build depuis la base CC0, traduit par `nomFr`) et commentaires
-  factuels chess.js (centre, développement, roque, prise, attaque, clouage, échec) ; aucune
-  intention inventée (le plan vient de la fiche). Pratique guidée = module Lignes `guided`
-  (indice : case de départ, puis le coup). Leçon suivie → `progress.cours`.
-- Mes données (⚙ Réglages, transfer.js) : export/import d'un fichier JSON de toutes les clés
-  `coach-echecs:*` SAUF les secrets (jeton Lichess, code d'accès, clé YouTube), jamais exportés
-  ni écrasés par un import. Caches exclus.
-- Drill anti-trash : un autre coup que la fiche est vérifié par Stockfish (700 ms, chrono
-  suspendu) et accepté s'il gagne presque autant que la punition vérifiée (`seuilAutreCoup`).
-- Mes parties : chargement automatique à la première ouverture si des pseudos sont enregistrés,
-  analyse de la plus récente partie non analysée, badge « Nouveau » depuis le dernier chargement.
-- Cache local Lichess (`PersistCache`, 12 h, 400 entrées) pour Cloud Eval et l'Opening Explorer.
-- Export PGN : une partie par fiche (≤ 64 par répertoire = limite d'une étude Lichess) ;
-  chess.js refuse un commentaire juste après « ( » ou « ) » : le writer l'évite.
-- Pages : #/moteur, #/repertoire, #/entrainement, #/parties. Le moteur est partagé : une page
-  peut interrompre le calcul d'une autre ; la page Moteur relance son calcul en revenant.
-- Mode « Indice d'abord » (réglage helpMode) : indice (thème + pièce) → explication sans le coup
-  (case de départ entourée) → coup montré ; flèches et « Coup optimal » masqués jusque-là.
-- Entraînement : coups adverses tirés au hasard pondéré par les parties Lichess du filtre
-  (sinon par les fiches) ; nos coups : « répertoire » si présents dans les fiches, sinon jugés
-  par Stockfish (perte ≤ 0,4 bon, ≤ 1,2 imprécision, ≤ 3 erreur, au-delà gaffe) ; pièges signalés.
-- Mes parties : export Lichess `/api/games/user/{pseudo}` (NDJSON). Depuis l'environnement de
-  développement, cet export répondait 404 sans jeton : en fait au User-Agent de curl seulement
-  (vérifié le 2026-10-22, voir Élite) ; l'application envoie le jeton personnel s'il existe. Chess.com : API publique `pub/player/{pseudo}/games/…`
-  (CORS non vérifié localement ; test @online en CI). Analyse : une position = un calcul de
-  `precision` ms, évaluations bornées à ±10 pions, mises en cache (40 parties) ; erreurs classées
-  par perte (≥ 0,5 imprécision, ≥ 1,2 erreur, ≥ 3 gaffe) ; bilan = règles factuelles (sortie de
-  répertoire, pièce laissée en prise, gaffe adverse non exploitée, phase la plus coûteuse).
-- Interface en mode sombre par défaut (`:root[data-theme="light"]` pour le clair).
+## 5. Décisions techniques importantes
 
-- **Élite blitz/rapide** (`scripts/elite.mjs` → `site/data/elite.json`) : top 50 blitz et rapide
-  Lichess (`/api/player/top/{n}/{perf}`, export `/api/games/user/{u}` NDJSON, `perfType`, 100 parties
-  max sur 3 mois) et Chess.com (`/pub/leaderboards` live_blitz/live_rapid, archives mensuelles,
-  3 mois max). Parties classées gardées si elles atteignent **par position** l'arbre du répertoire
-  dans les 16 premiers demi-coups (`repertoireEntry`, scripts/elite-core.mjs) : positions des lignes
-  des fiches (principale, punition, piège) à partir de la racine de leur ouverture, plus les racines
-  1.d4 d5 2.c4 et 1.e4 c6 ; clé FEN sans compteurs, camp au trait compris (1.c4 e6 2.Cc3 d5 3.d4 ou
-  1.d4 Cf6 2.c4 e6 3.Cc3 d5 entrent dans le Gambit Dame, 1.Cc3 c6 2.e4 d5 dans la Caro-Kann). Aucune
-  règle de couleur : la partie compte quel que soit le camp du joueur du top (inchangé). Les parties
-  transposées déjà vues et écartées par un état ancien ne reviennent qu'à la reconstruction complète. Ouverture et
-  demi-coup d'entrée notés sur la partie (`rp`, `e`) ; agrégation par FEN sans compteurs, à partir de
-  la première position du répertoire atteinte (les coups d'avant ne sont pas comptés ; clé FEN
-  des préfixes de coups mise en cache) jusqu'au demi-coup 24 (les fiches vont jusqu'à 24) ; par coup : Blancs/nulles/Noirs, Elo moyen du joueur qui le joue,
-  Lichess/Chess.com ; 3 parties exemples (meilleure moyenne Elo) avec leurs coups pour l'échiquier.
-  Positions de moins de 2 parties retirées (seuil relevé automatiquement au-delà de 1,5 Mo).
-  Requêtes série, pause de 60 s sur 429, User-Agent avec l'adresse du dépôt ; `LICHESS_TOKEN`
-  facultatif (jamais écrit). Source en échec : notée dans `meta.sources`, jamais complétée.
-  L'export Lichess répond **404 au User-Agent par défaut de curl** (pas à celui de Node ni des
-  navigateurs) : c'était la cause des 404 « sans jeton » observés ; api.chess.com est bloqué depuis
-  l'environnement de développement (fixtures Chess.com synthétiques). Node 22 n'utilise le proxy de
-  l'environnement qu'avec `NODE_USE_ENV_PROXY=1` : le script se relance lui-même ainsi.
-  **Mise à jour continue** (`.github/workflows/elite.yml`, seul écrivain, groupe de concurrence
-  `donnees-elite`) : toutes les 30 min, `--incremental etat.json` ; le lundi (ou état absent, ou
-  lancement manuel « complet ») reconstruction complète. `etat.json` garde par joueur × cadence la
-  dernière partie vue et ses 100 dernières parties (id, date), les listes du top, les ETag Chess.com
-  et les parties du répertoire gardées (coups SAN complets, pour les ouvrir sur l'échiquier).
-  L'agrégat est **recalculé** à chaque passage depuis ces parties (dédoublonnées par plateforme + id) :
-  fenêtre glissante de 3 mois, 100 dernières parties par joueur × cadence, joueurs sortis du top
-  retirés, nouveaux venus chargés sur toute la fenêtre. Lichess : `since` = dernière partie − 3 h
-  (une partie commencée avant le passage précédent peut finir après). Chess.com : archive du mois en
-  cours (+ mois précédent tant qu'aucune partie du mois n'a été vue), `If-None-Match` → 304.
-  Classement injoignable : liste précédente conservée et erreur notée. Publication : branche
-  orpheline `donnees-elite` d'**un seul commit remplacé à chaque fois** (force push, sinon ≈ 50
-  commits/jour de fichiers de 1 à 3 Mo), seulement si les données ont changé ; message
-  « Élite : +N parties (date) ». Le site lit `raw.githubusercontent.com/…/donnees-elite/elite.json`
-  (CORS `*` et `cache-control: max-age=300` vérifiés le 2026-10-22, 404 si la branche manque),
-  rechargé au plus toutes les 5 min, sinon `./data/elite.json` (copie prise par deploy.yml sur la
-  branche), sinon « non publié ». Affichage « Mis à jour il y a X min » (`meta.generatedAt` = dernier
-  changement publié) et « 🔴 Nouvelles parties du top » (10 dernières, page Répertoire, ouvrables).
-  Limites : un cron GitHub est souvent retardé de 5 à 20 min ; les workflows planifiés sont
-  désactivés après 60 jours sans commit sur la branche par défaut (les commits de donnees-elite ne
-  comptent pas) ; une partie apparaît au passage qui suit sa fin (+ jusqu'à 5 min de cache raw) ;
-  date affichée = début de partie (Lichess) ou fin (Chess.com).
-- **Joueurs suivis** (`scripts/elite-suivis.mjs`) : grands maîtres collectés même hors du top 50
-  (plafond 200 parties par cadence, fenêtre 3 mois). Les comptes listés sont des candidats, vérifiés
-  à chaque collecte (Lichess : dans la requête groupée `/api/users` ; Chess.com : `/pub/player/{u}`
-  en reconstruction puis au plus une fois par semaine) : profil existant et ouvert, titre GM, nom réel
-  concordant quand le profil en donne un, sinon « vérifié (titre seul) ». Verdicts dans
-  `meta.sources.su.comptes`. Vérifié le 2026-10-22 sur Lichess : DrNykterstein, DrDrunkenstein
-  (titre seul), alireza2003, AnishGiri ; rejetés à l'essai et retirés de la liste : gmwso (autre nom
-  réel), comptes fermés ou sans titre. Chess.com (bloqué ici) n'est vérifié qu'en CI. Le nom usuel
-  (« Magnus Carlsen ») est attaché aux parties (`wn`/`bn`) ; un compte non vérifié n'en reçoit pas.
-- **Tournois retransmis** (source `bc`, « Tournois (retransmissions Lichess) ») : tournois de
-  catégorie 5 (`tier`) ou annonçant un joueur suivi (`info.players`), sur 6 mois ; reconstruction :
-  pages `/api/broadcast/top` (Lichess refuse les pages trop anciennes : « resource too old ») + une
-  recherche `/api/broadcast/search?q=<nom>` par joueur suivi ; détail `/api/broadcast/{id}` puis
-  export `/api/broadcast/{id}.pgn` (toutes les rondes) ; incrémental : page 1 (en cours et tout juste
-  finis) et seulement les rondes terminées non lues (`/api/broadcast/round/{id}.pgn`). Parties
-  gardées : les deux joueurs 2600+ (Elo FIDE de la retransmission) ou un joueur suivi (nom FIDE
-  « Carlsen, Magnus », mots entiers), répertoire atteint par position (transpositions comprises).
-  Les exports de retransmission sont lents (≈ 10 s par ronde) : la reconstruction hebdomadaire prend
-  plusieurs dizaines de minutes (délai du job : 90 min).
-- **Recherche par joueur** (barre `data-q` du Répertoire) : `joueurs.json` (branche donnees-elite,
-  sinon copie du site) chargé à la première saisie : toutes les parties gardées (coups complets,
-  ouverture nommée) et, par joueur (nom usuel des suivis, compte du top, nom des tournois), ses
-  parties et sa couleur ; suggestions par `datalist`. Un index dédié plutôt qu'`etat.json` : etat.json
-  contient l'état interne (dernières parties hors répertoire, ETag…) et grossit avec lui. Recherche
-  insensible aux accents et à la casse, ≥ 3 caractères ; les fiches restent filtrées par la même
-  requête ; si ni fiche ni joueur : message « Aucun joueur … » et liste de ce qui est couvert.
-  Ouverture d'une partie : `openGame` avec White/Black/WhiteElo/BlackElo/Event/Site/Date/Result.
+- **Stockfish 18 lite monothread** (stockfish.js 18.0.8, WASM 7,3 Mo), pleine force. WASM mis en
+  cache (Cache Storage) et passé au Worker par `stockfish.js#<blob-url>` (le service worker reconstruit
+  la réponse du script pour garder ce fragment). Multithread non activé (pas de COOP/COEP sur Pages).
+- **Jetons** `{gameId, branchId, revision, ply}` pour ignorer les résultats périmés ; moteur partagé
+  entre pages (une page peut interrompre le calcul d'une autre, la page Moteur relance au retour).
+- Fins de partie FIDE : triple répétition / 50 coups = nulles réclamables ; fins automatiques :
+  mat, pat, matériel insuffisant, quintuple répétition, 75 coups.
+- **Lichess** : Cloud Eval public ; Opening Explorer et base des maîtres exigent un jeton (jeton
+  personnel sans permission, ou relais Worker). Une requête à la fois, 60 s de pause après un 429.
+  Chess.com n'a pas de statistiques d'ouvertures agrégées.
+- **Répertoire** : ECO et noms par la base CC0 (position la plus profonde) ; `noms` = nom atteint à
+  chaque coup (pour les cours, traduit par `nomFr`). Punition ≥ +1,5 (ou `minCp` explicite), piège
+  ≤ −1,5, vérifiés à profondeur 18 ; CI : `verify-repertoire --all --dry`.
+- **Vidéos** : seulement des vidéos trouvées telles quelles (vidéothèque Lichess, recherche web),
+  jamais d'identifiant deviné ; `&t=` seulement si l'auteur a publié ce chapitre ; français affiché
+  en premier ; contrôle oEmbed en CI (une annotation unique « Vidéos à vérifier »), non bloquant.
+- **Élite** : top 50 blitz/rapide Lichess + Chess.com, 16 grands maîtres suivis (comptes vérifiés à
+  chaque collecte : titre GM, nom réel), tournois retransmis sur Lichess (2600+ ou joueur suivi).
+  Parties gardées si elles atteignent **par position** l'arbre du répertoire dans les 16 premiers
+  demi-coups (transpositions comprises), agrégées par FEN. Collecte incrémentale (≈ horaire, cron
+  GitHub retardé) et complète le lundi ; publication sur la branche `donnees-elite` (un seul commit
+  remplacé) ; le site lit `raw.githubusercontent.com` (cache 5 min), copie de secours dans le site.
+  Chiffres au 2026-10-23 : Lichess 1 127, Chess.com 812, tournois 235 parties gardées.
+- **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
+  puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
+- **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
+  Stockfish du coup joué et du meilleur coup, motifs détectés par chess.js (mat, fourchette,
+  matériel, pièce en prise).
+- **Hors connexion** : précache de dist/ (sauf WASM, données Élite) ; réseau d'abord pour la
+  navigation, config et manifeste moteur ; jamais d'interception d'une autre origine ; mise à jour
+  sur action de l'utilisateur (bandeau « Recharger »).
+- **Worker Claude** : code d'accès (SHA-256, comparaison à temps constant), limites par IP et par
+  jour, CORS limité au site, Durable Object pour les compteurs. Modèle par défaut configurable
+  (variable `CLAUDE_MODEL`).
 
-## Phase 2 (non implémenté)
+## 6. Stockage local (clés `coach-echecs:*`)
 
-- Vidéos pour les 11 fiches restantes (gaffes et sorties loufoques sans vidéo dédiée, Avance
-  4.Fd3/4.Fe3) ; recopier les chaînes « à renseigner » signalées par la CI.
-- Plus de fiches (le répertoire actuel couvre 58 lignes ; l'arbre Lichess couvre le reste).
-- Parties d'un joueur précis (endpoint /player).
+`partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent), `entrainement`,
+`revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
+`youtube-v1` ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
 
-- Comparaison facultative de trois candidats (MultiPV 3), avec indication du coût de calcul.
-- Exploration de variantes d'analyse (`analysisBranches`) séparée de la partie réelle ;
-  analyse d'une position passée de l'historique.
-- Base pédagogique sourcée (règles officielles FIDE, ouvertures, tactique, stratégie,
-  structures de pions, finales) consultable par Claude ; base de parties annotées ;
-  tables de finales compatibles. Ne pas entraîner de modèle d'échecs.
-- Option multithread (coi-serviceworker) seulement après test réussi sur le site publié,
-  Safari iOS compris, avec repli automatique monothread.
-- Réclamation explicite d'une nulle / abandon dans l'interface.
+## 7. Commandes
+
+```
+npm ci                         # dépendances + copie chess.js / Stockfish dans site/
+npm test                       # tests unitaires (≈ 86)
+npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
+node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
+BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 57), WITH_WEBKIT=1 en CI
+npm run verify:repertoire      # après modification d'une fiche (recalcule data/verification.json)
+node scripts/verify-repertoire.mjs --check
+cd worker && npm ci && npm test
+node scripts/elite.mjs --fixture tests/fixtures/elite --top 2 --now 2026-10-22T12:00:00Z --out /tmp/elite.json
+gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f mode=complet
+```
+
+## 8. Règles de travail (pour Claude)
+
+- Toujours lancer `npm test` et les tests Playwright avant de pousser ; pousser sur `main`
+  (`git push origin main`) puis suivre la CI (`gh run list`, annotations via l'API GitHub).
+- Messages de commit en français, terminés par les deux lignes d'attribution demandées par la
+  session ; ne jamais écrire de nom ou d'identifiant de modèle ailleurs dans le dépôt.
+- Environnement de développement cloud : youtube.com, api.chess.com et github.io sont bloqués
+  (vérifier via la CI) ; lichess.org et raw.githubusercontent.com sont joignables. Si le port 4173
+  est pris, servir dist/ sur un autre port et utiliser `BASE_URL`.
+- GitHub n'affiche que 10 annotations par étape : regrouper les rapports en une annotation.
+- Ne jamais ajouter de ligne tactique, de vidéo ou de compte sans vérification ; si une donnée
+  manque, l'afficher comme absente.
+- L'utilisateur est sur téléphone le plus souvent, non développeur : expliquer simplement, en
+  français, et économiser les tokens (pas de surveillance CI continue inutile, agents parallèles
+  seulement pour les gros chantiers).
+
+## 9. Reste à faire / idées
+
+- **Vidéos** : renseigner les chaînes « à renseigner » restantes signalées par la CI (≈ 20) ;
+  trouver des vidéos pour les 11 fiches sans vidéo (gd-g5, gd-dame-precoce, gd-fg4, gd-h5, gd-dd6,
+  gd-dxd4-gaffe, ck-avance-fd3, ck-avance-fe3, ck-dh5, ck-fd3, ck-df3) ; quelques liens douteux
+  à confirmer (gd-gda-b5, ck-classique-cc5, gd-polonaise, gd-marshall-gambit).
+- **À vérifier par l'utilisateur** : installation sur iPhone (icône, hors connexion après une
+  visite), bouton d'installation sur Android.
+- **Explications Claude** : inactives tant que les 4 secrets GitHub (ANTHROPIC_API_KEY,
+  CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, COACH_ACCESS_CODE) ne sont pas créés — payant à
+  l'usage, décision de l'utilisateur ; l'explication gratuite fonctionne sans.
+- Élite : option « règle de couleur » (ne garder que les parties où le joueur du top a notre camp) ;
+  le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
+- Plus de fiches (58 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
+- Analyse : comparaison de 3 candidats (MultiPV 3) ; variantes d'analyse (`analysisBranches`)
+  séparées de la partie réelle ; réclamation de nulle / abandon dans l'interface.
+- Option multithread (coi-serviceworker) seulement après test réussi sur le site publié et Safari iOS.
+- Projet futur séparé (nouveau dépôt) : boutique en ligne de créations faites main (crochet,
+  pulls, attrape-rêves, sacs) — site vitrine + paiement Stripe, éventuellement Etsy en parallèle.
