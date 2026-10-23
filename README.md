@@ -56,6 +56,17 @@ Mode « Indice d'abord » (⚙) : indice → explication → coup, au lieu d'aff
 
 Pour activer les explications Claude : ⚙ Réglages → « Code d'accès personnel ».
 
+## Sur le téléphone, même hors connexion
+
+- **Installer** : iPhone/iPad (Safari) → bouton Partager → « Sur l'écran d'accueil ».
+  Android (Chrome) → menu ⋮ → « Installer l'application » (ou bouton dans ⚙ Réglages).
+  L'application s'ouvre alors en plein écran, avec son icône.
+- **Hors connexion** : après une première visite en ligne (le temps que le moteur se charge),
+  la page Moteur (Stockfish), les fiches du Répertoire et l'Entraînement par fiches fonctionnent
+  sans réseau. Les données Lichess, Élite, YouTube et les explications Claude restent en ligne.
+- **Mise à jour** : quand une nouvelle version est publiée, un bandeau « Nouvelle version
+  disponible — Recharger » apparaît ; la partie en cours est conservée.
+
 ## Mise en service
 
 Voir [docs/CONFIGURATION.md](docs/CONFIGURATION.md) (comptes, secrets, coûts).

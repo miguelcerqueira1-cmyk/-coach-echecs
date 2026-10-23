@@ -12,6 +12,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Actions sur Node 24 (checkout v7, setup-node v7, upload-artifact v7, configure-pages v6,
+# upload-pages-artifact v5, deploy-pages v5) ; runner épinglé sur Ubuntu 24.04 pendant la
+# migration d'ubuntu-latest. Les jobs e2e/online tournent dans l'image Playwright (noble = 24.04).
 permissions:
   contents: read
 
@@ -22,11 +25,11 @@ concurrency:
 jobs:
   verify:
     name: Vérification (tests unitaires, Worker, navigateur)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -50,13 +53,13 @@ jobs:
   # package.json) : plus d'installation de paquets système, qui se bloquait sur GitHub.
   e2e:
     name: Tests de bout en bout (vrai Stockfish, Chromium + WebKit/iPhone)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -67,7 +70,7 @@ jobs:
         env:
           WITH_WEBKIT: '1'
           HOME: /root
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: rapport-playwright
@@ -78,7 +81,7 @@ jobs:
     name: Déploiement de l'API Claude (Cloudflare Worker)
     needs: verify
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
       url: ${{ steps.deploy.outputs.deployment-url }}
@@ -107,9 +110,9 @@ jobs:
           fi
           owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo "origin=https://${owner}.github.io" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: steps.secrets.outputs.ok == 'true'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.secrets.outputs.ok == 'true'
         with:
           node-version: 22
@@ -147,7 +150,7 @@ jobs:
     name: Publication GitHub Pages
     needs: [verify, e2e, worker]
     if: always() && github.event_name != 'pull_request' && needs.verify.result == 'success' && needs.e2e.result == 'success' && needs.worker.result != 'failure'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
@@ -159,13 +162,13 @@ jobs:
     outputs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
         id: pages-config
         with:
           enablement: true
@@ -188,25 +191,27 @@ jobs:
         run: npm run build
         env:
           COACH_API_URL: ${{ needs.worker.outputs.url }}
-      - uses: actions/upload-pages-artifact@v3
+      # Depuis la v4, les fichiers cachés (.nojekyll) sont exclus par défaut : on les garde.
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+          include-hidden-files: true
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   online:
     name: Vérification du site publié
     needs: [pages, worker]
     if: always() && needs.pages.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
     env:
       HOME: /root
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -241,7 +246,7 @@ jobs:
         timeout-minutes: 5
         run: node scripts/verify-videos.mjs
       - name: Parcours réel sur le site publié (moteur compris)
-        run: npx playwright test -g "parcours complet|téléphone|panne du moteur|navigation entre les pages"
+        run: npx playwright test -g "parcours complet|téléphone|panne du moteur|navigation entre les pages|hors connexion|manifeste"
         env:
           BASE_URL: ${{ needs.pages.outputs.url }}
           WITH_WEBKIT: '1'
@@ -251,7 +256,7 @@ jobs:
           BASE_URL: ${{ needs.pages.outputs.url }}
           ONLINE: '1'
           LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: rapport-site-publie
