@@ -120,7 +120,7 @@ test('Élite : colonne Statistiques et arbre du Répertoire (présente, absente,
   await tree.locator(`[data-child="${r.top.uci}"]`).click();
   await expect.poll(() => page.evaluate(() => window.__coach.repertoire.tree.path.length)).toBe(4);
   await tree.locator('[data-crumb="0"]').click();
-  await expect(tree.locator('.elite-absent')).toContainText('il ne couvre que les positions après 1.d4 d5 2.c4');
+  await expect(tree.locator('.elite-absent')).toContainText('il ne couvre que les positions du répertoire');
 
   // Partie exemple : la partie en cours est vide → ouverte sans confirmation sur le Moteur.
   await page.evaluate(() => window.__coach.repertoire.openTree(['d2d4', 'd7d5', 'c2c4']));

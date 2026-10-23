@@ -1,9 +1,11 @@
 // Logique pure du jeu de données Élite (sans réseau, testée) : lecture des réponses Lichess /
-// Chess.com, filtre du répertoire, état persistant (mises à jour incrémentales), agrégation par
-// position et sélection des parties exemples.
+// Chess.com, filtre du répertoire (par POSITION, transpositions comprises), état persistant
+// (mises à jour incrémentales), agrégation par position et sélection des parties exemples.
 import { Chess } from '../site/vendor/chess.js';
 import { parseLichessGame, parseChessComGame } from '../site/js/games-core.js';
-import { fenKey, repertoireOfSan, ROOTS } from '../site/js/elite.js';
+import { fenKey, ROOTS } from '../site/js/elite.js';
+import { LIGNES } from '../site/data/repertoire.js';
+import { playLine } from '../site/js/lines.js';
 
 const RESULTS = ['1-0', '0-1', '1/2-1/2'];
 
@@ -23,34 +25,107 @@ export function firstSans(movetext, n = 3) {
 
 const PGN_BODY = (pgn) => String(pgn).replace(/^\s*(\[[^\]]*\]\s*)+/, '');
 
-// Le début de partie peut-il atteindre le répertoire ? (évite de rejouer toutes les parties)
-export function mayReachRepertoire(sans) {
-  return !!repertoireOfSan(sans);
+// ---------- Entrée dans le répertoire (par position) ----------
+// Arbre du répertoire = positions des lignes des fiches (ligne principale, punition, piège) à
+// partir de la racine de leur ouverture (après 1.d4 d5 2.c4 : 3 demi-coups ; après 1.e4 c6 : 2),
+// plus les deux racines. Clé : FEN sans compteurs (le camp au trait en fait partie). Une partie
+// est gardée si l'une de ses positions, dans les TRANSPO_PLIES premiers demi-coups, est dans
+// l'arbre : 1.d4 Cf6 2.c4 e6 3.Cc3 d5 rejoint la Variante orthodoxe comme 1.d4 d5 2.c4 e6 3.Cc3 Cf6.
+
+export const TRANSPO_PLIES = 16;
+
+export function buildRepertoireIndex(lines = LIGNES) {
+  const index = new Map();
+  const add = (fen, rep) => { const k = fenKey(fen); if (!index.has(k)) index.set(k, rep); };
+  for (const [rep, root] of Object.entries(ROOTS)) {
+    const c = new Chess();
+    root.forEach((m) => c.move(m));
+    add(c.fen(), rep);
+  }
+  for (const e of lines) {
+    const from = ROOTS[e.rep]?.length ?? 0;
+    for (const ligne of [e.ligne, e.punition?.ligne, e.piege?.ligne].filter(Boolean)) {
+      const { fens } = playLine(ligne);
+      fens.forEach((f, ply) => { if (ply >= from) add(f, e.rep); });
+    }
+  }
+  return index;
+}
+
+let defaultIndex = null;
+export const repertoireIndex = () => (defaultIndex ??= buildRepertoireIndex());
+
+// Première position de l'arbre atteinte : { rep, ply } (ply = demi-coups joués avant elle), ou null.
+// Les coups illisibles ou illégaux arrêtent la recherche. Les débuts de partie se répètent
+// énormément : la clé FEN de chaque préfixe de coups est mise en cache (la génération de FEN par
+// chess.js coûte ≈ 0,05 ms par coup, × 16 demi-coups × des dizaines de milliers de parties).
+const prefixCache = new Map();
+const CACHE_MAX = 300000;
+export function repertoireEntry(san, { index = repertoireIndex(), maxPlies = TRANSPO_PLIES } = {}) {
+  const moves = [];
+  let c = null;
+  for (let ply = 0; ply <= maxPlies; ply++) {
+    const prefix = moves.join(' ');
+    let key = prefixCache.get(prefix);
+    if (key === undefined) {
+      if (!c) {
+        c = new Chess();
+        try { for (const m of moves) c.move(m); } catch { key = null; }
+      }
+      if (key === undefined) key = fenKey(c.fen());
+      if (prefixCache.size >= CACHE_MAX) prefixCache.clear();
+      prefixCache.set(prefix, key);
+    }
+    if (key === null) return null;
+    const rep = index.get(key);
+    if (rep) return { rep, ply };
+    const m = san[ply];
+    if (!m) return null;
+    const mv = String(m).replace(/[!?]+$/, '');
+    if (c) {
+      try { c.move(mv); } catch { return null; }
+    }
+    moves.push(mv);
+  }
+  return null;
+}
+
+// Entrée d'une partie normalisée (champs rp/e posés à la collecte ; recalculés pour un état ancien).
+export function entryOf(g, opts) {
+  if (g.rp && Number.isInteger(g.e)) return { rep: g.rp, ply: g.e };
+  return repertoireEntry(g.san || String(g.m || '').split(' '), opts);
+}
+
+// Le début de partie atteint-il le répertoire ? (filtre avant l'analyse complète de la partie)
+export function mayReachRepertoire(sans, opts) {
+  return !!repertoireEntry(sans, opts);
 }
 
 // Partie Lichess (ligne NDJSON) → partie normalisée, ou null (hors cadence, hors répertoire, inachevée…).
 export function normalizeLichess(g, player, speeds = ['blitz', 'rapid']) {
   if (!g || !speeds.includes(g.speed) || g.rated === false) return null;
-  if (!mayReachRepertoire(String(g.moves || '').split(' ').slice(0, 3))) return null;
+  const ent = repertoireEntry(String(g.moves || '').split(' ').slice(0, TRANSPO_PLIES));
+  if (!ent) return null;
   const p = parseLichessGame(g, player);
   if (!p || !RESULTS.includes(p.result)) return null;
   return {
     p: 'li', id: g.id, w: p.white, wr: p.whiteElo, b: p.black, br: p.blackElo,
-    y: new Date(p.date).getUTCFullYear(), t: g.createdAt || 0, r: p.result, s: g.speed, san: p.san,
+    y: new Date(p.date).getUTCFullYear(), t: g.createdAt || 0, r: p.result, s: g.speed, san: p.san, rp: ent.rep, e: ent.ply,
   };
 }
 
 // Partie d'une archive mensuelle Chess.com → partie normalisée, ou null.
 export function normalizeChessCom(g, player, speeds = ['blitz', 'rapid']) {
   if (!g || !speeds.includes(g.time_class) || g.rated === false || g.rules !== 'chess' || !g.pgn) return null;
-  if (!mayReachRepertoire(firstSans(PGN_BODY(g.pgn), 3))) return null;
+  const ent = repertoireEntry(firstSans(PGN_BODY(g.pgn), TRANSPO_PLIES));
+  if (!ent) return null;
   const p = parseChessComGame(g, player);
   if (!p || !RESULTS.includes(p.result)) return null;
   const id = String(g.url || '').split('/').pop();
   if (!id) return null;
   return {
     p: 'cc', id, w: p.white, wr: p.whiteElo, b: p.black, br: p.blackElo,
-    y: new Date(p.date).getUTCFullYear(), t: (g.end_time || 0) * 1000, r: p.result, s: g.time_class, san: p.san,
+    y: new Date(p.date).getUTCFullYear(), t: (g.end_time || 0) * 1000, r: p.result, s: g.time_class, san: p.san, rp: ent.rep, e: ent.ply,
   };
 }
 
@@ -69,6 +144,9 @@ export function parseNdjson(text) {
 export function publicGame(g) {
   const out = { p: g.p, id: g.id, w: g.w, wr: g.wr, b: g.b, br: g.br, y: g.y, t: g.t, r: g.r, s: g.s };
   for (const k of ['wn', 'bn', 'ev', 'rd', 'u']) if (g[k]) out[k] = g[k];
+  // Ouverture du répertoire atteinte et demi-coup d'entrée (transpositions).
+  const ent = entryOf(g);
+  if (ent) { out.rp = ent.rep; out.e = ent.ply; }
   return out;
 }
 
@@ -85,11 +163,11 @@ export function aggregate(games, { plies = 24, minPositionGames = 2, samples = 3
   const positions = new Map();
   const kept = [];
   for (const g of games) {
-    const rep = repertoireOfSan(g.san);
-    if (!rep) continue;
+    const ent = entryOf(g);
+    if (!ent) continue;
     const gi = kept.length;
     kept.push(g);
-    const root = ROOTS[rep].length;
+    const root = ent.ply; // coups joués avant l'entrée dans le répertoire : non comptés
     const avg = avgElo(g);
     const c = new Chess();
     const n = Math.min(plies, g.san.length);
@@ -148,7 +226,8 @@ export function countGames(games) {
   const out = { li: 0, cc: 0, bc: 0, gd: 0, ck: 0 };
   for (const g of games) {
     out[g.p]++;
-    out[repertoireOfSan(g.san)]++;
+    const ent = entryOf(g);
+    if (ent) out[ent.rep]++;
   }
   return out;
 }
@@ -263,11 +342,12 @@ export function normalizeBroadcast(pgn, { speed = 'classical', event = '', round
   if (h.Variant && h.Variant.toLowerCase() !== 'standard') return null;
   if (h.SetUp === '1' || h.FEN) return null;
   const body = PGN_BODY(pgn);
-  if (!mayReachRepertoire(firstSans(body, 3))) return null;
+  const ent = repertoireEntry(firstSans(body, TRANSPO_PLIES));
+  if (!ent) return null;
   const c = new Chess();
   try { c.loadPgn(pgn); } catch { return null; }
   const san = c.history();
-  if (!repertoireOfSan(san)) return null;
+  if (!repertoireEntry(san)) return null;
   const url = h.GameURL || '';
   const id = url.split('/').pop() || `${h.Event}-${h.Round}-${h.White}-${h.Black}`.replace(/\W+/g, '');
   const day = (h.UTCDate || h.Date || '').replace(/\./g, '-');
@@ -277,7 +357,7 @@ export function normalizeBroadcast(pgn, { speed = 'classical', event = '', round
   return {
     p: 'bc', id, u: url || undefined, w: displayName(h.White || '?'), wr: elo(h.WhiteElo), b: displayName(h.Black || '?'), br: elo(h.BlackElo),
     y: t ? new Date(t).getUTCFullYear() : null, t, r: h.Result, s: speed, ev: event || h.BroadcastName || h.Event || '', rd: roundName || (h.Round ? `ronde ${h.Round}` : ''),
-    san, wFide: h.WhiteFideId || null, bFide: h.BlackFideId || null,
+    san, rp: ent.rep, e: ent.ply, wFide: h.WhiteFideId || null, bFide: h.BlackFideId || null,
   };
 }
 

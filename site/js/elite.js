@@ -132,7 +132,7 @@ const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, ''
 // Position absente : explication honnête du périmètre (aucun chiffre extrapolé).
 export function absentText(meta) {
   const f = meta?.filters || {};
-  return `Position absente du jeu Élite : il ne couvre que les positions après 1.d4 d5 2.c4 ou 1.e4 c6, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`;
+  return `Position absente du jeu Élite : il ne couvre que les positions du répertoire (Gambit Dame, Caro-Kann, transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`;
 }
 
 export const SOURCE_LABELS = { direct: 'mise à jour continue (branche donnees-elite)', site: 'copie publiée avec le site' };
@@ -141,7 +141,7 @@ export const SOURCE_LABELS = { direct: 'mise à jour continue (branche donnees-e
 export function recentInfo(data) {
   return (data?.recent || []).map((g) => {
     const info = gameInfo(g);
-    const rep = repertoireOfSan(info.san);
+    const rep = g.rp || repertoireOfSan(info.san); // rp : posé à la collecte (transpositions)
     return { ...info, rep, color: rep === 'ck' ? 'b' : 'w', opening: g.eco ? `${g.eco} ${g.n || ''}`.trim() : '' };
   });
 }
