@@ -43,6 +43,7 @@ export const DEFAULT_SETTINGS = {
   autoExplain: true,
   helpMode: 'direct', // 'direct' : conseil affiché ; 'indice' : Indice → Explication → Montrer le coup
   showOpponentArrow: true,
+  eliteCamp: false, // Élite : seulement les parties où le joueur du top tient notre camp
   apiUrl: '', // vide = valeur publiée dans config.json
   theme: 'neon', // 'neon' | 'sombre' | 'clair'
   board: 'auto', // style d'échiquier (js/theme.js), 'auto' = assorti au thème

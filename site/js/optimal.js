@@ -10,7 +10,8 @@ import {
   RATING_BUCKETS, SPEEDS, SPEED_LABELS, PRESETS, bucketLabel, enrichMoves, bestByWinRate,
 } from './lichess.js';
 import { sanFr, formatScore, COLOR_NAMES } from './analysis.js';
-import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, SOURCE_LABELS } from './elite.js';
+import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, SOURCE_LABELS, NOCAMP_TEXT, CAMP_LABEL } from './elite.js';
+import { loadSettings } from './storage.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -89,7 +90,7 @@ export class OptimalPanel {
     // Élite : fichier statique publié avec le site (aucun jeton, aucune requête Lichess).
     this.loadEliteData().then((r) => {
       if (isStale()) return;
-      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen), meta: r.data.meta, source: r.source } : r;
+      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen, { camp: !!loadSettings().eliteCamp }), meta: r.data.meta, source: r.source } : r;
       this.render();
     });
 
@@ -247,13 +248,14 @@ export class OptimalPanel {
     let body;
     if (e.status === 'loading') body = '<span class="state"><span class="spinner"></span>Jeu de données Élite…</span>';
     else if (e.status === 'unavailable') body = `<span class="muted">Jeu de données Élite non publié sur ce site (${esc(e.error)}).</span>`;
-    else if (e.status === 'absent') body = `<span class="muted elite-absent">${esc(absentText(e.meta))}</span>`; else if (e.status === 'ok' && e.top) {
+    else if (e.status === 'nocamp') body = `<span class="muted elite-absent">${esc(NOCAMP_TEXT)}</span>`;
+    else if (e.status === 'absent') body = `<span class="muted elite-absent">${esc(absentText(e.meta, e.camp))}</span>`; else if (e.status === 'ok' && e.top) {
       const share = (100 * e.top.stats.total) / e.total;
       body = `<strong class="mv-elite">${esc(sanFr(e.top.san))}</strong> <span class="eval">${p1(share)} des parties</span>
         <span class="muted small">${e.total.toLocaleString('fr-FR')} parties · score ${turn === 'w' ? 'Blancs' : 'Noirs'} ${p1(e.top.score)} · ${splitText(e.split)}</span>`;
     } else body = '—';
     const meta = e.meta ? `<p class="muted tiny elite-fresh">${esc(eliteSummary(e.meta))} Source : ${esc(SOURCE_LABELS[e.source] || '?')}.</p>` : '';
-    return `<div class="opt-block elite-block"><p class="label">Élite blitz/rapide — top ${e.meta?.filters?.top ?? 50} Lichess et Chess.com</p><p>${body}</p>
+    return `<div class="opt-block elite-block"><p class="label">Élite blitz/rapide — top ${e.meta?.filters?.top ?? 50} Lichess et Chess.com${e.camp ? ` · ${CAMP_LABEL}` : ''}</p><p>${body}</p>
       <p class="muted small">Fréquences observées chez les meilleurs joueurs en ligne (blitz/rapide), pas une évaluation moteur.</p>${meta}${this.eliteGames()}</div>`;
   }
 
@@ -319,7 +321,7 @@ export class OptimalPanel {
           <span class="w" style="width:${s.white}%"></span><span class="d" style="width:${s.draws}%"></span><span class="b" style="width:${s.black}%"></span></div>
           <span class="tiny">${p1(s.white)} / ${p1(s.draws)} / ${p1(s.black)}</span></td>
         <td class="num">${p1(m.win)}</td>
-        ${elite ? `<td class="num tiny">${m.li} / ${m.cc}${e.split.bc ? ` / ${m.bc}` : ''}</td>` : ''}
+        ${elite && e.split ? `<td class="num tiny">${m.li} / ${m.cc}${e.split.bc ? ` / ${m.bc}` : ''}</td>` : ''}
       </tr>`;
     }).join('');
     const total = e.stats;
@@ -333,7 +335,7 @@ export class OptimalPanel {
       ${opening}
       <p class="muted small">${e.total.toLocaleString('fr-FR')} parties ${{ niveau: '', maitres: 'de maîtres ', elite: 'Élite ' }[src]}dans cette position (Blancs ${p1(total.white)} · nulles ${p1(total.draws)} · Noirs ${p1(total.black)}).${note}</p>
       <table>
-        <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th>${elite ? `<th title="Parties Lichess / Chess.com${e.split.bc ? ' / tournois retransmis' : ''}">Li / C.com${e.split.bc ? ' / Tourn.' : ''}</th>` : ''}</tr></thead>
+        <thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${e.turn === 'w' ? 'Blancs' : 'Noirs'}</th>${elite && e.split ? `<th title="Parties Lichess / Chess.com${e.split.bc ? ' / tournois retransmis' : ''}">Li / C.com${e.split.bc ? ' / Tourn.' : ''}</th>` : ''}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <p class="muted small">${src === 'niveau' ? `Grisé : moins de ${e.filter.minGames} parties. ` : ''}Toucher un coup le joue sur l’échiquier.</p>

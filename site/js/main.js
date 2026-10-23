@@ -1146,6 +1146,7 @@ function openSettings() {
   $('set-auto').checked = s.autoExplain;
   $('set-help').value = s.helpMode || 'direct';
   $('set-opp-arrow').checked = s.showOpponentArrow;
+  $('set-elite-camp').checked = !!s.eliteCamp;
   $('set-api').value = s.apiUrl;
   $('set-code').value = '';
   $('set-code').placeholder = store.getAccessCode() ? 'Code enregistré sur cet appareil (laisser vide pour le garder)' : 'Saisi une fois, conservé sur cet appareil';
@@ -1177,6 +1178,8 @@ function saveSettingsFromForm() {
   optimal.setHidden(moveHidden());
   renderAdvice();
   s.showOpponentArrow = $('set-opp-arrow').checked;
+  const campChanged = !!s.eliteCamp !== $('set-elite-camp').checked;
+  s.eliteCamp = $('set-elite-camp').checked;
   s.apiUrl = $('set-api').value.trim();
   Object.assign(s, appearanceFromForm());
   applyAppearance(s);
@@ -1189,7 +1192,8 @@ function saveSettingsFromForm() {
   if (tok) store.setLichessToken(tok);
   const yt = $('set-youtube').value.trim();
   if (yt) store.setYoutubeKey(yt);
-  if (tok || code) optimal.update(state.game);
+  if (tok || code || campChanged) optimal.update(state.game);
+  if (campChanged) repertoirePage?.refreshElite?.();
   refreshCoachPill();
   renderCoach();
   renderBoard();

@@ -131,6 +131,11 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   GitHub retardé) et complète le lundi ; publication sur la branche `donnees-elite` (un seul commit
   remplacé) ; le site lit `raw.githubusercontent.com` (cache 5 min), copie de secours dans le site.
   Chiffres au 2026-10-23 : Lichess 1 127, Chess.com 812, tournois 235 parties gardées.
+  **Règle de couleur** (⚙ « Élite : seulement les parties où le joueur du top a mon camp ») :
+  partie marquée `c` si notre camp (Blancs GD / Noirs CK) est tenu par un propriétaire de la partie
+  (joueur du top ou suivi) ou, en tournoi, par un joueur suivi ou à 2600+ (`campDuTop`) ; colonnes
+  blancs/nulles/noirs supplémentaires par coup (omises si nulles) ; sans répartition par plateforme.
+  Fichier antérieur à l'option → message « Règle de couleur indisponible », rien d'extrapolé.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
@@ -145,7 +150,7 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 
 ## 6. Stockage local (clés `coach-echecs:*`)
 
-`partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent), `entrainement`,
+`partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
 `youtube-v1` ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
 
@@ -153,10 +158,10 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 
 ```
 npm ci                         # dépendances + copie chess.js / Stockfish dans site/
-npm test                       # tests unitaires (≈ 86)
+npm test                       # tests unitaires (≈ 87)
 npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
 node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
-BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 57), WITH_WEBKIT=1 en CI
+BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 59), WITH_WEBKIT=1 en CI
 npm run verify:repertoire      # après modification d'une fiche (recalcule data/verification.json)
 node scripts/verify-repertoire.mjs --check
 cd worker && npm ci && npm test
@@ -170,6 +175,9 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   (`git push origin main`) puis suivre la CI (`gh run list`, annotations via l'API GitHub).
 - Messages de commit en français, terminés par les deux lignes d'attribution demandées par la
   session ; ne jamais écrire de nom ou d'identifiant de modèle ailleurs dans le dépôt.
+- Playwright local : si le Chromium attendu manque dans /opt/pw-browsers, pointer
+  PLAYWRIGHT_BROWSERS_PATH vers un dossier où `chromium_headless_shell-<version attendue>/chrome-linux/headless_shell`
+  est un lien vers le chrome-headless-shell installé (ne jamais lancer `playwright install`).
 - Environnement de développement cloud : youtube.com, api.chess.com et github.io sont bloqués
   (vérifier via la CI) ; lichess.org et raw.githubusercontent.com sont joignables. Si le port 4173
   est pris, servir dist/ sur un autre port et utiliser `BASE_URL`.
@@ -193,8 +201,7 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
 - **Explications Claude** : inactives tant que les 4 secrets GitHub (ANTHROPIC_API_KEY,
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, COACH_ACCESS_CODE) ne sont pas créés — payant à
   l'usage, décision de l'utilisateur ; l'explication gratuite fonctionne sans.
-- Élite : option « règle de couleur » (ne garder que les parties où le joueur du top a notre camp) ;
-  le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
+- Élite : le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
 - Plus de fiches (58 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
 - Analyse : comparaison de 3 candidats (MultiPV 3) ; variantes d'analyse (`analysisBranches`)
   séparées de la partie réelle ; réclamation de nulle / abandon dans l'interface.

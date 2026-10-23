@@ -131,6 +131,44 @@ test('Élite : colonne Statistiques et arbre du Répertoire (présente, absente,
   expect(await page.evaluate(() => window.__coach.state.game.record.headers.White)).toBe(eliteHeaders(g).White);
 });
 
+test('Élite : règle de couleur (⚙) — seulement les parties où le joueur du top a notre camp', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await play(page, ['d4', 'd5', 'c4']);
+  const data = JSON.parse(dataset);
+  const fen = fenAfter(['d4', 'd5', 'c4']);
+  const tous = lookupElite(data, fen);
+  const camp = lookupElite(data, fen, { camp: true });
+  expect(camp.total).toBeLessThan(tous.total);
+  const block = page.locator('#optimal .elite-block');
+  await expect(block).toContainText(`${tous.total} parties`);
+  await page.click('#btn-settings');
+  await page.check('#set-elite-camp');
+  await page.click('#form-settings button[value=ok]');
+  await expect(block).toContainText('mon camp seulement');
+  await expect(block).toContainText(`${camp.total} parties`);
+  // Répertoire : la ligne Élite des fiches suit le réglage.
+  await page.goto('./#/repertoire');
+  await expect(page.locator('.stat-elite').first()).toContainText('Élite (mon camp seulement)');
+});
+
+test('Élite : règle de couleur demandée sur un fichier publié avant l’option, signalée', async ({ page }) => {
+  const old = JSON.parse(dataset);
+  delete old.meta.filters.camp;
+  dataset = JSON.stringify(old);
+  try {
+    await setup(page);
+    await page.addInitScript(() => localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false, eliteCamp: true })));
+    await page.goto('./');
+    await play(page, ['d4', 'd5', 'c4']);
+    await expect(page.locator('#optimal .elite-block .elite-absent')).toContainText('Règle de couleur indisponible');
+    await expect(page.locator('#optimal .mv-elite')).toHaveCount(0);
+  } finally {
+    old.meta.filters.camp = 'rétabli';
+    dataset = JSON.stringify(old);
+  }
+});
+
 test('Élite : jeu de données non publié, affiché comme tel', async ({ page }) => {
   await setup(page, { elite: 'absent' });
   await page.goto('./');

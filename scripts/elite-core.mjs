@@ -96,6 +96,18 @@ export function entryOf(g, opts) {
   return repertoireEntry(g.san || String(g.m || '').split(' '), opts);
 }
 
+// Règle de couleur : le camp de notre répertoire (Blancs pour le Gambit Dame, Noirs pour la
+// Caro-Kann) est-il tenu par un joueur du top ou suivi ? Plateformes : un propriétaire de la partie
+// (clé « li:pseudo:cadence ») joue ce camp ; tournois : joueur suivi (nom usuel) ou Elo ≥ minElo.
+export function campDuTop(g, { minElo = 2600 } = {}) {
+  const ent = entryOf(g);
+  if (!ent) return false;
+  const side = ent.rep === 'ck' ? 'b' : 'w';
+  if (g.p === 'bc') return !!g[`${side}n`] || (Number.isFinite(g[`${side}r`]) && g[`${side}r`] >= minElo);
+  const name = String(g[side] ?? '').toLowerCase();
+  return (g.o || []).some((k) => k.split(':')[1] === name);
+}
+
 // Le début de partie atteint-il le répertoire ? (filtre avant l'analyse complète de la partie)
 export function mayReachRepertoire(sans, opts) {
   return !!repertoireEntry(sans, opts);
@@ -143,7 +155,7 @@ export function parseNdjson(text) {
 // Champs publiés d'une partie (noms usuels des joueurs suivis, tournoi et ronde, lien direct).
 export function publicGame(g) {
   const out = { p: g.p, id: g.id, w: g.w, wr: g.wr, b: g.b, br: g.br, y: g.y, t: g.t, r: g.r, s: g.s };
-  for (const k of ['wn', 'bn', 'ev', 'rd', 'u']) if (g[k]) out[k] = g[k];
+  for (const k of ['wn', 'bn', 'ev', 'rd', 'u', 'c']) if (g[k]) out[k] = g[k];
   // Ouverture du répertoire atteinte et demi-coup d'entrée (transpositions).
   const ent = entryOf(g);
   if (ent) { out.rp = ent.rep; out.e = ent.ply; }
@@ -157,7 +169,8 @@ const avgElo = (g) => {
 
 // Agrégation par position (clé FEN sans compteurs) à partir de la racine du répertoire et
 // jusqu'à `plies` demi-coups. Pour chaque coup : [san, blancs, nulles, noirs, Elo moyen du
-// joueur qui le joue, parties Lichess, parties Chess.com]. Parties exemples : les `samples`
+// joueur qui le joue, parties Lichess, parties Chess.com, tournois, puis — règle de couleur, parties
+// marquées `c` (campDuTop) — blancs, nulles, noirs]. Parties exemples : les `samples`
 // parties de moyenne Elo la plus haute passant par la position.
 export function aggregate(games, { plies = 24, minPositionGames = 2, samples = 3 } = {}) {
   const positions = new Map();
@@ -179,8 +192,10 @@ export function aggregate(games, { plies = 24, minPositionGames = 2, samples = 3
       let pos = positions.get(key);
       if (!pos) { pos = { moves: new Map(), samples: [] }; positions.set(key, pos); }
       let m = pos.moves.get(mv.san);
-      if (!m) { m = { w: 0, d: 0, b: 0, eloSum: 0, eloN: 0, li: 0, cc: 0, bc: 0 }; pos.moves.set(mv.san, m); }
-      if (g.r === '1-0') m.w++; else if (g.r === '0-1') m.b++; else m.d++;
+      if (!m) { m = { w: 0, d: 0, b: 0, eloSum: 0, eloN: 0, li: 0, cc: 0, bc: 0, cw: 0, cd: 0, cb: 0 }; pos.moves.set(mv.san, m); }
+      const r = g.r === '1-0' ? 'w' : g.r === '0-1' ? 'b' : 'd';
+      m[r]++;
+      if (g.c) m[`c${r}`]++;
       const elo = mv.color === 'w' ? g.wr : g.br;
       if (Number.isFinite(elo)) { m.eloSum += elo; m.eloN++; }
       m[g.p]++;
@@ -207,7 +222,9 @@ export function compact(agg, minPositionGames = agg.minPositionGames) {
   };
   let dropped = 0;
   for (const [key, pos] of agg.positions) {
-    const moves = [...pos.moves].map(([san, m]) => [san, m.w, m.d, m.b, m.eloN ? Math.round(m.eloSum / m.eloN) : null, m.li, m.cc, m.bc]);
+    // Colonnes de la règle de couleur seulement si non nulles (format plus court).
+    const moves = [...pos.moves].map(([san, m]) => [san, m.w, m.d, m.b, m.eloN ? Math.round(m.eloSum / m.eloN) : null, m.li, m.cc, m.bc,
+      ...(m.cw + m.cd + m.cb ? [m.cw, m.cd, m.cb] : [])]);
     const total = moves.reduce((a, m) => a + m[1] + m[2] + m[3], 0);
     if (total < minPositionGames) { dropped++; continue; }
     moves.sort((a, b) => (b[1] + b[2] + b[3]) - (a[1] + a[2] + a[3]) || (a[0] < b[0] ? -1 : 1));

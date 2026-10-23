@@ -7,10 +7,10 @@ import { Chess } from '../../site/vendor/chess.js';
 import {
   firstSans, normalizeLichess, normalizeChessCom, parseNdjson, aggregate, compact, dedupe, countGames,
   repertoireEntry, buildRepertoireIndex, TRANSPO_PLIES,
-  emptyState, ownerKey, recordDownload, pruneState, stateGames, recentGames, MONTH_MS,
+  emptyState, ownerKey, campDuTop, recordDownload, pruneState, stateGames, recentGames, MONTH_MS,
 } from '../../scripts/elite-core.mjs';
 import { parseArgs, fixtureName, Http, run, buildDataset, DEFAULTS, LICHESS_OVERLAP_MS } from '../../scripts/elite.mjs';
-import { fenKey, lookupElite, repertoireOfSan, gameInfo, eliteSummary, absentText, splitText } from '../../site/js/elite.js';
+import { fenKey, lookupElite, repertoireOfSan, gameInfo, eliteSummary, absentText, splitText, hasCamp } from '../../site/js/elite.js';
 
 const FIXTURE = new URL('../fixtures/elite/', import.meta.url).pathname;
 const fenAfter = (san) => { const c = new Chess(); san.forEach((m) => c.move(m)); return c.fen(); };
@@ -130,6 +130,50 @@ test('format compact : seuil de parties par position, exemples réindexés, donn
   assert.match(absentText(data.meta), /demi-coup 10.*au moins 2 parties.*Rien n’est extrapolé/);
   assert.equal(splitText({ li: 1, cc: 2 }), 'Lichess 1 · Chess.com 2');
   assert.equal(dedupe([games[0], games[0], games[1]]).length, 2);
+});
+
+test('règle de couleur : joueur du top dans notre camp (Blancs au GD, Noirs en Caro-Kann)', () => {
+  const gd = { ...game('li', 'a', 'd4 d5 c4 e6', '1-0'), w: 'TopA', b: 'Adv', o: ['li:topa:blitz'] };
+  assert.equal(campDuTop(gd), true, 'GD : le joueur du top a les Blancs');
+  assert.equal(campDuTop({ ...gd, w: 'Adv', b: 'TopA' }), false, 'GD : le joueur du top a les Noirs');
+  const ck = { ...game('cc', 'b', 'e4 c6 d4 d5', '0-1'), w: 'Adv', b: 'TopB', o: ['cc:topb:rapid'] };
+  assert.equal(campDuTop(ck), true, 'Caro-Kann : le joueur du top a les Noirs');
+  assert.equal(campDuTop({ ...ck, o: ['cc:autre:rapid'] }), false);
+  // Tournois : joueur suivi (nom usuel) ou Elo ≥ minElo du côté de notre camp.
+  const bc = { ...game('bc', 'c', 'e4 c6 d4 d5', '1-0', 2700, 2550) };
+  assert.equal(campDuTop(bc), false, 'Noirs à 2550 < 2600');
+  assert.equal(campDuTop({ ...bc, bn: 'Magnus Carlsen' }), true);
+  assert.equal(campDuTop({ ...bc, br: 2650 }), true);
+  assert.equal(campDuTop(game('li', 'd', 'e4 e5', '1-0')), false, 'hors répertoire');
+
+  // Agrégat : colonnes supplémentaires seulement si des parties marquées passent par le coup.
+  const games = [
+    { ...game('li', 'g1', 'd4 d5 c4 e6 Nc3', '1-0'), c: 1 },
+    { ...game('cc', 'g2', 'd4 d5 c4 e6 Nf3', '0-1'), c: 1 },
+    game('cc', 'g3', 'd4 d5 c4 e6 Nf3', '1/2-1/2'),
+    game('li', 'g4', 'd4 d5 c4 c6 Nc3', '0-1'),
+  ];
+  const c = compact(aggregate(games, { plies: 10, minPositionGames: 1, samples: 3 }));
+  const qg = fenAfter(['d4', 'd5', 'c4']);
+  assert.deepEqual(c.positions[fenKey(qg)].m, [['e6', 1, 1, 1, 2800, 1, 2, 0, 1, 0, 1], ['c6', 0, 0, 1, 2800, 1, 0, 0]]);
+  assert.deepEqual(c.games.filter((g) => g.c).map((g) => g.id).sort(), ['g1', 'g2']);
+  // Lecture côté site.
+  const data = { meta: { filters: { plies: 10, minPositionGames: 1, camp: 'oui' } }, positions: c.positions, games: c.games };
+  assert.ok(hasCamp(data));
+  const tous = lookupElite(data, qg);
+  assert.equal(tous.total, 4);
+  const camp = lookupElite(data, qg, { camp: true });
+  assert.equal(camp.status, 'ok');
+  assert.equal(camp.camp, true);
+  assert.equal(camp.total, 2);
+  assert.deepEqual(camp.moves.map((m) => m.san), ['e6'], 'c6 : aucune partie dans notre camp');
+  assert.equal(camp.split, null);
+  assert.ok(camp.games.every((g) => g.c));
+  assert.match(splitText(camp.split), /même camp/);
+  assert.equal(lookupElite(data, fenAfter(['d4', 'd5', 'c4', 'c6']), { camp: true }).status, 'absent');
+  assert.match(absentText(data.meta, true), /règle de couleur/);
+  // Fichier publié avant l'option : signalé, rien d'extrapolé.
+  assert.equal(lookupElite({ ...data, meta: { filters: {} } }, qg, { camp: true }).status, 'nocamp');
 });
 
 test('taille visée : le seuil de parties par position est relevé automatiquement', () => {

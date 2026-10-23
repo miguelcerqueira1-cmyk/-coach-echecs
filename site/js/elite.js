@@ -53,14 +53,23 @@ export function gameInfo(g) {
   };
 }
 
+// Le jeu de données publie-t-il les colonnes de la règle de couleur ?
+export const hasCamp = (data) => !!data?.meta?.filters?.camp;
+
 // Statistiques Élite d'une position. Chaque coup est revalidé par chess.js.
-export function lookupElite(data, fen) {
+// camp : règle de couleur, seules les parties où le joueur du top tient notre camp (Blancs pour le
+// Gambit Dame, Noirs pour la Caro-Kann) ; la répartition par plateforme n'est alors pas connue.
+export function lookupElite(data, fen, { camp = false } = {}) {
+  if (camp && !hasCamp(data)) return { status: 'nocamp' };
   const pos = data?.positions?.[fenKey(fen)];
-  if (!pos) return { status: 'absent' };
+  if (!pos) return { status: 'absent', camp };
   const c = new Chess(fen);
   const turn = c.turn();
   const raw = [];
-  for (const [san, w, d, b, elo, li, cc, bc = 0] of pos.m) {
+  for (const row of pos.m) {
+    const [san, , , , elo, li, cc, bc = 0, cw = 0, cd = 0, cb = 0] = row;
+    const [w, d, b] = camp ? [cw, cd, cb] : row.slice(1, 4);
+    if (w + d + b === 0) continue;
     let uci = null;
     try {
       const mv = new Chess(fen).move(san);
@@ -71,15 +80,17 @@ export function lookupElite(data, fen) {
   const moves = enrichMoves(raw, turn).sort((a, b) => b.stats.total - a.stats.total);
   const sum = (k) => moves.reduce((a, m) => a + m[k], 0);
   const stats = nodeStats({ white: sum('white'), draws: sum('draws'), black: sum('black') });
+  if (!stats.total) return { status: 'absent', camp };
   return {
     status: 'ok',
+    camp,
     turn,
     moves,
     total: stats.total,
     stats,
-    split: { li: sum('li'), cc: sum('cc'), bc: sum('bc') },
+    split: camp ? null : { li: sum('li'), cc: sum('cc'), bc: sum('bc') },
     top: moves[0] || null,
-    games: (pos.g || []).map((i) => data.games[i]).filter(Boolean).map(gameInfo),
+    games: (pos.g || []).map((i) => data.games[i]).filter((g) => g && (!camp || g.c)).map(gameInfo),
   };
 }
 
@@ -112,6 +123,7 @@ export function eliteSummary(meta, now = Date.now()) {
 
 // Répartition par source, ex. « Lichess 12 · Chess.com 30 » (+ « Tournois 3 » s'il y en a).
 export function splitText(split) {
+  if (!split) return 'même camp que moi (plateformes non détaillées)';
   return Object.entries(PLATFORM_LABELS).filter(([k]) => k !== 'bc' || split?.bc)
     .map(([k, l]) => `${l} ${(split?.[k] || 0).toLocaleString('fr-FR')}`).join(' · ');
 }
@@ -130,10 +142,14 @@ export function eliteHeaders(g) {
 const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 // Position absente : explication honnête du périmètre (aucun chiffre extrapolé).
-export function absentText(meta) {
+export function absentText(meta, camp = false) {
   const f = meta?.filters || {};
-  return `Position absente du jeu Élite : il ne couvre que les positions du répertoire (Gambit Dame, Caro-Kann, transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`;
+  return `Position absente du jeu Élite${camp ? ' avec la règle de couleur (joueur du top dans notre camp)' : ''} : il ne couvre que les positions du répertoire (Gambit Dame, Caro-Kann, transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`;
 }
+
+// Règle de couleur demandée mais absente du fichier publié (collecte antérieure à l'option).
+export const NOCAMP_TEXT = 'Règle de couleur indisponible : le jeu Élite publié date d’avant cette option (elle arrivera avec la prochaine collecte). Décochez-la dans ⚙ Réglages pour voir toutes les parties.';
+export const CAMP_LABEL = 'mon camp seulement';
 
 export const SOURCE_LABELS = { direct: 'mise à jour continue (branche donnees-elite)', site: 'copie publiée avec le site' };
 

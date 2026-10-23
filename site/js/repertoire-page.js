@@ -13,7 +13,8 @@ import { repertoireToPgn } from './repertoire-pgn.js';
 import { LANGS, searchLink, decodeEntities } from './youtube.js';
 import { loadJoueurs } from './joueurs.js';
 import { datalistHtml, playersSectionHtml, bindPlayers } from './joueurs-ui.js';
-import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago } from './elite.js';
+import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago, NOCAMP_TEXT, CAMP_LABEL } from './elite.js';
+import { loadSettings } from './storage.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -347,10 +348,12 @@ export class RepertoirePage {
   // Ligne « Élite » : lue dans le fichier statique, sans requête réseau supplémentaire.
   eliteLine(fen) {
     const el = this.elite;
-    const label = 'Élite';
+    const camp = !!loadSettings().eliteCamp;
+    const label = camp ? `Élite (${CAMP_LABEL})` : 'Élite';
     if (el.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
     if (el.status !== 'ok') return `<div class="muted tiny">${label} : jeu de données non publié</div>`;
-    const x = lookupElite(el.data, fen);
+    const x = lookupElite(el.data, fen, { camp });
+    if (x.status === 'nocamp') return `<div class="muted tiny elite-absent">${label} : ${esc(NOCAMP_TEXT)}</div>`;
     if (x.status !== 'ok') return `<div class="muted tiny elite-absent">${label} : position absente (aucune partie du top retenue)</div>`;
     const s = x.stats;
     return `<div class="stat-line stat-elite"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString('fr-FR')} parties · ensuite surtout ${esc(sanFr(x.top.san))} (${p1((100 * x.top.stats.total) / x.total)})</span>${bar(s)}<span class="tiny">Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)} · ${esc(splitText(x.split))}</span></div>`;
@@ -511,7 +514,8 @@ export class RepertoirePage {
     if (!n || n.status === 'loading') body = '<p class="state"><span class="spinner"></span> Chargement…</p>';
     else if (n.status === 'notoken') body = '<p class="muted">Jeton Lichess requis (⚙ Réglages) pour l’Opening Explorer.</p>';
     else if (n.status === 'unavailable') body = `<p class="muted">Jeu de données Élite non publié sur ce site (${esc(n.error)}).</p>`;
-    else if (n.status === 'absent') body = `<p class="muted elite-absent">${esc(absentText(n.meta))}</p>`;
+    else if (n.status === 'nocamp') body = `<p class="muted elite-absent">${esc(NOCAMP_TEXT)}</p>`;
+    else if (n.status === 'absent') body = `<p class="muted elite-absent">${esc(absentText(n.meta, n.camp))}</p>`;
     else if (n.status === 'error') body = `<p class="errbox">${esc(n.error)}</p>`;
     else {
       const known = this.knownChildren(t.path);
@@ -571,7 +575,7 @@ export class RepertoirePage {
       else {
         const c = new Chess();
         path.forEach((u) => c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }));
-        const x = lookupElite(el.data, c.fen());
+        const x = lookupElite(el.data, c.fen(), { camp: !!loadSettings().eliteCamp });
         this.tree.node = { ...x, meta: el.data.meta };
       }
       this.renderTree();
@@ -795,6 +799,12 @@ export class RepertoirePage {
     });
     this.bindTree(this.el.querySelector('#rep-tree'));
     this.bindLive(this.el.querySelector('#rep-live'));
+  }
+
+  // Règle de couleur changée dans ⚙ Réglages : lignes Élite et arbre relus (fichier déjà chargé).
+  refreshElite() {
+    this.render();
+    if (this.tree && this.treeSource === 'elite') this.openTree(this.tree.path);
   }
 
   bindTree(el) {

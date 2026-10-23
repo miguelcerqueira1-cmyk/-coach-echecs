@@ -39,7 +39,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import {
   normalizeLichess, normalizeChessCom, parseNdjson, aggregate, compact, countGames,
-  emptyState, ownerKey, recordDownload, pruneState, stateGames, recentGames, publicGame, MONTH_MS,
+  emptyState, ownerKey, campDuTop, recordDownload, pruneState, stateGames, recentGames, publicGame, MONTH_MS,
   splitPgn, pgnHeaders, normalizeBroadcast, keepBroadcast, keepTour, FIDE_TC,
 } from './elite-core.mjs';
 import { SUIVIS, verifyAccount, lichessProfile, chessComProfile, suiviByName } from './elite-suivis.mjs';
@@ -529,7 +529,8 @@ export function buildPlayersIndex(games, state, { now = Date.now(), opening = ()
 }
 
 export function buildDataset({ state, sources, o, run = {}, now = Date.now() }) {
-  const games = withCanonicalNames(stateGames(state), state);
+  const games = withCanonicalNames(stateGames(state), state)
+    .map((g) => (campDuTop(g, { minElo: o.bcMinElo }) ? { ...g, c: 1 } : g));
   const agg = aggregate(games, { plies: o.plies, minPositionGames: o.minPosition, samples: o.samples });
   const counts = countGames(agg.games);
   for (const [k, s] of Object.entries(sources)) if (k in counts) s.gamesKept = counts[k];
@@ -546,10 +547,11 @@ export function buildDataset({ state, sources, o, run = {}, now = Date.now() }) 
           top: o.top, maxGamesPerPlayerPerSpeed: o.maxGames, maxGamesFollowed: o.maxGamesSuivis, months: o.months, plies: o.plies,
           minPositionGames: min, samplesPerPosition: o.samples,
           broadcasts: { months: o.bcMonths, minElo: o.bcMinElo, tier: o.bcTier },
+          camp: 'Blancs (Gambit Dame) ou Noirs (Caro-Kann) tenus par un joueur du top, un joueur suivi ou, en tournoi, un joueur à minElo+',
         },
         run,
         sources,
-        games: { total: agg.games.length, li: counts.li, cc: counts.cc, bc: counts.bc, gd: counts.gd, ck: counts.ck },
+        games: { total: agg.games.length, li: counts.li, cc: counts.cc, bc: counts.bc, gd: counts.gd, ck: counts.ck, camp: agg.games.filter((g) => g.c).length },
         positions: Object.keys(c.positions).length,
         positionsDropped: c.dropped,
         players: playersOf(state),
