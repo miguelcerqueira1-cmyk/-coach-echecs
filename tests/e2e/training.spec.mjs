@@ -211,6 +211,25 @@ test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, pui
   // 3. À retenir
   await expect(page.locator('[data-panel]')).toContainText('Cases et pièces clés');
   await expect(page.locator('[data-panel]')).toContainText('Le piège à éviter');
+  // Le piège, joué coup par coup : seul le coup de la séquence est accepté, le coup fautif est signalé.
+  await page.click('[data-panel] [data-drill="piege"]');
+  const card = page.locator('[data-drill-card="piege"]');
+  await expect(card).toContainText('coup 1 / 18');
+  await move(page, 'a2a3');
+  await expect(card.locator('.drill-msg')).toContainText('1. d4');
+  await move(page, 'd2d4');
+  await expect(card).toContainText('coup 2 / 18');
+  await card.locator('[data-drill-skip]').click();
+  await expect(card).toContainText('C’est le coup fautif');
+  await expect(card).toContainText('7. Fd3?');
+  await move(page, 'f1d3');
+  await expect(card.locator('.drill-msg')).toContainText('Voilà l’erreur');
+  for (const u of 'f6e4 d1c2 e4g5 f3g5 d5c4'.split(' ')) await move(page, u);
+  await expect(card.locator('.drill-done')).toContainText('Séquence jouée');
+  await card.locator('[data-drill-back]').click();
+  await expect(card).toContainText('coup 18 / 18');
+  await card.locator('[data-drill-quit]').click();
+  await expect(card).toHaveCount(0);
   await page.click('[data-panel] [data-next]');
   // 4. Pratique guidée : erreur → indice (case entourée), puis le bon coup.
   await ours(page, 'd2d4');

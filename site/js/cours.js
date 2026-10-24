@@ -1,7 +1,8 @@
 // Module « Apprendre » de la page Entraînement : une leçon par fiche, en 4 étapes.
 // 1. Présentation (nom, idée, structure) ; 2. les coups un par un, avec le nom officiel de
 // l'ouverture atteint à chaque étape et des commentaires factuels ; 3. à retenir (cases,
-// échanges, piège, punition, vidéos) ; 4. à vous : pratique guidée (indices, puis le coup).
+// échanges, piège, punition — séquences jouables coup par coup sur l'échiquier —, vidéos) ;
+// 4. à vous : pratique guidée (indices, puis le coup).
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
@@ -40,7 +41,7 @@ export class LessonView {
         <section class="card lesson-panel" data-panel></section>
       </div>
     </div>`;
-    this.board = new Board(this.el.querySelector('[data-board]'), { piecesUrl: './pieces/' });
+    this.board = new Board(this.el.querySelector('[data-board]'), { piecesUrl: './pieces/', onMove: (mv) => this.onBoardMove(mv) });
     this.board.setOrientation(this.color);
     this.el.querySelector('[data-close]').addEventListener('click', () => this.close());
     this.el.querySelectorAll('[data-stage]').forEach((b) => b.addEventListener('click', () => this.go(Number(b.dataset.stage))));
@@ -56,6 +57,7 @@ export class LessonView {
     clearInterval(this.timer);
     this.timer = null;
     this.stage = stage;
+    this.drill = null;
     if (stage === 1 && this.ply < 0) this.ply = -1;
     if (stage === 2 || stage === 0) this.ply = this.steps.length - 1;
     if (stage === 3) { this.alive = false; this.onPractice?.(this.e.id); return; }
@@ -131,10 +133,12 @@ export class LessonView {
       return;
     }
     // Étape 2 : à retenir.
-    this.drawAt(this.steps.length - 1, { arrow: false });
+    if (this.drill) this.renderDrill();
+    else this.drawAt(this.steps.length - 1, { arrow: false });
     const claim = (c, kind) => (c ? `<div class="lesson-claim ${kind}"><h3>${kind === 'piege' ? '⚠ Le piège à éviter' : '🎯 La punition à connaître'}</h3><p>${esc(c.texte)}</p>
       <p class="line small">${esc(lineFr(c.san))}</p>
-      <button type="button" class="small-btn" data-show="${kind}">Voir sur l’échiquier</button></div>` : '');
+      <div class="actions"><button type="button" class="primary small-btn" data-drill="${kind}">♟ La jouer coup par coup</button>
+      <button type="button" class="small-btn" data-show="${kind}">Voir défiler</button></div></div>` : '');
     const liens = (e.video?.liens || []).slice().sort((a, b) => (a.langue === 'fr' ? -1 : 0) - (b.langue === 'fr' ? -1 : 0));
     panel.innerHTML = `<h2>À retenir</h2>
       <dl class="lesson-keys">
@@ -146,7 +150,93 @@ export class LessonView {
       ${liens.length ? `<h3>🎬 Pour aller plus loin</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())})</span></li>`).join('')}</ul>` : ''}
       <div class="actions"><button type="button" class="primary" data-next>À vous de jouer la ligne →</button></div>`;
     panel.querySelector('[data-next]').addEventListener('click', () => this.go(3));
-    panel.querySelectorAll('[data-show]').forEach((b) => b.addEventListener('click', () => this.showClaim(e[b.dataset.show])));
+    panel.querySelectorAll('[data-show]').forEach((b) => b.addEventListener('click', () => { this.drill = null; this.el.querySelector('[data-under]').innerHTML = ''; this.showClaim(e[b.dataset.show]); }));
+    panel.querySelectorAll('[data-drill]').forEach((b) => b.addEventListener('click', () => this.startDrill(b.dataset.drill)));
+  }
+
+  // ---------- Séquence jouable (piège ou punition) ----------
+  // Vous jouez vous-même chaque coup de la ligne (les deux camps), le coup fautif compris :
+  // seul le coup suivant de la séquence est accepté ; « Indice » montre la pièce à jouer.
+
+  startDrill(kind) {
+    const c = this.e[kind];
+    if (!c) return;
+    this.stop();
+    this.drill = { kind, c, i: 0, msg: null, hint: false };
+    this.renderDrill();
+    this.el.querySelector('[data-board]').scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // Étiquette d'un demi-coup de la séquence (« 4. Fg5 », « 4… Cf6? »).
+  drillLabel(i) {
+    const { c } = this.drill;
+    const num = i % 2 === 0 ? `${i / 2 + 1}. ` : `${Math.floor(i / 2) + 1}… `;
+    return `${num}${sanFr(c.san[i])}${i === c.marked ? '?' : ''}`;
+  }
+
+  renderDrill() {
+    const d = this.drill;
+    const { c } = d;
+    const total = c.uci.length;
+    const chess = new Chess();
+    let last = null;
+    for (const u of c.uci.slice(0, d.i)) last = chess.move(toObj(u));
+    const done = d.i >= total;
+    this.board.setPosition(chess, { lastMove: last, interactive: !done });
+    const arrows = [];
+    if (last) arrows.push({ from: last.from, to: last.to, kind: d.i - 1 === c.marked ? 'threat' : (d.i - 1 > c.marked ? 'best' : 'reply') });
+    if (d.hint && !done) arrows.push({ from: c.uci[d.i].slice(0, 2), to: c.uci[d.i].slice(2, 4), kind: 'stat' });
+    this.board.setArrows(arrows);
+    this.board.setHint?.(d.hint && !done ? c.uci[d.i].slice(0, 2) : null);
+    const piege = d.kind === 'piege';
+    const side = chess.turn() === 'w' ? 'aux Blancs' : 'aux Noirs';
+    const moves = c.san.map((_, i) => `<span class="m ${i === c.marked ? 'fault' : ''} ${i < d.i ? 'played' : ''} ${i === d.i ? 'current' : ''}">${esc(this.drillLabel(i))}</span>`).join(' ');
+    let body;
+    if (done) {
+      body = `<p class="drill-done">✔ Séquence jouée jusqu’au bout.</p><p>${esc(c.texte)}</p>
+        <p class="muted small">${piege ? 'Retenez le coup marqué « ? » : c’est le réflexe à ne pas avoir.' : 'Retenez la suite après le coup fautif « ? » : c’est elle qui le punit.'}</p>`;
+    } else {
+      const next = d.i === c.marked
+        ? (piege ? `C’est le coup fautif : jouez <strong>${esc(this.drillLabel(d.i))}</strong> pour voir pourquoi il perd.` : `L’adversaire commet l’erreur : jouez <strong>${esc(this.drillLabel(d.i))}</strong> pour lui.`)
+        : d.i > c.marked
+          ? `${piege ? 'La sanction' : 'La punition'} : jouez <strong>${esc(this.drillLabel(d.i))}</strong>.`
+          : `Mise en place : jouez <strong>${esc(this.drillLabel(d.i))}</strong>.`;
+      body = `<p>Trait ${side}. ${next}</p>${d.msg ? `<p class="drill-msg" role="status">${esc(d.msg)}</p>` : ''}`;
+    }
+    const under = this.el.querySelector('[data-under]');
+    under.innerHTML = `<div class="card lesson-step lesson-drill" data-drill-card="${d.kind}">
+      <p class="muted small">${piege ? '⚠ Le piège, à jouer vous-même' : '🎯 La punition, à jouer vous-même'} · coup ${Math.min(d.i + 1, total)} / ${total}</p>
+      ${body}
+      <p class="moves-annot small">${moves}</p>
+      <div class="actions">
+        ${done ? '' : '<button type="button" class="small-btn" data-drill-hint>💡 Indice</button>'}
+        ${!done && d.i < c.marked ? '<button type="button" class="small-btn" data-drill-skip>⏩ Aller à l’erreur</button>' : ''}
+        <button type="button" class="small-btn" data-drill-back ${d.i ? '' : 'disabled'}>◀ Annuler un coup</button>
+        <button type="button" class="small-btn" data-drill-restart>↺ Recommencer</button>
+        <button type="button" class="small-btn" data-drill-quit>Fermer</button>
+      </div></div>`;
+    under.querySelector('[data-drill-hint]')?.addEventListener('click', () => { d.hint = true; this.renderDrill(); });
+    under.querySelector('[data-drill-skip]')?.addEventListener('click', () => { d.i = c.marked; d.msg = null; d.hint = false; this.renderDrill(); });
+    under.querySelector('[data-drill-back]').addEventListener('click', () => { d.i = Math.max(0, d.i - 1); d.msg = null; d.hint = false; this.renderDrill(); });
+    under.querySelector('[data-drill-restart]').addEventListener('click', () => { d.i = 0; d.msg = null; d.hint = false; this.renderDrill(); });
+    under.querySelector('[data-drill-quit]').addEventListener('click', () => { this.drill = null; under.innerHTML = ''; this.drawAt(this.steps.length - 1, { arrow: false }); this.board.setHint?.(null); });
+  }
+
+  // Coup joué sur l'échiquier : seul le coup suivant de la séquence est accepté.
+  onBoardMove(mv) {
+    const d = this.drill;
+    if (!d || this.stage !== 2 || d.i >= d.c.uci.length) return;
+    const want = d.c.uci[d.i];
+    const played = `${mv.from}${mv.to}${mv.promotion || ''}`;
+    if (played === want || (played.slice(0, 4) === want.slice(0, 4) && !want[4])) {
+      const fault = d.i === d.c.marked;
+      d.i++;
+      d.hint = false;
+      d.msg = fault ? (d.kind === 'piege' ? 'Voilà l’erreur. Regardez maintenant la sanction.' : 'Voilà l’erreur adverse. À vous de la punir.') : null;
+    } else {
+      d.msg = `Ce n’est pas le coup de la séquence : ici, on joue ${this.drillLabel(d.i)}.`;
+    }
+    this.renderDrill();
   }
 
   stop() { clearInterval(this.timer); this.timer = null; }

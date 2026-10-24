@@ -612,6 +612,13 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .lesson-claim { padding: .5rem .8rem; border-radius: 10px; background: var(--surface-2); margin: .6rem 0; }
 .lesson-claim.piege { box-shadow: inset 4px 0 0 var(--threat); }
 .lesson-claim.punition { box-shadow: inset 4px 0 0 var(--best); }
+.lesson-claim .actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.lesson-drill .moves-annot .m.played { opacity: .6; }
+.lesson-drill .moves-annot .m.fault { color: var(--threat); font-weight: 700; }
+.lesson-drill .moves-annot .m.current { opacity: 1; }
+.lesson-drill .actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.drill-msg { color: var(--warn); font-weight: 600; }
+.drill-done { color: var(--best); font-weight: 700; }
 .lesson-claim h3 { margin-top: .2rem; }
 .lesson-under { margin-top: .6rem; } .lesson-step { margin: 0; }
 .file-btn { display: inline-flex; align-items: center; min-height: 40px; padding: .45rem .7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); cursor: pointer; }
