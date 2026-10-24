@@ -21,11 +21,27 @@ export function chaptersOf(description) {
   return out;
 }
 
-// Description d'une page YouTube (champ shortDescription de ytInitialPlayerResponse).
+// Description d'une page YouTube (shortDescription de ytInitialPlayerResponse, sinon
+// attributedDescription).
 export function descriptionOf(html) {
-  const m = String(html).match(/"shortDescription":"((?:[^"\\]|\\.)*)"/);
-  if (!m) return null;
-  try { return JSON.parse(`"${m[1]}"`); } catch { return null; }
+  for (const re of [/"shortDescription":"((?:[^"\\]|\\.)*)"/, /"attributedDescription":\{"content":"((?:[^"\\]|\\.)*)"/]) {
+    const m = String(html).match(re);
+    if (!m) continue;
+    try { return JSON.parse(`"${m[1]}"`); } catch { /* suivant */ }
+  }
+  return null;
+}
+
+// Repli : API interne du lecteur (client Android), champ videoDetails.shortDescription.
+async function descriptionApi(id) {
+  const r = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'user-agent': 'com.google.android.youtube/19.44.38 (Linux; U; Android 14) gzip' },
+    body: JSON.stringify({ videoId: id, context: { client: { clientName: 'ANDROID', clientVersion: '19.44.38', androidSdkVersion: 34, hl: 'fr', gl: 'FR' } } }),
+  });
+  if (!r.ok) return { http: r.status, desc: null };
+  const j = await r.json();
+  return { http: r.status, desc: j?.videoDetails?.shortDescription ?? null, etat: j?.playabilityStatus?.status };
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -36,8 +52,11 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     let r = { fiches: v.fiches, titre: v.titre };
     try {
       const resp = await fetch(`https://www.youtube.com/watch?v=${v.id}&hl=fr`, { headers });
-      const desc = resp.ok ? descriptionOf(await resp.text()) : null;
-      r = { ...r, http: resp.status, description: desc != null, chapitres: chaptersOf(desc) };
+      const html = resp.ok ? await resp.text() : '';
+      let desc = descriptionOf(html);
+      r.page = { http: resp.status, taille: html.length, consentement: /consent\.youtube|before you continue/i.test(html), robot: /not a bot|confirm you.re not/i.test(html) };
+      if (desc == null) { const a = await descriptionApi(v.id); r.api = { http: a.http, etat: a.etat }; desc = a.desc; }
+      r = { ...r, description: desc != null, chapitres: chaptersOf(desc) };
     } catch (e) { r.erreur = e.message; }
     res[v.id] = r;
     await new Promise((ok) => setTimeout(ok, 500));
