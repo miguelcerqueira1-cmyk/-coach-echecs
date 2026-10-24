@@ -1,0 +1,20 @@
+name: Chapitres des vidéos (à la demande)
+
+# Lit les horodatages publiés dans la description YouTube de chaque vidéo du répertoire
+# (scripts/video-chapters.mjs) pour choisir des liens &t= vérifiables. youtube.com est joignable
+# depuis GitHub Actions, pas depuis l'environnement de développement. Ne modifie rien.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chapitres:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: node scripts/video-chapters.mjs
