@@ -38,7 +38,7 @@ export class Board {
     this.svg.setAttribute('viewBox', '0 0 800 800');
     this.svg.setAttribute('aria-hidden', 'true');
     this.svg.innerHTML = `<defs>
-      ${['best', 'reply', 'threat', 'stat'].map((k) => `<marker id="ah-${k}" markerWidth="4" markerHeight="4" refX="2.2" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 z" class="ah-${k}"/></marker>`).join('')}
+      ${['best', 'reply', 'threat', 'stat', 'alt'].map((k) => `<marker id="ah-${k}" markerWidth="4" markerHeight="4" refX="2.2" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 z" class="ah-${k}"/></marker>`).join('')}
     </defs><g class="arrows"></g>`;
     this.promo = document.createElement('div');
     this.promo.className = 'promo hidden';
