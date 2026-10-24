@@ -46,6 +46,7 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== SCOPE.origin || !url.pathname.startsWith(SCOPE.pathname)) return;
   const path = url.pathname.slice(SCOPE.pathname.length);
   if (path === 'sw.js' || path.endsWith('.wasm')) return;
+  if (path.startsWith('fc-creations/')) return; // maquette d'un autre projet : jamais en cache ni prise pour index.html
   if (req.mode === 'navigate') {
     event.respondWith(networkFirst(event, req, new URL('index.html', SCOPE).href));
   } else if (NETWORK_FIRST.has(path) || path.endsWith('.html')) {

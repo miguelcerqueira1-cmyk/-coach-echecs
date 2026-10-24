@@ -22,12 +22,13 @@ writeFileSync(join(dist, 'config.json'), JSON.stringify(config, null, 2) + '\n')
 // Service worker : liste des fichiers de l'application à garder hors connexion, et version
 // du cache = identifiant de build + empreinte du contenu (une modification locale suffit aussi
 // à déclencher la mise à jour). Exclus : le WASM de Stockfish (engine.js le met lui-même en
-// cache), les gros jeux Élite (relus en ligne, mis en cache à l'usage), la source du répertoire.
+// cache), les gros jeux Élite (relus en ligne, mis en cache à l'usage), la source du répertoire,
+// et fc-creations/ (maquette d'un autre projet, hébergée ici provisoirement).
 const NOT_PRECACHED = new Set(['sw.js', 'config.json', '.nojekyll', 'engine/stockfish.wasm', 'engine/COPYING.txt',
   'data/elite.json', 'data/joueurs.json', 'data/repertoire.js']);
 const files = (function walk(d) {
   return readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
-})(dist).map((f) => relative(dist, f).split(sep).join('/')).filter((f) => !NOT_PRECACHED.has(f)).sort();
+})(dist).map((f) => relative(dist, f).split(sep).join('/')).filter((f) => !NOT_PRECACHED.has(f) && !f.startsWith('fc-creations/')).sort();
 const hash = createHash('sha256');
 for (const f of files) hash.update(f).update(readFileSync(join(dist, f)));
 const swVersion = `${config.build}-${hash.digest('hex').slice(0, 10)}`;
