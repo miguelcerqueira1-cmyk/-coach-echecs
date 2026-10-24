@@ -147,7 +147,8 @@ export class LessonView {
         <dt>À conserver</dt><dd>${esc(e.conserver)}</dd>
       </dl>
       ${claim(e.piege, 'piege')}${claim(e.punition, 'punition')}
-      ${liens.length ? `<h3>🎬 Pour aller plus loin</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())})</span></li>`).join('')}</ul>` : ''}
+      ${liens.length ? `<h3>🎬 Pour aller plus loin</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())})</span>
+        ${l.chapitre ? `<br><span class="badge tiny video-chap">▶ s’ouvre à ${esc(l.chapitre)}</span>` : '<br><span class="muted tiny">Début de la vidéo (l’auteur n’a pas publié de chapitres)</span>'}</li>`).join('')}</ul>` : ''}
       <div class="actions"><button type="button" class="primary" data-next>À vous de jouer la ligne →</button></div>`;
     panel.querySelector('[data-next]').addEventListener('click', () => this.go(3));
     panel.querySelectorAll('[data-show]').forEach((b) => b.addEventListener('click', () => { this.drill = null; this.el.querySelector('[data-under]').innerHTML = ''; this.showClaim(e[b.dataset.show]); }));

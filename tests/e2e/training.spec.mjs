@@ -211,6 +211,9 @@ test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, pui
   // 3. À retenir
   await expect(page.locator('[data-panel]')).toContainText('Cases et pièces clés');
   await expect(page.locator('[data-panel]')).toContainText('Le piège à éviter');
+  // Vidéos : horodatage seulement depuis un chapitre publié par l'auteur, affiché.
+  await expect(page.locator('[data-panel] a[href*="TSTnJNs9wdw&t=560s"]')).toHaveCount(1);
+  await expect(page.locator('[data-panel] .video-chap')).toContainText('s’ouvre à 9:20');
   // Le piège, joué coup par coup : seul le coup de la séquence est accepté, le coup fautif est signalé.
   await page.click('[data-panel] [data-drill="piege"]');
   const card = page.locator('[data-drill-card="piege"]');
