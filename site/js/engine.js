@@ -42,6 +42,7 @@ export class Engine {
     this.pending = null;
     this.listeners = new Set();
     this.lastGameId = null;
+    this.multipv = 1; // valeur de l'option UCI MultiPV actuellement envoyée au moteur
     this.name = '';
   }
 
@@ -139,10 +140,14 @@ export class Engine {
     if (!job) return;
     if (line.startsWith('info ')) {
       const info = parseInfo(line);
-      if (info && info.pv && info.score && (info.multipv || 1) === 1) {
+      const k = info?.multipv || 1;
+      if (info && info.pv && info.score) {
         // Une borne (lowerbound/upperbound) n'est pas une évaluation exacte : on garde la dernière exacte.
-        if (!info.bound || !job.last) job.last = info;
-        if (!job.cancelled && job.onInfo) job.onInfo(info);
+        if (!info.bound || !job.lines[k]) job.lines[k] = info;
+        if (k === 1) {
+          if (!info.bound || !job.last) job.last = info;
+          if (!job.cancelled && job.onInfo) job.onInfo(info);
+        }
       }
     } else if (line.startsWith('bestmove')) {
       clearTimeout(job.watchdog);
@@ -151,6 +156,8 @@ export class Engine {
         bestmove: parts[1],
         ponder: parts[3] || null,
         info: job.last || null,
+        // Lignes MultiPV (1 = meilleure), chacune avec sa propre profondeur au moment de l'arrêt.
+        lines: job.lines.slice(1, job.multipv + 1).filter(Boolean),
         movetime: job.movetime,
         elapsedMs: Math.round(performance.now() - job.started),
         token: job.token,
@@ -173,10 +180,11 @@ export class Engine {
   }
 
   // Lance un calcul. `token` identifie la partie/branche/révision demandée.
-  analyze({ position, movetime, token, onInfo }) {
+  // multipv : nombre de meilleurs coups calculés en parallèle (1 à 5) ; le temps total ne change pas.
+  analyze({ position, movetime, token, onInfo, multipv = 1 }) {
     if (this.state !== 'ready') return Promise.reject(new Error('Moteur indisponible'));
     return new Promise((resolve, reject) => {
-      const job = { position, movetime, token, onInfo, resolve, reject, cancelled: false };
+      const job = { position, movetime, token, onInfo, multipv: Math.min(5, Math.max(1, multipv | 0)), lines: [], resolve, reject, cancelled: false };
       if (this.pending) this.pending.resolve({ cancelled: true, token: this.pending.token });
       this.pending = job;
       if (this.current) {
@@ -205,6 +213,10 @@ export class Engine {
       this.lastGameId = job.token.gameId;
       this._send('ucinewgame');
     }
+    if (job.multipv !== this.multipv) {
+      this._send(`setoption name MultiPV value ${job.multipv}`);
+      this.multipv = job.multipv;
+    }
     this._send(job.position);
     job.started = performance.now();
     this._send(`go movetime ${job.movetime}`);
@@ -217,6 +229,7 @@ export class Engine {
     this.worker = null;
     this.state = 'idle';
     this.lastGameId = null;
+    this.multipv = 1;
     await this.load();
   }
 }

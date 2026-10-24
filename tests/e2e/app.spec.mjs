@@ -321,6 +321,7 @@ test('mode « Indice d’abord » : coup caché jusqu’à « Montrer le coup »
   const advice = page.locator('#advice');
   await expect(advice).toContainText('À vous de trouver le meilleur coup');
   await expect(page.locator('.board-arrows line')).toHaveCount(0);
+  await expect(advice.locator('.candidates')).toHaveCount(0);
   await expect(page.locator('#optimal')).toContainText('Masqué');
   await expect(page.locator('#advice-mini')).toContainText('Mode indice');
   await page.click('#btn-hint1');
@@ -334,6 +335,7 @@ test('mode « Indice d’abord » : coup caché jusqu’à « Montrer le coup »
   await page.click('#btn-hint3');
   await expect(advice).toContainText('Coup conseillé par le moteur');
   await expect(page.locator('.board-arrows line.arrow-best')).toHaveCount(1);
+  await expect(advice.locator('.cand-list li')).toHaveCount(3);
   // Coup suivant : le masquage reprend à zéro.
   await page.click('#btn-play-best');
   await waitAdvice(page);
@@ -341,6 +343,32 @@ test('mode « Indice d’abord » : coup caché jusqu’à « Montrer le coup »
   await page.press('#notation-input', 'Enter');
   await waitAdvice(page);
   await expect(advice).toContainText('À vous de trouver le meilleur coup');
+});
+
+test('3 coups candidats (MultiPV) : rejoués, notation française, flèches discrètes, position passée', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await waitAdvice(page);
+  const cands = await page.evaluate(() => window.__coach.state.analysis.advice.candidates.map((c) => ({ san: c.san, lan: c.move.lan, gap: c.gap })));
+  expect(cands).toHaveLength(3);
+  expect(new Set(cands.map((c) => c.lan)).size).toBe(3);
+  expect(cands[0].lan).toBe((await snap(page)).best);
+  for (const c of cands.slice(1)) if (c.gap != null) expect(c.gap).toBeLessThanOrEqual(0.01);
+  const items = page.locator('#advice .cand-list li');
+  await expect(items).toHaveCount(3);
+  await expect(page.locator('#advice .candidates summary')).toContainText('Comparer les 3 meilleurs coups');
+  const fr = (san) => san.replace(/^N/, 'C').replace(/^B/, 'F').replace(/^R/, 'T').replace(/^Q/, 'D').replace(/^K/, 'R');
+  for (let i = 0; i < 3; i++) await expect(items.nth(i).locator('.cand-move')).toHaveText(fr(cands[i].san));
+  await expect(page.locator('.board-arrows line.arrow-best')).toHaveCount(1);
+  await expect(page.locator('.board-arrows line.arrow-alt')).toHaveCount(2);
+  // Coup joué : l'ancienne comparaison disparaît, la nouvelle concerne la nouvelle position.
+  await typeMove(page, 'e4');
+  await waitAdvice(page);
+  const after = await page.evaluate(() => window.__coach.state.analysis.advice);
+  expect(after.candidates.every((c) => c.move.color === 'b')).toBe(true);
+  // Position passée : comparaison calculée aussi pour la position consultée.
+  await page.click('[data-nav="start"]');
+  await expect(page.locator('#advice .cand-list li')).toHaveCount(3, { timeout: 60000 });
 });
 
 test('position passée : meilleur coup Stockfish calculé pour la position consultée', async ({ page }) => {

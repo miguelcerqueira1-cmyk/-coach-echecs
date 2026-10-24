@@ -104,6 +104,47 @@ export function wdlFor(wdl, turn, color) {
   return turn === color ? { win: w, draw: d, loss: l } : { win: l, draw: d, loss: w };
 }
 
+// Coups candidats (MultiPV) : chaque ligne est rejouée par chess.js ; une ligne dont le premier
+// coup est illégal ou déjà proposé est écartée. Le premier candidat est toujours le coup conseillé
+// (`bestLan`) ; sinon aucun candidat n'est rendu (résultat moteur incohérent).
+// gap : écart avec le meilleur, en pions, du point de vue du camp au trait (null si un mat est en jeu).
+export function buildCandidates(fen, lines, bestLan, max = 3) {
+  const turn = fen.split(' ')[1];
+  const out = [];
+  for (const info of lines || []) {
+    if (!info?.pv?.length || !info.score) continue;
+    const line = validateLine(fen, info.pv);
+    if (!line.moves.length || out.some((c) => c.move.lan === line.moves[0].lan)) continue;
+    const scoreWhite = whitePovScore(info.score, turn);
+    out.push({
+      move: line.moves[0],
+      san: line.moves[0].san,
+      line: line.moves.slice(0, 6),
+      lineText: formatLine(line.moves.slice(0, 6), fen),
+      scoreWhite,
+      scoreText: formatScore(scoreWhite),
+      mover: info.score,
+      depth: info.depth ?? null,
+    });
+  }
+  const i = out.findIndex((c) => c.move.lan === bestLan);
+  if (i < 0) return [];
+  out.unshift(...out.splice(i, 1));
+  const top = out[0].mover;
+  return out.slice(0, max).map(({ mover, ...c }, rank) => ({
+    ...c,
+    rank: rank + 1,
+    gap: rank && top.type === 'cp' && mover.type === 'cp' ? (mover.value - top.value) / 100 : null,
+  }));
+}
+
+// « −0,45 » : écart en pions (toujours négatif ou nul pour un candidat moins bon).
+export function formatGap(gap) {
+  if (gap == null) return '';
+  const v = Math.min(0, gap);
+  return `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(2).replace('.', ',')}`;
+}
+
 // Construit le conseil à partir du résultat moteur et de l'état de la partie.
 export function buildAdvice(game, res) {
   const fen = game.fen();
@@ -135,6 +176,7 @@ export function buildAdvice(game, res) {
     line: line.moves.slice(0, 8),
     lineTruncated: line.truncated,
     lineText: formatLine(line.moves.slice(0, 8), fen),
+    candidates: res.lines?.length > 1 ? buildCandidates(fen, res.lines, best.lan) : [],
     scoreWhite: wScore,
     scoreText: formatScore(wScore),
     verdict: scoreVerdict(wScore),

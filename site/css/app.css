@@ -207,6 +207,13 @@ textarea { resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospa
 .ah-reply { fill: var(--reply); }
 .ah-threat { fill: var(--threat); }
 .arrow-stat { stroke: var(--stat); opacity: .75; }
+.arrow-alt { stroke: var(--best); stroke-width: 8; opacity: .35; }
+.ah-alt { fill: var(--best); opacity: .35; }
+.candidates { margin: .6rem 0; }
+.cand-list { margin: .4rem 0; padding-left: 1.4rem; display: grid; gap: .35rem; }
+.cand { overflow-wrap: anywhere; }
+.cand-head, .cand .line { display: block; }
+.cand-1 .cand-move { color: var(--best); }
 .ah-stat { fill: var(--stat); }
 .promo { position: absolute; inset: 0; z-index: 10; background: rgba(0, 0, 0, .45); display: grid; place-items: center; }
 .promo-box { background: var(--surface); border-radius: var(--radius); padding: .8rem; text-align: center; box-shadow: var(--shadow); }

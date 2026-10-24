@@ -6,7 +6,7 @@ import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
 import { Engine } from './engine.js';
 import { Board } from './board.js';
 import {
-  BUDGETS, DEEPER_MOVETIME, COLOR_NAMES, buildAdvice, buildThreat, nullMoveFen, sanFr, formatScore,
+  BUDGETS, DEEPER_MOVETIME, COLOR_NAMES, buildAdvice, buildThreat, nullMoveFen, sanFr, formatScore, formatGap,
 } from './analysis.js';
 import { Coach, CoachError, LEVELS, buildCoachPayload, allowedMoveSet, renderCoachText } from './coach.js';
 import * as store from './storage.js';
@@ -173,6 +173,7 @@ function onPositionChanged(reason) {
 }
 
 let jobCounter = 0;
+const CANDIDATES = 3; // coups candidats comparés (MultiPV) ; 1 pendant la suite automatique
 
 async function runAnalysis(movetime, { deeper = false } = {}) {
   const g = state.game;
@@ -192,6 +193,7 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
       position: g.uciPosition(),
       movetime,
       token,
+      multipv: autoplay.running ? 1 : CANDIDATES,
       onInfo: (info) => {
         if (!g.isCurrent(token) || state.analysis.jobId !== jobId) return;
         state.analysis.live = info;
@@ -416,6 +418,7 @@ function renderBoard() {
   const hide = moveHidden();
   board.setHint(hide && (state.reveal || 0) >= 2 && !a.advice.best.san.startsWith('O-O') ? a.advice.best.from : null);
   if (live && a.advice && g.isCurrent(a.advice.token) && a.status !== 'engine-error' && !hide) {
+    if (a.advice.isPlayerTurn || state.settings.showOpponentArrow) arrows.push(...altArrows(a.advice));
     if (a.advice.isPlayerTurn) arrows.push({ from: a.advice.best.from, to: a.advice.best.to, kind: 'best' });
     else if (state.settings.showOpponentArrow) arrows.push({ from: a.advice.best.from, to: a.advice.best.to, kind: 'reply' });
     const th = state.coach.meta?.threat;
@@ -428,6 +431,7 @@ function renderBoard() {
   }
   if (!live && state.view?.status === 'ready' && state.view.ply === state.viewPly) {
     const b = state.view.advice.best;
+    arrows.push(...altArrows(state.view.advice));
     arrows.push({ from: b.from, to: b.to, kind: state.view.advice.isPlayerTurn ? 'best' : 'reply' });
     const stat = optimal.statArrow((t) => optimal.game?.isCurrent(t));
     if (stat && !(stat.from === b.from && stat.to === b.to)) arrows.push(stat);
@@ -435,6 +439,11 @@ function renderBoard() {
   board.setArrows(arrows);
   $('view-banner').classList.toggle('hidden', live);
   if (!live) $('view-text').textContent = ply === 0 ? 'Vous consultez la position de départ.' : `Vous consultez la position après ${moveLabel(ply - 1)}.`;
+}
+
+// Candidats 2 et 3 : flèches discrètes, dessinées sous la flèche du meilleur coup.
+function altArrows(adv) {
+  return (adv.candidates || []).slice(1).map((c) => ({ from: c.move.from, to: c.move.to, kind: 'alt' }));
 }
 
 function moveLabel(i) {
@@ -517,6 +526,20 @@ function evalBlock(adv) {
     <div class="wdl-bar" aria-hidden="true"><span style="width:${wdl.win / 10}%"></span><span style="width:${wdl.draw / 10}%"></span><span style="width:${wdl.loss / 10}%"></span></div>
     <span class="muted small">Estimation issue du modèle interne du moteur (jeu de niveau moteur des deux côtés), pas une probabilité garantie contre votre adversaire.</span></dd>` : '';
   return `<dt>Évaluation</dt><dd><strong>${esc(adv.scoreText)}</strong> <span class="muted">(point de vue des Blancs${adv.scoreWhite?.type === 'cp' ? ', en pions' : ''})</span><br><span class="small">${esc(adv.verdict)}</span></dd>${wdlHtml}`;
+}
+
+// Comparaison des meilleurs coups (MultiPV) : écart avec le premier, du point de vue du camp au trait.
+function candidatesBlock(adv) {
+  const cands = adv.candidates || [];
+  if (cands.length < 2) return '';
+  const who = COLOR_NAMES[adv.turn];
+  const rows = cands.map((c) => `<li class="cand cand-${c.rank}">
+      <span class="cand-head"><strong class="cand-move">${esc(sanFr(c.san))}</strong> <span class="eval">${esc(c.scoreText)}</span>${c.rank > 1 && c.gap != null ? ` <span class="muted small">(${esc(formatGap(c.gap))} pour les ${who})</span>` : ''}</span>
+      <span class="line small">${esc(c.lineText)}</span></li>`).join('');
+  return `<details class="candidates" open><summary>Comparer les ${cands.length} meilleurs coups</summary>
+    <ol class="cand-list">${rows}</ol>
+    <p class="muted tiny">Calcul Stockfish en parallèle (MultiPV ${CANDIDATES}) : évaluations du point de vue des Blancs, écart en pions avec le premier coup. À temps égal, chaque ligne est un peu moins approfondie qu’un calcul d’un seul coup.</p>
+  </details>`;
 }
 
 function techDetails(adv, a) {
@@ -626,6 +649,7 @@ function renderAdvice() {
         <dt>Réponse adverse principale</dt><dd>${adv.reply ? `${esc(sanFr(adv.reply.san))} <span class="muted">— calculée, pas une prédiction du choix humain</span>` : '—'}</dd>
         <dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd>
       </dl>
+      ${candidatesBlock(adv)}
       <div class="actions">
         <button type="button" class="primary" id="btn-play-best">Confirmer : je joue ${esc(sanFr(adv.best.san))}</button>
       </div>
@@ -635,7 +659,8 @@ function renderAdvice() {
       <p class="move-big reply">${esc(sanFr(adv.best.san))}</p>
       <p class="desc">${esc(adv.bestDescription)}</p>
       <p class="small muted">Le moteur indique le coup le plus fort pour l’adversaire ; un humain peut jouer autre chose. Saisissez le coup qu’il a réellement joué.</p>
-      <dl>${evalBlock(adv)}<dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd></dl>`;
+      <dl>${evalBlock(adv)}<dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd></dl>
+      ${candidatesBlock(adv)}`;
   }
   const liveLine = computing && adv ? `<p class="small muted" id="live-text"></p>` : '';
   el.innerHTML = `<p>${badge}</p>${deviationNote()}${claimNote}${body}${liveLine}${adv ? techDetails(adv, a) : ''}`;
@@ -859,6 +884,7 @@ async function analyzeView(ply) {
       position: `position fen ${g.startFen}${ucis ? ' moves ' + ucis : ''}`,
       movetime: BUDGETS[state.settings.budget].movetime,
       token: vg.token(),
+      multipv: CANDIDATES,
     });
   } catch (e) {
     if (job === viewJob) { state.view = { ...state.view, status: 'engine-error', error: e.message }; renderAdvice(); }
@@ -892,7 +918,7 @@ function renderViewAdvice(el) {
       <p class="desc">${esc(adv.bestDescription)}</p>
       <dl>${evalBlock(adv)}<dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd>
         ${played ? `<dt>Coup réellement joué</dt><dd><strong>${esc(sanFr(played.san))}</strong> ${same ? '<span class="ok">✔ c’était le meilleur coup</span>' : '<span class="muted">(différent du calcul)</span>'}</dd>` : ''}
-      </dl>${techDetails(adv, { movetime: adv.movetime })}`;
+      </dl>${candidatesBlock(adv)}${techDetails(adv, { movetime: adv.movetime })}`;
   }
   el.innerHTML = `<p><span class="badge">Position consultée</span> <strong>${esc(where)}</strong> — trait aux ${COLOR_NAMES[turn]}</p>${body}
     <p class="muted small">Ce n’est pas la position actuelle de la partie. <button type="button" class="link-btn" id="btn-back-live">Revenir à la position actuelle</button></p>`;

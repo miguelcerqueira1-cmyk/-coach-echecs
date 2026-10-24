@@ -111,6 +111,9 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 - **Stockfish 18 lite monothread** (stockfish.js 18.0.8, WASM 7,3 Mo), pleine force. WASM mis en
   cache (Cache Storage) et passé au Worker par `stockfish.js#<blob-url>` (le service worker reconstruit
   la réponse du script pour garder ce fragment). Multithread non activé (pas de COOP/COEP sur Pages).
+- **3 coups candidats** (page Moteur) : MultiPV 3 sur le budget habituel (1 pendant la suite
+  automatique, menaces et analyses de parties) ; lignes rejouées par chess.js, meilleur coup en tête,
+  écart en pions ; flèches discrètes (`alt`) ; masqués en mode « Indice d'abord ».
 - **Jetons** `{gameId, branchId, revision, ply}` pour ignorer les résultats périmés ; moteur partagé
   entre pages (une page peut interrompre le calcul d'une autre, la page Moteur relance au retour).
 - Fins de partie FIDE : triple répétition / 50 coups = nulles réclamables ; fins automatiques :
@@ -203,7 +206,7 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   l'usage, décision de l'utilisateur ; l'explication gratuite fonctionne sans.
 - Élite : le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
 - Plus de fiches (58 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
-- Analyse : comparaison de 3 candidats (MultiPV 3) ; variantes d'analyse (`analysisBranches`)
+- Analyse : variantes d'analyse (`analysisBranches`)
   séparées de la partie réelle ; réclamation de nulle / abandon dans l'interface.
 - Option multithread (coi-serviceworker) seulement après test réussi sur le site publié et Safari iOS.
 - Projet futur séparé (nouveau dépôt) : boutique en ligne de créations faites main (crochet,
