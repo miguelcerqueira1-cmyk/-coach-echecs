@@ -14,6 +14,8 @@ rmSync(dist, { recursive: true, force: true });
 cpSync(join(root, 'site'), dist, { recursive: true });
 const config = {
   apiUrl: process.env.COACH_API_URL || '',
+  // Lien de paiement « Passer Pro » (ex. lien de paiement Stripe) ; vide = « paiement bientôt ».
+  paymentUrl: process.env.PAYMENT_URL || '',
   build: process.env.GITHUB_SHA ? process.env.GITHUB_SHA.slice(0, 7) : 'local',
   builtAt: new Date().toISOString(),
 };

@@ -15,6 +15,7 @@ import { loadJoueurs } from './joueurs.js';
 import { datalistHtml, playersSectionHtml, bindPlayers } from './joueurs-ui.js';
 import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago, NOCAMP_TEXT, CAMP_LABEL } from './elite.js';
 import { loadSettings } from './storage.js';
+import { canOpenFiche, openPaywall } from './pro.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -95,6 +96,11 @@ const bar = (s) => `<div class="wdl-bar" title="Blancs ${p1(s.white)} · nulles 
 export class RepertoirePage {
   constructor({ el, client, getFilter, openSan, openMaster, openGame = null, youtube, loadEliteData = loadElite }) {
     this.el = el;
+    // « Débloquer avec Pro » (fiches verrouillées) : fenêtre BlitzRefute Pro.
+    el.addEventListener('click', (ev) => {
+      const b = ev.target.closest('[data-unlock]');
+      if (b) openPaywall({ reason: b.dataset.unlock });
+    });
     this.client = client;
     this.getFilter = getFilter;
     this.openSan = openSan;
@@ -295,7 +301,23 @@ export class RepertoirePage {
     </div>`;
   }
 
+  // Fiche réservée à BlitzRefute Pro : nom, code ECO et premiers coups visibles, le reste flouté.
+  lockedRow(e) {
+    return `<tr data-id="${e.id}" data-locked class="locked-card">
+      <td data-label="ECO · Nom">
+        <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span>
+        <div class="rep-name">${esc(e.nom)}</div>
+        <div class="muted tiny">${esc(e.ecoNom)}</div>
+        <button type="button" class="primary small-btn unlock-btn" data-unlock="La fiche « ${esc(e.nom)} »">Débloquer avec Pro</button>
+      </td>
+      <td data-label="Séquence" class="line">${esc(sanLine(e.san.slice(0, 4)))} …</td>
+      <td data-label="Contenu Pro" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan)}</p>
+        <p class="small muted">Plan, pièges, réfutation vérifiée par Stockfish, statistiques et vidéos dans BlitzRefute Pro.</p></td>
+    </tr>`;
+  }
+
   row(e) {
+    if (!canOpenFiche(e.id)) return this.lockedRow(e);
     const v = e.verification;
     const live = this.live.get(e.id) || {};
     const color = this.data.repertoires[e.rep].couleur;
@@ -393,7 +415,13 @@ export class RepertoirePage {
     const punitions = list.filter((e) => e.punition);
     const loufoques = list.filter((e) => !e.punition && e.badge === 'loufoque');
     const pieges = list.filter((e) => e.piege);
+    const lockedCard = (e) => `<article class="card trash-card locked-card">
+        <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span></div>
+        <h3>${esc(e.nom)}</h3>
+        <button type="button" class="primary small-btn" data-unlock="La réfutation « ${esc(e.nom)} »">Débloquer avec Pro</button>
+      </article>`;
     const card = (e, kind) => {
+      if (!canOpenFiche(e.id)) return lockedCard(e);
       const c = e[kind];
       const v = e.verification?.[kind];
       const color = reps[e.rep].couleur;
@@ -410,11 +438,11 @@ export class RepertoirePage {
           <button type="button" class="link-btn" data-goto="${e.id}">Voir la fiche</button></div>
       </article>`;
     };
-    const plain = (e) => `<article class="card trash-card">
+    const plain = (e) => (!canOpenFiche(e.id) ? lockedCard(e) : `<article class="card trash-card">
         <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span></div>
         <h3>${esc(e.nom)}</h3><p class="small line">${esc(sanLine(e.san))}</p><p class="small">${esc(e.plan)}</p>
         <div class="actions"><button type="button" class="primary small-btn" data-test="${e.id}">▶ Tester</button><button type="button" class="link-btn" data-goto="${e.id}">Voir la fiche</button></div>
-      </article>`;
+      </article>`);
     return `<section class="trash">
       <p class="small">Coups bizarres fréquents en Blitz autour de 1000 Elo : sorties de Dame précoces, gambits douteux, poussées de pions hâtives, et vos propres réflexes perdants. Chaque réfutation est vérifiée par Stockfish.</p>
       <h2>Coups adverses à punir (${punitions.length})</h2><div class="trash-grid">${punitions.map((e) => card(e, 'punition')).join('') || '<p class="muted">Aucun.</p>'}</div>
@@ -427,7 +455,7 @@ export class RepertoirePage {
 
   observe() {
     this.io?.disconnect();
-    const rows = this.el.querySelectorAll('tr[data-id]');
+    const rows = this.el.querySelectorAll('tr[data-id]:not([data-locked])');
     if (!rows.length) return;
     if (!('IntersectionObserver' in window)) {
       this.entries().forEach((e) => this.load(e));
@@ -445,6 +473,7 @@ export class RepertoirePage {
   }
 
   load(e) {
+    if (!canOpenFiche(e.id)) return; // fiche Pro verrouillée : aucune requête
     if (this.live.has(e.id)) return;
     const gen = this.generation;
     const hasToken = !!this.client.explorerMode();

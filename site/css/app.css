@@ -129,16 +129,33 @@ input[type=text], input[type=url], input[type=password], input[type=search], inp
 }
 textarea { resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85rem; }
 .hidden { display: none !important; }
+[hidden] { display: none !important; }
 .muted { color: var(--muted); }
 .small { font-size: .85rem; }
 .error-text { color: var(--error); min-height: 1.2em; margin: .4rem 0; }
 
 .top {
+  position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; gap: .75rem;
-  padding: .6rem 1rem;
+  padding: .55rem 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px);
 }
+/* Marque BlitzRefute */
+.brand { display: flex; align-items: center; gap: .55rem; text-decoration: none; color: var(--text); min-width: 0; }
+.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; font-size: 1.05rem;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 45%, var(--best))); color: var(--accent-contrast);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 40%, transparent); flex: none; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.05; min-width: 0; }
+.top h1.brand-name { margin: 0; font-size: 1.12rem; font-weight: 700; letter-spacing: -.01em; text-transform: none; white-space: nowrap; }
+.brand-tag { font-size: .68rem; color: var(--muted); white-space: nowrap; letter-spacing: .02em; }
+.pill.plan { color: var(--muted); }
+.pill.plan.pro { color: var(--accent-contrast); background: var(--accent); border-color: var(--accent); font-weight: 700; }
+.pro-cta { flex: none; font-weight: 700; font-size: .85rem; padding: .35rem .8rem; min-height: 36px; border: 0; border-radius: 999px;
+  color: var(--accent-contrast); background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--best)));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent); cursor: pointer; }
+.pro-cta:hover { filter: brightness(1.08); }
 .pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-left: auto; }
 .pill {
   font-size: .78rem; padding: .2rem .55rem; border-radius: 999px;
@@ -227,7 +244,7 @@ textarea { resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospa
 .advice-mini strong.best { color: var(--best); }
 .advice-mini strong.reply { color: var(--reply); }
 @media (min-width: 900px) { .advice-mini { display: none; } }
-.top h1 { white-space: nowrap; }
+
 .view-banner { display: flex; gap: .5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: .5rem; padding: .45rem .7rem; background: var(--warn-bg); color: var(--warn); border-radius: var(--radius); font-size: .9rem; }
 .toolbar { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; margin-top: .6rem; }
 .toolbar button { font-size: .85rem; padding: .4rem .3rem; }
@@ -302,7 +319,12 @@ dialog fieldset label, dialog label.check { display: flex; align-items: center; 
 .tabs a { color: var(--muted); text-decoration: none; padding: .35rem .7rem; border-radius: 999px; font-weight: 600; font-size: .92rem; }
 .tabs a[aria-current="page"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
 @media (max-width: 520px) {
-  .top { flex-wrap: wrap; }
+  .top { flex-wrap: wrap; position: static; }
+  .brand-tag { display: none; }
+  .pills .pill:not(.plan):not(.err):not(.warn) { display: none; }
+  .pills .pill.plan:not(.pro) { display: none; } /* le bouton « Passer Pro » suffit */
+  .pro-cta { font-size: .8rem; padding: .3rem .65rem; }
+  .brand-mark { width: 30px; height: 30px; }
   .tabs { order: 3; width: 100%; margin: 0; }
   .tabs a { flex: 1; text-align: center; }
 }
@@ -514,7 +536,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
   border-radius: 12px;
 }
 :root[data-theme="neon"] .tabs a[aria-current="page"] { background: var(--accent); color: var(--accent-contrast); box-shadow: none; }
-:root[data-theme="neon"] .top h1 { letter-spacing: .06em; text-transform: uppercase; }
+
 :root[data-theme="neon"] .card, :root[data-theme="neon"] dialog { border-radius: 16px; }
 :root[data-theme="neon"] button { border-radius: 12px; }
 .appearance-row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
@@ -646,3 +668,33 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .drill-recap .recap-nums .ok { color: var(--best); font-weight: 700; }
 .drill-recap .recap-nums .ko { color: var(--threat); font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .board.shake, .streak.bump, .sq.sq-error::after { animation: none; } }
+
+/* BlitzRefute Pro : fenêtre de paiement, verrous */
+.dlg-pro { max-width: min(520px, calc(100vw - 32px)); }
+.pro-head { display: flex; gap: .7rem; align-items: center; }
+.pro-head h2 { margin: 0; }
+.pro-head p { margin: .15rem 0 0; }
+.pro-reason { margin: .8rem 0 .2rem; }
+.pro-list { list-style: none; padding: 0; margin: .6rem 0; display: grid; gap: .55rem; }
+.pro-list li { display: flex; gap: .6rem; align-items: flex-start; }
+.pro-ico { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 9px; background: var(--surface-2); }
+.pro-actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .6rem; }
+.pro-buy { display: inline-flex; align-items: center; text-decoration: none; padding: .55rem 1rem; font-size: .95rem; }
+.pro-soon { margin: 0; padding: .45rem .7rem; border-radius: 10px; background: var(--surface-2); color: var(--muted); }
+.pro-code { margin-top: .8rem; }
+.pro-code-form { display: flex; gap: .4rem; margin-top: .4rem; }
+.pro-code-form input { flex: 1; min-width: 0; }
+.ok-text { color: var(--best); }
+.pro-lock { filter: grayscale(.2); }
+.locked { position: relative; }
+.lock-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 700; padding: .1rem .5rem; border-radius: 999px; color: var(--accent); border: 1px solid var(--accent); white-space: nowrap; }
+.locked-card { opacity: .78; }
+.locked-card .locked-blur { filter: blur(5px); user-select: none; pointer-events: none; max-height: 7.5em; overflow: hidden; }
+.unlock-btn { margin-top: .5rem; }
+/* Partie collée en PGN (Mes parties) */
+.pgn-paste summary { cursor: pointer; }
+.pgn-paste textarea { width: 100%; margin: .6rem 0 .3rem; }
+.pgn-alert { box-shadow: inset 4px 0 0 var(--stat); }
+.pgn-alert.warn { box-shadow: inset 4px 0 0 var(--warn); }
+.pgn-alert.ok { box-shadow: inset 4px 0 0 var(--best); }
+.pgn-alert .actions { display: flex; flex-wrap: wrap; gap: .4rem; }

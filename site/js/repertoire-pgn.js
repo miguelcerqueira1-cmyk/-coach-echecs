@@ -80,7 +80,7 @@ export function entryToPgn(entry, { repTitle, colorName } = {}) {
   const body = moveTokens(main, 0, { marked: mainMarked, markedComment: mainComment, firstComment: intro, variationsAt: after });
   const headers = [
     ['Event', `${repTitle || 'Répertoire'} — ${entry.nom}`],
-    ['Site', 'Coach Échecs'],
+    ['Site', 'BlitzRefute'],
     ['Date', '????.??.??'],
     ['Round', '-'],
     ['White', colorName === 'Blancs' ? 'Moi' : '?'],
@@ -88,7 +88,7 @@ export function entryToPgn(entry, { repTitle, colorName } = {}) {
     ['Result', '*'],
     ['ECO', entry.eco],
     ['Opening', entry.ecoNom],
-    ['Annotator', 'Coach Échecs'],
+    ['Annotator', 'BlitzRefute'],
   ];
   return `${headers.map(([k, v]) => `[${k} "${String(v).replace(/"/g, "'")}"]`).join('\n')}\n\n${wrap(body + ' *')}\n`;
 }

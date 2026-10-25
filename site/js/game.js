@@ -236,7 +236,7 @@ export class Game {
     const h = this.record.headers || {};
     const pc = this.record.playerColor;
     c.setHeader('Event', h.Event || "Partie d'entraînement");
-    c.setHeader('Site', h.Site || 'Coach Échecs');
+    c.setHeader('Site', h.Site || 'BlitzRefute');
     c.setHeader('Date', h.Date || this.record.createdAt.slice(0, 10).replace(/-/g, '.'));
     c.setHeader('White', h.White || (pc === 'w' ? 'Moi' : 'Adversaire'));
     c.setHeader('Black', h.Black || (pc === 'b' ? 'Moi' : 'Adversaire'));

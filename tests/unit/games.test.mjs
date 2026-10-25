@@ -154,3 +154,16 @@ test('vraies erreurs : position à retravailler (sortie, punition manquée), enr
   p = markCorrige(p, 'li-b', Date.UTC(2026, 9, 25));
   assert.deepEqual(vraiesErreurs(p).map((x) => x.gameId), ['li-a']);
 });
+
+test('PGN collé : alerte de déviation (erreur adverse connue, sortie de théorie, hors répertoire)', async () => {
+  const { alertePgn } = await import('../../site/js/games-core.js');
+  const al = (san, color) => { const g = game(san, color); return alertePgn(g, repertoireDeviation(g, data.entries)); };
+  const a1 = al(['d4', 'd5', 'c4', 'Bg4', 'Qb3'], 'w');
+  assert.equal(a1.niveau, 'warn');
+  assert.match(a1.texte, /^Au coup 2… Fg4, l’adversaire a joué une déviation connue \(fiche « .+ »\) ! Elle se punit/);
+  assert.deepEqual(a1.ligne.slice(0, 5), ['d4', 'd5', 'c4', 'Bg4', 'cxd5']);
+  const a2 = al(['d4', 'd5', 'Nf3'], 'w');
+  assert.match(a2.texte, /^Au coup 2\. Cf3, vous sortez de la théorie de vos fiches : le coup prévu était c4\./);
+  assert.deepEqual(a2.ligne, ['d4', 'd5', 'c4']);
+  assert.equal(al(['e4', 'e5'], 'w').niveau, 'info');
+});

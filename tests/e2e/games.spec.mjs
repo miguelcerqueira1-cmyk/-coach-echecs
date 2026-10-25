@@ -38,6 +38,7 @@ async function setup(page, { token = 'lip_test' } = {}) {
   await page.addInitScript(([t]) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
       localStorage.setItem('coach-echecs:mes-parties', JSON.stringify({ lichess: 'LeugiMC', chesscom: 'QG_Miguel', max: 20, speed: 'blitz', precision: 150 }));
       if (t) localStorage.setItem('coach-echecs:jeton-lichess', t);
@@ -155,6 +156,7 @@ test('Bilan de la partie de l’échiquier : analyse Stockfish et pistes sur la 
   await page.addInitScript(() => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
       sessionStorage.setItem('e2e-init', '1');
     }
@@ -179,6 +181,7 @@ test('rapport détaillé : erreur expliquée avec la suite du moteur, bon coup, 
   await page.addInitScript(() => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
       sessionStorage.setItem('e2e-init', '1');
     }
@@ -201,4 +204,23 @@ test('rapport détaillé : erreur expliquée avec la suite du moteur, bon coup, 
   await rep.locator('[data-exo]').first().click();
   await expect(page.locator('#page-parties [data-review-caption]')).toContainText('Exercice');
   await expect(page.locator('#page-parties [data-review-board] .board-arrows line')).toHaveCount(0);
+});
+
+test('Mes parties : partie collée en PGN, déviation connue signalée, réfutation ouverte sur l’échiquier', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/parties');
+  await expect(page.locator('.game-card').first()).toBeVisible({ timeout: 15000 });
+  await page.locator('.pgn-paste summary').click();
+  await page.fill('[data-pgn]', '[Site "https://lichess.org/abcdEFGH"]\n[Date "2026.10.20"]\n[White "LeugiMC"]\n[Black "Adversaire9"]\n[Result "*"]\n\n1. d4 d5 2. c4 Bg4 3. Qb3 Nc6 *');
+  await page.click('[data-pgn-go]');
+  const alert = page.locator('[data-pgn-alert]');
+  await expect(alert).toContainText('Au coup 2… Fg4, l’adversaire a joué une déviation connue');
+  await expect(page.locator('.game-card').first()).toContainText('Adversaire9');
+  // La punition manquée devient une position de « Mes vraies erreurs ».
+  const rec = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')).sorties.find((x) => x.gameId.startsWith('pgn-')));
+  expect(rec).toMatchObject({ kind: 'punition', expected: ['c4d5'], opp: 'Adversaire9', url: 'https://lichess.org/abcdEFGH' });
+  await alert.locator('[data-pgn-line]').click();
+  await expect(page.locator('#page-moteur')).toBeVisible();
+  const g = await page.evaluate(() => window.__coach.state.game.record.moves?.length ?? window.__coach.state.game.ply);
+  expect(g).toBeGreaterThanOrEqual(5);
 });

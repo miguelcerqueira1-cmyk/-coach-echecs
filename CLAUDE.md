@@ -1,9 +1,13 @@
-# CLAUDE.md — Coach Échecs (synthèse du projet, mise à jour le 2026-10-23)
+# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-10-26)
 
 À lire en premier dans toute nouvelle session. Le code complet est dans le dépôt : ce fichier
 explique le but, l'organisation, les choix et les règles. Ne pas y recopier de code.
 
 ## 1. Objectif
+
+**Marque : BlitzRefute** (depuis le 2026-10-26) — « L'encyclopédie interactive et l'arme fatale pour
+maîtriser tes ouvertures et détruire les pièges en Blitz. » Les clés localStorage gardent le préfixe
+`coach-echecs:` (données des utilisateurs conservées).
 
 Application web **en français** d'entraînement aux échecs, pour un joueur de club/blitz (~1000–1400
 Elo) qui joue le **Gambit Dame avec les Blancs** et la **Caro-Kann avec les Noirs**.
@@ -165,20 +169,37 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   jour, CORS limité au site, Durable Object pour les compteurs. Modèle par défaut configurable
   (variable `CLAUDE_MODEL`).
 
+## 5 bis. Formule Gratuit / Pro (`site/js/pro.js`)
+
+- Gratuit : Moteur, Mes parties (dont PGN collé), 3 variantes de base `FREE_FICHES`
+  (gd-orthodoxe, ck-classique, ck-avance-short : fiche + leçon). Pro : autres fiches (lignes
+  verrouillées, contenu flouté, aucune requête), anti-trash, S'entraîner / révision espacée, séance du
+  jour, Mes vraies erreurs, autres modes, leçons Pro. Fenêtre `#dlg-pro` (`openPaywall`).
+- Paiement : `config.json.paymentUrl` (variable `PAYMENT_URL` au build) ; vide → « Le paiement en
+  ligne ouvre bientôt ». Aucune délivrance de licence après paiement pour l'instant.
+- Code d'accès (admin) : seule son empreinte SHA-256 est dans le code (`CODE_HASHES`) ; drapeau
+  `coach-echecs:pro` (jamais exporté par « Mes données »). Les tests e2e tournent en Pro
+  (`pro.spec.mjs` couvre la formule gratuite).
+- **Limites à dire à l'utilisateur** : protection purement côté navigateur (contenu dans le dépôt
+  public et le JS, drapeau modifiable) ; GitHub Pages interdit un usage principalement commercial
+  (SaaS) → avant de vendre : hébergement (ex. Cloudflare Pages), dépôt privé, vérification de
+  licence côté serveur (Worker) + paiement (Stripe) ; conditions d'usage commercial des API
+  Lichess / Chess.com et licences (Stockfish GPLv3, pièces cburnett GPL) à vérifier.
+
 ## 6. Stockage local (clés `coach-echecs:*`)
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
-`youtube-v1` ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
+`youtube-v1`, `pro` (formule, propre à l'appareil) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
 
 ## 7. Commandes
 
 ```
 npm ci                         # dépendances + copie chess.js / Stockfish dans site/
-npm test                       # tests unitaires (≈ 95)
+npm test                       # tests unitaires (≈ 96)
 npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
 node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
-BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 60), WITH_WEBKIT=1 en CI
+BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 63), WITH_WEBKIT=1 en CI
 npm run verify:repertoire      # après modification d'une fiche (recalcule data/verification.json)
 node scripts/verify-repertoire.mjs --check
 cd worker && npm ci && npm test

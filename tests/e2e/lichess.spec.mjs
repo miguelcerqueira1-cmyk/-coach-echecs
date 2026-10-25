@@ -43,6 +43,7 @@ async function setup(page, { token = 'lip_test', settings = {} } = {}) {
   await page.addInitScript(([t, s]) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false, ...s }));
       if (t) localStorage.setItem('coach-echecs:jeton-lichess', t);
       sessionStorage.setItem('e2e-init', '1');

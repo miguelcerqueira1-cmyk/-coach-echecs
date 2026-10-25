@@ -125,6 +125,41 @@ export function repertoireDeviation(game, entries) {
   return { rep, who: 'aucun', ply: game.san.length };
 }
 
+// Alerte d'une partie collée en PGN : où la partie quitte vos fiches et ce que disent les fiches.
+// Faits uniquement (fiches vérifiées par Stockfish, chess.js) ; ligne = coups SAN à ouvrir sur
+// l'échiquier (réfutation ou coup de la fiche), null s'il n'y a rien à montrer.
+export function alertePgn(game, d) {
+  const toSan = (prefix, ucis) => {
+    const c = new Chess();
+    const out = [];
+    try {
+      for (const s of prefix) out.push(c.move(s).san);
+      for (const u of ucis) out.push(c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }).san);
+    } catch { return null; }
+    return out;
+  };
+  const coup = (ply, san) => `${moveNo(ply)} ${sanFr(san)}`;
+  if (!d?.rep) return { niveau: 'info', texte: 'Partie hors de votre répertoire (Gambit Dame avec les Blancs, Caro-Kann avec les Noirs) : rien à comparer.', ligne: null };
+  const err = d.err;
+  if ((d.who === 'adversaire-erreur' || (d.who === 'adversaire' && err)) && err) {
+    const ligne = toSan(game.san.slice(0, d.ply + 1), err.suite || []);
+    const puni = d.who === 'adversaire-erreur' && d.punished;
+    return {
+      niveau: puni ? 'ok' : 'warn',
+      texte: `Au coup ${coup(d.ply, d.played)}, l’adversaire a joué une déviation connue (fiche « ${err.nom} ») ! ${puni ? 'Vous l’avez punie ✔' : `Elle se punit : ${err.texte}`}`,
+      ligne, bouton: 'Voir la réfutation',
+    };
+  }
+  if (d.who === 'adversaire') return { niveau: 'info', texte: `Au coup ${coup(d.ply, d.played)}, l’adversaire quitte vos fiches avec un coup qu’elles ne couvrent pas : à partir d’ici, c’est le moteur qui juge.`, ligne: null };
+  if (d.who === 'moi') {
+    const attendu = (d.expected || []).map(sanFr).join(' ou ');
+    const ligne = d.expected?.length ? (() => { const c = new Chess(); try { const l = game.san.slice(0, d.ply).map((s) => c.move(s).san); l.push(c.move(d.expected[0]).san); return l; } catch { return null; } })() : null;
+    if (d.trap) return { niveau: 'warn', texte: `Au coup ${coup(d.ply, d.played)}, vous êtes tombé dans le piège de la fiche « ${d.trap.nom} » : ${d.trap.texte}`, ligne, bouton: 'Voir le bon coup' };
+    return { niveau: 'warn', texte: `Au coup ${coup(d.ply, d.played)}, vous sortez de la théorie de vos fiches : le coup prévu était ${attendu}.${d.note ? ` ${d.note}` : ''}`, ligne, bouton: 'Voir le coup de la fiche' };
+  }
+  return { niveau: 'ok', texte: 'Vous avez suivi vos fiches jusqu’au bout ✔', ligne: null };
+}
+
 // Position d'une vraie partie à retravailler (module « Mes vraies erreurs » de l'Entraînement) :
 // - sortie : à vous de jouer, vous avez quitté les fiches (attendu : un coup des fiches) ;
 // - punition : l'adversaire a commis l'erreur prévue par une fiche et vous ne l'avez pas punie

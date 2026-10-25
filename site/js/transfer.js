@@ -4,7 +4,8 @@
 
 const PREFIX = 'coach-echecs:';
 export const SECRETS = ['coach-echecs:jeton-lichess', 'coach-echecs:code-acces', 'coach-echecs:cle-youtube'];
-const SKIP = [...SECRETS, 'coach-echecs:youtube-v1', 'coach-echecs:partie-illisible']; // caches et brouillons
+// Formule Pro : propre à l'appareil, jamais transportée par un fichier.
+const SKIP = [...SECRETS, 'coach-echecs:pro', 'coach-echecs:youtube-v1', 'coach-echecs:partie-illisible']; // caches et brouillons
 export const FORMAT = 'coach-echecs-donnees';
 
 function keysOf(storage) {
@@ -38,7 +39,7 @@ export function describe(dump) {
 
 // Vérifie puis écrit l'export ; les clés inconnues ou les secrets sont ignorés.
 export function importData(dump, storage = localStorage) {
-  if (!dump || dump.format !== FORMAT || typeof dump.data !== 'object') throw new Error('Fichier non reconnu : ce n’est pas un export de Coach Échecs.');
+  if (!dump || dump.format !== FORMAT || typeof dump.data !== 'object') throw new Error('Fichier non reconnu : ce n’est pas un export de BlitzRefute (ex-Coach Échecs).');
   let n = 0;
   for (const [k, v] of Object.entries(dump.data)) {
     if (!k.startsWith(PREFIX) || SKIP.includes(k) || typeof v !== 'string') continue;

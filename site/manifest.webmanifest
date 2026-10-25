@@ -1,7 +1,7 @@
 {
-  "name": "Coach Échecs",
-  "short_name": "Coach Échecs",
-  "description": "Entraîneur d'échecs : Stockfish calcule, chess.js valide les règles, Claude explique.",
+  "name": "BlitzRefute",
+  "short_name": "BlitzRefute",
+  "description": "L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.",
   "lang": "fr",
   "dir": "ltr",
   "id": "./",

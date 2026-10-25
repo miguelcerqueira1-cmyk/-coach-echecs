@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Coach Échecs</title>
-  <meta name="description" content="Entraîneur d'échecs : Stockfish calcule, chess.js valide les règles, Claude explique.">
+  <title>BlitzRefute — ouvertures et réfutations en Blitz</title>
+  <meta name="description" content="BlitzRefute — L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.">
   <meta name="theme-color" content="#0b0d1e">
   <script>
     // Apparence enregistrée appliquée avant l'affichage (même logique que js/theme.js).
@@ -26,13 +26,16 @@
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Coach Échecs">
+  <meta name="apple-mobile-web-app-title" content="BlitzRefute">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
   <header class="top">
-    <h1>Coach Échecs</h1>
+    <a class="brand" href="#/moteur" title="L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.">
+      <span class="brand-mark" aria-hidden="true">⚡</span>
+      <span class="brand-text"><h1 class="brand-name">BlitzRefute</h1><span class="brand-tag">Ouvertures &amp; réfutations Blitz</span></span>
+    </a>
     <nav class="tabs" aria-label="Pages">
       <a href="#/moteur" data-page="moteur">Moteur</a>
       <a href="#/repertoire" data-page="repertoire">Répertoire</a>
@@ -42,7 +45,9 @@
     <div class="pills">
       <span id="engine-pill" class="pill" title="État du moteur Stockfish">Moteur…</span>
       <span id="coach-pill" class="pill" title="État des explications Claude">Claude…</span>
+      <span id="plan-pill" class="pill plan" title="Votre formule">Gratuit</span>
     </div>
+    <button id="btn-pro" class="pro-cta" type="button">⚡ Passer Pro</button>
     <button id="btn-settings" class="icon-btn" type="button" aria-label="Réglages" title="Réglages">⚙</button>
   </header>
 
@@ -239,6 +244,29 @@
         <button value="ok" class="primary">Enregistrer</button>
       </div>
     </form>
+  </dialog>
+
+  <dialog id="dlg-pro" class="dlg-pro" aria-labelledby="pro-title">
+    <div class="pro-head">
+      <span class="brand-mark" aria-hidden="true">⚡</span>
+      <div><h2 id="pro-title">BlitzRefute Pro</h2><p class="muted small">L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.</p></div>
+    </div>
+    <p class="pro-reason" data-pro-reason></p>
+    <ul class="pro-list" data-pro-list></ul>
+    <p class="pro-free muted small">Toujours gratuit : le moteur d’analyse Stockfish, Mes parties, et 3 variantes de base.</p>
+    <div class="pro-actions">
+      <a class="pro-cta pro-buy" data-pro-buy href="#" target="_blank" rel="noopener" hidden>⚡ Passer Pro — accès à vie</a>
+      <p class="pro-soon small" data-pro-soon>Le paiement en ligne ouvre bientôt.</p>
+      <button type="button" data-pro-close>Plus tard</button>
+    </div>
+    <details class="pro-code">
+      <summary class="small">J’ai un code d’accès</summary>
+      <form data-pro-form class="pro-code-form">
+        <input data-pro-code type="password" autocomplete="off" spellcheck="false" placeholder="Code d’accès" aria-label="Code d’accès">
+        <button type="submit">Activer</button>
+      </form>
+      <p data-pro-msg class="small" role="status"></p>
+    </details>
   </dialog>
 
   <script type="module" src="js/main.js"></script>

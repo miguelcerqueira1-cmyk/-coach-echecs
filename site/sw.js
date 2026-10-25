@@ -1,4 +1,4 @@
-// Service worker de Coach Échecs : application installable et utilisable hors connexion.
+// Service worker de BlitzRefute : application installable et utilisable hors connexion.
 // BUILD et PRECACHE sont remplis par scripts/build.mjs (dist/sw.js) ; le fichier change donc à
 // chaque publication, ce qui déclenche la mise à jour (bandeau « Nouvelle version disponible »).
 //

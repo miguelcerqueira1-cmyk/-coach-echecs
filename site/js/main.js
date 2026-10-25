@@ -1,5 +1,6 @@
 // Contrôleur principal. Principe : l'état de partie (game.js) est la source de vérité ;
 // Stockfish calcule ; chess.js valide ; Claude explique les résultats calculés.
+import { bindPaywall, renderPlan, openPaywall, setPaymentUrl } from './pro.js';
 import './pwa.js'; // service worker, bandeau de mise à jour, aide à l'installation
 import { Game, parseMoveText } from './game.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
@@ -88,6 +89,15 @@ async function init() {
     const cfg = await (await fetch('./config.json', { cache: 'no-cache' })).json();
     state.config = { ...state.config, ...cfg };
   } catch { /* pas de config publiée : pas d'API Claude */ }
+  setPaymentUrl(state.config.paymentUrl);
+  bindPaywall();
+  renderPlan();
+  $('btn-pro').addEventListener('click', () => openPaywall());
+  window.addEventListener('pro-change', () => {
+    renderPlan();
+    if (repertoirePage) repertoirePage.render();
+    if (trainingPage && !trainingPage.drill && !trainingPage.lesson) trainingPage.renderSetup();
+  });
   refreshCoachPill();
   renderAll();
   initRouter({
@@ -795,7 +805,7 @@ async function refreshCoachPill() {
   const el = $('coach-pill');
   const missing = coach.missing();
   if (missing) {
-    el.className = 'pill';
+    el.className = 'pill hidden'; // badge discret : masqué tant que Claude n'est pas configuré
     el.textContent = 'Claude : indisponible';
     el.title = missing;
     return;
@@ -1264,6 +1274,7 @@ function openSanInBoard(san, color, label, { animate = false, headers = null } =
 function ensureGamesPage() {
   gamesPage ??= new GamesPage({
     el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
+    openLine: (san, color, label) => openSanInBoard(san, color, label),
     openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`, {
       headers: { White: g.white, Black: g.black, WhiteElo: g.whiteElo ? String(g.whiteElo) : '', BlackElo: g.blackElo ? String(g.blackElo) : '', Site: g.url || '', Date: (g.date || '').slice(0, 10).replace(/-/g, '.'), Result: g.result || '' },
     }),

@@ -10,6 +10,7 @@ async function setup(page, settings = {}, code = '') {
   await page.addInitScript(([s, c]) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify(s));
       if (c) localStorage.setItem('coach-echecs:code-acces', c);
       sessionStorage.setItem('e2e-init', '1');

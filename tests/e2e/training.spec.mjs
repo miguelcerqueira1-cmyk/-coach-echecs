@@ -9,6 +9,7 @@ async function setup(page, { token = '', prefs = {} } = {}) {
   await page.addInitScript(([t, p]) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
       localStorage.setItem('coach-echecs:entrainement', JSON.stringify(p));
       if (t) localStorage.setItem('coach-echecs:jeton-lichess', t);

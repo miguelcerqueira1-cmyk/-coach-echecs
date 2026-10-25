@@ -13,6 +13,7 @@ async function setup(page) {
   await page.addInitScript((s) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify(s));
       localStorage.setItem('coach-echecs:entrainement', JSON.stringify({ rep: 'gd', source: 'fiches', length: 5 }));
       sessionStorage.setItem('e2e-init', '1');
@@ -37,7 +38,7 @@ test('manifeste : nom, portée relative, icônes servies', async ({ page, reques
   const res = await request.get(href);
   expect(res.ok()).toBe(true);
   const m = await res.json();
-  expect(m.name).toBe('Coach Échecs');
+  expect(m.name).toBe('BlitzRefute');
   expect(m.display).toBe('standalone');
   expect(m.start_url.startsWith('./')).toBe(true);
   expect(m.scope).toBe('./');
@@ -84,7 +85,7 @@ test('hors connexion : Moteur (Stockfish), Répertoire et Entraînement après u
 
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('h1')).toHaveText('Coach Échecs');
+  await expect(page.locator('h1')).toHaveText('BlitzRefute');
   await expect(page.locator('#engine-pill')).toHaveText('Moteur prêt', { timeout: 60000 });
   await waitAdvice(page);
   await expect(page.locator('#advice')).toContainText('Coup conseillé par le moteur');

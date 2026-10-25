@@ -3,10 +3,11 @@
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { loadProgress, saveProgress, recordSortie } from './progress.js';
+import { loadPgnTolerant } from './game.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
-  positionARevoir,
+  positionARevoir, alertePgn,
 } from './games-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -19,8 +20,9 @@ function load(k, d) { try { return { ...d, ...JSON.parse(localStorage.getItem(k)
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* stockage plein */ } }
 
 export class GamesPage {
-  constructor({ el, engine, client, getToken, openGame }) {
+  constructor({ el, engine, client, getToken, openGame, openLine = null }) {
     this.el = el;
+    this.openLine = openLine; // (san, color, label) : ligne ouverte sur l'échiquier Moteur
     this.engine = engine;
     this.client = client;
     this.getToken = getToken;
@@ -156,7 +158,7 @@ export class GamesPage {
 
   filtered() {
     const sp = this.prefs.speed;
-    return this.games.filter((g) => g.local || sp === 'toutes' || g.speed.toLowerCase() === { blitz: 'blitz', rapide: 'rapide', bullet: 'bullet' }[sp]);
+    return this.games.filter((g) => g.local || g.site === 'PGN collé' || sp === 'toutes' || g.speed.toLowerCase() === { blitz: 'blitz', rapide: 'rapide', bullet: 'bullet' }[sp]);
   }
 
   // ---------- Analyse ----------
@@ -280,11 +282,60 @@ export class GamesPage {
         <ul class="games-status">${st('Lichess')}${st('Chess.com')}${this.status.general ? `<li class="error-text">${esc(this.status.general)}</li>` : ''}</ul>
         <p class="muted small">Lichess : l’export utilise votre jeton (⚙) s’il est enregistré. Chess.com : API publique, sans compte. Rien n’est envoyé ailleurs ; l’analyse est faite par Stockfish sur votre appareil.</p>
       </div>
+      ${this.pgnHtml()}
       ${this.summaryHtml()}
       <div data-analysis></div>
       ${this.listHtml()}`;
     this.bind();
     this.renderAnalysis();
+  }
+
+  // ---------- Partie collée en PGN ----------
+
+  pgnHtml() {
+    const a = this.pgnAlert;
+    const alert = a ? `<div class="card pgn-alert ${a.niveau}" data-pgn-alert role="status">
+        <p>${a.niveau === 'warn' ? '⚠ ' : a.niveau === 'ok' ? '✔ ' : 'ℹ '}${esc(a.texte)}</p>
+        <div class="actions">${a.ligne ? `<button type="button" class="primary" data-pgn-line>${esc(a.bouton)}</button>` : ''}
+          <button type="button" data-open="${esc(a.id)}">Ouvrir la partie sur l’échiquier</button>
+          <button type="button" data-analyse="${esc(a.id)}">Analyser avec Stockfish</button></div>
+      </div>` : '';
+    return `<details class="card pgn-paste" ${this.pgnOpen ? 'open' : ''}>
+        <summary><strong>📋 Coller une partie PGN</strong> <span class="muted small">(Lichess, Chess.com…)</span></summary>
+        <textarea data-pgn rows="5" spellcheck="false" placeholder="[White &quot;…&quot;] [Black &quot;…&quot;]&#10;1. d4 d5 2. c4 …" aria-label="Partie au format PGN"></textarea>
+        <label class="row">Je jouais <select data-pgn-color><option value="auto">Détecter (mes pseudos)</option><option value="w">les Blancs</option><option value="b">les Noirs</option></select></label>
+        <div class="actions"><button type="button" class="primary" data-pgn-go>Comparer avec mon répertoire</button></div>
+        <p class="error-text small" data-pgn-err></p>
+      </details>${alert}`;
+  }
+
+  pastePgn() {
+    const errEl = this.el.querySelector('[data-pgn-err]');
+    const raw = this.el.querySelector('[data-pgn]').value;
+    let c;
+    try { c = loadPgnTolerant(raw); } catch (e) { errEl.textContent = `PGN illisible : ${e.message}`; return; }
+    const san = c.history();
+    if (!san.length) { errEl.textContent = 'Aucun coup trouvé dans ce PGN.'; return; }
+    const h = (c.getHeaders?.() || c.header?.() || {});
+    const low = (x) => String(x || '').trim().toLowerCase();
+    const mine = [this.prefs.lichess, this.prefs.chesscom].map(low).filter(Boolean);
+    let color = this.el.querySelector('[data-pgn-color]').value;
+    if (color === 'auto') color = mine.includes(low(h.White)) ? 'w' : mine.includes(low(h.Black)) ? 'b' : (san[0] === 'e4' ? 'b' : 'w');
+    const base = localGame({ san, color, result: h.Result || '*', white: h.White && h.White !== '?' ? h.White : null, black: h.Black && h.Black !== '?' ? h.Black : null });
+    const d = /^(\d{4})\.(\d{2})\.(\d{2})$/.exec(h.Date || h.UTCDate || '');
+    const g = {
+      ...base, site: 'PGN collé', id: base.id.replace(/^moteur-/, 'pgn-'), local: false, speed: 'PGN',
+      url: /^https:\/\//.test(h.Site || h.Link || '') ? (h.Site?.startsWith('https://') ? h.Site : h.Link) : null,
+      date: d ? new Date(Date.UTC(+d[1], +d[2] - 1, +d[3])).toISOString() : base.date,
+      whiteElo: Number(h.WhiteElo) || null, blackElo: Number(h.BlackElo) || null,
+    };
+    g.deviation = repertoireDeviation(g, this.data?.entries || []);
+    this.games = [g, ...this.games.filter((x) => x.id !== g.id)];
+    this.noteSorties([g]);
+    this.pgnAlert = { id: g.id, color, ...alertePgn(g, g.deviation) };
+    this.pgnOpen = true;
+    this.render();
+    this.el.querySelector('[data-pgn-alert]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   summaryHtml() {
@@ -501,6 +552,11 @@ export class GamesPage {
       if (this.cache[g.id]) { this.selected = g.id; this.render(); } else this.analyse(g);
       this.el.querySelector('[data-analysis]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }));
+    this.el.querySelector('[data-pgn-go]')?.addEventListener('click', () => this.pastePgn());
+    this.el.querySelector('[data-pgn-line]')?.addEventListener('click', () => {
+      const a = this.pgnAlert;
+      if (a?.ligne) this.openLine?.(a.ligne, a.color, a.bouton === 'Voir la réfutation' ? 'la réfutation de la fiche' : 'le coup de la fiche');
+    });
     this.el.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => {
       const g = this.games.find((x) => x.id === b.dataset.open);
       if (g) this.openGame(g);

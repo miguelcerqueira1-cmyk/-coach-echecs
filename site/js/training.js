@@ -11,6 +11,7 @@ import {
 } from './training-core.js';
 import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
+import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson, vraiesErreurs, markCorrige } from './progress.js';
 import { LessonView } from './cours.js';
 import { courseOrder } from './lesson-core.js';
@@ -69,10 +70,11 @@ export class TrainingPage {
     const nTrash = this.data.entries.filter((e) => trashDrill(e, this.data.repertoires[e.rep].couleur)).length;
     const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>Les deux</option><option value="gd" ${cur === 'gd' ? 'selected' : ''}>Gambit Dame</option><option value="ck" ${cur === 'ck' ? 'selected' : ''}>Caro-Kann</option></select>`;
     const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
-    const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id]);
+    const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
     const total = (rep) => this.data.entries.filter((e) => e.rep === rep).length;
     const reelles = vraiesErreurs(this.progress);
+    const lock = isPro() ? '' : ' <span class="lock-badge">🔒 Pro</span>';
     const nSort = reelles.filter((x) => x.kind === 'sortie').length;
     this.el.innerHTML = `<div class="train-hub">
       <section class="card hub-head">
@@ -82,10 +84,10 @@ export class TrainingPage {
           <div><span class="hub-big">${board.byRep.ck.pct} %</span><span class="muted small">Caro-Kann</span></div>
           <div><span class="hub-big">${board.byRep.gd.due + board.byRep.ck.due}</span><span class="muted small">position(s) à revoir</span></div>
         </div>
-        <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span></button>
+        <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span>${lock}</button>
       </section>
       <section class="card hub-card hub-real" data-reelles>
-        <h2>🎯 Mes vraies erreurs</h2>
+        <h2>🎯 Mes vraies erreurs${lock}</h2>
         ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
         <ul class="small real-list">${reelles.slice(0, 3).map((x) => `<li>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${x.kind === 'punition' ? 'punition manquée' : 'sortie du répertoire'}${x.ficheNom ? ` (« ${esc(x.ficheNom)} »)` : ''}</li>`).join('')}</ul>
         <div class="actions"><button type="button" class="primary" data-real>Revoir mes vraies erreurs</button></div>`
@@ -95,6 +97,7 @@ export class TrainingPage {
       <div class="hub-grid">
         <section class="card hub-card hub-learn">
           <h2>📖 1. Apprendre</h2>
+          ${isPro() ? '' : '<p class="small"><strong>Gratuit :</strong> 3 leçons de base. Les autres leçons sont dans BlitzRefute Pro.</p>'}
           <p class="small">Des leçons pas à pas : le nom de chaque variante, les coups expliqués un par un, ce qu’il faut retenir, puis vous rejouez la ligne avec des indices.</p>
           <div class="hub-courses">
             ${['gd', 'ck'].map((rep) => {
@@ -108,14 +111,14 @@ export class TrainingPage {
           </div>
         </section>
         <section class="card hub-card">
-          <h2>📚 2. S’entraîner</h2>
+          <h2>📚 2. S’entraîner${lock}</h2>
           <p class="small">L’application joue l’adversaire, vous jouez la théorie de mémoire. Erreur : le plan et le bon coup, et la position revient en fin de séance.</p>
           <label class="row">Répertoire ${repSel('lRep', p.lRep)}</label>
           <label class="row">Lignes ${opt('lN', [3, 5, 8], p.lN)}</label>
           <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
         </section>
         <section class="card hub-card">
-          <h2>⏱ 3. Réflexes anti-trash</h2>
+          <h2>⏱ 3. Réflexes anti-trash${lock}</h2>
           <p class="small">Un coup douteux de blitz est joué : enchaînez la punition avant la fin du chrono. ${nTrash} exercices.</p>
           <label class="row">Répertoire ${repSel('tRep', p.tRep)}</label>
           <label class="row">Exercices ${opt('tN', [5, 10, 20], p.tN)}</label>
@@ -161,23 +164,25 @@ export class TrainingPage {
       try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* rien */ }
       this.el.querySelector('[data-rev-stats]').innerHTML = this.revisionLine(this.prefs.rep);
     }));
-    this.el.querySelector('[data-start]').addEventListener('click', () => this.start());
-    this.el.querySelector('[data-real]')?.addEventListener('click', () => this.runReelles());
+    // Modules réservés à BlitzRefute Pro : fenêtre de paiement sinon.
+    const need = (reason, fn) => () => (isPro() ? fn() : openPaywall({ reason }));
+    this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
+    this.el.querySelector('[data-real]')?.addEventListener('click', need('« Mes vraies erreurs »', () => this.runReelles()));
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
-    this.el.querySelector('[data-lines]').addEventListener('click', () => {
+    this.el.querySelector('[data-lines]').addEventListener('click', need('L’entraînement en répétition espacée', () => {
       this.runDrill('lignes', pickFiches(board, { rep: this.prefs.lRep || null, n: Number(this.prefs.lN) || 3 }));
-    });
+    }));
     const trashIds = (rep) => pickFiches(board, { rep, n: 999, needPunition: true })
       .filter((id) => { const e = this.data.entries.find((x) => x.id === id); return trashDrill(e, this.data.repertoires[e.rep].couleur); });
-    this.el.querySelector('[data-trash]').addEventListener('click', () => {
+    this.el.querySelector('[data-trash]').addEventListener('click', need('Le module Réflexes anti-trash', () => {
       this.runDrill('trash', shuffle(trashIds(this.prefs.tRep || null)).slice(0, Number(this.prefs.tN) || 5), { timeLimit: Number(this.prefs.tTime) || 10 });
-    });
-    this.el.querySelector('[data-today]').addEventListener('click', () => {
+    }));
+    this.el.querySelector('[data-today]').addEventListener('click', need('La séance du jour', () => {
       const trash = shuffle(trashIds(null)).slice(0, 3);
       this.runDrill('lignes', pickFiches(board, { n: 3 }), { then: () => this.runDrill('trash', trash, { timeLimit: Number(this.prefs.tTime) || 10 }) });
-    });
-    this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', () => this.runDrill('lignes', [b.dataset.dashLine])));
-    this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 })));
+    }));
+    this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', need('La révision des lignes', () => this.runDrill('lignes', [b.dataset.dashLine]))));
+    this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', need('Le drill de punition', () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 }))));
     this.el.querySelectorAll('[data-dash-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.dashLesson)));
     this.el.querySelectorAll('[data-dash-rep]').forEach((b) => b.addEventListener('click', () => {
       this.dashRep = b.dataset.dashRep;
@@ -193,7 +198,7 @@ export class TrainingPage {
     const board = dashboard(this.data, this.revision, this.progress);
     const byId = Object.fromEntries(board.fiches.map((f) => [f.id, f]));
     const list = courseOrder(this.data.entries, rep);
-    const next = list.find((e) => !this.progress.cours?.[e.id]);
+    const next = list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const groups = [];
     for (const e of list) {
       const g = `${e.badge === 'theorie' ? '' : `${({ piege: 'Pièges', loufoque: 'Coups loufoques à punir' })[e.badge]} · `}${e.famille}`;
@@ -216,7 +221,7 @@ export class TrainingPage {
           <div class="course-main"><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
             <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %</div></div>
           <div class="dash-bar"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
-          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
+          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) ? '🔒 Pro' : this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
         </li>`;
       }).join('')}</ol>`).join('')}
     </div>`;
@@ -228,6 +233,7 @@ export class TrainingPage {
   openLesson(id) {
     const entry = this.data.entries.find((e) => e.id === id);
     if (!entry) return;
+    if (!canOpenFiche(id)) { openPaywall({ reason: `La leçon « ${entry.nom} »` }); return; }
     this.s = null;
     this.view = 'cours';
     this.courseRep = entry.rep;
@@ -246,7 +252,7 @@ export class TrainingPage {
           const drill = trashDrill(e2, this.data.repertoires[e2.rep].couleur);
           this.el.querySelector('.course').insertAdjacentHTML('afterbegin', `<div class="hub-result">Leçon « ${esc(e2.nom)} » terminée ✔ Elle reviendra dans vos révisions (module S’entraîner).
             ${drill ? `<button type="button" class="small-btn" data-after-drill="${fid}">⏱ Tester la punition</button>` : ''}</div>`);
-          this.el.querySelector('[data-after-drill]')?.addEventListener('click', () => this.runDrill('trash', [fid], { timeLimit: 20 }));
+          this.el.querySelector('[data-after-drill]')?.addEventListener('click', () => (isPro() ? this.runDrill('trash', [fid], { timeLimit: 20 }) : openPaywall({ reason: 'Le drill de punition' })));
         },
       }),
     });
