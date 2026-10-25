@@ -119,3 +119,38 @@ test('motifs tactiques : fourchette de Cavalier et matériel', () => {
   assert.equal(lineText(fen, ['Nc7+', 'Kd7']), '1. Cc7+ Rd7');
   assert.equal(pourVous(-120, 'b'), '+1,2');
 });
+
+test('vraies erreurs : position à retravailler (sortie, punition manquée), enregistrement et validation', async () => {
+  const { positionARevoir } = await import('../../site/js/games-core.js');
+  const { recordSortie, vraiesErreurs, markCorrige, dashboard } = await import('../../site/js/progress.js');
+  // Sortie : 2.Cf3 au lieu de 2.c4 → position après 1.d4 d5, attendu c2c4.
+  const g1 = { ...game(['d4', 'd5', 'Nf3', 'Nf6'], 'w'), id: 'li-a', date: '2026-10-20T10:00:00Z' };
+  const p1 = positionARevoir(g1, repertoireDeviation(g1, data.entries));
+  assert.deepEqual(p1, { kind: 'sortie', moves: ['d2d4', 'd7d5'], expected: ['c2c4'], played: 'Nf3', ply: 2, color: 'w', texte: null, ficheNom: p1.ficheNom });
+  // Punition manquée : après 2…Fg4 ?, attendu cxd5 (1er coup de la punition vérifiée).
+  const g2 = { ...game(['d4', 'd5', 'c4', 'Bg4', 'Qb3'], 'w'), id: 'li-b', date: '2026-10-21T10:00:00Z' };
+  const p2 = positionARevoir(g2, repertoireDeviation(g2, data.entries));
+  assert.equal(p2.kind, 'punition');
+  assert.deepEqual(p2.moves, ['d2d4', 'd7d5', 'c2c4', 'c8g4']);
+  assert.deepEqual(p2.expected, ['c4d5']);
+  assert.equal(p2.played, 'Qb3');
+  assert.ok(p2.texte);
+  // Caro-Kann : 1…e5 → attendu c7c6.
+  const g3 = game(['e4', 'e5'], 'b');
+  assert.deepEqual(positionARevoir(g3, repertoireDeviation(g3, data.entries)).expected, ['c7c6']);
+  // Rien à retravailler quand la partie suit les fiches.
+  const g4 = game(['d4', 'd5', 'c4'], 'w');
+  assert.equal(positionARevoir(g4, repertoireDeviation(g4, data.entries)), null);
+
+  let p = { lignes: {}, drills: {}, jours: [], sorties: [{ gameId: 'li-a', ficheId: 'gd-orthodoxe', rep: 'gd', ply: 2, date: g1.date }], cours: {} };
+  p = recordSortie(p, { gameId: 'li-a', ficheId: 'gd-orthodoxe', rep: 'gd', ply: 2, date: g1.date, pos: p1, opp: 'Adv' });
+  p = recordSortie(p, { gameId: 'li-b', ficheId: 'gd-fg4', rep: 'gd', ply: 3, date: g2.date, pos: p2 });
+  p = recordSortie(p, { gameId: 'li-b', ficheId: 'gd-fg4', rep: 'gd', ply: 3, date: g2.date, pos: p2 });
+  assert.deepEqual(vraiesErreurs(p).map((x) => x.gameId), ['li-b', 'li-a'], 'une fois par partie, plus récente d’abord ; ancien enregistrement complété');
+  assert.equal(p.sorties.length, 2);
+  // Une punition manquée n'est pas comptée comme « sortie » dans le tableau de bord.
+  const rev = { gd: {}, ck: {} };
+  assert.equal(dashboard(data, rev, p).fiches.find((f) => f.id === 'gd-fg4').sorties, 0);
+  p = markCorrige(p, 'li-b', Date.UTC(2026, 9, 25));
+  assert.deepEqual(vraiesErreurs(p).map((x) => x.gameId), ['li-a']);
+});

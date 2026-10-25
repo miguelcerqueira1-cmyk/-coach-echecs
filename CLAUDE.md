@@ -32,7 +32,7 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
 |---|---|
 | `#/moteur` | Échiquier ; conseil Stockfish après chaque coup réellement joué (confirmer pour l'enregistrer) ; panneau « Coup optimal » (Stockfish local, Lichess Cloud Eval, meilleur % de victoire à mon niveau, coup des maîtres, coup de l'Élite) ; navigation ⏮◀▶⏭ et analyse des positions passées ; explication gratuite sans IA (ou Claude si configuré) ; mode « Indice d'abord » ; noms/Elo des joueurs au-dessus de l'échiquier ; « Jouer la suite jusqu'à la fin » (théorie des maîtres puis Stockfish) ; « Bilan de la partie » ; import/export PGN/FEN. |
 | `#/repertoire` | 58 fiches (31 Gambit Dame, 27 Caro-Kann) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
-| `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir, piège et punition **jouables coup par coup** sur l'échiquier → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **⚡ Séance du jour**, **📊 progression** par variante (maîtrise %, série 🔥, sorties réelles ⚠). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
+| `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir, piège et punition **jouables coup par coup** sur l'échiquier → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **🎯 Mes vraies erreurs** (positions de mes parties Lichess/Chess.com : sorties de répertoire et punitions manquées, à rejouer jusqu'à validation), **⚡ Séance du jour**, **📊 progression** par variante (maîtrise %, série 🔥, sorties réelles ⚠). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
 | `#/parties` | Import des dernières parties Lichess/Chess.com (automatique à l'ouverture si pseudos enregistrés, badge « Nouveau »), sortie du répertoire, analyse Stockfish coup par coup, courbe, bilan, **rapport détaillé écrit** (note, déroulement, bons coups, erreurs expliquées avec la suite du moteur, occasions manquées, à retenir, exercices). |
 
 ⚙ Réglages : budget moteur, niveau des explications, mode d'aide, **apparence** (thème, échiquier,
@@ -147,6 +147,12 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   erreur). Série « 🔥 Série : X » (réussites du premier coup). Fin de séance : bilan « X réussies,
   Y ratées » puis « 🎯 Revoir uniquement mes erreurs » (file des positions ratées, une ratée
   repasse en fin de file, jusqu'à validation de toutes).
+- **Mes vraies erreurs** : à l'import (Mes parties), `positionARevoir` (games-core) tire de chaque
+  partie la position de sortie des fiches (attendu : coups des fiches) ou de punition manquée
+  (attendu : 1er coup de la punition) ; stockée dans `progression-v1.sorties` (moves/expected UCI,
+  une par partie, ancien enregistrement complété) ; validée → `corrige` (sort de la liste) ;
+  la position compte aussi en révision espacée si elle est dans l'arbre. Parties de l'échiquier
+  Moteur exclues ; une punition manquée ne compte pas comme « sortie » au tableau de bord.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
@@ -169,7 +175,7 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 
 ```
 npm ci                         # dépendances + copie chess.js / Stockfish dans site/
-npm test                       # tests unitaires (≈ 94)
+npm test                       # tests unitaires (≈ 95)
 npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
 node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
 BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 60), WITH_WEBKIT=1 en CI

@@ -6,6 +6,8 @@
 // Coup refusé : case rouge, secousse et bulle (raison tirée de chess.js ou du piège de la fiche).
 // Série de réussites du premier coup ; en fin de séance, bilan et « Revoir uniquement mes
 // erreurs » : les positions ratées reviennent jusqu'à ce qu'elles soient toutes validées.
+// - « Mes vraies erreurs » (kind 'reelles') : positions de vos parties Lichess/Chess.com où vous
+//   avez quitté les fiches ou manqué une punition ; une position validée sort de la liste.
 // Les coups attendus sont ceux des fiches (lignes vérifiées par Stockfish) ; rien n'est inventé.
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
@@ -22,7 +24,8 @@ const sec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
 export class DrillRunner {
   // kind : 'lignes' | 'trash' ; ids : fiches à travailler ; onDone(résumé) : retour au menu.
   // guided : pratique guidée d'une leçon (indice, puis le coup ; pas de pénalité ni de reprise).
-  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, onDone }) {
+  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone }) {
+    this.onValidated = onValidated;
     this.guided = guided;
     this.engine = engine; // Stockfish : accepte un autre coup gagnant dans le drill anti-trash
     this.el = el;
@@ -45,13 +48,14 @@ export class DrillRunner {
     this.reviewing = false;
     this.alive = true;
     this.layout();
+    if (kind === 'reelles') { this.startReview(positions.map((x) => ({ ...x, kind: 'pos' }))); return; }
     this.next();
   }
 
   colorOf(e) { return this.data.repertoires[e.rep].couleur; }
 
   layout() {
-    const title = this.kind === 'trash' ? '⏱ Drill anti-trash' : this.guided ? '📖 À vous : pratique guidée' : '📚 Lignes du répertoire';
+    const title = { trash: '⏱ Drill anti-trash', reelles: '🎯 Mes vraies erreurs' }[this.kind] || (this.guided ? '📖 À vous : pratique guidée' : '📚 Lignes du répertoire');
     this.el.innerHTML = `<div class="train-layout drill" data-drill="${this.kind}">
       <section>
         <div class="train-status" data-status></div>
@@ -160,6 +164,7 @@ export class DrillRunner {
 
   onUserMove(input) {
     if (!this.alive || !this.cur || this.cur.wait) return;
+    if (this.cur.pos) { this.onPosMove(input); return; }
     if (this.kind === 'trash') { this.onTrashMove(input); return; }
     const c = this.cur;
     const step = c.steps[c.i];
@@ -279,11 +284,13 @@ export class DrillRunner {
 
   // Mini-quiz des positions ratées : une position réussie sort de la file, une position
   // ratée repasse à la fin, jusqu'à ce que toutes soient validées.
-  startReview() {
+  startReview(queue = this.missed.map((m) => ({ ...m }))) {
     this.reviewing = true;
-    this.queue = this.missed.map((m) => ({ ...m }));
+    this.queue = queue;
     this.$('[data-log]').innerHTML = '';
-    this.log('🎯 Révision ciblée : seulement les positions ratées, jusqu’à ce qu’elles soient toutes validées.', 'muted');
+    this.log(this.kind === 'reelles'
+      ? '🎯 Positions de vos vraies parties : retrouvez le coup de votre répertoire. Une position ratée repasse en fin de liste.'
+      : '🎯 Révision ciblée : seulement les positions ratées, jusqu’à ce qu’elles soient toutes validées.', 'muted');
     this.nextReview();
   }
 
@@ -294,15 +301,16 @@ export class DrillRunner {
     if (!this.queue.length) {
       this.cur = null;
       this.status('Toutes vos erreurs sont corrigées ✔', 'player');
-      this.$('[data-head]').innerHTML = '<p><strong>Révision ciblée terminée</strong></p>';
-      this.feedback(`<div class="drill-fb ok" data-review-done><p>✔ Toutes les positions ratées sont validées.${this.streak.best ? ` Meilleure série : 🔥 ${this.streak.best}.` : ''}</p>
+      this.$('[data-head]').innerHTML = `<p><strong>${this.kind === 'reelles' ? 'Vraies erreurs corrigées' : 'Révision ciblée terminée'}</strong></p>`;
+      this.feedback(`<div class="drill-fb ok" data-review-done><p>✔ Toutes les positions ${this.kind === 'reelles' ? 'de vos parties' : 'ratées'} sont validées.${this.streak.best ? ` Meilleure série : 🔥 ${this.streak.best}.` : ''}</p>
         <div class="actions"><button type="button" class="primary" data-end>Terminer</button></div></div>`);
       this.$('[data-end]').addEventListener('click', () => this.done());
       return;
     }
     const m = this.queue[0];
-    this.$('[data-head]').innerHTML = `<p><strong>Révision ciblée</strong> — encore ${this.queue.length} position(s) · fiche « ${esc(m.e.nom)} »</p>`;
     this.board.setOrientation(m.color);
+    if (m.kind === 'pos') { this.showPos(m); return; }
+    this.$('[data-head]').innerHTML = `<p><strong>Révision ciblée</strong> — encore ${this.queue.length} position(s) · fiche « ${esc(m.e.nom)} »</p>`;
     if (m.kind === 'trash') {
       this.cur = { e: m.e, d: trashDrill(m.e, m.color), color: m.color, errors: 0, i: 0, review: m };
       this.startTrash();
@@ -314,6 +322,58 @@ export class DrillRunner {
     for (const st of steps.slice(0, m.i)) this.chess.move(toObj(st.uci));
     this.status('À vous : retrouvez le coup de la ligne', 'player');
     this.draw({ interactive: true });
+  }
+
+  // Position d'une vraie partie : tous les coups des fiches à cette position sont acceptés.
+  showPos(m) {
+    this.chess = new Chess();
+    for (const u of m.moves) this.chess.move(toObj(u));
+    this.cur = { pos: true, review: m, color: m.color };
+    const quand = m.date ? new Date(m.date).toLocaleDateString('fr-FR') : '';
+    this.$('[data-head]').innerHTML = `<p><strong>Encore ${this.queue.length} position(s)</strong> — partie${quand ? ` du ${esc(quand)}` : ''}${m.opp ? ` contre ${esc(m.opp)}` : ''}${m.url ? ` <a class="tiny" href="${esc(m.url)}" target="_blank" rel="noopener">↗</a>` : ''}${m.ficheNom ? ` · fiche « ${esc(m.ficheNom)} »` : ''}</p>`;
+    const vous = m.played ? `vous aviez joué <strong>${esc(sanFr(m.played))}</strong>` : 'la partie s’est arrêtée là';
+    this.status(m.kind === 'punition'
+      ? `L’adversaire vient de faire l’erreur prévue par la fiche (${vous}) : punissez-la !`
+      : `Ici, ${vous} et vous êtes sorti du répertoire : quel est le coup de vos fiches ?`, 'player');
+    this.draw({ interactive: true });
+  }
+
+  onPosMove(input) {
+    const c = this.cur;
+    const m = c.review;
+    let mv;
+    try { mv = new Chess(this.chess.fen()).move(input); } catch { return; }
+    const rep = m.color === 'w' ? 'gd' : 'ck';
+    const k = key(m.moves);
+    const inTree = this.tree[rep]?.ours.has(k);
+    const bestSan = new Chess(this.chess.fen()).move(toObj(m.expected[0])).san;
+    if (m.expected.includes(mv.lan)) {
+      this.queue.shift();
+      if (inTree) this.gradePos(rep, k, true);
+      this.bumpStreak(true);
+      this.results.push({ id: m.gameId, ok: true });
+      this.onValidated?.(m.gameId);
+      this.chess.move(toObj(mv.lan));
+      this.log(`✔ ${esc(sanFr(mv.san))} — position corrigée`, 'ok');
+      this.draw();
+      this.board.showBubble('✔ Validé ! Cette position sort de la liste.', 'ok');
+      c.wait = true;
+      this.later(() => this.nextReview(), 900);
+      return;
+    }
+    if (inTree) this.gradePos(rep, k, false);
+    this.bumpStreak(false);
+    const why = raisonErreur({ fen: this.chess.fen(), uci: mv.lan, expectedSan: bestSan });
+    this.board.flashError(mv.to, why || `Ici, on joue ${sanFr(bestSan)}.`);
+    this.queue.push(this.queue.shift());
+    this.log(`✘ ${esc(sanFr(mv.san))} — attendu ${esc(sanFr(bestSan))}`, 'ko');
+    c.wait = true;
+    this.draw({ arrows: [{ from: m.expected[0].slice(0, 2), to: m.expected[0].slice(2, 4), kind: 'best' }] });
+    this.feedback(`<div class="drill-fb ko"><p>✘ Le coup de votre répertoire est <strong>${esc(sanFr(bestSan))}</strong> (flèche verte).</p>
+      ${m.texte ? `<p class="small">${esc(m.texte)}</p>` : ''}
+      <p class="small muted">La position repasse en fin de liste.</p>
+      <div class="actions"><button type="button" class="primary" data-continue>Continuer</button></div></div>`);
+    this.$('[data-continue]').addEventListener('click', () => this.nextReview());
   }
 
   onReviewMove(c, mv, step) {

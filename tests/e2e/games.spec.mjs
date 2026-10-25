@@ -75,6 +75,27 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await expect(page.locator('#page-moteur')).toBeVisible();
   const g = await page.evaluate(() => ({ n: window.__coach.state.game.ply, c: window.__coach.state.game.playerColor }));
   expect(g).toEqual({ n: 10, c: 'b' });
+  // Entraînement : la sortie réelle (2.Cf3 au lieu de 2.c4) devient une position à corriger.
+  await page.goto('./#/entrainement');
+  const card = page.locator('[data-reelles]');
+  await expect(card).toContainText('sortie(s) de répertoire');
+  await expect(card).toContainText('contre Adversaire1');
+  const first = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')).sorties
+    .filter((x) => x.moves && !x.corrige).sort((a, b) => String(b.date).localeCompare(String(a.date)))[0]);
+  await card.locator('[data-real]').click();
+  const sq = (s) => page.locator(`#page-entrainement [data-sq="${s}"]`);
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText(first.kind === 'punition' ? 'punissez' : 'sorti du répertoire');
+  // Mauvais coup : refusé, bulle, la position repasse en fin de liste.
+  const wrong = first.color === 'w' ? ['h2', 'h3'] : ['h7', 'h6'];
+  await sq(wrong[0]).click(); await sq(wrong[1]).click();
+  await expect(page.locator('#page-entrainement .board-bubble')).toBeVisible();
+  await page.click('#page-entrainement [data-continue]');
+  await sq(first.expected[0].slice(0, 2)).click(); await sq(first.expected[0].slice(2, 4)).click();
+  await expect(page.locator('#page-entrainement [data-log]')).toContainText('position corrigée');
+  await page.click('#page-entrainement [data-quit]');
+  await expect(page.locator('.hub-result')).toContainText('Mes vraies erreurs : 1 position(s) corrigée(s)');
+  const left = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')).sorties.filter((x) => x.corrige).length);
+  expect(left).toBe(1);
 });
 
 test('Mes parties : erreur explicite si l’export Lichess est refusé', async ({ page }) => {

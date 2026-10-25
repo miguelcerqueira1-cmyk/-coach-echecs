@@ -6,6 +6,7 @@ import { loadProgress, saveProgress, recordSortie } from './progress.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
+  positionARevoir,
 } from './games-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -72,7 +73,11 @@ export class GamesPage {
     const p = loadProgress();
     for (const g of games) {
       const d = g.deviation;
-      if (d?.who === 'moi' && d.fiche) recordSortie(p, { gameId: g.id, ficheId: d.fiche.id, rep: d.rep, ply: d.ply, date: g.date });
+      if (g.local) continue; // partie de l'échiquier Moteur : pas une vraie partie
+      const pos = positionARevoir(g, d);
+      if (pos || (d?.who === 'moi' && d.fiche)) {
+        recordSortie(p, { gameId: g.id, ficheId: d.who === 'moi' ? d.fiche?.id || null : d.err?.id || null, rep: d.rep, ply: d.ply, date: g.date, pos, opp: g.color === 'w' ? g.black : g.white, url: g.url });
+      }
     }
     saveProgress(p);
   }

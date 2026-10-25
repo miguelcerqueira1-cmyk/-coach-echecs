@@ -125,6 +125,35 @@ export function repertoireDeviation(game, entries) {
   return { rep, who: 'aucun', ply: game.san.length };
 }
 
+// Position d'une vraie partie à retravailler (module « Mes vraies erreurs » de l'Entraînement) :
+// - sortie : à vous de jouer, vous avez quitté les fiches (attendu : un coup des fiches) ;
+// - punition : l'adversaire a commis l'erreur prévue par une fiche et vous ne l'avez pas punie
+//   (attendu : le 1er coup de la punition, vérifiée par Stockfish).
+// moves/expected en UCI depuis la position initiale ; null si rien à retravailler.
+export function positionARevoir(game, d) {
+  if (!d || !game?.san) return null;
+  let kind;
+  let upto;
+  let expectedSan;
+  let played;
+  if (d.who === 'moi') { kind = 'sortie'; upto = d.ply; expectedSan = d.expected || []; played = d.played; } else if (d.who === 'adversaire-erreur' && !d.punished) { kind = 'punition'; upto = d.ply + 1; expectedSan = d.expected || []; played = d.playedNext || null; } else return null;
+  const c = new Chess();
+  const moves = [];
+  for (const s of game.san.slice(0, upto)) {
+    try { moves.push(c.move(s).lan); } catch { return null; }
+  }
+  const expected = [];
+  for (const s of expectedSan) {
+    try { expected.push(new Chess(c.fen()).move(s).lan); } catch { /* coup illisible : ignoré */ }
+  }
+  if (!expected.length) return null;
+  return {
+    kind, moves, expected, played, ply: upto, color: game.color,
+    texte: kind === 'punition' ? d.err?.texte || null : d.trap?.texte || d.note || null,
+    ficheNom: kind === 'punition' ? d.err?.nom || null : d.fiche?.nom || d.trap?.nom || null,
+  };
+}
+
 function sanOf(path, uci) {
   const c = new Chess();
   for (const u of path) c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });

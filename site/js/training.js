@@ -11,7 +11,7 @@ import {
 } from './training-core.js';
 import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
-import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson } from './progress.js';
+import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson, vraiesErreurs, markCorrige } from './progress.js';
 import { LessonView } from './cours.js';
 import { courseOrder } from './lesson-core.js';
 
@@ -72,6 +72,8 @@ export class TrainingPage {
     const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id]);
     const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
     const total = (rep) => this.data.entries.filter((e) => e.rep === rep).length;
+    const reelles = vraiesErreurs(this.progress);
+    const nSort = reelles.filter((x) => x.kind === 'sortie').length;
     this.el.innerHTML = `<div class="train-hub">
       <section class="card hub-head">
         <div class="hub-stats">
@@ -81,6 +83,13 @@ export class TrainingPage {
           <div><span class="hub-big">${board.byRep.gd.due + board.byRep.ck.due}</span><span class="muted small">position(s) à revoir</span></div>
         </div>
         <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span></button>
+      </section>
+      <section class="card hub-card hub-real" data-reelles>
+        <h2>🎯 Mes vraies erreurs</h2>
+        ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
+        <ul class="small real-list">${reelles.slice(0, 3).map((x) => `<li>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${x.kind === 'punition' ? 'punition manquée' : 'sortie du répertoire'}${x.ficheNom ? ` (« ${esc(x.ficheNom)} »)` : ''}</li>`).join('')}</ul>
+        <div class="actions"><button type="button" class="primary" data-real>Revoir mes vraies erreurs</button></div>`
+    : '<p class="small muted">Aucune position à corriger pour l’instant. Importez vos parties dans « Mes parties » : quand vous sortez de vos fiches ou laissez passer une punition prévue, la position arrive ici.</p>'}
       </section>
       <p class="hub-path muted small">Le parcours conseillé : <strong>1. Apprendre</strong> une variante (leçon), <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux en blitz.</p>
       <div class="hub-grid">
@@ -153,6 +162,7 @@ export class TrainingPage {
       this.el.querySelector('[data-rev-stats]').innerHTML = this.revisionLine(this.prefs.rep);
     }));
     this.el.querySelector('[data-start]').addEventListener('click', () => this.start());
+    this.el.querySelector('[data-real]')?.addEventListener('click', () => this.runReelles());
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
     this.el.querySelector('[data-lines]').addEventListener('click', () => {
       this.runDrill('lignes', pickFiches(board, { rep: this.prefs.lRep || null, n: Number(this.prefs.lN) || 3 }));
@@ -262,6 +272,26 @@ export class TrainingPage {
           ? `Drill terminé : ${r.ok} / ${r.total} punition(s) réussie(s)${r.best ? `, meilleur temps ${(r.best / 1000).toFixed(1).replace('.', ',')} s` : ''}.`
           : `Lignes terminées : ${r.ok} / ${r.total} sans faute.`;
         this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
+      },
+    });
+  }
+
+  // « Mes vraies erreurs » : positions de vos parties réelles (Mes parties) à corriger.
+  runReelles() {
+    const list = vraiesErreurs(loadProgress());
+    if (!list.length) { this.renderSetup(); return; }
+    this.s = null;
+    const tree = { gd: buildTree(this.data.entries, 'gd'), ck: buildTree(this.data.entries, 'ck') };
+    this.drill = new DrillRunner({
+      el: this.el, data: this.data, kind: 'reelles', ids: [], tree, engine: this.engine, positions: list,
+      progress: loadProgress(),
+      gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
+      onValidated: (gameId) => { const p = loadProgress(); markCorrige(p, gameId); saveProgress(p); },
+      onDone: (r) => {
+        this.drill = null;
+        this.view = null;
+        this.renderSetup();
+        this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(`Mes vraies erreurs : ${r.ok} position(s) corrigée(s).`)}</p>`);
       },
     });
   }

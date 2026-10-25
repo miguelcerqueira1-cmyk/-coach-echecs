@@ -58,10 +58,28 @@ export function recordDrill(p, id, ok, ms = null, now = Date.now()) {
   return touchDay(p, now);
 }
 
-// Sortie de répertoire vue dans une vraie partie (une seule fois par partie).
-export function recordSortie(p, { gameId, ficheId, rep, ply, date }) {
-  if (!ficheId || p.sorties.some((x) => x.gameId === gameId)) return p;
-  p.sorties = [...p.sorties, { gameId, ficheId, rep, ply, date }].slice(-200);
+// Sortie de répertoire (ou punition manquée) vue dans une vraie partie, une fois par partie.
+// pos : position à retravailler (positionARevoir) ; corrige : date de validation dans le module
+// « Mes vraies erreurs ».
+export function recordSortie(p, { gameId, ficheId = null, rep, ply, date, pos = null, opp = null, url = null }) {
+  if (!ficheId && !pos) return p;
+  const old = p.sorties.find((x) => x.gameId === gameId);
+  if (old && (old.moves || !pos)) return p;
+  const rec = { gameId, ficheId, rep, ply, date };
+  if (pos) Object.assign(rec, { kind: pos.kind, moves: pos.moves, expected: pos.expected, played: pos.played, color: pos.color, texte: pos.texte, ficheNom: pos.ficheNom, opp, url });
+  // Enregistrement antérieur sans position (avant « Mes vraies erreurs ») : complété.
+  p.sorties = old ? p.sorties.map((x) => (x === old ? rec : x)) : [...p.sorties, rec].slice(-200);
+  return p;
+}
+
+// Positions de vraies parties encore à corriger (les plus récentes d'abord).
+export function vraiesErreurs(p) {
+  return (p.sorties || []).filter((x) => x.moves && x.expected?.length && !x.corrige)
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+}
+
+export function markCorrige(p, gameId, now = Date.now()) {
+  p.sorties = p.sorties.map((x) => (x.gameId === gameId ? { ...x, corrige: new Date(now).toISOString() } : x));
   return p;
 }
 
@@ -98,7 +116,7 @@ export function dashboard(data, revision, p, now = Date.now()) {
   const fiches = data.entries.map((e) => {
     const color = data.repertoires[e.rep].couleur;
     const m = mastery(e, color, revision[e.rep] || {}, p, now);
-    const sorties = p.sorties.filter((x) => x.ficheId === e.id).length;
+    const sorties = p.sorties.filter((x) => x.ficheId === e.id && x.kind !== 'punition').length;
     return { id: e.id, rep: e.rep, nom: e.nom, eco: e.eco, badge: e.badge, punition: !!e.punition, sorties, cours: !!(p.cours || {})[e.id], ...m };
   });
   const byRep = {};
