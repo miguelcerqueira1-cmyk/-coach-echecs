@@ -165,5 +165,5 @@ test('PGN collé : alerte de déviation (erreur adverse connue, sortie de théor
   const a2 = al(['d4', 'd5', 'Nf3'], 'w');
   assert.match(a2.texte, /^Au coup 2\. Cf3, vous sortez de la théorie de vos fiches : le coup prévu était c4\./);
   assert.deepEqual(a2.ligne, ['d4', 'd5', 'c4']);
-  assert.equal(al(['e4', 'e5'], 'w').niveau, 'info');
+  assert.equal(al(['f4', 'e5'], 'w').niveau, 'info');
 });

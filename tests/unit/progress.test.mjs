@@ -47,7 +47,7 @@ test('tableau de bord : fiches faibles et sorties réelles d’abord', () => {
   const b = dashboard(data, { gd: {}, ck: {} }, p, t0);
   assert.equal(b.fiches.length, data.entries.length);
   assert.equal(b.fiches[0].id, 'ck-karpov');
-  assert.equal(b.byRep.gd.total + b.byRep.ck.total, data.entries.length);
+  assert.equal(Object.values(b.byRep).reduce((n, r) => n + r.total, 0), data.entries.length);
   assert.deepEqual(pickFiches(b, { n: 1 }), ['ck-karpov']);
   const withPun = pickFiches(b, { n: 50, needPunition: true });
   assert.ok(withPun.length > 5 && withPun.every((id) => data.entries.find((e) => e.id === id).punition));
