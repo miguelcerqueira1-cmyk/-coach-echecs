@@ -4,6 +4,7 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { loadProgress, saveProgress, recordSortie } from './progress.js';
 import { loadPgnTolerant } from './game.js';
+import { loadRepertoire } from './repertoire-data.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
@@ -39,7 +40,7 @@ export class GamesPage {
 
   async show() {
     if (!this.data) {
-      try { this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json(); } catch { this.data = { entries: [] }; }
+      try { this.data = await loadRepertoire(); } catch { this.data = { entries: [], all: [] }; }
     }
     if (this.pendingLocal) {
       // Bilan demandé depuis la page Moteur : la partie passe en tête de liste et s'analyse.

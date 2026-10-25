@@ -15,7 +15,8 @@ import { loadJoueurs } from './joueurs.js';
 import { datalistHtml, playersSectionHtml, bindPlayers } from './joueurs-ui.js';
 import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago, NOCAMP_TEXT, CAMP_LABEL } from './elite.js';
 import { loadSettings } from './storage.js';
-import { canOpenFiche, openPaywall } from './pro.js';
+import { canOpenFiche, openPaywall, isPro } from './pro.js';
+import { loadRepertoire } from './repertoire-data.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -126,12 +127,12 @@ export class RepertoirePage {
     if (!this.data) {
       this.el.innerHTML = '<p class="state pad"><span class="spinner"></span> Chargement du répertoire…</p>';
       try {
-        this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json();
+        this.data = await loadRepertoire();
       } catch {
         this.el.innerHTML = '<p class="errbox pad">Impossible de charger le répertoire (data/repertoire.json).</p>';
         return;
       }
-      for (const e of this.data.entries) e._search = searchText(e);
+      for (const e of this.data.all) e._search = searchText(e);
     }
     // À chaque affichage (rechargé au plus toutes les 5 min) : nouvelles parties visibles sans recharger la page.
     this.loadEliteData().then((r) => {
@@ -155,7 +156,7 @@ export class RepertoirePage {
 
   entries() {
     const q = norm(this.query.trim());
-    const list = this.data.entries.filter((e) => (this.view === 'trash' || e.rep === this.view)
+    const list = this.data.all.filter((e) => (this.view === 'trash' || e.rep === this.view)
       && (!this.badge || e.badge === this.badge) && (!q || e._search.includes(/^\d/.test(q) ? '|' + q : q)));
     if (!this.sort || this.view === 'trash') return list;
     // Tri stable : les fiches sans donnée (ou sous le seuil de parties) restent en fin de liste.
@@ -194,7 +195,7 @@ export class RepertoirePage {
   sortPending(list) {
     if (!this.sort || this.sort === 'eval') return 0;
     const src = this.sort.endsWith('maitres') ? 'masters' : 'explorer';
-    return list.filter((e) => { const x = this.live.get(e.id)?.[src]; return !x || x.status === 'loading'; }).length;
+    return list.filter((e) => { if (this.locked(e)) return false; const x = this.live.get(e.id)?.[src]; return !x || x.status === 'loading'; }).length;
   }
 
   rankingHtml(list) {
@@ -301,8 +302,15 @@ export class RepertoirePage {
     </div>`;
   }
 
+  // Fiche verrouillée : formule gratuite, ou aperçu dont la fiche Pro n'a pas été téléchargée.
+  locked(e) { return !!e.pro || !canOpenFiche(e.id); }
+
   // Fiche réservée à BlitzRefute Pro : nom, code ECO et premiers coups visibles, le reste flouté.
   lockedRow(e) {
+    const st = this.data.proStatus;
+    const note = isPro() && e.pro
+      ? (st === 'erreur' ? `Fiches Pro indisponibles pour l’instant (${esc(this.data.proError || 'serveur')}) : réessayez plus tard.` : 'Fiche Pro non chargée : activez votre clé de licence (fenêtre BlitzRefute Pro).')
+      : 'Plan, pièges, réfutation vérifiée par Stockfish, statistiques et vidéos dans BlitzRefute Pro.';
     return `<tr data-id="${e.id}" data-locked class="locked-card">
       <td data-label="ECO · Nom">
         <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span>
@@ -311,13 +319,13 @@ export class RepertoirePage {
         <button type="button" class="primary small-btn unlock-btn" data-unlock="La fiche « ${esc(e.nom)} »">Débloquer avec Pro</button>
       </td>
       <td data-label="Séquence" class="line">${esc(sanLine(e.san.slice(0, 4)))} …</td>
-      <td data-label="Contenu Pro" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan)}</p>
-        <p class="small muted">Plan, pièges, réfutation vérifiée par Stockfish, statistiques et vidéos dans BlitzRefute Pro.</p></td>
+      <td data-label="Contenu Pro" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan || 'Plan de jeu, structure de pions, pièges à éviter et réfutation de cette variante, vérifiés par Stockfish.')}</p>
+        <p class="small muted">${note}</p></td>
     </tr>`;
   }
 
   row(e) {
-    if (!canOpenFiche(e.id)) return this.lockedRow(e);
+    if (this.locked(e)) return this.lockedRow(e);
     const v = e.verification;
     const live = this.live.get(e.id) || {};
     const color = this.data.repertoires[e.rep].couleur;
@@ -421,7 +429,7 @@ export class RepertoirePage {
         <button type="button" class="primary small-btn" data-unlock="La réfutation « ${esc(e.nom)} »">Débloquer avec Pro</button>
       </article>`;
     const card = (e, kind) => {
-      if (!canOpenFiche(e.id)) return lockedCard(e);
+      if (this.locked(e)) return lockedCard(e);
       const c = e[kind];
       const v = e.verification?.[kind];
       const color = reps[e.rep].couleur;
@@ -438,7 +446,7 @@ export class RepertoirePage {
           <button type="button" class="link-btn" data-goto="${e.id}">Voir la fiche</button></div>
       </article>`;
     };
-    const plain = (e) => (!canOpenFiche(e.id) ? lockedCard(e) : `<article class="card trash-card">
+    const plain = (e) => (this.locked(e) ? lockedCard(e) : `<article class="card trash-card">
         <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span></div>
         <h3>${esc(e.nom)}</h3><p class="small line">${esc(sanLine(e.san))}</p><p class="small">${esc(e.plan)}</p>
         <div class="actions"><button type="button" class="primary small-btn" data-test="${e.id}">▶ Tester</button><button type="button" class="link-btn" data-goto="${e.id}">Voir la fiche</button></div>
@@ -473,7 +481,7 @@ export class RepertoirePage {
   }
 
   load(e) {
-    if (!canOpenFiche(e.id)) return; // fiche Pro verrouillée : aucune requête
+    if (this.locked(e)) return; // fiche Pro verrouillée : aucune requête
     if (this.live.has(e.id)) return;
     const gen = this.generation;
     const hasToken = !!this.client.explorerMode();
@@ -800,7 +808,7 @@ export class RepertoirePage {
     this.el.querySelector('[data-results]').addEventListener('click', (ev) => {
       const b = ev.target.closest('button');
       if (!b) return;
-      const entry = (id) => this.data.entries.find((x) => x.id === id);
+      const entry = (id) => this.data.all.find((x) => x.id === id);
       if (b.dataset.badgeFilter) {
         this.badge = b.dataset.badgeFilter;
         this.render();

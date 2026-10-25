@@ -1,11 +1,11 @@
 // Transfert des données de l'appareil (progression, réglages, partie, analyses…) vers un
-// autre appareil, par un fichier. Les secrets (jeton Lichess, code d'accès, clé YouTube) ne
+// autre appareil, par un fichier. Les secrets (jeton Lichess, code d'accès, clé YouTube, jeton de licence) ne
 // sont JAMAIS exportés : ils se ressaisissent dans ⚙ Réglages sur le nouvel appareil.
 
 const PREFIX = 'coach-echecs:';
-export const SECRETS = ['coach-echecs:jeton-lichess', 'coach-echecs:code-acces', 'coach-echecs:cle-youtube'];
+export const SECRETS = ['coach-echecs:jeton-lichess', 'coach-echecs:code-acces', 'coach-echecs:cle-youtube', 'coach-echecs:licence'];
 // Formule Pro : propre à l'appareil, jamais transportée par un fichier.
-const SKIP = [...SECRETS, 'coach-echecs:pro', 'coach-echecs:youtube-v1', 'coach-echecs:partie-illisible']; // caches et brouillons
+const SKIP = [...SECRETS, 'coach-echecs:pro', 'coach-echecs:pro-content', 'coach-echecs:youtube-v1', 'coach-echecs:partie-illisible']; // caches et brouillons
 export const FORMAT = 'coach-echecs-donnees';
 
 function keysOf(storage) {

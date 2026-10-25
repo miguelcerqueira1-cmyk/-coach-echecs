@@ -1,6 +1,6 @@
 // Contrôleur principal. Principe : l'état de partie (game.js) est la source de vérité ;
 // Stockfish calcule ; chess.js valide ; Claude explique les résultats calculés.
-import { bindPaywall, renderPlan, openPaywall, setPaymentUrl } from './pro.js';
+import { bindPaywall, renderPlan, openPaywall, setPaymentUrl, setApiUrl } from './pro.js';
 import './pwa.js'; // service worker, bandeau de mise à jour, aide à l'installation
 import { Game, parseMoveText } from './game.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
@@ -90,6 +90,7 @@ async function init() {
     state.config = { ...state.config, ...cfg };
   } catch { /* pas de config publiée : pas d'API Claude */ }
   setPaymentUrl(state.config.paymentUrl);
+  setApiUrl(state.settings.apiUrl || state.config.apiUrl); // serveur des licences (Worker)
   bindPaywall();
   renderPlan();
   $('btn-pro').addEventListener('click', () => openPaywall());

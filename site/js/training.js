@@ -12,6 +12,7 @@ import {
 import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
+import { loadRepertoire } from './repertoire-data.js';
 import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson, vraiesErreurs, markCorrige } from './progress.js';
 import { LessonView } from './cours.js';
 import { courseOrder } from './lesson-core.js';
@@ -49,7 +50,7 @@ export class TrainingPage {
   async show() {
     if (!this.data) {
       try {
-        this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json();
+        this.data = await loadRepertoire();
       } catch {
         this.el.innerHTML = '<p class="errbox pad">Impossible de charger le répertoire.</p>';
         return;
@@ -72,7 +73,7 @@ export class TrainingPage {
     const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
     const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
-    const total = (rep) => this.data.entries.filter((e) => e.rep === rep).length;
+    const total = (rep) => (this.data.all || this.data.entries).filter((e) => e.rep === rep).length;
     const reelles = vraiesErreurs(this.progress);
     const lock = isPro() ? '' : ' <span class="lock-badge">🔒 Pro</span>';
     const nSort = reelles.filter((x) => x.kind === 'sortie').length;
@@ -197,7 +198,8 @@ export class TrainingPage {
     this.progress = loadProgress();
     const board = dashboard(this.data, this.revision, this.progress);
     const byId = Object.fromEntries(board.fiches.map((f) => [f.id, f]));
-    const list = courseOrder(this.data.entries, rep);
+    // Toutes les leçons, aperçus Pro compris (verrouillés) : data.all.
+    const list = courseOrder(this.data.all || this.data.entries, rep);
     const next = list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const groups = [];
     for (const e of list) {
@@ -215,13 +217,13 @@ export class TrainingPage {
       <p class="small muted">Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques. Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
       ${groups.map(({ g, items }) => `<h3 class="course-group">${esc(g)}</h3><ol class="course-list" start="${n + 1}">${items.map((e) => {
         n++;
-        const f = byId[e.id];
+        const f = byId[e.id] || { pct: 0 }; // aperçu Pro : pas de progression calculable
         const isNext = next?.id === e.id;
         return `<li class="course-item ${isNext ? 'next' : ''}">
           <div class="course-main"><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
             <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %</div></div>
           <div class="dash-bar"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
-          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) ? '🔒 Pro' : this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
+          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) || e.pro ? '🔒 Pro' : this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
         </li>`;
       }).join('')}</ol>`).join('')}
     </div>`;
@@ -231,9 +233,10 @@ export class TrainingPage {
   }
 
   openLesson(id) {
-    const entry = this.data.entries.find((e) => e.id === id);
+    const entry = (this.data.all || this.data.entries).find((e) => e.id === id);
     if (!entry) return;
-    if (!canOpenFiche(id)) { openPaywall({ reason: `La leçon « ${entry.nom} »` }); return; }
+    // Formule gratuite, ou fiche Pro pas encore téléchargée (licence à activer) : fenêtre Pro.
+    if (!canOpenFiche(id) || entry.pro) { openPaywall({ reason: `La leçon « ${entry.nom} »` }); return; }
     this.s = null;
     this.view = 'cours';
     this.courseRep = entry.rep;

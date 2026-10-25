@@ -2,12 +2,15 @@
 // - Gratuit : page Moteur, Mes parties, et 3 variantes de base (fiche, leçon) ;
 // - Pro : encyclopédie complète, entraînement (lignes, révision espacée, anti-trash, séance du
 //   jour, mes vraies erreurs).
-// LIMITE ASSUMÉE : tout se passe sur l'appareil (site statique, aucun serveur de licences) ; le
-// drapeau Pro est dans localStorage et le contenu reste dans le code public. C'est un écran de
-// vente, pas une protection : une vraie vente exige une vérification côté serveur.
-// Le code d'accès n'est jamais écrit en clair ici : seule son empreinte SHA-256 est comparée.
+// Licence : la clé Lemon Squeezy est vérifiée par le Worker (POST /v1/licence), qui renvoie un
+// jeton signé valable 30 jours ; ce jeton (jamais la clé) est gardé sur l'appareil, jamais exporté,
+// et sert à télécharger les fiches Pro (repertoire-data.js). Le site publié ne contient qu'un
+// aperçu des fiches Pro (scripts/pro-content.mjs).
+// Code d'accès administrateur : seule son empreinte SHA-256 est comparée ; il débloque l'interface
+// mais ne télécharge pas les fiches Pro (il faut une clé de licence, gratuite pour le créateur).
 
 const KEY = 'coach-echecs:pro';
+export const LICENCE_KEY = 'coach-echecs:licence'; // { token, exp } — secret local, jamais exporté
 // Empreinte SHA-256 du code administrateur (le code lui-même n'est pas dans le dépôt).
 const CODE_HASHES = ['96c385bdf2fc8a78972ab9b37af0d4375c2a459080f437b4a8002323adf10248'];
 
@@ -22,8 +25,44 @@ export const PRO_FEATURES = [
   ['📖', 'Tous les cours', 'Chaque variante en leçon pas à pas, piège et punition à jouer'],
 ];
 
+// Jeton de licence encore valide (ou null).
+export function licenceToken(now = Date.now()) {
+  try {
+    const l = JSON.parse(localStorage.getItem(LICENCE_KEY) || 'null');
+    return l?.token && Number(l.exp) > now ? l.token : null;
+  } catch { return null; }
+}
+
 export function isPro() {
+  if (licenceToken()) return true;
   try { return !!JSON.parse(localStorage.getItem(KEY) || 'null')?.pro; } catch { return false; }
+}
+
+let API_URL = '';
+export function setApiUrl(url) { API_URL = String(url || '').replace(/\/+$/, ''); }
+export const getApiUrl = () => API_URL;
+
+// Clé de licence → jeton du Worker. Renvoie { ok } ou { ok: false, error } (message en français).
+export async function activateLicence(key, { apiUrl = API_URL, fetchImpl = (...a) => fetch(...a) } = {}) {
+  const k = String(key || '').trim();
+  if (!k) return { ok: false, error: 'Saisissez votre clé de licence.' };
+  if (!apiUrl) return { ok: false, error: 'Le serveur de licences n’est pas encore configuré sur ce site : réessayez plus tard.' };
+  let r;
+  try {
+    r = await fetchImpl(`${apiUrl}/v1/licence`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: k }) });
+  } catch {
+    return { ok: false, error: 'Serveur de licences injoignable (connexion ?).' };
+  }
+  let d = {};
+  try { d = await r.json(); } catch { /* réponse illisible */ }
+  if (!r.ok || !d.token) return { ok: false, error: d.error || `Serveur de licences : erreur ${r.status}.` };
+  try { localStorage.setItem(LICENCE_KEY, JSON.stringify({ token: d.token, exp: d.exp })); } catch { return { ok: false, error: 'Stockage de l’appareil indisponible.' }; }
+  window.dispatchEvent(new CustomEvent('pro-change'));
+  return { ok: true };
+}
+
+export function forgetLicence() {
+  try { localStorage.removeItem(LICENCE_KEY); } catch { /* rien */ }
 }
 
 export const isFreeFiche = (id) => FREE_FICHES.includes(id);
@@ -68,6 +107,8 @@ export function openPaywall({ reason = '', paymentUrl = PAYMENT_URL } = {}) {
   soon.hidden = !!paymentUrl;
   dlg.querySelector('[data-pro-msg]').textContent = '';
   dlg.querySelector('[data-pro-code]').value = '';
+  dlg.querySelector('[data-licence-msg]').textContent = '';
+  dlg.querySelector('[data-licence-key]').value = '';
   if (!dlg.open) dlg.showModal();
 }
 
@@ -83,6 +124,20 @@ export function bindPaywall() {
     msg.textContent = ok ? '✔ BlitzRefute Pro est activé sur cet appareil.' : 'Code non reconnu.';
     msg.className = ok ? 'small ok-text' : 'small error-text';
     if (ok) setTimeout(() => dlg.close(), 900);
+  });
+  dlg.querySelector('[data-licence-form]').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const msg = dlg.querySelector('[data-licence-msg]');
+    const btn = dlg.querySelector('[data-licence-form] button');
+    btn.disabled = true;
+    msg.className = 'small';
+    msg.textContent = 'Vérification de la clé…';
+    const r = await activateLicence(dlg.querySelector('[data-licence-key]').value);
+    btn.disabled = false;
+    msg.textContent = r.ok ? '✔ Licence activée : chargement des fiches Pro…' : r.error;
+    msg.className = r.ok ? 'small ok-text' : 'small error-text';
+    // Rechargement : les pages relisent le répertoire avec les fiches Pro.
+    if (r.ok) setTimeout(() => window.location.reload(), 900);
   });
 }
 

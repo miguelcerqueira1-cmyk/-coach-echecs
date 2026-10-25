@@ -4,7 +4,8 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { writeFileSync, rmSync } from 'node:fs';
+import { writeFileSync, rmSync, existsSync } from 'node:fs';
+import { createHmac } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,6 +15,14 @@ const MOCK = 4999;
 const BASE = `http://127.0.0.1:${PORT}`;
 const CODE = 'code-de-test-123';
 const ORIGIN = 'http://localhost:4173';
+const SECRET = 'secret-de-test-pour-les-licences-0123456789';
+// Clés simulées de la License API Lemon Squeezy (boutique 111, produit 222).
+const LEMON = {
+  'CLE-VALIDE': { valid: true, license_key: { status: 'active' }, meta: { store_id: 111, product_id: 222 } },
+  'CLE-NEUVE': { valid: true, license_key: { status: 'inactive' }, meta: { store_id: 111, product_id: 222 } },
+  'CLE-AUTRE-PRODUIT': { valid: true, license_key: { status: 'active' }, meta: { store_id: 111, product_id: 999 } },
+  'CLE-DESACTIVEE': { valid: false, error: 'This license key is disabled.', license_key: { status: 'disabled' }, meta: { store_id: 111, product_id: 222 } },
+};
 const received = [];
 let wrangler;
 let mock;
@@ -29,6 +38,14 @@ before(async () => {
     let body = '';
     req.on('data', (c) => { body += c; });
     req.on('end', () => {
+      if (req.url.startsWith('/v1/licenses/validate')) {
+        const key = new URLSearchParams(body).get('license_key');
+        received.push({ url: req.url, headers: req.headers, lemon: true, key });
+        const r = LEMON[key];
+        res.writeHead(r ? 200 : 404, { 'content-type': 'application/json' });
+        res.end(JSON.stringify(r || { valid: false, error: 'license_key not found.', license_key: null, meta: null }));
+        return;
+      }
       if (req.url.startsWith('/lichess')) {
         received.push({ url: req.url, headers: req.headers, explorer: true });
         res.writeHead(200, { 'content-type': 'application/json' });
@@ -44,9 +61,12 @@ before(async () => {
       }));
     });
   }).listen(MOCK);
-  writeFileSync(join(dir, '.dev.vars'), `ACCESS_CODE=${CODE}\nANTHROPIC_API_KEY=sk-test-factice\nLICHESS_TOKEN=lip_relais\n`);
+  writeFileSync(join(dir, '.dev.vars'), `ACCESS_CODE=${CODE}\nANTHROPIC_API_KEY=sk-test-factice\nLICHESS_TOKEN=lip_relais\nLICENCE_SECRET=${SECRET}\n`);
+  // Contenu Pro généré au build (scripts/pro-content.mjs) ; absent en CI avant le build : jeu de test.
+  if (!existsSync(join(dir, 'src/pro-content.json'))) writeFileSync(join(dir, 'src/pro-content.json'), JSON.stringify({ version: 'test', entries: [{ id: 'fiche-pro-test', plan: 'contenu Pro' }] }));
   wrangler = spawn(join(dir, 'node_modules/.bin/wrangler'), ['dev', '--show-interactive-dev-session=false', '--port', String(PORT), '--ip', '127.0.0.1',
     '--var', `ANTHROPIC_BASE_URL:http://127.0.0.1:${MOCK}`, '--var', `EXPLORER_URL:http://127.0.0.1:${MOCK}/lichess`, '--var', 'PER_MINUTE_LIMIT:3', '--var', `ALLOWED_ORIGINS:${ORIGIN}`,
+    '--var', `LEMON_API_URL:http://127.0.0.1:${MOCK}`, '--var', 'LS_STORE_ID:111', '--var', 'LS_PRODUCT_ID:222',
     '--persist-to', join(dir, '.wrangler/test-state')], { cwd: dir, stdio: 'pipe', detached: true });
   let log = '';
   wrangler.stdout.on('data', (d) => { log += d; });
@@ -138,4 +158,69 @@ test('verrouillage après 10 échecs d’authentification', async () => {
   for (let i = 0; i < 8; i++) assert.equal((await call('/v1/status', { code: 'mauvais-' + i })).status, 401);
   const r = await call('/v1/status');
   assert.equal(r.status, 429);
+});
+
+// ---------- Licences BlitzRefute Pro ----------
+
+const licence = (key, { origin = ORIGIN } = {}) => fetch(BASE + '/v1/licence', {
+  method: 'POST', headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}) }, body: JSON.stringify({ key }),
+});
+const proContent = (token) => fetch(BASE + '/v1/pro-content', { headers: { origin: ORIGIN, ...(token != null ? { authorization: 'Licence ' + token } : {}) } });
+const b64 = (x) => Buffer.from(x).toString('base64url');
+const forge = (payload, secret = SECRET) => { const body = b64(JSON.stringify(payload)); return `${body}.${createHmac('sha256', secret).update(body).digest('base64url')}`; };
+
+test('licence : clé valide (Lemon Squeezy) → jeton 30 j sans la clé → contenu Pro', async () => {
+  const r = await licence('CLE-VALIDE');
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('access-control-allow-origin'), ORIGIN);
+  const d = await r.json();
+  assert.equal(d.ok, true);
+  assert.ok(d.exp - Date.now() > 29 * 86400000 && d.exp - Date.now() <= 30 * 86400000);
+  const payloadTxt = Buffer.from(d.token.split('.')[0], 'base64url').toString();
+  assert.doesNotMatch(payloadTxt + d.token, /CLE-VALIDE/, 'la clé n’apparaît pas dans le jeton');
+  const req = received.filter((x) => x.lemon).at(-1);
+  assert.equal(req.key, 'CLE-VALIDE');
+  const c = await proContent(d.token);
+  assert.equal(c.status, 200);
+  const content = await c.json();
+  assert.ok(content.entries.length >= 1);
+  assert.ok(content.entries[0].id);
+  // Clé neuve (jamais activée, statut « inactive ») : acceptée.
+  assert.equal((await licence('CLE-NEUVE')).status, 200);
+});
+
+test('licence : sans jeton, jeton falsifié ou expiré → 401', async () => {
+  assert.equal((await proContent(null)).status, 401);
+  const { token } = await (await licence('CLE-VALIDE')).json();
+  const [body, sig] = token.split('.');
+  const p = JSON.parse(Buffer.from(body, 'base64url').toString());
+  const tampered = `${b64(JSON.stringify({ ...p, exp: p.exp + 365 * 86400000 }))}.${sig}`;
+  const r1 = await proContent(tampered);
+  assert.equal(r1.status, 401);
+  assert.match((await r1.json()).error, /Licence invalide/);
+  assert.equal((await proContent(forge({ v: 1, h: 'x', exp: Date.now() + 86400000 }, 'autre-secret'))).status, 401);
+  const r2 = await proContent(forge({ v: 1, h: 'x', exp: Date.now() - 1000 }));
+  assert.equal(r2.status, 401);
+  assert.match((await r2.json()).error, /expirée/);
+  assert.equal((await proContent('n.importe.quoi')).status, 401);
+});
+
+test('licence : origine non autorisée → 403', async () => {
+  assert.equal((await licence('CLE-VALIDE', { origin: 'https://exemple.invalid' })).status, 403);
+});
+
+test('licence : autre produit, clé désactivée, clé inconnue → 403 avec message clair', async () => {
+  const msg = async (key) => { const r = await licence(key); return [r.status, (await r.json()).error]; };
+  assert.deepEqual(await msg('CLE-AUTRE-PRODUIT'), [403, 'Cette clé ne correspond pas à BlitzRefute Pro.']);
+  assert.deepEqual(await msg('CLE-DESACTIVEE'), [403, 'Cette clé de licence est désactivée ou expirée.']);
+  assert.deepEqual(await msg('CLE-INCONNUE'), [403, 'Clé de licence invalide.']);
+  assert.equal((await licence('')).status, 400);
+});
+
+test('licence : 10 clés refusées par IP → 429, même avec une bonne clé', async () => {
+  // 3 refus déjà comptés au test précédent + 7 ici = 10.
+  for (let i = 0; i < 7; i++) assert.equal((await licence('FAUSSE-' + i)).status, 403);
+  const r = await licence('CLE-VALIDE');
+  assert.equal(r.status, 429);
+  assert.match((await r.json()).error, /Trop d’essais/);
 });

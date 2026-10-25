@@ -10,3 +10,6 @@ worker/node_modules/
 site/data/repertoire.json
 site/data/elite.json
 site/data/joueurs.json
+
+# Contenu Pro généré (scripts/pro-content.mjs), servi par le Worker : jamais versionné.
+worker/src/pro-content.json

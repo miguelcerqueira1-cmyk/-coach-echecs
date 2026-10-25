@@ -1,9 +1,14 @@
 // Assemble le site publié dans dist/ (copie de site/ + config.json).
 // COACH_API_URL : adresse du Worker Cloudflare (fournie par le workflow de déploiement).
+// Contenu Pro : par défaut, dist/data/repertoire.json ne garde que les fiches gratuites complètes
+// et un aperçu des fiches Pro, servies par le Worker contre une licence (scripts/pro-content.mjs,
+// qui écrit aussi worker/src/pro-content.json). FULL_CONTENT=1 : répertoire complet publié (tests).
+// La source data/repertoire.js n'est jamais publiée.
 import { cpSync, existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { splitRepertoire, writeProContent } from './pro-content.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -12,6 +17,14 @@ for (const f of ['vendor/chess.js', 'engine/stockfish.js', 'engine/stockfish.was
 }
 rmSync(dist, { recursive: true, force: true });
 cpSync(join(root, 'site'), dist, { recursive: true });
+rmSync(join(dist, 'data/repertoire.js'), { force: true });
+const fullContent = process.env.FULL_CONTENT === '1';
+{
+  const data = JSON.parse(readFileSync(join(root, 'site/data/repertoire.json'), 'utf8'));
+  const n = writeProContent(data);
+  if (!fullContent) writeFileSync(join(dist, 'data/repertoire.json'), JSON.stringify(splitRepertoire(data).publicData));
+  console.log(fullContent ? 'répertoire : complet (FULL_CONTENT=1)' : `répertoire : ${n} fiches Pro retirées du site (aperçu seulement) → servies par le Worker`);
+}
 const config = {
   apiUrl: process.env.COACH_API_URL || '',
   // Lien de paiement « Passer Pro » (ex. lien de paiement Stripe) ; vide = « paiement bientôt ».

@@ -1,5 +1,6 @@
 # Worker Cloudflare de l'API « entraîneur ». Déployé par GitHub Actions.
-# Secrets (jamais dans ce fichier) : ANTHROPIC_API_KEY, ACCESS_CODE.
+# Secrets (jamais dans ce fichier) : ANTHROPIC_API_KEY, ACCESS_CODE, LICENCE_SECRET (licences Pro).
+# Variables LS_STORE_ID / LS_PRODUCT_ID (boutique et produit Lemon Squeezy) : passées au déploiement.
 name = "coach-echecs-api"
 main = "src/index.js"
 compatibility_date = "2026-09-01"

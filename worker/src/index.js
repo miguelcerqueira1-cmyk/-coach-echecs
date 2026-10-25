@@ -4,11 +4,21 @@
 // Protections : code d'accès vérifié côté serveur (comparaison à temps constant),
 // verrouillage après échecs répétés, limite par minute, plafond quotidien, CORS,
 // taille de requête bornée. Les compteurs vivent dans un Durable Object unique.
+//
+// Licences BlitzRefute Pro (routes publiques, sans code d'accès) :
+// - POST /v1/licence {key} : clé vérifiée auprès de la License API de Lemon Squeezy (boutique et
+//   produit attendus, clé ni désactivée ni expirée) → jeton signé HMAC-SHA256 valable 30 jours,
+//   qui ne contient qu'une empreinte de la clé. La clé n'est jamais journalisée ni stockée.
+// - GET /v1/pro-content (Authorization: Licence <jeton>) : fiches Pro complètes, générées au
+//   build (scripts/pro-content.mjs → src/pro-content.json, non versionné).
 import Anthropic from '@anthropic-ai/sdk';
 import { DurableObject } from 'cloudflare:workers';
 import { SYSTEM_PROMPT, buildUserMessage, validatePayload } from './prompt.js';
+import PRO_CONTENT from './pro-content.json';
 
 const MAX_BODY = 16 * 1024;
+const LEMON_API_URL = 'https://api.lemonsqueezy.com';
+const LICENCE_DAYS = 30;
 const EXPLORER_URL = 'https://explorer.lichess.org/lichess';
 const MASTERS_URL = 'https://explorer.lichess.org/masters';
 const EXPLORER_PARAMS = ['variant', 'fen', 'play', 'speeds', 'ratings', 'since', 'until', 'moves', 'topGames', 'recentGames'];
@@ -21,19 +31,20 @@ export class Gate extends DurableObject {
     return v && v.period === fresh.period ? v : fresh;
   }
 
-  // Échecs d'authentification : 10 par heure et par IP, 30 par heure au total.
-  async authBlocked(ip) {
+  // Échecs d'authentification : 10 par heure et par IP, 30 par heure au total (code d'accès).
+  // kind 'lfails' : clés de licence refusées, compteur séparé (10 par IP, 100 au total).
+  async authBlocked(ip, kind = 'fails') {
     const hour = Math.floor(Date.now() / 3600000);
-    const f = await this._get('fails', { period: hour, total: 0, ips: {} });
-    return f.total >= 30 || (f.ips[ip] || 0) >= 10;
+    const f = await this._get(kind, { period: hour, total: 0, ips: {} });
+    return f.total >= (kind === 'fails' ? 30 : 100) || (f.ips[ip] || 0) >= 10;
   }
 
-  async recordFail(ip) {
+  async recordFail(ip, kind = 'fails') {
     const hour = Math.floor(Date.now() / 3600000);
-    const f = await this._get('fails', { period: hour, total: 0, ips: {} });
+    const f = await this._get(kind, { period: hour, total: 0, ips: {} });
     f.total += 1;
     f.ips[ip] = (f.ips[ip] || 0) + 1;
-    await this.ctx.storage.put('fails', f);
+    await this.ctx.storage.put(kind, f);
   }
 
   // Relais Opening Explorer : limite séparée, sans toucher au quota Claude.
@@ -94,6 +105,80 @@ async function checkCode(provided, expected) {
   return crypto.subtle.timingSafeEqual(a, b);
 }
 
+// ---------- Licences Pro ----------
+
+const b64url = (bytes) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const fromB64url = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
+const hex = (bytes) => [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+
+async function hmac(secret, text) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(text)));
+}
+
+async function signLicence(secret, keyHash, now = Date.now()) {
+  const exp = now + LICENCE_DAYS * 86400000;
+  const body = b64url(new TextEncoder().encode(JSON.stringify({ v: 1, h: keyHash, exp })));
+  return { token: `${body}.${b64url(await hmac(secret, body))}`, exp };
+}
+
+// Jeton → { ok, payload } ou { ok: false, reason: 'invalide' | 'expire' }. Signature comparée à temps constant.
+async function verifyLicence(secret, token, now = Date.now()) {
+  const [body, sig] = String(token || '').split('.');
+  if (!body || !sig) return { ok: false, reason: 'invalide' };
+  let given;
+  try { given = fromB64url(sig); } catch { return { ok: false, reason: 'invalide' }; }
+  const expected = await hmac(secret, body);
+  if (given.length !== expected.length || !crypto.subtle.timingSafeEqual(given, expected)) return { ok: false, reason: 'invalide' };
+  let payload;
+  try { payload = JSON.parse(new TextDecoder().decode(fromB64url(body))); } catch { return { ok: false, reason: 'invalide' }; }
+  if (!Number.isFinite(payload?.exp) || payload.exp <= now) return { ok: false, reason: 'expire' };
+  return { ok: true, payload };
+}
+
+async function licenceRoute(request, env, gate, ip, headers) {
+  if (request.method !== 'POST') return json({ error: 'Méthode non autorisée' }, 405, headers);
+  const raw = await request.text();
+  if (raw.length > 2048) return json({ error: 'Requête trop volumineuse' }, 413, headers);
+  let key;
+  try { key = String(JSON.parse(raw)?.key || '').trim(); } catch { return json({ error: 'JSON invalide' }, 400, headers); }
+  if (!key || key.length > 100) return json({ error: 'Clé de licence manquante ou mal formée.' }, 400, headers);
+  if (await gate.authBlocked(ip, 'lfails')) return json({ error: 'Trop d’essais de clé. Réessayez dans une heure.' }, 429, headers);
+  let res;
+  try {
+    res = await fetch(`${env.LEMON_API_URL || LEMON_API_URL}/v1/licenses/validate`, {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ license_key: key }).toString(),
+    });
+  } catch {
+    return json({ error: 'Service de licences injoignable, réessayez plus tard.' }, 502, headers);
+  }
+  let data = null;
+  try { data = await res.json(); } catch { /* réponse illisible */ }
+  if (res.status >= 500 || (!data && !res.ok)) return json({ error: 'Service de licences indisponible, réessayez plus tard.' }, 502, headers);
+  const lk = data?.license_key;
+  const meta = data?.meta;
+  let error = null;
+  if (lk && (lk.status === 'disabled' || lk.status === 'expired')) error = 'Cette clé de licence est désactivée ou expirée.';
+  else if (!data?.valid || !lk) error = 'Clé de licence invalide.';
+  else if (String(meta?.store_id) !== String(env.LS_STORE_ID) || String(meta?.product_id) !== String(env.LS_PRODUCT_ID)) error = 'Cette clé ne correspond pas à BlitzRefute Pro.';
+  if (error) {
+    await gate.recordFail(ip, 'lfails');
+    return json({ error }, 403, headers);
+  }
+  const { token, exp } = await signLicence(env.LICENCE_SECRET, hex(await sha256(key)).slice(0, 32));
+  return json({ ok: true, token, exp }, 200, headers);
+}
+
+async function proContentRoute(request, env, headers) {
+  if (request.method !== 'GET') return json({ error: 'Méthode non autorisée' }, 405, headers);
+  const auth = request.headers.get('authorization') || '';
+  const v = await verifyLicence(env.LICENCE_SECRET, auth.startsWith('Licence ') ? auth.slice(8) : '');
+  if (!v.ok) return json({ error: v.reason === 'expire' ? 'Licence expirée : réactivez votre clé (fenêtre BlitzRefute Pro).' : 'Licence invalide.' }, 401, headers);
+  return json({ version: PRO_CONTENT.version ?? null, entries: PRO_CONTENT.entries || [] }, 200, headers);
+}
+
 // Relaie une requête vers l'Opening Explorer avec le jeton Lichess stocké dans les secrets.
 // Seuls les paramètres documentés sont transmis ; réponses mises en cache 24 h.
 async function explorerRelay(url, env, gate, headers) {
@@ -131,9 +216,17 @@ export default {
 
     if (request.method === 'OPTIONS') return new Response(null, { status: cors.allowed ? 204 : 403, headers: cors.headers });
     if (url.pathname === '/' && request.method === 'GET') {
-      return new Response('API Coach Échecs : accès réservé.\n', { headers: { 'content-type': 'text/plain; charset=utf-8' } });
+      return new Response('API BlitzRefute : accès réservé.\n', { headers: { 'content-type': 'text/plain; charset=utf-8' } });
     }
     if (!cors.allowed) return json({ error: 'Origine non autorisée' }, 403, cors.headers);
+    if (url.pathname === '/v1/licence' || url.pathname === '/v1/pro-content') {
+      if (!env.LS_STORE_ID || !env.LS_PRODUCT_ID || !env.LICENCE_SECRET || env.LICENCE_SECRET.length < 32) {
+        return json({ error: 'Serveur de licences non configuré (LS_STORE_ID, LS_PRODUCT_ID, LICENCE_SECRET).' }, 503, cors.headers);
+      }
+      if (url.pathname === '/v1/pro-content') return proContentRoute(request, env, cors.headers);
+      const gate = env.GATE.get(env.GATE.idFromName('global'));
+      return licenceRoute(request, env, gate, request.headers.get('cf-connecting-ip') || 'inconnue', cors.headers);
+    }
     if (!['/v1/status', '/v1/explain', '/v1/explorer'].includes(url.pathname)) return json({ error: 'Introuvable' }, 404, cors.headers);
 
     if (!env.ACCESS_CODE || env.ACCESS_CODE.length < 8) {

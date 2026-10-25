@@ -176,15 +176,28 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   verrouillées, contenu flouté, aucune requête), anti-trash, S'entraîner / révision espacée, séance du
   jour, Mes vraies erreurs, autres modes, leçons Pro. Fenêtre `#dlg-pro` (`openPaywall`).
 - Paiement : `config.json.paymentUrl` (variable `PAYMENT_URL` au build) ; vide → « Le paiement en
-  ligne ouvre bientôt ». Aucune délivrance de licence après paiement pour l'instant.
+  ligne ouvre bientôt ». Lemon Squeezy envoie la clé de licence par e-mail après l'achat.
+- **Vrai verrou (licences)** : `scripts/pro-content.mjs` sépare le répertoire au build →
+  `dist/data/repertoire.json` = fiches gratuites complètes + **aperçus** des fiches Pro (`pro: true` :
+  nom, ECO, famille, 4 coups) ; `worker/src/pro-content.json` (GÉNÉRÉ, gitignoré) = fiches Pro
+  complètes ; la source `data/repertoire.js` n'est plus publiée. `FULL_CONTENT=1` : répertoire
+  complet (job e2e de la CI). Worker : `POST /v1/licence {key}` → License API Lemon Squeezy
+  (`/v1/licenses/validate`, boutique/produit = `LS_STORE_ID`/`LS_PRODUCT_ID`, clé ni désactivée ni
+  expirée) → jeton HMAC-SHA256 30 j (`LICENCE_SECRET` ≥ 32 car., empreinte de la clé seulement) ;
+  10 clés refusées / IP / h (compteur `lfails` séparé du code d'accès) ; `GET /v1/pro-content`
+  (`Authorization: Licence <jeton>`). Routes publiques (CORS seul), « non configuré » (503) sans
+  secrets. Site : `repertoire-data.js` (`loadRepertoire`) fusionne les fiches Pro si jeton
+  (`coach-echecs:licence`, secret jamais exporté), copie locale `coach-echecs:pro-content` hors
+  connexion ; `data.entries` = fiches complètes (exercices, arbres), `data.all` = aperçus compris
+  (listes verrouillées). Fenêtre Pro : « J'ai une clé de licence » (activation puis rechargement).
 - Code d'accès (admin) : seule son empreinte SHA-256 est dans le code (`CODE_HASHES`) ; drapeau
-  `coach-echecs:pro` (jamais exporté par « Mes données »). Les tests e2e tournent en Pro
-  (`pro.spec.mjs` couvre la formule gratuite).
-- **Limites à dire à l'utilisateur** : protection purement côté navigateur (contenu dans le dépôt
-  public et le JS, drapeau modifiable) ; GitHub Pages interdit un usage principalement commercial
-  (SaaS) → avant de vendre : hébergement (ex. Cloudflare Pages), dépôt privé, vérification de
-  licence côté serveur (Worker) + paiement (Stripe) ; conditions d'usage commercial des API
-  Lichess / Chess.com et licences (Stockfish GPLv3, pièces cburnett GPL) à vérifier.
+  `coach-echecs:pro` (jamais exporté par « Mes données ») : débloque l'interface mais **pas** les
+  fiches Pro en mode réel → le créateur se crée une clé gratuite (remise 100 %) dans Lemon Squeezy.
+  Les tests e2e tournent en Pro (`pro.spec.mjs` : formule gratuite, licence avec Worker simulé).
+- **Reste avant de vendre** : hébergement hors GitHub Pages (usage commercial interdit) et dépôt
+  privé (la source des fiches est dans le dépôt) ; secrets Cloudflare `LICENCE_SECRET` +
+  variables GitHub `LS_STORE_ID` / `LS_PRODUCT_ID` ; `ALLOWED_ORIGINS` = futur domaine ; conditions
+  d'usage commercial des API Lichess / Chess.com et licences (Stockfish GPLv3, pièces cburnett GPL).
 
 - **Décisions de vente (2026-10-26)** : prix **29 € accès à vie** ; paiement **Lemon Squeezy**
   (revendeur officiel : TVA, factures, clés de licence) ; statut micro-entreprise **en cours de
@@ -203,10 +216,10 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 
 ```
 npm ci                         # dépendances + copie chess.js / Stockfish dans site/
-npm test                       # tests unitaires (≈ 96)
+npm test                       # tests unitaires (≈ 98)
 npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
 node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
-BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 63), WITH_WEBKIT=1 en CI
+FULL_CONTENT=1 npm run build && BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 64), WITH_WEBKIT=1 en CI
 npm run verify:repertoire      # après modification d'une fiche (recalcule data/verification.json)
 node scripts/verify-repertoire.mjs --check
 cd worker && npm ci && npm test

@@ -64,7 +64,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Tests fonctionnels en formule Pro : répertoire complet publié dans le site de test.
       - run: npm run build
+        env:
+          FULL_CONTENT: '1'
       - name: Tests de bout en bout
         run: npx playwright test
         env:
@@ -78,13 +81,14 @@ jobs:
           retention-days: 7
 
   worker:
-    name: Déploiement de l'API Claude (Cloudflare Worker)
+    name: Déploiement du Worker Cloudflare (API Claude, licences Pro)
     needs: verify
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
       url: ${{ steps.deploy.outputs.deployment-url }}
+      claude: ${{ steps.secrets.outputs.claude }}
     steps:
       - name: Présence des secrets
         id: secrets
@@ -93,21 +97,28 @@ jobs:
           CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
           CODE: ${{ secrets.COACH_ACCESS_CODE }}
+          LICENCE: ${{ secrets.LICENCE_SECRET }}
         run: |
+          # Worker déployé dès que les secrets Cloudflare existent ; Claude et licences sont
+          # chacun facultatifs (leurs routes répondent « non configuré » sans leurs secrets).
           missing=""
           [ -n "$CF_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
           [ -n "$CF_ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
-          [ -n "$ANTHROPIC" ] || missing="$missing ANTHROPIC_API_KEY"
-          [ -n "$CODE" ] || missing="$missing COACH_ACCESS_CODE"
           if [ -n "$missing" ]; then
-            echo "::notice::API Claude non déployée : secrets manquants :$missing. Le site est publié sans explications Claude."
+            echo "::notice::Worker non déployé : secrets manquants :$missing. Le site est publié sans explications Claude ni licences Pro."
             echo "ok=false" >> "$GITHUB_OUTPUT"
-          elif [ ${#CODE} -lt 12 ]; then
-            echo "::error::COACH_ACCESS_CODE doit contenir au moins 12 caractères."
-            exit 1
           else
             echo "ok=true" >> "$GITHUB_OUTPUT"
           fi
+          if [ -n "$ANTHROPIC" ] && [ -n "$CODE" ]; then
+            if [ ${#CODE} -lt 12 ]; then echo "::error::COACH_ACCESS_CODE doit contenir au moins 12 caractères."; exit 1; fi
+            echo "claude=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Explications Claude inactives (ANTHROPIC_API_KEY / COACH_ACCESS_CODE absents)."
+            echo "claude=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "$LICENCE" ] && [ ${#LICENCE} -lt 32 ]; then echo "::error::LICENCE_SECRET doit contenir au moins 32 caractères."; exit 1; fi
+          [ -n "$LICENCE" ] || echo "::notice::Licences Pro inactives (secret LICENCE_SECRET et variables LS_STORE_ID / LS_PRODUCT_ID à créer)." 
           owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo "origin=https://${owner}.github.io" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
@@ -116,6 +127,9 @@ jobs:
         if: steps.secrets.outputs.ok == 'true'
         with:
           node-version: 22
+      # Contenu Pro (fiches complètes) généré depuis le répertoire, embarqué dans le Worker.
+      - run: npm ci && node scripts/pro-content.mjs
+        if: steps.secrets.outputs.ok == 'true'
       - run: npm ci
         if: steps.secrets.outputs.ok == 'true'
         working-directory: worker
@@ -129,15 +143,18 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ACCESS_CODE: ${{ secrets.COACH_ACCESS_CODE }}
           LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }}
+          LICENCE_SECRET: ${{ secrets.LICENCE_SECRET }}
+          LS_STORE: ${{ vars.LS_STORE_ID }}
+          LS_PRODUCT: ${{ vars.LS_PRODUCT_ID }}
           ORIGIN: ${{ steps.secrets.outputs.origin }}
           MODEL: ${{ vars.CLAUDE_MODEL || 'claude-opus-5-5' }}
           DAILY: ${{ vars.DAILY_LIMIT || '100' }}
         run: |
           set -o pipefail
-          npx wrangler deploy --var "ALLOWED_ORIGINS:$ORIGIN" --var "CLAUDE_MODEL:$MODEL" --var "DAILY_LIMIT:$DAILY" 2>&1 | tee deploy.log
-          # Les secrets ne passent ni par la ligne de commande ni par un fichier du dépôt.
-          # LICHESS_TOKEN (facultatif) active le relais Opening Explorer.
-          node -e 'const e=process.env, s={ANTHROPIC_API_KEY:e.ANTHROPIC_API_KEY, ACCESS_CODE:e.ACCESS_CODE}; if (e.LICHESS_TOKEN) s.LICHESS_TOKEN=e.LICHESS_TOKEN; process.stdout.write(JSON.stringify(s))' | npx wrangler secret bulk
+          npx wrangler deploy --var "ALLOWED_ORIGINS:$ORIGIN" --var "CLAUDE_MODEL:$MODEL" --var "DAILY_LIMIT:$DAILY" --var "LS_STORE_ID:$LS_STORE" --var "LS_PRODUCT_ID:$LS_PRODUCT" 2>&1 | tee deploy.log
+          # Les secrets ne passent ni par la ligne de commande ni par un fichier du dépôt ; seuls
+          # ceux qui existent sont envoyés. LICHESS_TOKEN (facultatif) active le relais Opening Explorer.
+          node -e 'const e=process.env, s={}; for (const k of ["ANTHROPIC_API_KEY","ACCESS_CODE","LICHESS_TOKEN","LICENCE_SECRET"]) if (e[k]) s[k]=e[k]; process.stdout.write(JSON.stringify(s))' | npx wrangler secret bulk
           url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
           if [ -z "$url" ]; then
             echo "::error::Adresse workers.dev introuvable. Ouvrez une fois « Workers & Pages » dans le tableau de bord Cloudflare pour créer votre sous-domaine workers.dev, puis relancez."
@@ -236,7 +253,7 @@ jobs:
               console.log(await (await fetch(site + "config.json")).text());
             })();'
       - name: API Claude en ligne et protégée (sans code → 401)
-        if: needs.worker.outputs.url != ''
+        if: needs.worker.outputs.url != '' && needs.worker.outputs.claude == 'true'
         env:
           API: ${{ needs.worker.outputs.url }}
         run: |
