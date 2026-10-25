@@ -186,6 +186,13 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   licence côté serveur (Worker) + paiement (Stripe) ; conditions d'usage commercial des API
   Lichess / Chess.com et licences (Stockfish GPLv3, pièces cburnett GPL) à vérifier.
 
+- **Décisions de vente (2026-10-26)** : prix **29 € accès à vie** ; paiement **Lemon Squeezy**
+  (revendeur officiel : TVA, factures, clés de licence) ; statut micro-entreprise **en cours de
+  création** par l'utilisateur → tout est préparé en mode test, la vente n'ouvre qu'une fois le
+  statut obtenu. Plan : 1. comptes Cloudflare + Lemon Squeezy (utilisateur) ; 2. hébergement
+  Cloudflare Pages + dépôt privé ; 3. vrai verrou (contenu Pro servi par le Worker contre une clé de
+  licence Lemon Squeezy validée) — branche `licences-pro` ; 4. pages légales ; 5. achat test.
+
 ## 6. Stockage local (clés `coach-echecs:*`)
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
