@@ -7,6 +7,7 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
 import { lessonSteps, nomFr } from './lesson-core.js';
+import { raisonErreur } from './drills-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
@@ -58,6 +59,7 @@ export class LessonView {
     this.timer = null;
     this.stage = stage;
     this.drill = null;
+    this.board.hideBubble();
     if (stage === 1 && this.ply < 0) this.ply = -1;
     if (stage === 2 || stage === 0) this.ply = this.steps.length - 1;
     if (stage === 3) { this.alive = false; this.onPractice?.(this.e.id); return; }
@@ -236,7 +238,14 @@ export class LessonView {
       d.msg = fault ? (d.kind === 'piege' ? 'Voilà l’erreur. Regardez maintenant la sanction.' : 'Voilà l’erreur adverse. À vous de la punir.') : null;
     } else {
       d.msg = `Ce n’est pas le coup de la séquence : ici, on joue ${this.drillLabel(d.i)}.`;
+      const chess = new Chess();
+      for (const u of d.c.uci.slice(0, d.i)) chess.move(toObj(u));
+      const why = raisonErreur({ fen: chess.fen(), uci: played, expectedSan: d.c.san[d.i] });
+      this.renderDrill();
+      this.board.flashError(mv.to, why || d.msg);
+      return;
     }
+    this.board.hideBubble();
     this.renderDrill();
   }
 

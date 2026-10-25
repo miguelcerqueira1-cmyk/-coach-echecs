@@ -96,6 +96,41 @@ export class Board {
   }
 
   // Case entourée (indice de niveau 2 : pièce à jouer, sans dire où).
+  // Coup refusé : la case visée clignote en rouge, l'échiquier tremble et une bulle explique.
+  // La position n'est pas modifiée (c'est l'appelant qui redessine la position inchangée).
+  flashError(square, text = '') {
+    const sq = this.squares[square];
+    if (sq) {
+      sq.classList.remove('sq-error');
+      void sq.offsetWidth;
+      sq.classList.add('sq-error');
+      setTimeout(() => sq.classList.remove('sq-error'), 900);
+    }
+    this.el.classList.remove('shake');
+    void this.el.offsetWidth;
+    this.el.classList.add('shake');
+    if (text) this.showBubble(text, 'error');
+  }
+
+  // Bulle au-dessus de l'échiquier (erreur en rouge, réussite en vert) ; un toucher la ferme.
+  showBubble(text, kind = 'error') {
+    if (!this.bubble) {
+      this.bubble = document.createElement('div');
+      this.bubble.setAttribute('role', 'status');
+      this.bubble.addEventListener('click', () => this.hideBubble());
+      this.el.append(this.bubble);
+    }
+    this.bubble.className = `board-bubble ${kind}`;
+    this.bubble.textContent = text;
+    clearTimeout(this.bubbleTimer);
+    if (kind !== 'error') this.bubbleTimer = setTimeout(() => this.hideBubble(), 1200);
+  }
+
+  hideBubble() {
+    clearTimeout(this.bubbleTimer);
+    this.bubble?.classList.add('hidden');
+  }
+
   setHint(square) {
     if (square === this.hint) return;
     this.hint = square;

@@ -1,21 +1,23 @@
 // Modules d'exercices de la page Entraînement :
 // - « Lignes » : l'application joue les coups adverses d'une fiche, vous jouez les vôtres ;
-//   une erreur affiche le plan et le bon coup, et la position revient en fin de séance ;
+//   une erreur affiche le plan et le bon coup ;
 // - « Anti-trash » : un coup douteux adverse est joué, vous devez enchaîner la punition
 //   de la fiche avant la fin du chronomètre.
+// Coup refusé : case rouge, secousse et bulle (raison tirée de chess.js ou du piège de la fiche).
+// Série de réussites du premier coup ; en fin de séance, bilan et « Revoir uniquement mes
+// erreurs » : les positions ratées reviennent jusqu'à ce qu'elles soient toutes validées.
 // Les coups attendus sont ceux des fiches (lignes vérifiées par Stockfish) ; rien n'est inventé.
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
 import { key, cpFrom } from './training-core.js';
-import { lineSteps, trashDrill, seuilAutreCoup } from './drills-core.js';
+import { lineSteps, trashDrill, seuilAutreCoup, raisonErreur, nextStreak } from './drills-core.js';
 import { lineText } from './games-core.js';
 import { recordLine, recordDrill, saveProgress } from './progress.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
 const sec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
-const MAX_RETRY = 3;
 
 export class DrillRunner {
   // kind : 'lignes' | 'trash' ; ids : fiches à travailler ; onDone(résumé) : retour au menu.
@@ -36,8 +38,11 @@ export class DrillRunner {
       ? this.entries.map((e) => ({ e, d: trashDrill(e, this.colorOf(e)) })).filter((x) => x.d)
       : this.entries.map((e) => ({ e }));
     this.idx = -1;
-    this.retry = [];
     this.results = [];
+    this.missed = []; // positions ratées (révision ciblée en fin de séance)
+    this.okFirst = 0; // positions (ou punitions) réussies du premier coup
+    this.streak = { cur: 0, best: 0 };
+    this.reviewing = false;
     this.alive = true;
     this.layout();
     this.next();
@@ -50,6 +55,7 @@ export class DrillRunner {
     this.el.innerHTML = `<div class="train-layout drill" data-drill="${this.kind}">
       <section>
         <div class="train-status" data-status></div>
+        <p class="drill-streak"><span class="streak" data-streak hidden></span></p>
         ${this.kind === 'trash' ? '<div class="drill-timer" data-timer><span></span></div>' : ''}
         <div class="board-wrap" data-board></div>
         <div class="actions"><button type="button" data-quit>Terminer</button></div>
@@ -78,11 +84,41 @@ export class DrillRunner {
 
   later(fn, ms) { setTimeout(() => { if (this.alive) fn(); }, ms); }
 
+  // Série de réussites du premier coup (effet vert discret à chaque hausse).
+  bumpStreak(firstTry) {
+    this.streak = nextStreak(this.streak, firstTry);
+    const el = this.$('[data-streak]');
+    el.hidden = false;
+    el.textContent = `🔥 Série : ${this.streak.cur}`;
+    el.classList.toggle('hot', this.streak.cur >= 3);
+    el.classList.remove('bump');
+    if (firstTry) { void el.offsetWidth; el.classList.add('bump'); }
+  }
+
+  // Position ratée, notée une fois pour la révision ciblée.
+  noteMissed(m) {
+    const id = m.kind === 'trash' ? `t:${m.e.id}` : `l:${m.e.id}:${m.i}`;
+    if (!this.missed.some((x) => x.id === id)) this.missed.push({ ...m, id });
+  }
+
+  missedLabel(m) {
+    if (m.kind === 'trash') return `« ${m.e.nom} » — punition chronométrée`;
+    return `« ${m.e.nom} » — ${Math.floor(m.i / 2) + 1}${m.i % 2 ? 'e coup noir' : 'e coup blanc'}`;
+  }
+
+  // Coup refusé : rien ne bouge sur l'échiquier, la case visée clignote et une bulle explique.
+  refuse(c, mv, step, { reveal = true } = {}) {
+    const k = key(c.steps.slice(0, c.i).map((s) => s.uci));
+    const trap = this.tree[c.e.rep]?.traps.get(k);
+    const why = raisonErreur({ fen: this.chess.fen(), uci: mv.lan, expectedSan: reveal ? step.san : null, trap });
+    this.board.flashError(mv.to, why || 'Ce n’est pas le coup de la ligne.');
+  }
+
   // ---------- Enchaînement des exercices ----------
 
   next() {
     this.feedback('');
-    if (this.kind === 'lignes' && this.idx + 1 >= this.items.length && this.retry.length) { this.nextRetry(); return; }
+    this.board.hideBubble();
     this.idx++;
     if (this.idx >= this.items.length) { this.finish(); return; }
     const it = this.items[this.idx];
@@ -130,23 +166,27 @@ export class DrillRunner {
     if (!step?.ours) return;
     let mv;
     try { mv = new Chess(this.chess.fen()).move(input); } catch { return; }
+    if (c.review) { this.onReviewMove(c, mv, step); return; }
     const k = key(c.steps.slice(0, c.i).map((s) => s.uci));
     const t = this.tree[c.e.rep];
     if (mv.lan === step.uci) {
+      const firstTry = !c.errAt?.has(c.i);
       this.board.setHint(null);
+      this.board.hideBubble();
       this.feedback('');
-      if (!c.retryItem && !(this.guided && c.hints?.ply === c.i)) this.gradePos(c.e.rep, k, true);
+      if (!(this.guided && c.hints?.ply === c.i)) this.gradePos(c.e.rep, k, true);
+      if (firstTry) this.okFirst++;
+      this.bumpStreak(firstTry);
       this.chess.move(toObj(step.uci));
       this.log(`✔ ${esc(sanFr(mv.san))}`, 'ok');
       c.i++;
-      if (c.retryItem) { this.retryDone(true); return; }
       this.advance();
       return;
     }
     const good = sanFr(step.san);
     const arrow = { from: step.uci.slice(0, 2), to: step.uci.slice(2, 4), kind: 'best' };
     // Autre coup de votre répertoire (transposition d'une autre fiche) : pas une faute.
-    if (!c.retryItem && t.ours.get(k)?.has(mv.lan)) {
+    if (t.ours.get(k)?.has(mv.lan)) {
       this.log(`≈ ${esc(sanFr(mv.san))} est aussi dans votre répertoire, mais cette fiche continue par <strong>${esc(good)}</strong>.`, 'muted');
       c.wait = true;
       this.draw({ arrows: [arrow] });
@@ -154,8 +194,12 @@ export class DrillRunner {
       return;
     }
     c.errors++;
-    if (!c.retryItem) this.gradePos(c.e.rep, k, false);
-    if (this.guided) { this.guide(c, step, mv, arrow); return; }
+    (c.errAt ??= new Set()).add(c.i);
+    this.gradePos(c.e.rep, k, false);
+    this.bumpStreak(false);
+    this.noteMissed({ kind: 'ligne', e: c.e, i: c.i, color: c.color });
+    if (this.guided) { this.refuse(c, mv, step, { reveal: (c.hints?.ply === c.i ? c.hints.n : 0) >= 1 }); this.guide(c, step, mv, arrow); return; }
+    this.refuse(c, mv, step);
     const trap = t.traps.get(k);
     const isTrap = trap?.uci === mv.lan;
     const plan = c.e.plan ? `<p class="small"><strong>Plan de la fiche :</strong> ${esc(c.e.plan)}</p>` : '';
@@ -163,18 +207,17 @@ export class DrillRunner {
       <p>✘ <strong>${esc(sanFr(mv.san))}</strong> n’est pas le coup de la ligne. Le bon coup : <strong>${esc(good)}</strong> (flèche verte).</p>
       ${isTrap ? `<p class="small">⚠ C’est le piège de la fiche : ${esc(trap.texte)}</p>` : ''}
       ${plan}
-      <p class="small muted">Cette position reviendra en fin de séance.</p>
+      <p class="small muted">Elle sera proposée dans « Revoir uniquement mes erreurs » en fin de séance.</p>
       <div class="actions"><button type="button" class="primary" data-continue>J’ai compris, continuer</button></div>
     </div>`);
     this.log(`✘ ${esc(sanFr(mv.san))} — attendu ${esc(good)}`, 'ko');
-    if (!c.retryItem && !this.retry.some((r) => r.e.id === c.e.id && r.i === c.i)) this.retry.push({ e: c.e, i: c.i, color: c.color, tries: 0 });
     c.wait = true;
     this.status('Erreur : lisez l’explication', 'opponent');
     this.draw({ arrows: [arrow] });
     this.$('[data-continue]').addEventListener('click', () => {
       this.feedback('');
+      this.board.hideBubble();
       c.wait = false;
-      if (c.retryItem) { this.retryDone(false); return; }
       this.chess.move(toObj(step.uci));
       c.i++;
       this.advance();
@@ -211,26 +254,92 @@ export class DrillRunner {
     this.later(() => this.next(), 1100);
   }
 
-  // Positions ratées remises dans la boucle : on les redonne jusqu'à réussite (3 essais max).
-  nextRetry() {
-    const r = this.retry.shift();
-    const steps = lineSteps(r.e, r.color);
-    this.cur = { e: r.e, color: r.color, steps, i: r.i, errors: 0, retryItem: r };
+  // ---------- Bilan et révision ciblée ----------
+
+  showRecap() {
+    this.recapDone = true;
+    clearInterval(this.cur?.timer);
+    this.cur = null;
+    if (this.chess) this.draw();
+    this.board.hideBubble();
+    this.board.setHint(null);
+    const n = this.missed.length;
+    const pl = (x) => (x > 1 ? 's' : '');
+    this.status('Séance terminée', 'player');
+    this.$('[data-head]').innerHTML = '<p><strong>Bilan de la séance</strong></p>';
+    this.feedback(`<div class="drill-recap" data-recap>
+      <p class="recap-nums"><span class="ok">✔ ${this.okFirst} réussie${pl(this.okFirst)}</span> · <span class="ko">✘ ${n} ratée${pl(n)}</span>${this.streak.best ? ` · 🔥 meilleure série ${this.streak.best}` : ''}</p>
+      <p class="small muted">Réussie = trouvée du premier coup. ${n ? 'Positions à revoir :' : ''}</p>
+      ${n ? `<ul class="small">${this.missed.map((m) => `<li>${esc(this.missedLabel(m))}</li>`).join('')}</ul>` : ''}
+      <div class="actions">${n ? '<button type="button" class="primary" data-review>🎯 Revoir uniquement mes erreurs</button>' : ''}<button type="button" data-end>Terminer</button></div>
+    </div>`);
+    this.$('[data-review]')?.addEventListener('click', () => this.startReview());
+    this.$('[data-end]').addEventListener('click', () => this.done());
+  }
+
+  // Mini-quiz des positions ratées : une position réussie sort de la file, une position
+  // ratée repasse à la fin, jusqu'à ce que toutes soient validées.
+  startReview() {
+    this.reviewing = true;
+    this.queue = this.missed.map((m) => ({ ...m }));
+    this.$('[data-log]').innerHTML = '';
+    this.log('🎯 Révision ciblée : seulement les positions ratées, jusqu’à ce qu’elles soient toutes validées.', 'muted');
+    this.nextReview();
+  }
+
+  nextReview() {
+    this.feedback('');
+    this.board.hideBubble();
+    this.board.setHint(null);
+    if (!this.queue.length) {
+      this.cur = null;
+      this.status('Toutes vos erreurs sont corrigées ✔', 'player');
+      this.$('[data-head]').innerHTML = '<p><strong>Révision ciblée terminée</strong></p>';
+      this.feedback(`<div class="drill-fb ok" data-review-done><p>✔ Toutes les positions ratées sont validées.${this.streak.best ? ` Meilleure série : 🔥 ${this.streak.best}.` : ''}</p>
+        <div class="actions"><button type="button" class="primary" data-end>Terminer</button></div></div>`);
+      this.$('[data-end]').addEventListener('click', () => this.done());
+      return;
+    }
+    const m = this.queue[0];
+    this.$('[data-head]').innerHTML = `<p><strong>Révision ciblée</strong> — encore ${this.queue.length} position(s) · fiche « ${esc(m.e.nom)} »</p>`;
+    this.board.setOrientation(m.color);
+    if (m.kind === 'trash') {
+      this.cur = { e: m.e, d: trashDrill(m.e, m.color), color: m.color, errors: 0, i: 0, review: m };
+      this.startTrash();
+      return;
+    }
+    const steps = lineSteps(m.e, m.color);
+    this.cur = { e: m.e, color: m.color, steps, i: m.i, errors: 0, review: m };
     this.chess = new Chess();
-    for (const s of steps.slice(0, r.i)) this.chess.move(toObj(s.uci));
-    this.board.setOrientation(r.color);
-    this.$('[data-head]').innerHTML = `<p><strong>Révision des erreurs</strong> — fiche « ${esc(r.e.nom)} » (encore ${this.retry.length + 1} position(s))</p>`;
-    this.log(`↺ Position ratée de « ${esc(r.e.nom)} » : retrouvez le coup.`, 'muted');
+    for (const st of steps.slice(0, m.i)) this.chess.move(toObj(st.uci));
     this.status('À vous : retrouvez le coup de la ligne', 'player');
     this.draw({ interactive: true });
   }
 
-  retryDone(ok) {
-    const r = this.cur.retryItem;
-    r.tries++;
-    if (!ok && r.tries < MAX_RETRY) this.retry.push(r);
-    this.draw();
-    this.later(() => this.next(), ok ? 700 : 300);
+  onReviewMove(c, mv, step) {
+    const k = key(c.steps.slice(0, c.i).map((s) => s.uci));
+    if (mv.lan === step.uci) {
+      this.queue.shift();
+      this.gradePos(c.e.rep, k, true);
+      this.bumpStreak(true);
+      this.chess.move(toObj(step.uci));
+      this.log(`✔ ${esc(sanFr(mv.san))} — validé (« ${esc(c.e.nom)} »)`, 'ok');
+      this.draw();
+      this.board.showBubble('✔ Validé !', 'ok');
+      c.wait = true;
+      this.later(() => this.nextReview(), 800);
+      return;
+    }
+    this.gradePos(c.e.rep, k, false);
+    this.bumpStreak(false);
+    this.refuse(c, mv, step);
+    this.queue.push(this.queue.shift());
+    this.log(`✘ ${esc(sanFr(mv.san))} — attendu ${esc(sanFr(step.san))} ; la position reviendra.`, 'ko');
+    c.wait = true;
+    this.draw({ arrows: [{ from: step.uci.slice(0, 2), to: step.uci.slice(2, 4), kind: 'best' }] });
+    this.feedback(`<div class="drill-fb ko"><p>✘ Le coup de la ligne est <strong>${esc(sanFr(step.san))}</strong> (flèche verte). La position repasse en fin de file.</p>
+      <div class="actions"><button type="button" class="primary" data-continue>Continuer</button></div></div>`);
+    this.$('[data-continue]').addEventListener('click', () => this.nextReview());
   }
 
   // ---------- Module Anti-trash ----------
@@ -292,6 +401,8 @@ export class DrillRunner {
     let mv;
     try { mv = new Chess(this.chess.fen()).move(input); } catch { return; }
     if (mv.lan !== step.uci) { this.checkOther(mv, step); return; }
+    this.board.hideBubble();
+    this.bumpStreak(true);
     this.chess.move(toObj(step.uci));
     this.log(`✔ ${esc(sanFr(mv.san))}`, 'ok');
     c.i++;
@@ -338,7 +449,12 @@ export class DrillRunner {
     const ms = Math.round(performance.now() - c.t0);
     recordDrill(this.progress, c.e.id, ok, ok ? ms : null);
     saveProgress(this.progress);
-    this.results.push({ id: c.e.id, ok, ms });
+    if (!c.review) {
+      this.results.push({ id: c.e.id, ok, ms });
+      if (ok) this.okFirst++;
+      else this.noteMissed({ kind: 'trash', e: c.e, color: c.color });
+    }
+    if (!ok) this.bumpStreak(false);
     const fenAt = (() => { const x = new Chess(); for (const u of c.d.setup) x.move(toObj(u)); x.move(toObj(c.d.bad.uci)); return x.fen(); })();
     const seq = lineText(fenAt, c.steps.map((s) => s.san));
     const best = this.progress.drills[c.e.id]?.best;
@@ -352,17 +468,30 @@ export class DrillRunner {
       const step = c.steps[c.i];
       this.draw({ arrows: step ? [{ from: step.uci.slice(0, 2), to: step.uci.slice(2, 4), kind: 'best' }] : [] });
       body = `<p>✘ ${esc(why)}.</p><p><strong>La punition :</strong> <span class="line">${esc(seq)}</span></p>`;
+      if (step) this.board.flashError(step.uci.slice(2, 4), `✘ ${why}. La punition commence par ${sanFr(step.san)}.`);
     }
     this.feedback(`<div class="drill-fb ${ok ? 'ok' : 'ko'}">${body}<p class="small">${esc(c.d.texte || '')}</p>
-      <div class="actions"><button type="button" class="primary" data-continue>Exercice suivant</button></div></div>`);
-    this.$('[data-continue]').addEventListener('click', () => this.next());
+      <div class="actions"><button type="button" class="primary" data-continue>${c.review ? 'Continuer' : 'Exercice suivant'}</button></div></div>`);
+    this.$('[data-continue]').addEventListener('click', () => {
+      if (!c.review) { this.next(); return; }
+      if (ok) this.queue.shift(); else this.queue.push(this.queue.shift());
+      this.nextReview();
+    });
   }
 
   // ---------- Fin ----------
 
+  // Fin de la série d'exercices (ou « Terminer ») : bilan avec révision ciblée s'il y a des erreurs.
   finish() {
     if (!this.alive) return;
+    if (!this.recapDone && !this.reviewing && this.missed.length) { this.showRecap(); return; }
+    this.done();
+  }
+
+  done() {
+    if (!this.alive) return;
     this.alive = false;
+    this.board.hideBubble();
     clearInterval(this.cur?.timer);
     const ok = this.results.filter((r) => r.ok).length;
     const times = this.results.filter((r) => r.ok && r.ms).map((r) => r.ms);

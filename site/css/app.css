@@ -629,3 +629,20 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .lesson-claim h3 { margin-top: .2rem; }
 .lesson-under { margin-top: .6rem; } .lesson-step { margin: 0; }
 .file-btn { display: inline-flex; align-items: center; min-height: 40px; padding: .45rem .7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); cursor: pointer; }
+
+/* Coup refusé / réussi : case rouge, secousse, bulle ; série de réussites */
+.sq.sq-error::after { content: ''; position: absolute; inset: 0; background: color-mix(in srgb, var(--threat) 55%, transparent); animation: sq-error .9s ease-out forwards; pointer-events: none; }
+@keyframes sq-error { from { opacity: 1; } to { opacity: 0; } }
+.board.shake { animation: board-shake .35s; }
+@keyframes board-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.board-bubble { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); width: max-content; max-width: 92%; z-index: 6; padding: .5rem .75rem; border-radius: 10px; font-size: .88rem; line-height: 1.35; color: #fff; background: var(--threat); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); cursor: pointer; }
+.board-bubble.ok { background: var(--best); }
+.board-bubble.hidden { display: none; }
+.streak { display: inline-flex; align-items: center; gap: .3rem; padding: .15rem .6rem; border-radius: 999px; font-weight: 700; font-size: .9rem; background: var(--surface-2); color: var(--text); }
+.streak.hot { color: var(--best); box-shadow: inset 0 0 0 1px var(--best); }
+.streak.bump { animation: streak-bump .6s ease-out; }
+@keyframes streak-bump { 0% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--best) 70%, transparent); } 40% { transform: scale(1.12); } 100% { transform: scale(1); box-shadow: 0 0 0 10px transparent; } }
+.drill-recap .recap-nums { font-size: 1.05rem; }
+.drill-recap .recap-nums .ok { color: var(--best); font-weight: 700; }
+.drill-recap .recap-nums .ko { color: var(--threat); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .board.shake, .streak.bump, .sq.sq-error::after { animation: none; } }

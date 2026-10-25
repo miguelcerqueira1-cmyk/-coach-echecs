@@ -141,6 +141,12 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   (joueur du top ou suivi) ou, en tournoi, par un joueur suivi ou à 2600+ (`campDuTop`) ; colonnes
   blancs/nulles/noirs supplémentaires par coup (omises si nulles) ; sans répartition par plateforme.
   Fichier antérieur à l'option → message « Règle de couleur indisponible », rien d'extrapolé.
+- **Exercices (cours, lignes, anti-trash)** : coup refusé → la pièce ne bouge pas, case rouge,
+  secousse, bulle (`raisonErreur` : piège de la fiche, sinon pièce en prise selon chess.js, sinon
+  rappel du coup ; jamais d'évaluation inventée ; en pratique guidée, coup non révélé à la 1re
+  erreur). Série « 🔥 Série : X » (réussites du premier coup). Fin de séance : bilan « X réussies,
+  Y ratées » puis « 🎯 Revoir uniquement mes erreurs » (file des positions ratées, une ratée
+  repasse en fin de file, jusqu'à validation de toutes).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
@@ -163,10 +169,10 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 
 ```
 npm ci                         # dépendances + copie chess.js / Stockfish dans site/
-npm test                       # tests unitaires (≈ 87)
+npm test                       # tests unitaires (≈ 94)
 npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
 node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
-BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 59), WITH_WEBKIT=1 en CI
+BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 60), WITH_WEBKIT=1 en CI
 npm run verify:repertoire      # après modification d'une fiche (recalcule data/verification.json)
 node scripts/verify-repertoire.mjs --check
 cd worker && npm ci && npm test

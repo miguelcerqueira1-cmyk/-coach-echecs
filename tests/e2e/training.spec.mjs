@@ -112,7 +112,7 @@ async function ours(page, uci) {
   await move(page, uci);
 }
 
-test('Lignes : l’application joue l’adversaire, erreur expliquée puis reposée en fin de séance', async ({ page }) => {
+test('Lignes : l’application joue l’adversaire, erreur refusée et expliquée, série, bilan puis révision ciblée', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
   await expect(page.locator('[data-dashboard]')).toContainText('Progression par variante');
@@ -122,17 +122,34 @@ test('Lignes : l’application joue l’adversaire, erreur expliquée puis repos
   const log = page.locator('#page-entrainement [data-log]');
   await ours(page, 'd2d4');
   await expect(log).toContainText('✔ d4');
-  // Erreur volontaire au 2e coup : explication du plan, bon coup, puis on continue.
+  const streak = page.locator('#page-entrainement [data-streak]');
+  await expect(streak).toHaveText('🔥 Série : 1');
+  // Erreur volontaire au 2e coup : coup refusé (pion resté en a2), bulle, plan, bon coup.
   await ours(page, 'a2a3');
+  const bubble = page.locator('#page-entrainement .board-bubble');
+  await expect(bubble).toContainText('Ce n’est pas le coup de la ligne. Ici, on joue c4.');
+  await expect(page.locator('#page-entrainement [data-sq="a2"] .piece')).toBeVisible();
+  await expect(streak).toHaveText('🔥 Série : 0');
   const fb = page.locator('#page-entrainement [data-feedback]');
   await expect(fb).toContainText('Le bon coup : c4');
   await expect(fb).toContainText('Plan de la fiche');
   await page.click('[data-continue]');
   for (let i = 4; i < line.length; i += 2) await ours(page, line[i]);
   await expect(log).toContainText('Ligne terminée');
-  // La position ratée revient.
-  await expect(page.locator('#page-entrainement [data-head]')).toContainText('Révision des erreurs', { timeout: 10000 });
+  await expect(streak).toHaveText('🔥 Série : 7');
+  // Bilan : 8 positions trouvées du premier coup, 1 ratée ; révision ciblée jusqu'à validation.
+  const recap = page.locator('#page-entrainement [data-recap]');
+  await expect(recap).toContainText('✔ 8 réussies', { timeout: 10000 });
+  await expect(recap).toContainText('✘ 1 ratée');
+  await expect(recap).toContainText('meilleure série 7');
+  await recap.locator('[data-review]').click();
+  await expect(page.locator('#page-entrainement [data-head]')).toContainText('Révision ciblée — encore 1 position(s)');
+  await ours(page, 'h2h3');
+  await expect(bubble).toContainText('Ici, on joue c4');
+  await page.click('#page-entrainement [data-continue]');
   await ours(page, 'c2c4');
+  await expect(page.locator('#page-entrainement [data-review-done]')).toContainText('Toutes les positions ratées sont validées', { timeout: 10000 });
+  await page.click('#page-entrainement [data-review-done] [data-end]');
   await expect(page.locator('.hub-result')).toContainText('Lignes terminées : 0 / 1 sans faute', { timeout: 10000 });
   // Progression mise à jour : positions révisées → maîtrise > 0 pour cette fiche.
   const pctTxt = await page.locator('.dash-row', { hasText: 'Variante orthodoxe' }).first().locator('.dash-pct').textContent().catch(() => null);
@@ -220,6 +237,7 @@ test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, pui
   await expect(card).toContainText('coup 1 / 18');
   await move(page, 'a2a3');
   await expect(card.locator('.drill-msg')).toContainText('1. d4');
+  await expect(page.locator('#page-entrainement .board-bubble')).toContainText('Ici, on joue d4');
   await move(page, 'd2d4');
   await expect(card).toContainText('coup 2 / 18');
   await card.locator('[data-drill-skip]').click();
@@ -242,6 +260,9 @@ test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, pui
   await ours(page, 'c2c4');
   const line = 'd2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8 g1f3 b8d7 a1c1 c7c6 f1d3 d5c4 d3c4 f6d5'.split(' ');
   for (let i = 4; i < line.length; i += 2) await ours(page, line[i]);
+  // Une erreur pendant la pratique : bilan, puis fin de la leçon.
+  await expect(page.locator('#page-entrainement [data-recap]')).toContainText('✘ 1 ratée', { timeout: 15000 });
+  await page.click('#page-entrainement [data-recap] [data-end]');
   await expect(page.locator('.hub-result')).toContainText('Leçon « Variante orthodoxe', { timeout: 15000 });
   await expect(page.locator('.course-item', { hasText: 'Variante orthodoxe' })).toContainText('Leçon suivie');
   const prog = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')));
