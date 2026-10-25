@@ -10,3 +10,6 @@ worker/node_modules/
 site/data/repertoire.json
 site/data/elite.json
 site/data/joueurs.json
+
+# Copies de travail temporaires des agents
+.claude/worktrees/
