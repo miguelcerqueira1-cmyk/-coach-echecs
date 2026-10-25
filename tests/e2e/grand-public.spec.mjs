@@ -48,19 +48,21 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await choisir(page, ['indienne-roi']);
   await expect(ch.locator('.choix-recap')).toContainText('Système de Londres · Défense sicilienne · Défense indienne du Roi');
   await ch.locator('[data-choix-next]').click();
-  // Rechargé sur le Répertoire : seulement les ouvertures choisies, annoncées « bientôt ».
+  // Rechargé sur le Répertoire : seulement les ouvertures choisies ; le Londres a ses fiches
+  // (1 gratuite, les autres verrouillées), la Sicilienne est annoncée « bientôt ».
   await expect(page).toHaveURL(/#\/repertoire$/);
   const rep = page.locator('#page-repertoire');
-  await expect(rep.locator('[data-soon="londres"]')).toContainText('en préparation');
+  await expect(rep.locator('tr[data-id="lon-classique"]:not([data-locked])')).toBeVisible();
   await expect(rep.locator('[data-view]')).toHaveCount(4); // 3 ouvertures + Anti-trash
   await expect(rep.locator('[data-view="gd"]')).toHaveCount(0);
-  await expect(rep.locator('tr[data-id]')).toHaveCount(0);
+  await expect(rep.locator('tr[data-id]')).toHaveCount(9);
+  await expect(rep.locator('tr[data-id][data-locked]')).toHaveCount(8);
   await rep.locator('[data-view="sicilienne"]').click();
   await expect(rep.locator('[data-soon="sicilienne"]')).toBeVisible();
   expect(JSON.parse(await page.evaluate((k) => localStorage.getItem(k), KEY)).ids).toEqual(['londres', 'sicilienne', 'indienne-roi']);
-  // Entraînement : aucune fiche publiée pour ces ouvertures, dit tel quel.
+  // Entraînement : le cours du Londres est proposé.
   await page.goto('./#/entrainement');
-  await expect(page.locator('[data-empty]')).toContainText('sont en préparation');
+  await expect(page.locator('[data-course="londres"]')).toBeVisible();
   // Revenir à l'accueil depuis le logo.
   await page.click('.brand');
   await expect(page.locator('#page-accueil')).toBeVisible();

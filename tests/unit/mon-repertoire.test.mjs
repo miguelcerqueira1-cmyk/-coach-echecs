@@ -26,7 +26,7 @@ test('répertoires : 12, trois groupes, racines légales, fiches gratuites exist
   }
   const ids = new Set(LIGNES.map((e) => e.id));
   for (const id of FICHES_GRATUITES) assert.ok(ids.has(id), id);
-  assert.deepEqual(FICHES_GRATUITES, ['gd-orthodoxe', 'ita-giuoco-piano', 'esp-fermee', 'ck-classique', 'ck-avance-short']);
+  assert.deepEqual(FICHES_GRATUITES, ['gd-orthodoxe', 'ita-giuoco-piano', 'esp-fermee', 'lon-classique', 'ang-sicilienne-inversee', 'ck-classique', 'ck-avance-short']);
   // Une fiche gratuite appartient à son répertoire ; un répertoire avec contenu en a au moins une.
   for (const r of Object.values(REPERTOIRES)) {
     for (const id of r.gratuites) assert.equal(LIGNES.find((e) => e.id === id).rep, r.id);
