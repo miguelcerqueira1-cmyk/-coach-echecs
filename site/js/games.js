@@ -4,6 +4,7 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { loadProgress, saveProgress, recordSortie } from './progress.js';
 import { loadPgnTolerant } from './game.js';
+import { choisis, REPERTOIRES } from './mon-repertoire.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
@@ -45,7 +46,7 @@ export class GamesPage {
       // Bilan demandé depuis la page Moteur : la partie passe en tête de liste et s'analyse.
       const g = this.pendingLocal;
       this.pendingLocal = null;
-      g.deviation = repertoireDeviation(g, this.data.entries);
+      g.deviation = repertoireDeviation(g, this.data.entries, choisis());
       this.games = [g, ...this.games.filter((x) => x.id !== g.id)];
       this.selected = g.id;
       this.render();
@@ -147,7 +148,7 @@ export class GamesPage {
       this.render();
     }));
     this.games.sort((a, b) => b.date.localeCompare(a.date));
-    for (const g of this.games) g.deviation = repertoireDeviation(g, this.data.entries);
+    for (const g of this.games) g.deviation = repertoireDeviation(g, this.data.entries, choisis());
     // « Nouveau » : parties terminées depuis le dernier chargement.
     const last = this.prefs.lastSeen || '';
     for (const g of this.games) g.isNew = !!last && g.date > last;
@@ -329,7 +330,7 @@ export class GamesPage {
       date: d ? new Date(Date.UTC(+d[1], +d[2] - 1, +d[3])).toISOString() : base.date,
       whiteElo: Number(h.WhiteElo) || null, blackElo: Number(h.BlackElo) || null,
     };
-    g.deviation = repertoireDeviation(g, this.data?.entries || []);
+    g.deviation = repertoireDeviation(g, this.data?.entries || [], choisis());
     this.games = [g, ...this.games.filter((x) => x.id !== g.id)];
     this.noteSorties([g]);
     this.pgnAlert = { id: g.id, color, ...alertePgn(g, g.deviation) };
@@ -344,10 +345,13 @@ export class GamesPage {
     const by = (fn) => { const g = list.filter(fn); const w = g.filter((x) => x.outcome === 'victoire').length; const d = g.filter((x) => x.outcome === 'nulle').length; return { n: g.length, w, d, l: g.length - w - d }; };
     const fmt = (s) => (s.n ? `${s.n} partie(s) : ${s.w} V · ${s.d} N · ${s.l} D` : 'aucune');
     const all = by(() => true);
-    const whiteRep = by((g) => g.color === 'w' && g.san[0] === 'd4');
-    const whiteOther = by((g) => g.color === 'w' && g.san[0] !== 'd4');
-    const caro = by((g) => g.color === 'b' && g.san[0] === 'e4' && g.san[1] === 'c6');
-    const blackE4Other = by((g) => g.color === 'b' && g.san[0] === 'e4' && g.san[1] !== 'c6');
+    // Par répertoire choisi ; une réponse des Noirs hors répertoire dès le 1er coup compte à part.
+    const dansRep = (g, id) => g.deviation?.rep === id && !(g.color === 'b' && g.deviation.who === 'moi' && g.deviation.ply === 1);
+    const ids = choisis();
+    const parRep = ids.map((id) => ({ id, s: by((g) => dansRep(g, id)) }));
+    const horsBlancs = by((g) => g.color === 'w' && !ids.some((id) => dansRep(g, id)));
+    const horsNoirs = by((g) => g.color === 'b' && !ids.some((id) => dansRep(g, id)));
+    const camp = (id) => (REPERTOIRES[id]?.couleur === 'w' ? 'Blancs' : 'Noirs');
     const devs = {};
     for (const g of list) {
       const d = g.deviation;
@@ -376,10 +380,9 @@ export class GamesPage {
       <h2>Vue d’ensemble (${esc(this.prefs.speed === 'toutes' ? 'toutes cadences' : this.prefs.speed)})</h2>
       <p>Total : ${fmt(all)}</p>
       <ul>
-        <li>Blancs avec 1.d4 (votre répertoire) : ${fmt(whiteRep)}</li>
-        ${whiteOther.n ? `<li>Blancs sans 1.d4 : ${fmt(whiteOther)}</li>` : ''}
-        <li>Noirs, Caro-Kann contre 1.e4 : ${fmt(caro)}</li>
-        ${blackE4Other.n ? `<li>Noirs, autre réponse à 1.e4 : ${fmt(blackE4Other)}</li>` : ''}
+        ${parRep.map(({ id, s: st }) => `<li>${camp(id)}, ${esc(REPERTOIRES[id].titre)} : ${fmt(st)}</li>`).join('')}
+        ${horsBlancs.n ? `<li>Blancs, hors de vos répertoires : ${fmt(horsBlancs)}</li>` : ''}
+        ${horsNoirs.n ? `<li>Noirs, hors de vos répertoires : ${fmt(horsNoirs)}</li>` : ''}
       </ul>
       ${topDev.length ? `<p><strong>Vos sorties de répertoire les plus fréquentes :</strong></p><ul>${topDev.map(([k, n]) => `<li>${esc(k)} (${n} fois)</li>`).join('')}</ul>` : ''}
       ${agg}

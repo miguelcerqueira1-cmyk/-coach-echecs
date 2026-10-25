@@ -1,6 +1,6 @@
-// Navigation entre les pages par l'ancre de l'URL (#/moteur, #/repertoire, #/entrainement, #/parties) :
-// pas de rechargement, l'état de la partie et du moteur est conservé.
-const PAGES = ['moteur', 'repertoire', 'entrainement', 'parties'];
+// Navigation entre les pages par l'ancre de l'URL (#/moteur, #/repertoire, #/entrainement, #/parties,
+// #/accueil, #/ouvertures) : pas de rechargement, l'état de la partie et du moteur est conservé.
+const PAGES = ['moteur', 'repertoire', 'entrainement', 'parties', 'accueil', 'ouvertures'];
 
 export function currentPage() {
   const p = location.hash.replace(/^#\/?/, '').split('/')[0];

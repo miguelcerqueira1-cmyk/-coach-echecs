@@ -5,6 +5,7 @@ import { Chess } from '../site/vendor/chess.js';
 import { parseLichessGame, parseChessComGame } from '../site/js/games-core.js';
 import { fenKey, ROOTS } from '../site/js/elite.js';
 import { LIGNES } from '../site/data/repertoire.js';
+import { REPERTOIRES, couleurDe } from '../site/data/repertoires/meta.js';
 import { playLine } from '../site/js/lines.js';
 
 const RESULTS = ['1-0', '0-1', '1/2-1/2'];
@@ -34,7 +35,8 @@ const PGN_BODY = (pgn) => String(pgn).replace(/^\s*(\[[^\]]*\]\s*)+/, '');
 
 export const TRANSPO_PLIES = 16;
 
-export function buildRepertoireIndex(lines = LIGNES) {
+// Seuls les répertoires marqués `elite` (repertoires/meta.js) sont collectés.
+export function buildRepertoireIndex(lines = LIGNES.filter((e) => REPERTOIRES[e.rep]?.elite)) {
   const index = new Map();
   const add = (fen, rep) => { const k = fenKey(fen); if (!index.has(k)) index.set(k, rep); };
   for (const [rep, root] of Object.entries(ROOTS)) {
@@ -102,7 +104,7 @@ export function entryOf(g, opts) {
 export function campDuTop(g, { minElo = 2600 } = {}) {
   const ent = entryOf(g);
   if (!ent) return false;
-  const side = ent.rep === 'ck' ? 'b' : 'w';
+  const side = couleurDe(ent.rep) || 'w';
   if (g.p === 'bc') return !!g[`${side}n`] || (Number.isFinite(g[`${side}r`]) && g[`${side}r`] >= minElo);
   const name = String(g[side] ?? '').toLowerCase();
   return (g.o || []).some((k) => k.split(':')[1] === name);
@@ -240,7 +242,7 @@ export function compact(agg, minPositionGames = agg.minPositionGames) {
 
 // Ensemble des parties gardées, comptées par plateforme et par répertoire.
 export function countGames(games) {
-  const out = { li: 0, cc: 0, bc: 0, gd: 0, ck: 0 };
+  const out = { li: 0, cc: 0, bc: 0, ...Object.fromEntries(Object.keys(ROOTS).map((id) => [id, 0])) };
   for (const g of games) {
     out[g.p]++;
     const ent = entryOf(g);

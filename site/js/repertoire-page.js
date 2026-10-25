@@ -16,6 +16,14 @@ import { datalistHtml, playersSectionHtml, bindPlayers } from './joueurs-ui.js';
 import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago, NOCAMP_TEXT, CAMP_LABEL } from './elite.js';
 import { loadSettings } from './storage.js';
 import { canOpenFiche, openPaywall } from './pro.js';
+import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
+import { couleurDe } from '../data/repertoires/meta.js';
+
+// Racine d'un répertoire en UCI (point de départ de l'arbre des coups).
+const racineUci = (id) => {
+  const c = new Chess();
+  return (REPERTOIRES[id]?.racine || []).map((m) => c.move(m).lan);
+};
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
@@ -110,7 +118,7 @@ export class RepertoirePage {
     this.loadEliteData = loadEliteData;
     this.elite = { status: 'loading' }; // jeu Élite (branche donnees-elite ou data/elite.json)
     this.data = null;
-    this.view = 'gd'; // 'gd' | 'ck' | 'trash'
+    this.view = ''; // identifiant d'un répertoire choisi, ou 'trash'
     this.badge = '';
     this.query = '';
     this.sort = ''; // '' | 'joue-niveau' | 'score-niveau' | 'joue-maitres' | 'score-maitres' | 'eval'
@@ -126,7 +134,8 @@ export class RepertoirePage {
     if (!this.data) {
       this.el.innerHTML = '<p class="state pad"><span class="spinner"></span> Chargement du répertoire…</p>';
       try {
-        this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json();
+        // Seulement les ouvertures choisies (Mon répertoire).
+        this.data = filtrerData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json());
       } catch {
         this.el.innerHTML = '<p class="errbox pad">Impossible de charger le répertoire (data/repertoire.json).</p>';
         return;
@@ -224,8 +233,12 @@ export class RepertoirePage {
 
   // ---------- Rendu ----------
 
+  // Répertoire affiché (onglet), ou le premier répertoire choisi si l'onglet est « Anti-trash ».
+  repVue() { return this.view !== 'trash' && this.data.choisis.includes(this.view) ? this.view : this.data.choisis[0]; }
+
   render() {
     const d = this.data;
+    if (this.view !== 'trash') this.view = this.repVue();
     const f = this.getFilter();
     const filt = `${f.speeds.map((s) => SPEED_LABELS[s]).join(', ') || 'toutes cadences'} · ${f.ratings.map(bucketLabel).join(', ') || 'tous classements'}`;
     const list = this.entries();
@@ -234,8 +247,10 @@ export class RepertoirePage {
     this.el.innerHTML = `
       <div class="rep-head">
         <div class="chips" aria-label="Ouverture">
-          ${chip('data-view', 'gd', this.view, '♙ Gambit Dame <span class="muted small">(Blancs)</span>', count((e) => e.rep === 'gd'))}
-          ${chip('data-view', 'ck', this.view, '♟ Caro-Kann <span class="muted small">(Noirs)</span>', count((e) => e.rep === 'ck'))}
+          ${d.choisis.map((id) => {
+            const n = count((e) => e.rep === id);
+            return chip('data-view', id, this.view, `${couleurDe(id) === 'w' ? '♙' : '♟'} ${esc(REPERTOIRES[id].titre)} <span class="muted small">(${couleurDe(id) === 'w' ? 'Blancs' : 'Noirs'})</span>${n ? '' : ' <span class="badge soon-badge">bientôt</span>'}`, n || null);
+          }).join('')}
           ${chip('data-view', 'trash', this.view, '🗑 Anti-trash Blitz', count((e) => e.punition || e.piege || e.badge === 'loufoque'))}
         </div>
         <div class="chips" aria-label="Type de ligne">
@@ -252,8 +267,7 @@ export class RepertoirePage {
           </select>`}
           <details class="export-menu"><summary>⤓ Exporter en PGN</summary>
             <div class="export-box">
-              <button type="button" data-export="gd">Gambit Dame (${count((e) => e.rep === 'gd')} fiches)</button>
-              <button type="button" data-export="ck">Caro-Kann (${count((e) => e.rep === 'ck')} fiches)</button>
+              ${d.choisis.filter((id) => count((e) => e.rep === id)).map((id) => `<button type="button" data-export="${id}">${esc(REPERTOIRES[id].titre)} (${count((e) => e.rep === id)} fiches)</button>`).join('')}
               <button type="button" data-export="all">Tout le répertoire</button>
               <p class="muted tiny">Lichess : Étude → « + » (nouveau chapitre) → onglet PGN → coller ou importer le fichier (64 chapitres max par étude : un fichier par ouverture). Chess.com : Analyse → Importer PGN. Les punitions et pièges sont inclus en variantes commentées.</p>
             </div>
@@ -263,7 +277,7 @@ export class RepertoirePage {
       </div>
       <div data-ranking>${this.rankingHtml(list)}</div>
       <section id="rep-players">${playersSectionHtml(this.joueurs, this.query, list.length)}</section>
-      <div data-results>${this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list)}</div>
+      <div data-results>${this.resultsHtml(list)}</div>
       <section class="card live-card" id="rep-live">${this.liveHtml()}</section>
       <section class="card tree-card" id="rep-tree">${this.treeHtml()}</section>
       <dialog class="video-dlg" data-video-dlg></dialog>
@@ -282,11 +296,28 @@ export class RepertoirePage {
     const sec = this.el.querySelector('#rep-players');
     sec.innerHTML = playersSectionHtml(this.joueurs, this.query, list.length);
     bindPlayers(sec, this.joueurs, this.openGame);
-    this.el.querySelector('[data-results]').innerHTML = this.view === 'trash' ? this.trashHtml(list) : this.tableHtml(list);
+    this.el.querySelector('[data-results]').innerHTML = this.resultsHtml(list);
     const dl = this.el.querySelector('#rep-joueurs');
     if (dl) dl.innerHTML = datalistHtml(this.joueurs, this.query);
     this.observe();
     if (this.sort && this.sort !== 'eval' && this.view !== 'trash') list.forEach((e) => this.load(e));
+  }
+
+  resultsHtml(list) {
+    if (this.view === 'trash') return this.trashHtml(list);
+    if (!this.data.entries.some((e) => e.rep === this.view)) return this.soonHtml(this.view);
+    return this.tableHtml(list);
+  }
+
+  // Répertoire choisi sans fiche publiée : annoncé tel quel, rien d'inventé.
+  soonHtml(id) {
+    const r = REPERTOIRES[id];
+    return `<section class="card soon-card" data-soon="${esc(id)}">
+      <h2>${couleurDe(id) === 'w' ? '♙' : '♟'} ${esc(r.titre)} <span class="badge soon-badge">bientôt</span></h2>
+      <p class="small muted">${esc(r.sousTitre)}</p>
+      <p>Les fiches de cette ouverture sont en préparation : chaque piège et chaque punition sera vérifié par Stockfish avant publication.</p>
+      <p class="small">En attendant, l’<strong>arbre des coups joués</strong> ci-dessous (statistiques Lichess, à votre niveau ou chez les maîtres) et le <strong>Moteur</strong> fonctionnent déjà pour cette ouverture.</p>
+    </section>`;
   }
 
   tableHtml(list) {
@@ -364,14 +395,15 @@ export class RepertoirePage {
       if (!s.total) return `<div class="muted tiny">${label} : aucune partie</div>`;
       return `<div class="stat-line"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString('fr-FR')} parties</span>${bar(s)}<span class="tiny">Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)}</span></div>`;
     };
-    return one(live.explorer, 'Mon niveau') + one(live.masters, 'Maîtres') + this.eliteLine(e.fenFinale);
+    return one(live.explorer, 'Mon niveau') + one(live.masters, 'Maîtres') + this.eliteLine(e.fenFinale, e.rep);
   }
 
   // Ligne « Élite » : lue dans le fichier statique, sans requête réseau supplémentaire.
-  eliteLine(fen) {
+  eliteLine(fen, rep = null) {
     const el = this.elite;
     const camp = !!loadSettings().eliteCamp;
     const label = camp ? `Élite (${CAMP_LABEL})` : 'Élite';
+    if (rep && !REPERTOIRES[rep]?.elite) return `<div class="muted tiny elite-absent">${label} : données Élite pas encore collectées pour cette ouverture</div>`;
     if (el.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
     if (el.status !== 'ok') return `<div class="muted tiny">${label} : jeu de données non publié</div>`;
     const x = lookupElite(el.data, fen, { camp });
@@ -642,14 +674,17 @@ export class RepertoirePage {
     const head = '<h2>🔴 Nouvelles parties du top</h2>';
     if (el.status === 'loading') return `${head}<p class="state small"><span class="spinner"></span> Chargement…</p>`;
     if (el.status !== 'ok') return `${head}<p class="muted small">Jeu de données Élite non publié sur ce site.</p>`;
-    const list = recentInfo(el.data);
+    // Parties du top limitées aux ouvertures choisies dont les données Élite sont collectées.
+    const suivis = this.data.choisis.filter((id) => REPERTOIRES[id]?.elite);
+    if (!suivis.length) return `${head}<p class="muted small">Données Élite pas encore collectées pour vos ouvertures (${esc(this.data.choisis.map((id) => REPERTOIRES[id].titre).join(', '))}).</p>`;
+    const list = recentInfo(el.data).filter((g) => suivis.includes(g.rep));
     const rows = list.map((g, i) => `<li>
         <span class="tiny live-when" title="${esc(new Date(g.t).toLocaleString('fr-FR'))}">${esc(ago(g.t))}</span>
         <button type="button" class="link-btn" data-live-game="${i}">${esc(g.label)}</button>
         <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}${g.opening ? ` · ${esc(g.opening)}` : ''}</span>
         <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('');
     return `${head}
-      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent votre répertoire (Gambit Dame ou Caro-Kann, quel que soit l’ordre des coups) ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).</p>
+      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent votre répertoire (${esc(suivis.map((id) => REPERTOIRES[id].titre).join(' ou '))}, quel que soit l’ordre des coups) ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).</p>
       ${rows ? `<ul class="live-list">${rows}</ul>` : '<p class="muted small">Aucune partie récente dans le jeu de données.</p>'}
       <p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p>`;
   }
@@ -739,7 +774,7 @@ export class RepertoirePage {
   exportPgn(which) {
     const d = this.data;
     const pgn = repertoireToPgn(d.entries, d.repertoires, which === 'all' ? null : which);
-    const name = { gd: 'repertoire-gambit-dame', ck: 'repertoire-caro-kann', all: 'repertoire-complet' }[which];
+    const name = { gd: 'repertoire-gambit-dame', ck: 'repertoire-caro-kann', all: 'repertoire-complet' }[which] || `repertoire-${which}`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([pgn], { type: 'application/x-chess-pgn' }));
     a.download = `${name}.pgn`;
@@ -837,7 +872,7 @@ export class RepertoirePage {
   }
 
   bindTree(el) {
-    const root = () => (this.view === 'ck' ? ['e2e4', 'c7c6'] : ['d2d4', 'd7d5', 'c2c4']);
+    const root = () => racineUci(this.repVue());
     el.querySelector('[data-tree-root]')?.addEventListener('click', () => this.openTree(root()));
     el.querySelectorAll('[data-tree-src]').forEach((b) => b.addEventListener('click', () => {
       this.treeSource = b.dataset.treeSrc;
@@ -846,12 +881,12 @@ export class RepertoirePage {
     el.querySelectorAll('[data-child]').forEach((b) => b.addEventListener('click', () => this.openTree([...this.tree.path, b.dataset.child])));
     el.querySelectorAll('[data-crumb]').forEach((b) => b.addEventListener('click', () => this.openTree(this.tree.path.slice(0, Number(b.dataset.crumb)))));
     el.querySelectorAll('[data-master]').forEach((b) => b.addEventListener('click', () => {
-      const color = this.view === 'ck' ? 'b' : 'w';
+      const color = couleurDe(this.repVue());
       this.openMaster(b.dataset.master, color);
     }));
     el.querySelectorAll('[data-elite-game]').forEach((b) => b.addEventListener('click', () => {
       const g = this.tree?.node?.games?.[Number(b.dataset.eliteGame)];
-      if (g) this.openGame?.(g.san, this.view === 'ck' ? 'b' : 'w', `la partie ${g.label}`, eliteHeaders(g));
+      if (g) this.openGame?.(g.san, couleurDe(this.repVue()), `la partie ${g.label}`, eliteHeaders(g));
     }));
   }
 }

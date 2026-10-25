@@ -1,5 +1,5 @@
 // Formule Gratuit / Pro de BlitzRefute.
-// - Gratuit : page Moteur, Mes parties, et 3 variantes de base (fiche, leçon) ;
+// - Gratuit : page Moteur, Mes parties, et une variante de base par ouverture (fiche, leçon) ;
 // - Pro : encyclopédie complète, entraînement (lignes, révision espacée, anti-trash, séance du
 //   jour, mes vraies erreurs).
 // LIMITE ASSUMÉE : tout se passe sur l'appareil (site statique, aucun serveur de licences) ; le
@@ -7,15 +7,18 @@
 // vente, pas une protection : une vraie vente exige une vérification côté serveur.
 // Le code d'accès n'est jamais écrit en clair ici : seule son empreinte SHA-256 est comparée.
 
+import { FICHES_GRATUITES } from '../data/repertoires/meta.js';
+
 const KEY = 'coach-echecs:pro';
 // Empreinte SHA-256 du code administrateur (le code lui-même n'est pas dans le dépôt).
 const CODE_HASHES = ['96c385bdf2fc8a78972ab9b37af0d4375c2a459080f437b4a8002323adf10248'];
 
-// Variantes de base offertes : la ligne principale de chaque répertoire, plus l'Avance (Caro-Kann).
-export const FREE_FICHES = ['gd-orthodoxe', 'ck-classique', 'ck-avance-short'];
+// Variantes de base offertes : listées par répertoire dans site/data/repertoires/meta.js
+// (`gratuites`, une fiche par répertoire dès qu'il a du contenu ; la Caro-Kann en garde deux).
+export const FREE_FICHES = FICHES_GRATUITES;
 
 export const PRO_FEATURES = [
-  ['📚', 'L’encyclopédie complète', 'Les 58 variantes : plans, pièges, réfutations vérifiées par Stockfish, vidéos'],
+  ['📚', 'L’encyclopédie complète', 'Toutes les variantes de vos ouvertures : plans, pièges, réfutations vérifiées par Stockfish, vidéos'],
   ['⏱', 'Réflexes anti-trash', 'Punitions chronométrées des coups douteux du Blitz'],
   ['🧠', 'Répétition espacée', 'Les lignes reviennent juste avant que vous les oubliiez'],
   ['🎯', 'Mes vraies erreurs', 'Vos sorties de répertoire Lichess / Chess.com transformées en exercices'],

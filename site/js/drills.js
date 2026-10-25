@@ -343,7 +343,7 @@ export class DrillRunner {
     const m = c.review;
     let mv;
     try { mv = new Chess(this.chess.fen()).move(input); } catch { return; }
-    const rep = m.color === 'w' ? 'gd' : 'ck';
+    const rep = m.rep; // répertoire de la vraie partie (enregistré avec la position)
     const k = key(m.moves);
     const inTree = this.tree[rep]?.ours.has(k);
     const bestSan = new Chess(this.chess.fen()).move(toObj(m.expected[0])).san;

@@ -9,8 +9,12 @@ explique le but, l'organisation, les choix et les règles. Ne pas y recopier de 
 maîtriser tes ouvertures et détruire les pièges en Blitz. » Les clés localStorage gardent le préfixe
 `coach-echecs:` (données des utilisateurs conservées).
 
-Application web **en français** d'entraînement aux échecs, pour un joueur de club/blitz (~1000–1400
-Elo) qui joue le **Gambit Dame avec les Blancs** et la **Caro-Kann avec les Noirs**.
+Application web **en français** d'entraînement aux ouvertures, **grand public** (joueurs de club /
+blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **12 répertoires** : avec les
+Blancs (Gambit Dame, Italienne, Espagnole, Londres, Anglaise), contre 1.e4 (Caro-Kann, Sicilienne,
+Française, Scandinave), contre 1.d4 (Indienne du Roi, GD refusé / Slave, Nimzo / Indienne de la
+Dame). Seuls le **Gambit Dame** et la **Caro-Kann** (répertoire historique du créateur) ont des
+fiches pour l'instant ; les autres sont affichés « bientôt ».
 Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans rien installer.
 
 - Site publié : https://miguelcerqueira1-cmyk.github.io/-coach-echecs/
@@ -34,6 +38,8 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
 
 | Page | Contenu |
 |---|---|
+| `#/accueil` | Page publique (1re visite, logo) : marque, fonctions, ouvertures (fiches publiées / « bientôt »), formules Gratuit / Pro 29 €, « Choisir mes ouvertures ». |
+| `#/ouvertures` | Choix en 3 étapes (Blancs, contre 1.e4, contre 1.d4), plusieurs ou aucun par étape, au moins un au total ; enregistré puis rechargement sur `#/repertoire`. Aussi depuis ⚙ « Mes ouvertures ». |
 | `#/moteur` | Échiquier ; conseil Stockfish après chaque coup réellement joué (confirmer pour l'enregistrer) ; panneau « Coup optimal » (Stockfish local, Lichess Cloud Eval, meilleur % de victoire à mon niveau, coup des maîtres, coup de l'Élite) ; navigation ⏮◀▶⏭ et analyse des positions passées ; explication gratuite sans IA (ou Claude si configuré) ; mode « Indice d'abord » ; noms/Elo des joueurs au-dessus de l'échiquier ; « Jouer la suite jusqu'à la fin » (théorie des maîtres puis Stockfish) ; « Bilan de la partie » ; import/export PGN/FEN. |
 | `#/repertoire` | 58 fiches (31 Gambit Dame, 27 Caro-Kann) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
 | `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir, piège et punition **jouables coup par coup** sur l'échiquier → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **🎯 Mes vraies erreurs** (positions de mes parties Lichess/Chess.com : sorties de répertoire et punitions manquées, à rejouer jusqu'à validation), **⚡ Séance du jour**, **📊 progression** par variante (maîtrise %, série 🔥, sorties réelles ⚠). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
@@ -79,7 +85,12 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/transfer.js              Export/import des données (sans secrets)
   js/pwa.js                   Service worker, bandeau de mise à jour, aide à l'installation
   js/router.js                Navigation par hash
-  data/repertoire.js          **Source des 58 fiches** (à éditer) ; repertoire.json, elite.json, joueurs.json GÉNÉRÉS
+  data/repertoires/meta.js    Les 12 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
+  data/repertoires/<id>.js    **Fiches d'un répertoire** (à éditer : `export default [ …fiches ]`)
+  data/repertoire.js          Agrège (REPERTOIRES, GROUPES, BADGES, LIGNES) + conventions des fiches ;
+                              repertoire.json, elite.json, joueurs.json GÉNÉRÉS
+  js/mon-repertoire.js        Ouvertures choisies (`coach-echecs:mon-repertoire`), filtrerData
+  js/accueil.js, js/choix.js  Page d'accueil publique, écran de choix des ouvertures
   pieces/                     SVG cburnett ; vendor/ et engine/ GÉNÉRÉS (postinstall)
 worker/src/                   Cloudflare Worker (API Claude, relais explorer) : index.js, prompt.js
 scripts/                      vendor, build (→ dist/), serve, icons, repertoire (ECO + noms par coup → JSON),
@@ -88,7 +99,7 @@ scripts/                      vendor, build (→ dist/), serve, icons, repertoir
 data/chess-openings/          Base ECO CC0 (lichess-org/chess-openings)
 data/verification.json        Résultats Stockfish (profondeur 18) par empreinte de fiche
 tests/unit/ (13 fichiers)     node:test — npm test
-tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, games, training, pwa
+tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, games, training, pwa, pro, grand-public
 .github/workflows/deploy.yml  vérification → tests e2e (image Playwright) → Worker → Pages → contrôle du site publié
 .github/workflows/elite.yml   collecte Élite (≈ toutes les heures, complète le lundi) → branche donnees-elite
 ```
@@ -169,10 +180,32 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
   jour, CORS limité au site, Durable Object pour les compteurs. Modèle par défaut configurable
   (variable `CLAUDE_MODEL`).
 
+## 5 ter. Grand public : choix des ouvertures
+
+- `mon-repertoire.js` : `initChoix()` au démarrage, **avant toute écriture** : aucun choix + aucune
+  clé `coach-echecs:*` → première visite → `#/accueil` (sauf lien direct vers une page) ; données
+  existantes → Gambit Dame + Caro-Kann enregistrés (`auto: true`), rien ne change. Exporté par
+  « Mes données ». Les pages filtrent `repertoire.json` (`filtrerData` : `entries`, `repertoires`,
+  `choisis` = choix ; `tous` = toutes les fiches).
+- Répertoire choisi sans fiche : onglet « bientôt » + carte « en préparation » (Répertoire), carte
+  « bientôt » (Entraînement) ; si aucune ouverture choisie n'a de fiche, l'Entraînement le dit.
+- Sorties de répertoire (`repertoireDeviation(game, entries, reps)`) : candidats = répertoires
+  choisis de la couleur jouée (Blancs : 1er coup du répertoire ; Noirs : réponse prévue au 1er coup
+  adverse) ; le répertoire suivi le plus loin l'emporte (ex. Gambit Dame et Londres après 1.d4).
+- Élite : collecte limitée aux répertoires `elite: true` (gd, ck) ; ailleurs « données Élite pas
+  encore collectées pour cette ouverture ».
+- **Ajouter des fiches à un répertoire** : écrire dans `site/data/repertoires/<id>.js` (même format
+  que gd.js : id unique préfixé, `rep: '<id>'`, famille, nom, badge, ligne SAN anglaise, plan,
+  structure, punition/piège `{ ligne avec « ? » sur le coup fautif, texte }`, cases, echanger,
+  conserver, video), désigner une fiche gratuite dans `meta.js` (`gratuites`), puis
+  `npm run verify:repertoire` (Stockfish profondeur 18, met à jour data/verification.json),
+  `node scripts/repertoire.mjs`, `npm test`.
+
 ## 5 bis. Formule Gratuit / Pro (`site/js/pro.js`)
 
-- Gratuit : Moteur, Mes parties (dont PGN collé), 3 variantes de base `FREE_FICHES`
-  (gd-orthodoxe, ck-classique, ck-avance-short : fiche + leçon). Pro : autres fiches (lignes
+- Gratuit : Moteur, Mes parties (dont PGN collé), une variante de base par ouverture `FREE_FICHES`
+  (tirée de `gratuites` dans repertoires/meta.js ; aujourd'hui gd-orthodoxe, ck-classique,
+  ck-avance-short : fiche + leçon). Pro : autres fiches (lignes
   verrouillées, contenu flouté, aucune requête), anti-trash, S'entraîner / révision espacée, séance du
   jour, Mes vraies erreurs, autres modes, leçons Pro. Fenêtre `#dlg-pro` (`openPaywall`).
 - Paiement : `config.json.paymentUrl` (variable `PAYMENT_URL` au build) ; vide → « Le paiement en
@@ -197,16 +230,16 @@ tests/e2e/  (6 fichiers)      Playwright, vrai Stockfish : app, lichess, elite, 
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
-`youtube-v1`, `pro` (formule, propre à l'appareil) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
+`youtube-v1`, `pro` (formule, propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
 
 ## 7. Commandes
 
 ```
 npm ci                         # dépendances + copie chess.js / Stockfish dans site/
-npm test                       # tests unitaires (≈ 96)
+npm test                       # tests unitaires (≈ 100)
 npm run build                  # dist/ (COACH_API_URL=... pour l'API Claude)
 node scripts/serve.mjs 4180 dist /coach-echecs/            # serveur local (port libre)
-BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 63), WITH_WEBKIT=1 en CI
+BASE_URL=http://localhost:4180/coach-echecs/ npx playwright test   # e2e (≈ 66), WITH_WEBKIT=1 en CI
 npm run verify:repertoire      # après modification d'une fiche (recalcule data/verification.json)
 node scripts/verify-repertoire.mjs --check
 cd worker && npm ci && npm test

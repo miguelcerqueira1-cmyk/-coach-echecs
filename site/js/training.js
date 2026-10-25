@@ -15,20 +15,27 @@ import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson, vraiesErreurs, markCorrige } from './progress.js';
 import { LessonView } from './cours.js';
 import { courseOrder } from './lesson-core.js';
+import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
+import { couleurDe } from '../data/repertoires/meta.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
-const REVISION = 'coach-echecs:revision-v1'; // { gd: { cléPosition: état }, ck: { … } }
+const REVISION = 'coach-echecs:revision-v1'; // { <répertoire> : { cléPosition: état } }
 const pct = (x) => x.toFixed(0) + ' %';
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
 
-const DEFAULT_PREFS = { rep: 'gd', source: 'lichess', length: 8, mode: 'partie', lRep: '', lN: 3, tRep: '', tN: 5, tTime: 10 };
+const DEFAULT_PREFS = { rep: '', source: 'lichess', length: 8, mode: 'partie', lRep: '', lN: 3, tRep: '', tN: 5, tTime: 10 };
 function loadPrefs() {
   try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch { return { ...DEFAULT_PREFS }; }
 }
 function loadRevision() {
-  try { return { gd: {}, ck: {}, ...JSON.parse(localStorage.getItem(REVISION) || '{}') }; } catch { return { gd: {}, ck: {} }; }
+  let r = {};
+  try { r = JSON.parse(localStorage.getItem(REVISION) || '{}') || {}; } catch { r = {}; }
+  for (const id of Object.keys(REPERTOIRES)) r[id] ??= {};
+  return r;
 }
+// Libellé d'un répertoire avec le camp joué : « ♙ Gambit Dame (Blancs) ».
+const repLabel = (id, { camp = true } = {}) => `${couleurDe(id) === 'w' ? '♙' : '♟'} ${REPERTOIRES[id]?.titre || id}${camp ? ` <span class="muted small">(${couleurDe(id) === 'w' ? 'Blancs' : 'Noirs'})</span>` : ''}`;
 const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
@@ -49,7 +56,8 @@ export class TrainingPage {
   async show() {
     if (!this.data) {
       try {
-        this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json();
+        // Seulement les ouvertures choisies (Mon répertoire).
+        this.data = filtrerData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json());
       } catch {
         this.el.innerHTML = '<p class="errbox pad">Impossible de charger le répertoire.</p>';
         return;
@@ -60,15 +68,24 @@ export class TrainingPage {
 
   // ---------- Écran de départ ----------
 
+  // Répertoires choisis qui ont des fiches (les autres sont « bientôt »).
+  actifs() { return this.data.choisis.filter((id) => this.data.entries.some((e) => e.rep === id)); }
+  bientot() { return this.data.choisis.filter((id) => !this.data.entries.some((e) => e.rep === id)); }
+
   renderSetup() {
     this.lesson = null;
-    if (this.view === 'cours') { this.renderCourse(this.courseRep || 'gd'); return; }
+    const actifs = this.actifs();
+    if (!actifs.length) { this.renderEmpty(); return; }
+    if (this.view === 'cours') { this.renderCourse(actifs.includes(this.courseRep) ? this.courseRep : actifs[0]); return; }
     const p = this.prefs;
+    if (!actifs.includes(p.rep)) p.rep = actifs[0];
+    for (const k of ['lRep', 'tRep']) if (p[k] && !actifs.includes(p[k])) p[k] = '';
+    const bientot = this.bientot();
     const hasLichess = !!this.client.explorerMode();
     this.progress = loadProgress();
     const board = dashboard(this.data, this.revision, this.progress);
     const nTrash = this.data.entries.filter((e) => trashDrill(e, this.data.repertoires[e.rep].couleur)).length;
-    const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>Les deux</option><option value="gd" ${cur === 'gd' ? 'selected' : ''}>Gambit Dame</option><option value="ck" ${cur === 'ck' ? 'selected' : ''}>Caro-Kann</option></select>`;
+    const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>${actifs.length > 1 ? 'Tous mes répertoires' : esc(REPERTOIRES[actifs[0]].titre)}</option>${actifs.length > 1 ? actifs.map((id) => `<option value="${id}" ${cur === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)}</option>`).join('') : ''}</select>`;
     const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
     const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
@@ -80,9 +97,8 @@ export class TrainingPage {
       <section class="card hub-head">
         <div class="hub-stats">
           <div><span class="hub-big">🔥 ${board.streak}</span><span class="muted small">jour(s) d’affilée</span></div>
-          <div><span class="hub-big">${board.byRep.gd.pct} %</span><span class="muted small">Gambit Dame</span></div>
-          <div><span class="hub-big">${board.byRep.ck.pct} %</span><span class="muted small">Caro-Kann</span></div>
-          <div><span class="hub-big">${board.byRep.gd.due + board.byRep.ck.due}</span><span class="muted small">position(s) à revoir</span></div>
+          ${actifs.map((id) => `<div><span class="hub-big">${board.byRep[id].pct} %</span><span class="muted small">${esc(REPERTOIRES[id].titre)}</span></div>`).join('')}
+          <div><span class="hub-big">${actifs.reduce((a, id) => a + board.byRep[id].due, 0)}</span><span class="muted small">position(s) à revoir</span></div>
         </div>
         <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span>${lock}</button>
       </section>
@@ -97,17 +113,18 @@ export class TrainingPage {
       <div class="hub-grid">
         <section class="card hub-card hub-learn">
           <h2>📖 1. Apprendre</h2>
-          ${isPro() ? '' : '<p class="small"><strong>Gratuit :</strong> 3 leçons de base. Les autres leçons sont dans BlitzRefute Pro.</p>'}
+          ${isPro() ? '' : '<p class="small"><strong>Gratuit :</strong> une leçon de base par ouverture. Les autres leçons sont dans BlitzRefute Pro.</p>'}
           <p class="small">Des leçons pas à pas : le nom de chaque variante, les coups expliqués un par un, ce qu’il faut retenir, puis vous rejouez la ligne avec des indices.</p>
           <div class="hub-courses">
-            ${['gd', 'ck'].map((rep) => {
+            ${actifs.map((rep) => {
               const n = next(rep);
               return `<button type="button" class="hub-course" data-course="${rep}">
-                <strong>${rep === 'gd' ? '♙ Gambit Dame' : '♟ Caro-Kann'}</strong>
+                <strong>${repLabel(rep, { camp: false })}</strong>
                 <span class="small muted">${seen(rep)} / ${total(rep)} leçon(s) suivie(s)</span>
                 ${n ? `<span class="small">Prochaine : ${esc(n.nom)}</span>` : '<span class="small">Toutes les leçons sont suivies ✔</span>'}
               </button>`;
             }).join('')}
+            ${bientot.map((rep) => `<div class="hub-course soon" aria-disabled="true"><strong>${repLabel(rep, { camp: false })}</strong><span class="small muted">Fiches en préparation — bientôt</span></div>`).join('')}
           </div>
         </section>
         <section class="card hub-card">
@@ -133,8 +150,7 @@ export class TrainingPage {
           <p class="small">L’application joue l’adversaire ; à vous de trouver le coup de votre répertoire, sans aide. Chaque coup est vérifié (fiche ou Stockfish).</p>
       <label class="row">Répertoire
         <select data-p="rep">
-          <option value="gd" ${p.rep === 'gd' ? 'selected' : ''}>Gambit Dame (vous avez les Blancs)</option>
-          <option value="ck" ${p.rep === 'ck' ? 'selected' : ''}>Caro-Kann (vous avez les Noirs)</option>
+          ${actifs.map((id) => `<option value="${id}" ${p.rep === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)} (vous avez les ${couleurDe(id) === 'w' ? 'Blancs' : 'Noirs'})</option>`).join('')}
         </select>
       </label>
       <label class="row">Mode
@@ -191,6 +207,17 @@ export class TrainingPage {
     }));
   }
 
+  // Aucune ouverture choisie n'a encore de fiche : on le dit, sans rien inventer.
+  renderEmpty() {
+    const b = this.bientot();
+    this.el.innerHTML = `<div class="train-hub"><section class="card hub-empty" data-empty>
+      <h2>📖 Entraînement</h2>
+      <p>Les fiches de ${b.length > 1 ? 'vos ouvertures' : 'votre ouverture'} (${b.map((id) => esc(REPERTOIRES[id].titre)).join(', ')}) sont en préparation : chaque ligne y sera vérifiée par Stockfish avant publication.</p>
+      <p class="small muted">En attendant : le Moteur d’analyse et Mes parties marchent pour toutes les ouvertures, et vous pouvez ajouter une ouverture déjà prête (Gambit Dame, Caro-Kann).</p>
+      <div class="actions"><a class="btn-like primary" href="#/ouvertures">Modifier mes ouvertures</a><a class="btn-like" href="#/moteur">Ouvrir le Moteur</a></div>
+    </section></div>`;
+  }
+
   // ---------- Module Apprendre (cours) ----------
 
   renderCourse(rep) {
@@ -209,9 +236,9 @@ export class TrainingPage {
     this.el.innerHTML = `<div class="course">
       <div class="lesson-top">
         <button type="button" class="small-btn" data-back>← Accueil Entraînement</button>
-        <div class="chips">${['gd', 'ck'].map((r) => `<button type="button" class="chip" data-crep="${r}" aria-pressed="${r === rep}">${r === 'gd' ? '♙ Gambit Dame (Blancs)' : '♟ Caro-Kann (Noirs)'}</button>`).join('')}</div>
+        <div class="chips">${this.actifs().map((r) => `<button type="button" class="chip" data-crep="${r}" aria-pressed="${r === rep}">${repLabel(r)}</button>`).join('')}</div>
       </div>
-      <h2>📖 Cours : ${rep === 'gd' ? 'le Gambit Dame avec les Blancs' : 'la Caro-Kann avec les Noirs'}</h2>
+      <h2>📖 Cours : ${esc(REPERTOIRES[rep].titre)} avec les ${couleurDe(rep) === 'w' ? 'Blancs' : 'Noirs'}</h2>
       <p class="small muted">Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques. Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
       ${groups.map(({ g, items }) => `<h3 class="course-group">${esc(g)}</h3><ol class="course-list" start="${n + 1}">${items.map((e) => {
         n++;
@@ -263,7 +290,7 @@ export class TrainingPage {
   runDrill(kind, ids, { timeLimit = 10, then = null, guided = false } = {}) {
     if (!ids.length) { this.renderSetup(); return; }
     this.s = null;
-    const tree = { gd: buildTree(this.data.entries, 'gd'), ck: buildTree(this.data.entries, 'ck') };
+    const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));
     this.drill = new DrillRunner({
       el: this.el, data: this.data, kind, ids, tree, timeLimit, guided, engine: this.engine,
       progress: this.progress || loadProgress(),
@@ -287,7 +314,7 @@ export class TrainingPage {
     const list = vraiesErreurs(loadProgress());
     if (!list.length) { this.renderSetup(); return; }
     this.s = null;
-    const tree = { gd: buildTree(this.data.entries, 'gd'), ck: buildTree(this.data.entries, 'ck') };
+    const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));
     this.drill = new DrillRunner({
       el: this.el, data: this.data, kind: 'reelles', ids: [], tree, engine: this.engine, positions: list,
       progress: loadProgress(),
@@ -309,12 +336,13 @@ export class TrainingPage {
   }
 
   dashboardHtml(board) {
-    const rep = this.dashRep || 'gd';
+    const actifs = this.actifs();
+    const rep = actifs.includes(this.dashRep) ? this.dashRep : actifs[0];
     const fiches = board.fiches.filter((f) => f.rep === rep);
     const r = board.byRep[rep];
-    const tab = (k, label) => `<button type="button" class="chip" data-dash-rep="${k}" aria-pressed="${rep === k}">${label}</button>`;
+    const tab = (k) => `<button type="button" class="chip" data-dash-rep="${k}" aria-pressed="${rep === k}">${repLabel(k, { camp: false })}</button>`;
     return `<h2>📊 Progression par variante</h2>
-      <div class="chips">${tab('gd', '♙ Gambit Dame')}${tab('ck', '♟ Caro-Kann')}</div>
+      <div class="chips">${actifs.map(tab).join('')}</div>
       <p class="small">Maîtrise moyenne <strong>${r.pct} %</strong> · ${r.maitrisees} / ${r.total} variante(s) maîtrisée(s) (≥ 80 %) · ${r.due} position(s) à revoir.
         ${board.bestDrill ? ` · Record anti-trash : ${(board.bestDrill / 1000).toFixed(1).replace('.', ',')} s` : ''}</p>
       <p class="muted tiny">Maîtrise = positions révisées avec succès (70 %) + réussite aux exercices de la fiche (30 %). Les variantes les plus faibles sont en haut ; ⚠ = vous en êtes sorti dans une vraie partie (Mes parties).</p>
@@ -371,7 +399,8 @@ export class TrainingPage {
 
   start() {
     const p = this.prefs;
-    const color = p.rep === 'gd' ? 'w' : 'b';
+    if (!this.actifs().includes(p.rep)) p.rep = this.actifs()[0];
+    const color = couleurDe(p.rep);
     const source = p.source === 'lichess' && this.client.explorerMode() ? 'lichess' : 'fiches';
     this.sessionNo++;
     this.s = {
@@ -450,9 +479,10 @@ export class TrainingPage {
     this.render();
     let pick = null;
     let info = '';
-    if (s.rep === 'ck' && s.path.length === 0) {
-      pick = { uci: 'e2e4' };
-      info = 'ouverture imposée pour la Caro-Kann';
+    if (s.color === 'b' && s.path.length === 0) {
+      // Avec les Noirs : le 1er coup blanc est celui qui mène au répertoire (1.e4, 1.d4…).
+      pick = { uci: new Chess().move(REPERTOIRES[s.rep].racine[0]).lan };
+      info = `ouverture imposée pour ${REPERTOIRES[s.rep].titre}`;
     } else if (s.source === 'lichess') {
       try {
         const f = this.getFilter();

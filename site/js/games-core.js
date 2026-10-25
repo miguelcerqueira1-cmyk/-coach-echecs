@@ -6,6 +6,7 @@ import { START_FEN } from './lines.js';
 import { buildTree, key } from './training-core.js';
 import { piecesEnDanger } from './explain-free.js';
 import { sanFr } from './analysis.js';
+import { REPERTOIRES, couleurDe } from '../data/repertoires/meta.js';
 
 const SPEED_FR = { ultraBullet: 'UltraBullet', bullet: 'Bullet', blitz: 'Blitz', rapid: 'Rapide', classical: 'Classique', correspondence: 'Correspondance', daily: 'Correspondance' };
 
@@ -77,18 +78,44 @@ export function localGame({ san, color, result = '*', white, black, opening = ''
   };
 }
 
-// Répertoire concerné par la partie (null si hors répertoire).
-export function repertoireOf(game) {
-  if (game.color === 'w') return game.san[0] === 'd4' ? 'gd' : null;
-  return game.san[0] === 'e4' && game.san[1] === 'c6' ? 'ck' : (game.san[0] === 'e4' ? 'ck-hors' : null);
+// Répertoires candidats d'une partie, parmi `reps` (défaut : ceux des fiches), de la couleur jouée :
+// Blancs, notre 1er coup est celui du répertoire (sinon la partie est hors répertoire) ;
+// Noirs, le répertoire prévoit une réponse au 1er coup adverse (sinon hors répertoire).
+export function repertoiresCandidats(game, entries, reps = null) {
+  const ids = reps || [...new Set(entries.map((e) => e.rep))];
+  let first;
+  try { first = new Chess().move(game.san[0]).lan; } catch { return []; }
+  const out = [];
+  for (const rep of ids) {
+    if (couleurDe(rep) !== game.color) continue;
+    const tree = buildTree(entries, rep);
+    const ok = game.color === 'w' ? tree.ours.get('')?.has(first) : tree.ours.has(key([first]));
+    if (ok) out.push({ rep, tree });
+  }
+  return out;
+}
+
+// Répertoire concerné par la partie (null si hors répertoire) : celui dont les fiches sont
+// suivies le plus longtemps.
+export function repertoireOf(game, entries, reps = null) {
+  return repertoireDeviation(game, entries, reps).rep;
 }
 
 // Premier écart avec les fiches : qui sort du répertoire, à quel coup, et ce qui était prévu.
-export function repertoireDeviation(game, entries) {
-  const rep = repertoireOf(game);
-  if (rep === 'ck-hors') return { rep: 'ck', who: 'moi', ply: 1, played: game.san[1], expected: ['c6'], note: 'Contre 1.e4, votre répertoire est la Caro-Kann (1…c6).' };
-  if (!rep) return { rep: null };
-  const tree = buildTree(entries, rep);
+// Plusieurs répertoires possibles (ex. Gambit Dame et Londres après 1.d4) : celui suivi le plus loin.
+export function repertoireDeviation(game, entries, reps = null) {
+  let best = { rep: null };
+  for (const { rep, tree } of repertoiresCandidats(game, entries, reps)) {
+    const d = deviationDans(game, tree, rep);
+    if (best.rep === null || d.ply > best.ply) best = d;
+  }
+  if (best.who === 'moi' && best.ply === 1 && game.color === 'b') {
+    best.note = `Votre répertoire (${REPERTOIRES[best.rep]?.titre || best.rep}) prévoit ${best.expected.map(sanFr).join(' ou ')} ici.`;
+  }
+  return best;
+}
+
+function deviationDans(game, tree, rep) {
   const c = new Chess();
   const path = [];
   for (let i = 0; i < game.san.length; i++) {

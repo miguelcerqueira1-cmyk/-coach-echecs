@@ -1,6 +1,9 @@
 // Contrôleur principal. Principe : l'état de partie (game.js) est la source de vérité ;
 // Stockfish calcule ; chess.js valide ; Claude explique les résultats calculés.
 import { bindPaywall, renderPlan, openPaywall, setPaymentUrl } from './pro.js';
+import { initChoix, choisis, resume } from './mon-repertoire.js';
+import { AccueilPage } from './accueil.js';
+import { ChoixPage } from './choix.js';
 import './pwa.js'; // service worker, bandeau de mise à jour, aide à l'installation
 import { Game, parseMoveText } from './game.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
@@ -69,6 +72,8 @@ const optimal = new OptimalPanel({
 });
 let repertoirePage = null;
 let trainingPage = null;
+let accueilPage = null;
+let choixPage = null;
 let gamesPage = null;
 
 const currentFilter = () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) });
@@ -80,6 +85,9 @@ function filterLabel() {
 }
 
 async function init() {
+  // Avant toute écriture locale : première visite → page d'accueil (sauf lien direct vers une page).
+  const { premiereVisite } = initChoix();
+  if (premiereVisite && !location.hash.replace(/^#\/?/, '')) history.replaceState(null, '', '#/accueil');
   applyAppearance(state.settings);
   fillSelects();
   restoreGame();
@@ -119,6 +127,12 @@ async function init() {
         trainingPage.show();
       }
       if (page === 'parties') ensureGamesPage().show();
+      if (page === 'accueil') { accueilPage ??= new AccueilPage({ el: $('page-accueil') }); accueilPage.show(); }
+      if (page === 'ouvertures') {
+        // Choix enregistré : rechargement, pour que toutes les pages suivent les nouvelles ouvertures.
+        choixPage ??= new ChoixPage({ el: $('page-ouvertures'), onSaved: () => { location.hash = '#/repertoire'; location.reload(); } });
+        choixPage.show();
+      }
       // Le moteur est partagé : en revenant sur la page Moteur, on relance le calcul si
       // une autre page l'a interrompu.
       if (page === 'moteur' && state.game && state.analysis.status !== 'ready' && !state.game.status().over && engine.state === 'ready') {
@@ -967,6 +981,7 @@ function bindUi() {
   $('btn-auto').onclick = () => (autoplay.running ? stopAutoplay('Suite automatique arrêtée.') : startAutoplay());
   $('btn-export').onclick = openExport;
   $('btn-settings').onclick = openSettings;
+  $('set-ouvertures-btn').addEventListener('click', () => { $('dlg-settings').close(); location.hash = '#/ouvertures'; });
   $('btn-live').onclick = () => viewAt(state.game.ply);
   $('moves').onclick = (e) => { const b = e.target.closest('[data-ply]'); if (b) viewAt(Number(b.dataset.ply)); };
   document.querySelectorAll('[data-nav]').forEach((b) => {
@@ -1182,6 +1197,7 @@ function openSettings() {
   $('set-auto').checked = s.autoExplain;
   $('set-help').value = s.helpMode || 'direct';
   $('set-opp-arrow').checked = s.showOpponentArrow;
+  $('set-ouvertures').textContent = `Votre répertoire : ${resume(choisis())}.`;
   $('set-elite-camp').checked = !!s.eliteCamp;
   $('set-api').value = s.apiUrl;
   $('set-code').value = '';

@@ -32,7 +32,7 @@
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="#/moteur" title="L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.">
+    <a class="brand" href="#/accueil" title="L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.">
       <span class="brand-mark" aria-hidden="true">⚡</span>
       <span class="brand-text"><h1 class="brand-name">BlitzRefute</h1><span class="brand-tag">Ouvertures &amp; réfutations Blitz</span></span>
     </a>
@@ -107,6 +107,8 @@
   <main id="page-repertoire" class="page repertoire hidden" aria-label="Répertoire d’ouvertures"></main>
   <main id="page-entrainement" class="page training hidden" aria-label="Entraînement du répertoire"></main>
   <main id="page-parties" class="page games hidden" aria-label="Mes parties"></main>
+  <main id="page-accueil" class="page accueil hidden" aria-label="Accueil BlitzRefute"></main>
+  <main id="page-ouvertures" class="page ouvertures hidden" aria-label="Mes ouvertures"></main>
 
   <footer class="foot muted small">
     Pour l’entraînement, l’analyse et les parties où l’assistance est autorisée.
@@ -184,6 +186,9 @@
       <label class="check"><input type="checkbox" id="set-auto"> Explication Claude automatique à mon tour</label>
       <label class="check"><input type="checkbox" id="set-opp-arrow"> Montrer la meilleure réponse adverse calculée sur l’échiquier</label>
       <label class="check"><input type="checkbox" id="set-elite-camp"> Élite : seulement les parties où le joueur du top a mon camp (Blancs au Gambit Dame, Noirs en Caro-Kann)</label>
+      <h3>Mes ouvertures</h3>
+      <p class="small" id="set-ouvertures"></p>
+      <div class="dlg-actions left"><button type="button" id="set-ouvertures-btn">Modifier mes ouvertures</button></div>
       <h3>Apparence</h3>
       <label class="row">Thème
         <select id="set-theme"></select>
@@ -253,7 +258,7 @@
     </div>
     <p class="pro-reason" data-pro-reason></p>
     <ul class="pro-list" data-pro-list></ul>
-    <p class="pro-free muted small">Toujours gratuit : le moteur d’analyse Stockfish, Mes parties, et 3 variantes de base.</p>
+    <p class="pro-free muted small">Toujours gratuit : le moteur d’analyse Stockfish, Mes parties, et une variante de base par ouverture.</p>
     <div class="pro-actions">
       <a class="pro-cta pro-buy" data-pro-buy href="#" target="_blank" rel="noopener" hidden>⚡ Passer Pro — accès à vie</a>
       <p class="pro-soon small" data-pro-soon>Le paiement en ligne ouvre bientôt.</p>

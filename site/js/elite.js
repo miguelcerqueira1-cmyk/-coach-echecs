@@ -9,13 +9,15 @@
 // cache), sinon la copie publiée avec le site, sinon « non publié ».
 import { Chess } from '../vendor/chess.js';
 import { enrichMoves, nodeStats, SPEED_LABELS } from './lichess.js';
+import { REPERTOIRES, couleurDe } from '../data/repertoires/meta.js';
 
 export const ELITE_LIVE_URL = 'https://raw.githubusercontent.com/miguelcerqueira1-cmyk/-coach-echecs/donnees-elite/elite.json';
 export const ELITE_URL = './data/elite.json';
 const RELOAD_MS = 5 * 60000; // même durée que le cache de raw.githubusercontent.com
 export const PLATFORM_LABELS = { li: 'Lichess', cc: 'Chess.com', bc: 'Tournois' };
 export const SOURCE_NAMES = { li: 'Lichess', cc: 'Chess.com', bc: 'Tournois (retransmissions Lichess)' };
-export const ROOTS = { gd: ['d4', 'd5', 'c4'], ck: ['e4', 'c6'] };
+// Racines des répertoires dont les données Élite sont collectées (repertoires/meta.js : elite).
+export const ROOTS = Object.fromEntries(Object.values(REPERTOIRES).filter((r) => r.elite).map((r) => [r.id, r.racine]));
 
 // Clé de position : FEN sans les compteurs de coups (les transpositions se rejoignent).
 export function fenKey(fen) {
@@ -158,7 +160,7 @@ export function recentInfo(data) {
   return (data?.recent || []).map((g) => {
     const info = gameInfo(g);
     const rep = g.rp || repertoireOfSan(info.san); // rp : posé à la collecte (transpositions)
-    return { ...info, rep, color: rep === 'ck' ? 'b' : 'w', opening: g.eco ? `${g.eco} ${g.n || ''}`.trim() : '' };
+    return { ...info, rep, color: couleurDe(rep) || 'w', opening: g.eco ? `${g.eco} ${g.n || ''}`.trim() : '' };
   });
 }
 

@@ -398,7 +398,7 @@ test('position passée : meilleur coup Stockfish calculé pour la position consu
 });
 
 test('partie importée : noms et classements des joueurs affichés au-dessus de l’échiquier', async ({ page }) => {
-  await page.goto('./');
+  await page.goto('./#/moteur'); // lien direct : pas de page d'accueil de première visite
   const pgn = '[Event "Tata Steel"]\n[Site "https://lichess.org/abcdefgh"]\n[Date "2019.01.20"]\n[White "Carlsen, Magnus"]\n[Black "Giri, Anish"]\n[WhiteElo "2835"]\n[BlackElo "2783"]\n[Result "1/2-1/2"]\n\n1. d4 d5 2. c4 c6 1/2-1/2';
   await newGame(page, { source: 'pgn', text: pgn });
   const info = page.locator('#game-info');

@@ -6,6 +6,8 @@
 //  - pièges : notre coup fautif marqué dans chaque fiche (à ne pas jouer) ;
 //  - erreurs adverses connues : coup fautif marqué dans les punitions (à punir).
 
+import { couleurDe } from '../data/repertoires/meta.js';
+
 export const key = (path) => path.join(',');
 
 export function buildTree(entries, rep) {
@@ -18,7 +20,7 @@ export function buildTree(entries, rep) {
   };
   for (const e of entries) {
     if (e.rep !== rep) continue;
-    const color = rep === 'gd' ? 'w' : 'b';
+    const color = couleurDe(rep);
     tree.color = color;
     const lines = [{ uci: e.uci, kind: 'ligne' }];
     if (e.punition) lines.push({ uci: e.punition.uci, kind: 'punition', marked: e.punition.marked });
