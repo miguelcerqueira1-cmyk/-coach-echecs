@@ -28,7 +28,7 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await expect(page).toHaveURL(/#\/accueil$/);
   await expect(acc).toContainText('L’encyclopédie interactive et l’arme fatale');
   await expect(acc.locator('.acc-opening', { hasText: 'Gambit Dame' }).first()).toContainText('31 fiches');
-  await expect(acc.locator('.acc-opening', { hasText: 'Défense sicilienne' })).toContainText('bientôt');
+  await expect(acc.locator('.acc-opening', { hasText: 'Défense indienne du Roi' })).toContainText('bientôt');
   await expect(acc).toContainText('29 €');
   await acc.locator('[data-acc-choix]').click();
   const ch = page.locator('#page-ouvertures');
@@ -49,7 +49,7 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await expect(ch.locator('.choix-recap')).toContainText('Système de Londres · Défense sicilienne · Défense indienne du Roi');
   await ch.locator('[data-choix-next]').click();
   // Rechargé sur le Répertoire : seulement les ouvertures choisies ; le Londres a ses fiches
-  // (1 gratuite, les autres verrouillées), la Sicilienne est annoncée « bientôt ».
+  // (1 gratuite, les autres verrouillées), l'Indienne du Roi est annoncée « bientôt ».
   await expect(page).toHaveURL(/#\/repertoire$/);
   const rep = page.locator('#page-repertoire');
   await expect(rep.locator('tr[data-id="lon-classique"]:not([data-locked])')).toBeVisible();
@@ -57,8 +57,8 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await expect(rep.locator('[data-view="gd"]')).toHaveCount(0);
   await expect(rep.locator('tr[data-id]')).toHaveCount(9);
   await expect(rep.locator('tr[data-id][data-locked]')).toHaveCount(8);
-  await rep.locator('[data-view="sicilienne"]').click();
-  await expect(rep.locator('[data-soon="sicilienne"]')).toBeVisible();
+  await rep.locator('[data-view="indienne-roi"]').click();
+  await expect(rep.locator('[data-soon="indienne-roi"]')).toBeVisible();
   expect(JSON.parse(await page.evaluate((k) => localStorage.getItem(k), KEY)).ids).toEqual(['londres', 'sicilienne', 'indienne-roi']);
   // Entraînement : le cours du Londres est proposé.
   await page.goto('./#/entrainement');
@@ -89,13 +89,13 @@ test('utilisateur existant : Gambit Dame + Caro-Kann gardés, choix modifié dan
   await expect(page).toHaveURL(/#\/repertoire$/);
   const rep = page.locator('#page-repertoire');
   await expect(rep.locator('[data-view="gd"]')).toBeVisible();
-  await expect(rep.locator('[data-view="sicilienne"]')).toContainText('bientôt');
+  await expect(rep.locator('[data-view="sicilienne"]')).not.toContainText('bientôt');
   await expect(rep.locator('[data-view="ck"]')).toHaveCount(0);
-  // Entraînement : seul le Gambit Dame a des leçons ; la Sicilienne est annoncée « bientôt ».
+  // Entraînement : leçons du Gambit Dame et de la Sicilienne, plus de Caro-Kann.
   await page.goto('./#/entrainement');
   await expect(page.locator('[data-course="gd"]')).toBeVisible();
+  await expect(page.locator('[data-course="sicilienne"]')).toBeVisible();
   await expect(page.locator('[data-course="ck"]')).toHaveCount(0);
-  await expect(page.locator('.hub-course.soon')).toContainText('Défense sicilienne');
   // Le choix fait partie de « Mes données ».
   const keys = await page.evaluate(async () => {
     const { exportData } = await import('./js/transfer.js');
