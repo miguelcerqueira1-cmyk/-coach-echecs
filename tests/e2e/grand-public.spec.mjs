@@ -22,6 +22,14 @@ const choisir = async (page, ids) => {
 
 test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indienne du Roi), ouvertures « bientôt »', async ({ page }) => {
   await setup(page);
+  // Données servies sans les fiches de l'Indienne du Roi : couvre l'affichage « bientôt »
+  // d'un répertoire sans contenu (tous les répertoires réels en ont désormais).
+  await page.route('**/data/repertoire.json', async (route) => {
+    const res = await route.fetch();
+    const data = await res.json();
+    data.entries = data.entries.filter((e) => e.rep !== 'indienne-roi');
+    await route.fulfill({ response: res, json: data });
+  });
   await page.goto('./');
   const acc = page.locator('#page-accueil');
   await expect(acc).toBeVisible();
@@ -57,6 +65,8 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await expect(rep.locator('[data-view="gd"]')).toHaveCount(0);
   await expect(rep.locator('tr[data-id]')).toHaveCount(9);
   await expect(rep.locator('tr[data-id][data-locked]')).toHaveCount(8);
+  // Tous les répertoires ont désormais des fiches : l'Indienne du Roi a été vidée dans les données
+  // servies à ce test (voir plus haut) pour garder la couverture de l'affichage « bientôt ».
   await rep.locator('[data-view="indienne-roi"]').click();
   await expect(rep.locator('[data-soon="indienne-roi"]')).toBeVisible();
   expect(JSON.parse(await page.evaluate((k) => localStorage.getItem(k), KEY)).ids).toEqual(['londres', 'sicilienne', 'indienne-roi']);

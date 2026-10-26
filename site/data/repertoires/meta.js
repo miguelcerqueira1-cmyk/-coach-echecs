@@ -25,9 +25,9 @@ export const REPERTOIRES = {
   sicilienne: { id: 'sicilienne', titre: 'Défense sicilienne', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'c5'], sousTitre: 'Jouée avec les Noirs : 1.e4 c5', gratuites: ['sic-taimanov'], elite: false },
   francaise: { id: 'francaise', titre: 'Défense française', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'e6'], sousTitre: 'Jouée avec les Noirs : 1.e4 e6', gratuites: ['fr-avance'], elite: false },
   scandinave: { id: 'scandinave', titre: 'Défense scandinave', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'd5'], sousTitre: 'Jouée avec les Noirs : 1.e4 d5', gratuites: ['scan-da5'], elite: false },
-  'indienne-roi': { id: 'indienne-roi', titre: 'Défense indienne du Roi', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'g6'], sousTitre: 'Jouée avec les Noirs : 1.d4 Cf6 2.c4 g6, puis …Fg7, …d6, …O-O', gratuites: [], elite: false },
-  'gdr-noirs': { id: 'gdr-noirs', titre: 'Gambit Dame refusé / Slave (Noirs)', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'd5'], sousTitre: 'Joué avec les Noirs : 1.d4 d5 2.c4 e6 ou 2…c6', gratuites: [], elite: false },
-  'nimzo-qid': { id: 'nimzo-qid', titre: 'Nimzo-indienne / Indienne de la Dame', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'e6'], sousTitre: 'Jouées avec les Noirs : 1.d4 Cf6 2.c4 e6 3.Cc3 Fb4 ou 3.Cf3 b6', gratuites: [], elite: false },
+  'indienne-roi': { id: 'indienne-roi', titre: 'Défense indienne du Roi', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'g6'], sousTitre: 'Jouée avec les Noirs : 1.d4 Cf6 2.c4 g6, puis …Fg7, …d6, …O-O', gratuites: ['kid-classique'], elite: false },
+  'gdr-noirs': { id: 'gdr-noirs', titre: 'Gambit Dame refusé / Slave (Noirs)', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'd5'], sousTitre: 'Joué avec les Noirs : 1.d4 d5 2.c4 e6 ou 2…c6', gratuites: ['gdrn-orthodoxe'], elite: false },
+  'nimzo-qid': { id: 'nimzo-qid', titre: 'Nimzo-indienne / Indienne de la Dame', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'e6'], sousTitre: 'Jouées avec les Noirs : 1.d4 Cf6 2.c4 e6 3.Cc3 Fb4 ou 3.Cf3 b6', gratuites: ['nimzo-rubinstein'], elite: false },
 };
 
 // Choix par défaut d'un utilisateur existant (avant le passage grand public) : rien ne change.
