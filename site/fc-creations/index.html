@@ -292,6 +292,14 @@ td.num,th.num{text-align:right}
 @media (max-width:900px){.feed{grid-template-columns:repeat(3,1fr)}}
 .social-links{display:flex;gap:10px;flex-wrap:wrap}
 
+/* encart « autres modèles sur commande » */
+.more{display:grid;grid-template-columns:auto 1fr auto;gap:16px 24px;align-items:center;background:var(--accent-soft);border-radius:var(--r);padding:22px 24px;margin-top:32px}
+.more .more-ico{width:52px;height:52px;border-radius:50%;background:var(--surface);color:var(--deep);display:grid;place-items:center}
+.more h3{margin-bottom:4px}
+.more p{color:var(--ink-soft)}
+.more .more-ctas{display:flex;flex-wrap:wrap;gap:10px}
+@media (max-width:760px){.more{grid-template-columns:1fr;text-align:left}.more .more-ico{display:none}}
+
 /* forms pages */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px}
 .form-grid .full{grid-column:1/-1}
@@ -780,6 +788,12 @@ function summaryHTML(){
   <dt class="tot">Prix</dt><dd class="tot">${eur(customPrice(c))}</dd></dl></div>`;
 }
 
+function moreBand(){
+  return `<aside class="more" aria-label="Autres modèles sur commande"><span class="more-ico">${ico("heart")}</span>
+  <div><h3>Envie d'un autre doudou ?</h3><p>Fabienne réalise de nombreux autres modèles sur commande. Écrivez-lui pour découvrir le catalogue complet et choisir le vôtre, dans les couleurs de votre choix.</p></div>
+  <div class="more-ctas"><button class="btn btn-primary" data-go="custom" data-preset="Peluche personnalisée">Me contacter ${ico("arrow")}</button><a class="btn btn-ghost" href="https://www.instagram.com/" target="_blank" rel="noopener">${ico("instagram")}Instagram</a></div></aside>`;
+}
+
 /* ---------- views ---------- */
 const V={};
 V.home=()=>`
@@ -797,6 +811,7 @@ V.home=()=>`
   <div class="sec-head"><div><span class="eyebrow">Produits vedettes</span><h2>Les créations du moment</h2></div>
   <div class="chips" role="group" aria-label="Filtrer par catégorie">${Object.entries(CATS).map(([k,v])=>`<button class="chip" data-act="filter" data-v="${k}" aria-pressed="${S.filter===k}">${v}</button>`).join("")}</div></div>
   <div class="grid" id="home-grid">${homeGrid()}</div>
+  ${moreBand()}
 </div></section>
 <section class="band alt"><div class="wrap">
   <div class="sec-head"><div><span class="eyebrow">Trois façons de commander</span><h2>En stock, sur modèle ou sur-mesure</h2></div></div>
@@ -860,6 +875,7 @@ V.shop=()=>{
    <div class="chips" role="group" aria-label="Mode d'achat"><button class="chip" data-act="mode" data-v="all" aria-pressed="${S.mode==="all"}">Tous les modes</button>${Object.entries(MODES).map(([k,v])=>`<button class="chip" data-act="mode" data-v="${k}" aria-pressed="${S.mode===k}">${v}</button>`).join("")}</div>
   </div>
   ${list.length?`<div class="grid">${list.map(card).join("")}</div>`:`<div class="empty"><p>Aucune création ne correspond à ces filtres pour le moment.</p><button class="btn btn-ghost" data-go="custom">Demander une création sur-mesure</button></div>`}
+  ${S.filter==="all"||S.filter==="peluches"?moreBand():""}
   </div></section>`;
 };
 
@@ -902,7 +918,7 @@ V.product=()=>{
     <div class="sec-head"><div><span class="eyebrow">Avis sur cette création</span><h2>${prodRev.length?"Ce qu'en disent les clients":"Soyez la première personne à donner votre avis"}</h2></div><button class="btn btn-ghost" data-go="reviews">Voir la galerie « Chez vous »</button></div>
     ${prodRev.length?`<div class="reviews">${prodRev.map(reviewCard).join("")}</div>`:`<p class="muted">Les avis apparaîtront ici après les premières commandes.</p>`}
   </div></section>
-  <section class="band"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Vous aimerez aussi</span><h2>Autres créations</h2></div></div><div class="grid">${related.map(card).join("")}</div></div></section>`;
+  <section class="band"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Vous aimerez aussi</span><h2>Autres créations</h2></div></div><div class="grid">${related.map(card).join("")}</div>${p.cat==="peluches"?moreBand():""}</div></section>`;
 };
 function thumbsHTML(p){
   return [["face","Face"],["detail","Détail"],["scene","Chez vous"]].map(([k,l])=>`<button class="thumb" data-act="thumb" data-v="${k}" aria-pressed="${S.pdThumb===k}" aria-label="Vue ${l}">${art(p,k)}<span>${l}</span></button>`).join("");
@@ -1146,7 +1162,7 @@ const ACT={
 };
 document.addEventListener("click",e=>{
   const t=e.target.closest("[data-go],[data-act],[data-add]");if(!t)return;
-  if(t.dataset.go){e.preventDefault();go(t.dataset.go,t.dataset.id,t.dataset.cat,t.dataset.mode);return}
+  if(t.dataset.go){e.preventDefault();S.preset=t.dataset.preset||null;go(t.dataset.go,t.dataset.id,t.dataset.cat,t.dataset.mode);return}
   if(t.dataset.add){addToCart(PRODUCTS.find(x=>x.id===t.dataset.add),1);return}
   const f=ACT[t.dataset.act];if(f)f(t,e);
 });
@@ -1161,6 +1177,7 @@ const BIND={
 ["input","change"].forEach(ev=>document.addEventListener(ev,e=>{const b=e.target.dataset&&e.target.dataset.bind;if(!b)return;if(b==="giftMsg"&&ev==="change")return;if(b==="fair"&&ev==="change")return;if((b==="gift"||b==="beads")&&ev==="input")return;BIND[b](e.target)}));
 
 function bindCustomForm(){
+  if(S.preset){$("#cf-type").value=S.preset;$("#cf-desc").placeholder="Ex. : le renne de Noël avec sa sacoche rouge, environ 25 cm, pour un enfant de 3 ans…"}
   const file=$("#cf-file"),drop=$("#drop");
   const show=f=>{if(!f||!f.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{const img=$("#drop-img");img.src=r.result;img.hidden=false;$("#drop-text").innerHTML=`<b>${esc(f.name)}</b><br><span class="small muted">Cliquez pour changer d'image</span>`};r.readAsDataURL(f)};
   file.addEventListener("change",()=>show(file.files[0]));
