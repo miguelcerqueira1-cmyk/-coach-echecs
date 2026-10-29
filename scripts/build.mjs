@@ -25,7 +25,7 @@ writeFileSync(join(dist, 'config.json'), JSON.stringify(config, null, 2) + '\n')
 // du cache = identifiant de build + empreinte du contenu (une modification locale suffit aussi
 // à déclencher la mise à jour). Exclus : le WASM de Stockfish (engine.js le met lui-même en
 // cache), les gros jeux Élite (relus en ligne, mis en cache à l'usage), la source du répertoire,
-// et fc-creations/ (maquette d'un autre projet, hébergée ici provisoirement).
+// et fc-creations/ (redirection vers le site FC Créations, qui a son propre dépôt).
 const NOT_PRECACHED = new Set(['sw.js', 'config.json', '.nojekyll', 'engine/stockfish.wasm', 'engine/COPYING.txt',
   'data/elite.json', 'data/joueurs.json', 'data/repertoire.js']);
 const files = (function walk(d) {
