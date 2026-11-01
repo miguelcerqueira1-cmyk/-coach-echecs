@@ -23,3 +23,21 @@ test('série : +1 à chaque réussite du premier coup, remise à zéro à l’er
   for (const ok of [true, true, true, false, true]) s = nextStreak(s, ok);
   assert.deepEqual(s, { cur: 1, best: 3 });
 });
+
+test('ligne complète : la suite Stockfish prolonge la fiche, marquée « moteur » ; bilan des temps', async () => {
+  const { lineSteps, bilanTemps } = await import('../../site/js/drills-core.js');
+  const { lessonSteps } = await import('../../site/js/lesson-core.js');
+  const e = { san: ['d4', 'd5'], uci: ['d2d4', 'd7d5'], suite: { san: ['c4', 'e6'], uci: ['c2c4', 'e7e6'] } };
+  assert.equal(lineSteps(e, 'w').length, 2, 'fiche seule par défaut');
+  const full = lineSteps(e, 'w', { complet: true });
+  assert.deepEqual(full.map((s) => [s.uci, s.ours, s.moteur]), [['d2d4', true, false], ['d7d5', false, false], ['c2c4', true, true], ['e7e6', false, true]]);
+  assert.equal(lineSteps({ ...e, suite: null }, 'w', { complet: true }).length, 2, 'pas de suite calculée : fiche seule');
+  const les = lessonSteps(e, 'w', { complet: true });
+  assert.equal(les.length, 4);
+  assert.equal(les[2].moteur, true);
+  assert.match(les[2].notes[0], /Suite conseillée par Stockfish/);
+  assert.equal(bilanTemps([]), null);
+  const t = bilanTemps([{ ms: 1000, i: 0 }, { ms: 4000, i: 2 }, { ms: 2500, i: 4 }], 2);
+  assert.equal(t.moy, 2500);
+  assert.deepEqual(t.lents.map((x) => x.ms), [4000, 2500]);
+});

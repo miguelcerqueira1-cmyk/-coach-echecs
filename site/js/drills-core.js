@@ -6,9 +6,19 @@ import { piecesEnDanger } from './explain-free.js';
 
 const mover = (i) => (i % 2 === 0 ? 'w' : 'b');
 
-// Ligne d'une fiche : chaque demi-coup, avec qui le joue.
-export function lineSteps(entry, color) {
-  return entry.uci.map((uci, i) => ({ uci, san: entry.san[i], ours: mover(i) === color, ply: i }));
+// Ligne d'une fiche : chaque demi-coup, avec qui le joue. complet : la suite Stockfish au-delà
+// de la fiche (entry.suite, jusqu'au 15e coup) est ajoutée, marquée `moteur`.
+export function lineSteps(entry, color, { complet = false } = {}) {
+  const uci = complet && entry.suite ? entry.uci.concat(entry.suite.uci) : entry.uci;
+  const san = complet && entry.suite ? entry.san.concat(entry.suite.san) : entry.san;
+  return uci.map((u, i) => ({ uci: u, san: san[i], ours: mover(i) === color, ply: i, moteur: i >= entry.uci.length }));
+}
+
+// Temps de réflexion : moyenne et positions les plus lentes (mode « Rythme Blitz »).
+export function bilanTemps(times, n = 3) {
+  if (!times.length) return null;
+  const moy = times.reduce((a, t) => a + t.ms, 0) / times.length;
+  return { moy, lents: times.slice().sort((a, b) => b.ms - a.ms).slice(0, n) };
 }
 
 // Drill anti-trash : position avant le coup douteux adverse, ce coup, puis la séquence de

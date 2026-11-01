@@ -1,6 +1,6 @@
 // Génère site/data/repertoire.json : fiches + code ECO / nom (base CC0 lichess-org/chess-openings)
 // + résultats de vérification Stockfish (data/verification.json) quand ils correspondent au contenu.
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LIGNES, REPERTOIRES } from '../site/data/repertoire.js';
@@ -10,6 +10,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const tsv = 'abcde'.split('').map((f) => readFileSync(join(root, `data/chess-openings/${f}.tsv`), 'utf8'));
 const index = buildEcoIndex(tsv);
 const verif = JSON.parse(readFileSync(join(root, 'data/verification.json'), 'utf8'));
+// Suites Stockfish au-delà des fiches (scripts/prolonge-lignes.mjs) : gardées si la fiche n'a pas changé.
+const prolong = existsSync(join(root, 'data/prolongations.json')) ? JSON.parse(readFileSync(join(root, 'data/prolongations.json'), 'utf8')) : { entries: {} };
 
 const claim = (c) => {
   if (!c) return null;
@@ -28,7 +30,10 @@ const entries = LIGNES.map((e) => {
     if (hit && hit.name !== noms.at(-1)?.name) noms.push({ ply: i, eco: hit.eco, name: hit.name });
   });
   const v = verif.entries[e.id];
-  const fresh = v && v.fp === entryFingerprint(e);
+  const fp = entryFingerprint(e);
+  const fresh = v && v.fp === fp;
+  const p = prolong.entries[e.id];
+  const suite = p && p.fp === fp && p.uci.length ? { uci: p.uci, san: p.san, source: prolong.engine, profondeur: prolong.depth } : null;
   return {
     ...e,
     eco: eco.eco,
@@ -40,6 +45,7 @@ const entries = LIGNES.map((e) => {
     punition: claim(e.punition),
     piege: claim(e.piege),
     verification: fresh ? v : null,
+    suite,
   };
 });
 

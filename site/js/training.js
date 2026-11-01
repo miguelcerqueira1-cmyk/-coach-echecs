@@ -24,7 +24,10 @@ const REVISION = 'coach-echecs:revision-v1'; // { <répertoire> : { cléPosition
 const pct = (x) => x.toFixed(0) + ' %';
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
 
-const DEFAULT_PREFS = { rep: '', source: 'lichess', length: 8, mode: 'partie', lRep: '', lN: 3, tRep: '', tN: 5, tTime: 10 };
+// complet : lignes prolongées par la suite Stockfish jusqu'au 15e coup (cours et S'entraîner) ;
+// lTemps : secondes par coup en S'entraîner (0 = libre) ; lRepet : répéter une ligne jusqu'à N fois
+// d'affilée sans faute.
+const DEFAULT_PREFS = { rep: '', source: 'lichess', length: 8, mode: 'partie', lRep: '', lN: 3, tRep: '', tN: 5, tTime: 10, complet: '1', lTemps: 0, lRepet: 1 };
 function loadPrefs() {
   try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch { return { ...DEFAULT_PREFS }; }
 }
@@ -132,6 +135,9 @@ export class TrainingPage {
           <p class="small">L’application joue l’adversaire, vous jouez la théorie de mémoire. Erreur : le plan et le bon coup, et la position revient en fin de séance.</p>
           <label class="row">Répertoire ${repSel('lRep', p.lRep)}</label>
           <label class="row">Lignes ${opt('lN', [3, 5, 8], p.lN)}</label>
+          <label class="row">Longueur ${opt('complet', ['1', '0'], p.complet, (v) => (v === '1' ? 'Complète (jusqu’au 15e coup)' : 'Fiche seule'))}</label>
+          <label class="row">Temps par coup ${opt('lTemps', [0, 10, 5, 3], p.lTemps, (v) => (Number(v) ? `${v} s (rythme Blitz)` : 'Libre'))}</label>
+          <label class="row">Répétitions ${opt('lRepet', [1, 3], p.lRepet, (v) => (Number(v) > 1 ? `Jusqu’à ${v} fois d’affilée sans faute` : '1 fois'))}</label>
           <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
         </section>
         <section class="card hub-card">
@@ -266,7 +272,7 @@ export class TrainingPage {
     this.courseRep = entry.rep;
     window.scrollTo(0, 0);
     this.lesson = new LessonView({
-      el: this.el, data: this.data, entry,
+      el: this.el, data: this.data, entry, complet: this.prefs.complet !== '0',
       onClose: () => { this.lesson = null; this.renderSetup(); },
       onPractice: (fid) => this.runDrill('lignes', [fid], {
         guided: true,
@@ -291,8 +297,12 @@ export class TrainingPage {
     if (!ids.length) { this.renderSetup(); return; }
     this.s = null;
     const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));
+    const p = this.prefs;
     this.drill = new DrillRunner({
       el: this.el, data: this.data, kind, ids, tree, timeLimit, guided, engine: this.engine,
+      complet: p.complet !== '0',
+      tempsCoup: kind === 'lignes' && !guided ? Number(p.lTemps) || 0 : 0,
+      repeter: kind === 'lignes' && !guided ? Number(p.lRepet) || 1 : 1,
       progress: this.progress || loadProgress(),
       gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
       onDone: (r) => {

@@ -15,12 +15,13 @@ const STAGES = ['Présentation', 'Les coups', 'À retenir', 'À vous'];
 const BADGE = { theorie: 'Théorie', piege: 'Piège Blitz', loufoque: 'Coup loufoque' };
 
 export class LessonView {
-  constructor({ el, data, entry, onPractice, onClose }) {
+  constructor({ el, data, entry, onPractice, onClose, complet = false }) {
     this.el = el;
     this.data = data;
     this.e = entry;
     this.color = data.repertoires[entry.rep].couleur;
-    this.steps = lessonSteps(entry, this.color);
+    this.steps = lessonSteps(entry, this.color, { complet });
+    this.nFiche = entry.san.length; // demi-coups de la fiche ; au-delà : suite Stockfish
     this.onPractice = onPractice;
     this.onClose = onClose;
     this.stage = 0;
@@ -103,7 +104,7 @@ export class LessonView {
         <p class="lesson-official">Nom officiel : <strong>${esc(finalName)}</strong><br><span class="muted tiny">${esc(e.ecoNom)} (${esc(e.eco)})</span></p>
         <h3>L’idée</h3><p>${esc(e.plan)}</p>
         <h3>La structure</h3><p>${esc(e.structure)}</p>
-        <p class="muted small">La position finale de la ligne est affichée. Étape suivante : les ${this.steps.length} demi-coups, un par un, avec le nom de l’ouverture qui se précise à chaque coup.</p>
+        <p class="muted small">La position finale de la ligne est affichée. Étape suivante : les ${this.steps.length} demi-coups, un par un, avec le nom de l’ouverture qui se précise à chaque coup${this.steps.length > this.nFiche ? ` (les ${this.nFiche} de la fiche, puis la suite conseillée par Stockfish jusqu’au ${Math.ceil(this.steps.length / 2)}e coup)` : ''}.</p>
         <div class="actions"><button type="button" class="primary" data-next>Voir les coups →</button></div>`;
       panel.querySelector('[data-next]').addEventListener('click', () => { this.ply = -1; this.go(1); });
       return;
@@ -124,7 +125,7 @@ export class LessonView {
         under.querySelector('[data-next]')?.addEventListener('click', () => this.go(2));
       }
       panel.innerHTML = `<h2>Les coups de la ligne</h2><p class="small muted">Touchez un coup pour y aller. En vert : vos coups.</p>
-        <p class="moves-annot">${this.steps.map((x) => `<button type="button" class="m ${x.ours ? 'mine' : ''} ${x.ply === this.ply ? 'current' : ''}" data-ply="${x.ply}">${esc(x.label)}</button>`).join(' ')}</p>`;
+        <p class="moves-annot">${this.steps.map((x) => `${x.ply === this.nFiche ? '<span class="suite-sep small muted" title="Au-delà de la fiche : meilleurs coups de Stockfish">🤖 suite Stockfish :</span> ' : ''}<button type="button" class="m ${x.ours ? 'mine' : ''} ${x.moteur ? 'moteur' : ''} ${x.ply === this.ply ? 'current' : ''}" data-ply="${x.ply}">${esc(x.label)}</button>`).join(' ')}</p>`;
       panel.querySelectorAll('[data-ply]').forEach((b) => b.addEventListener('click', () => { this.stop(); this.ply = Number(b.dataset.ply); this.render(); }));
       nav.innerHTML = `<button type="button" data-prev aria-label="Coup précédent" ${this.ply < 0 ? 'disabled' : ''}>◀</button>
         <button type="button" class="primary" data-play>${this.timer ? '⏸ Pause' : '▶ Lecture'}</button>

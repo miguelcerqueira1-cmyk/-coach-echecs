@@ -738,3 +738,6 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .choix-check { position: absolute; top: .7rem; right: .8rem; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); font-size: .8rem; color: var(--accent-contrast); }
 .choix-card[aria-pressed="true"] .choix-check { background: var(--accent); border-color: var(--accent); }
 .choix-nav { display: flex; gap: .5rem; flex-wrap: wrap; }
+/* Lignes complètes : suite Stockfish au-delà de la fiche */
+.moves-annot .m.moteur { font-style: italic; opacity: .85; }
+.suite-sep { flex-basis: 100%; margin-top: .2rem; }

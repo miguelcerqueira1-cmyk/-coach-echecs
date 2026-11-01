@@ -13,7 +13,7 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
 import { key, cpFrom } from './training-core.js';
-import { lineSteps, trashDrill, seuilAutreCoup, raisonErreur, nextStreak } from './drills-core.js';
+import { lineSteps, trashDrill, seuilAutreCoup, raisonErreur, nextStreak, bilanTemps } from './drills-core.js';
 import { lineText } from './games-core.js';
 import { recordLine, recordDrill, saveProgress } from './progress.js';
 
@@ -24,7 +24,15 @@ const sec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
 export class DrillRunner {
   // kind : 'lignes' | 'trash' ; ids : fiches à travailler ; onDone(résumé) : retour au menu.
   // guided : pratique guidée d'une leçon (indice, puis le coup ; pas de pénalité ni de reprise).
-  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone }) {
+  // complet : lignes prolongées par la suite Stockfish ; tempsCoup : secondes par coup (0 = libre,
+  // « rythme Blitz » : trop lent = position ratée) ; repeter : refaire une ligne jusqu'à N fois
+  // d'affilée sans faute.
+  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone, complet = false, tempsCoup = 0, repeter = 1 }) {
+    this.complet = complet;
+    this.tempsCoup = tempsCoup;
+    this.repeter = repeter;
+    this.times = []; // { ms, e, i } : temps de réflexion par coup (lignes)
+    this.consec = {}; // fiche → réussites sans faute d'affilée (répétitions)
     this.onValidated = onValidated;
     this.guided = guided;
     this.engine = engine; // Stockfish : accepte un autre coup gagnant dans le drill anti-trash
@@ -60,7 +68,7 @@ export class DrillRunner {
       <section>
         <div class="train-status" data-status></div>
         <p class="drill-streak"><span class="streak" data-streak hidden></span></p>
-        ${this.kind === 'trash' ? '<div class="drill-timer" data-timer><span></span></div>' : ''}
+        ${this.kind === 'trash' || this.tempsCoup ? '<div class="drill-timer" data-timer><span></span></div>' : ''}
         <div class="board-wrap" data-board></div>
         <div class="actions"><button type="button" data-quit>Terminer</button></div>
       </section>
@@ -136,7 +144,7 @@ export class DrillRunner {
 
   startLine() {
     const c = this.cur;
-    c.steps = lineSteps(c.e, c.color);
+    c.steps = lineSteps(c.e, c.color, { complet: this.complet });
     this.chess = new Chess();
     this.log(this.guided
       ? `Rejouez la ligne que vous venez d’apprendre. En cas d’hésitation : un indice, puis le coup.`
@@ -158,8 +166,49 @@ export class DrillRunner {
       }, 450);
       return;
     }
-    this.status(`À vous (${c.color === 'w' ? 'Blancs' : 'Noirs'}) : coup de la ligne ?`, 'player');
+    this.status(`À vous (${c.color === 'w' ? 'Blancs' : 'Noirs'}) : ${step.moteur ? 'coup de la suite Stockfish' : 'coup de la ligne'} ?`, 'player');
     this.draw({ interactive: true });
+    this.startMoveClock();
+  }
+
+  // ---------- Rythme Blitz : chrono par coup ----------
+
+  startMoveClock() {
+    const c = this.cur;
+    this.stopMoveClock();
+    c.t0 = performance.now();
+    if (!this.tempsCoup || this.kind !== 'lignes' || this.guided) return;
+    this.setTimer(1);
+    c.moveTimer = setInterval(() => {
+      if (!this.alive || this.cur !== c || c.wait) return;
+      const left = 1 - (performance.now() - c.t0) / (this.tempsCoup * 1000);
+      this.setTimer(left);
+      if (left <= 0) this.tooSlow();
+    }, 100);
+  }
+
+  stopMoveClock() {
+    const c = this.cur;
+    if (c?.moveTimer) { clearInterval(c.moveTimer); c.moveTimer = null; }
+  }
+
+  // Temps écoulé : position ratée (révision ciblée), le coup est montré puis joué.
+  tooSlow() {
+    const c = this.cur;
+    const step = c.steps[c.i];
+    this.stopMoveClock();
+    c.errors++;
+    (c.errAt ??= new Set()).add(c.i);
+    this.times.push({ ms: this.tempsCoup * 1000, e: c.e, i: c.i, lent: true });
+    if (!step.moteur) this.gradePos(c.e.rep, key(c.steps.slice(0, c.i).map((x) => x.uci)), false);
+    this.bumpStreak(false);
+    this.noteMissed({ kind: 'ligne', e: c.e, i: c.i, color: c.color });
+    c.wait = true;
+    this.status(`⏱ Trop lent ! Le coup était ${esc(sanFr(step.san))}`, 'opponent');
+    this.board.showBubble(`⏱ Trop lent ! Le coup était ${sanFr(step.san)}.`, 'error');
+    this.draw({ arrows: [{ from: step.uci.slice(0, 2), to: step.uci.slice(2, 4), kind: 'best' }] });
+    this.log(`⏱ Trop lent (${this.tempsCoup} s) — c’était ${esc(sanFr(step.san))}`, 'ko');
+    this.later(() => { c.wait = false; this.board.hideBubble(); this.chess.move(toObj(step.uci)); c.i++; this.advance(); }, 1500);
   }
 
   onUserMove(input) {
@@ -176,10 +225,12 @@ export class DrillRunner {
     const t = this.tree[c.e.rep];
     if (mv.lan === step.uci) {
       const firstTry = !c.errAt?.has(c.i);
+      this.stopMoveClock();
+      if (c.t0 && !this.guided) this.times.push({ ms: performance.now() - c.t0, e: c.e, i: c.i });
       this.board.setHint(null);
       this.board.hideBubble();
       this.feedback('');
-      if (!(this.guided && c.hints?.ply === c.i)) this.gradePos(c.e.rep, k, true);
+      if (!(this.guided && c.hints?.ply === c.i) && !step.moteur) this.gradePos(c.e.rep, k, true);
       if (firstTry) this.okFirst++;
       this.bumpStreak(firstTry);
       this.chess.move(toObj(step.uci));
@@ -200,7 +251,8 @@ export class DrillRunner {
     }
     c.errors++;
     (c.errAt ??= new Set()).add(c.i);
-    this.gradePos(c.e.rep, k, false);
+    this.stopMoveClock();
+    if (!step.moteur) this.gradePos(c.e.rep, k, false);
     this.bumpStreak(false);
     this.noteMissed({ kind: 'ligne', e: c.e, i: c.i, color: c.color });
     if (this.guided) { this.refuse(c, mv, step, { reveal: (c.hints?.ply === c.i ? c.hints.n : 0) >= 1 }); this.guide(c, step, mv, arrow); return; }
@@ -211,6 +263,7 @@ export class DrillRunner {
     this.feedback(`<div class="drill-fb ko">
       <p>✘ <strong>${esc(sanFr(mv.san))}</strong> n’est pas le coup de la ligne. Le bon coup : <strong>${esc(good)}</strong> (flèche verte).</p>
       ${isTrap ? `<p class="small">⚠ C’est le piège de la fiche : ${esc(trap.texte)}</p>` : ''}
+      ${step.moteur ? '<p class="small muted">🤖 Ce coup fait partie de la suite conseillée par Stockfish, au-delà de la fiche.</p>' : ''}
       ${plan}
       <p class="small muted">Elle sera proposée dans « Revoir uniquement mes erreurs » en fin de séance.</p>
       <div class="actions"><button type="button" class="primary" data-continue>J’ai compris, continuer</button></div>
@@ -251,8 +304,18 @@ export class DrillRunner {
   endLine() {
     const c = this.cur;
     const ok = c.errors === 0;
+    this.stopMoveClock();
     if (!this.guided) { recordLine(this.progress, c.e.id, ok); saveProgress(this.progress); }
     this.results.push({ id: c.e.id, ok });
+    // Répétitions : la même ligne revient jusqu'à N fois d'affilée sans faute (10 essais au plus).
+    if (this.repeter > 1 && !this.guided) {
+      this.consec[c.e.id] = ok ? (this.consec[c.e.id] || 0) + 1 : 0;
+      const essais = this.results.filter((r) => r.id === c.e.id).length;
+      if (this.consec[c.e.id] < this.repeter && essais < 10) {
+        this.items.splice(this.idx + 1, 0, { e: c.e });
+        this.log(`↻ On recommence « ${esc(c.e.nom)} » : ${this.consec[c.e.id]} / ${this.repeter} sans faute d’affilée.`, 'muted');
+      } else if (this.consec[c.e.id] >= this.repeter) this.log(`🏆 « ${esc(c.e.nom)} » : ${this.repeter} fois d’affilée sans faute !`, 'ok');
+    }
     this.log(ok ? `<strong>Ligne réussie sans faute ✔</strong>` : `<strong>Ligne terminée</strong> avec ${c.errors} erreur(s).`, ok ? 'ok' : 'warn');
     this.status(ok ? 'Ligne réussie ✔' : 'Ligne terminée', ok ? 'player' : 'opponent');
     this.draw();
@@ -262,6 +325,7 @@ export class DrillRunner {
   // ---------- Bilan et révision ciblée ----------
 
   showRecap() {
+    this.stopMoveClock();
     this.recapDone = true;
     clearInterval(this.cur?.timer);
     this.cur = null;
@@ -272,7 +336,11 @@ export class DrillRunner {
     const pl = (x) => (x > 1 ? 's' : '');
     this.status('Séance terminée', 'player');
     this.$('[data-head]').innerHTML = '<p><strong>Bilan de la séance</strong></p>';
+    const t = bilanTemps(this.times);
+    const lbl = (x) => `« ${x.e.nom} », ${Math.floor(x.i / 2) + 1}${x.i % 2 ? 'e coup noir' : 'e coup blanc'}`;
+    const temps = t ? `<p class="small" data-recap-temps>⏱ Temps moyen : <strong>${sec(t.moy)}</strong> par coup${this.tempsCoup ? ` (limite ${this.tempsCoup} s)` : ''}. Plus lents : ${t.lents.map((x) => `${esc(lbl(x))} (${x.lent ? 'temps écoulé' : sec(x.ms)})`).join(' ; ')}.</p>` : '';
     this.feedback(`<div class="drill-recap" data-recap>
+      ${temps}
       <p class="recap-nums"><span class="ok">✔ ${this.okFirst} réussie${pl(this.okFirst)}</span> · <span class="ko">✘ ${n} ratée${pl(n)}</span>${this.streak.best ? ` · 🔥 meilleure série ${this.streak.best}` : ''}</p>
       <p class="small muted">Réussie = trouvée du premier coup. ${n ? 'Positions à revoir :' : ''}</p>
       ${n ? `<ul class="small">${this.missed.map((m) => `<li>${esc(this.missedLabel(m))}</li>`).join('')}</ul>` : ''}
@@ -316,7 +384,7 @@ export class DrillRunner {
       this.startTrash();
       return;
     }
-    const steps = lineSteps(m.e, m.color);
+    const steps = lineSteps(m.e, m.color, { complet: this.complet });
     this.cur = { e: m.e, color: m.color, steps, i: m.i, errors: 0, review: m };
     this.chess = new Chess();
     for (const st of steps.slice(0, m.i)) this.chess.move(toObj(st.uci));
@@ -544,7 +612,7 @@ export class DrillRunner {
   // Fin de la série d'exercices (ou « Terminer ») : bilan avec révision ciblée s'il y a des erreurs.
   finish() {
     if (!this.alive) return;
-    if (!this.recapDone && !this.reviewing && this.missed.length) { this.showRecap(); return; }
+    if (!this.recapDone && !this.reviewing && (this.missed.length || (this.tempsCoup && this.times.length))) { this.showRecap(); return; }
     this.done();
   }
 
@@ -553,6 +621,7 @@ export class DrillRunner {
     this.alive = false;
     this.board.hideBubble();
     clearInterval(this.cur?.timer);
+    this.stopMoveClock();
     const ok = this.results.filter((r) => r.ok).length;
     const times = this.results.filter((r) => r.ok && r.ms).map((r) => r.ms);
     this.onDone?.({ kind: this.kind, ok, total: this.results.length, best: times.length ? Math.min(...times) : null });

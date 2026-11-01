@@ -152,16 +152,19 @@ export function commentaires(fen, san) {
 }
 
 // Étapes d'une leçon : chaque demi-coup de la fiche, qui le joue, commentaires et nom atteint.
-export function lessonSteps(entry, color) {
+export function lessonSteps(entry, color, { complet = false } = {}) {
   const c = new Chess();
   const noms = new Map((entry.noms || []).map((n) => [n.ply, n]));
-  return entry.san.map((san, i) => {
+  const sans = complet && entry.suite ? entry.san.concat(entry.suite.san) : entry.san;
+  const ucis = complet && entry.suite ? entry.uci.concat(entry.suite.uci) : entry.uci;
+  return sans.map((san, i) => {
+    const moteur = i >= entry.san.length;
     const fen = c.fen();
     const no = `${Math.floor(i / 2) + 1}${i % 2 ? '…' : '.'}`;
     const step = {
-      ply: i, san, sanFr: sanFr(san), label: `${no} ${sanFr(san)}`, uci: entry.uci[i],
+      ply: i, san, sanFr: sanFr(san), label: `${no} ${sanFr(san)}`, uci: ucis[i], moteur,
       ours: (i % 2 === 0 ? 'w' : 'b') === color, fen,
-      notes: commentaires(fen, san),
+      notes: moteur ? ['🤖 Suite conseillée par Stockfish au-delà de la fiche (meilleur coup du moteur, pas une théorie publiée).', ...commentaires(fen, san)] : commentaires(fen, san),
       nom: noms.has(i) ? { ...noms.get(i), fr: nomFr(noms.get(i).name) } : null,
     };
     c.move(san);

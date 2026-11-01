@@ -11,7 +11,7 @@ async function setup(page, { token = '', prefs = {} } = {}) {
       localStorage.clear();
       localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
-      localStorage.setItem('coach-echecs:entrainement', JSON.stringify(p));
+      localStorage.setItem('coach-echecs:entrainement', JSON.stringify({ complet: '0', ...p })); // lignes de la fiche seule, sauf test dédié
       if (t) localStorage.setItem('coach-echecs:jeton-lichess', t);
       sessionStorage.setItem('e2e-init', '1');
     }
@@ -268,4 +268,35 @@ test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, pui
   await expect(page.locator('.course-item', { hasText: 'Variante orthodoxe' })).toContainText('Leçon suivie');
   const prog = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')));
   expect(prog.cours['gd-orthodoxe'].n).toBe(1);
+});
+
+test('Ligne complète (suite Stockfish jusqu’au 15e coup) et rythme Blitz : trop lent = raté, bilan des temps', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches', complet: '1', lTemps: 3 } });
+  await page.goto('./#/entrainement');
+  // Cours : la ligne continue au-delà de la fiche, signalée comme suite Stockfish.
+  await page.click('[data-course="gd"]');
+  await page.click('[data-lesson="gd-orthodoxe"]');
+  await expect(page.locator('[data-panel]')).toContainText('suite conseillée par Stockfish');
+  await page.click('[data-panel] [data-next]');
+  await expect(page.locator('[data-panel] .suite-sep')).toContainText('suite Stockfish');
+  await expect(page.locator('[data-panel] .m.moteur').first()).toBeVisible();
+  await page.click('[data-close]');
+  // S'entraîner : 3 s par coup ; on laisse filer le 1er coup.
+  const full = await page.evaluate(async () => {
+    const d = await (await fetch('./data/repertoire.json')).json();
+    const e = d.entries.find((x) => x.id === 'gd-orthodoxe');
+    return e.uci.concat(e.suite.uci);
+  });
+  expect(full.length).toBe(30);
+  await page.click('[data-back]').catch(() => {});
+  await page.goto('./#/entrainement');
+  await openAll(page);
+  await page.click('[data-dash-line="gd-orthodoxe"]');
+  await expect(page.locator('#page-entrainement [data-timer]')).toBeVisible();
+  await expect(page.locator('#page-entrainement .board-bubble')).toContainText('Trop lent', { timeout: 8000 });
+  for (let i = 2; i < full.length; i += 2) await ours(page, full[i]);
+  const recap = page.locator('#page-entrainement [data-recap]');
+  await expect(recap).toContainText('Temps moyen', { timeout: 15000 });
+  await expect(recap).toContainText('✘ 1 ratée');
+  await expect(recap).toContainText('temps écoulé');
 });
