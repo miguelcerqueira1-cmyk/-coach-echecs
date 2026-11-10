@@ -95,7 +95,12 @@
 :root[data-board="encre"] { --light-sq: #f6f2e7; --dark-sq: #9a958a; --last: rgba(228, 199, 107, .65); }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* iPhone : pas de zoom au double-toucher (deux cases touchées vite = « double-tap » pour Safari) ;
+   le zoom à deux doigts reste possible. */
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+.board-wrap, button, a { touch-action: manipulation; }
+/* iPhone : un champ de saisie sous 16 px fait zoomer Safari à la mise au point. */
+@media (pointer: coarse) { input, select, textarea { font-size: max(16px, 1rem); } }
 body {
   margin: 0;
   background: var(--bg);
