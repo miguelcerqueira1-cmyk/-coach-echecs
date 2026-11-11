@@ -170,6 +170,15 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   une par partie, ancien enregistrement complété) ; validée → `corrige` (sort de la liste) ;
   la position compte aussi en révision espacée si elle est dans l'arbre. Parties de l'échiquier
   Moteur exclues ; une punition manquée ne compte pas comme « sortie » au tableau de bord.
+- **Lignes complètes** : `scripts/prolonge-lignes.mjs` (Stockfish profondeur 16, jusqu'au 30e
+  demi-coup) → `data/prolongations.json` (par empreinte) → `entry.suite` ; affichée « 🤖 suite
+  Stockfish » (cours, S'entraîner ; réglage Longueur). S'entraîner : temps par coup (trop lent =
+  raté), bilan des temps, répétitions jusqu'à N fois d'affilée sans faute. À relancer après ajout
+  ou modification de fiches.
+- **Cours « les plus jouées d'abord »** : `scripts/frequences.mjs` → `data/frequences.json` (nombre
+  de parties Élite où le coup qui définit la fiche a été joué) → `entry.freq` ; ordre par défaut
+  quand le répertoire a des données (gd, ck, gdr-noirs), bascule « Ordre conseillé ». Données
+  figées : relancer `node scripts/frequences.mjs` pour les rafraîchir.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

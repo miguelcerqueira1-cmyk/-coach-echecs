@@ -14,7 +14,7 @@ import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { loadProgress, saveProgress, dashboard, pickFiches, recordLesson, vraiesErreurs, markCorrige } from './progress.js';
 import { LessonView } from './cours.js';
-import { courseOrder } from './lesson-core.js';
+import { courseOrder, courseOrderFreq } from './lesson-core.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
 
@@ -90,7 +90,7 @@ export class TrainingPage {
     const nTrash = this.data.entries.filter((e) => trashDrill(e, this.data.repertoires[e.rep].couleur)).length;
     const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>${actifs.length > 1 ? 'Tous mes répertoires' : esc(REPERTOIRES[actifs[0]].titre)}</option>${actifs.length > 1 ? actifs.map((id) => `<option value="${id}" ${cur === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)}</option>`).join('') : ''}</select>`;
     const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
-    const next = (rep) => courseOrder(this.data.entries, rep).find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
+    const next = (rep) => this.ordreCours(rep).list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
     const total = (rep) => this.data.entries.filter((e) => e.rep === rep).length;
     const reelles = vraiesErreurs(this.progress);
@@ -226,18 +226,30 @@ export class TrainingPage {
 
   // ---------- Module Apprendre (cours) ----------
 
+  // Ordre du cours : « les plus jouées d'abord » (données Élite) par défaut quand le répertoire en a,
+  // sinon l'ordre conseillé (théorie, pièges, coups loufoques).
+  ordreCours(rep) {
+    const freq = courseOrderFreq(this.data.entries, rep);
+    const parFreq = !!freq && this.prefs.cOrdre !== 'conseil';
+    return { list: parFreq ? freq : courseOrder(this.data.entries, rep), parFreq, dispo: !!freq };
+  }
+
   renderCourse(rep) {
     this.progress = loadProgress();
     const board = dashboard(this.data, this.revision, this.progress);
     const byId = Object.fromEntries(board.fiches.map((f) => [f.id, f]));
-    const list = courseOrder(this.data.entries, rep);
+    const { list, parFreq, dispo } = this.ordreCours(rep);
     const next = list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const groups = [];
-    for (const e of list) {
-      const g = `${e.badge === 'theorie' ? '' : `${({ piege: 'Pièges', loufoque: 'Coups loufoques à punir' })[e.badge]} · `}${e.famille}`;
-      if (!groups.length || groups.at(-1).g !== g) groups.push({ g, items: [] });
-      groups.at(-1).items.push(e);
+    if (parFreq) groups.push({ g: 'Les plus jouées d’abord', items: list });
+    else {
+      for (const e of list) {
+        const g = `${e.badge === 'theorie' ? '' : `${({ piege: 'Pièges', loufoque: 'Coups loufoques à punir' })[e.badge]} · `}${e.famille}`;
+        if (!groups.length || groups.at(-1).g !== g) groups.push({ g, items: [] });
+        groups.at(-1).items.push(e);
+      }
     }
+    const src = this.data.frequences;
     let n = 0;
     this.el.innerHTML = `<div class="course">
       <div class="lesson-top">
@@ -245,14 +257,15 @@ export class TrainingPage {
         <div class="chips">${this.actifs().map((r) => `<button type="button" class="chip" data-crep="${r}" aria-pressed="${r === rep}">${repLabel(r)}</button>`).join('')}</div>
       </div>
       <h2>📖 Cours : ${esc(REPERTOIRES[rep].titre)} avec les ${couleurDe(rep) === 'w' ? 'Blancs' : 'Noirs'}</h2>
-      <p class="small muted">Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques. Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
+      ${dispo ? `<div class="chips" role="group" aria-label="Ordre des leçons"><button type="button" class="chip" data-cordre="freq" aria-pressed="${parFreq}">📊 Les plus jouées d’abord</button><button type="button" class="chip" data-cordre="conseil" aria-pressed="${!parFreq}">Ordre conseillé</button></div>` : ''}
+      <p class="small muted">${parFreq ? `Classées par fréquence réelle : nombre de parties du top blitz/rapide (Lichess, Chess.com, tournois) où le coup qui définit la variante a été joué${src ? `, données du ${esc(new Date(src.date).toLocaleDateString('fr-FR'))}` : ''}. Fréquence observée, pas une évaluation ; à votre niveau, les coups loufoques sont plus fréquents qu’au top.` : 'Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques.'} Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
       ${groups.map(({ g, items }) => `<h3 class="course-group">${esc(g)}</h3><ol class="course-list" start="${n + 1}">${items.map((e) => {
         n++;
         const f = byId[e.id];
         const isNext = next?.id === e.id;
         return `<li class="course-item ${isNext ? 'next' : ''}">
           <div class="course-main"><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
-            <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %</div></div>
+            <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %${e.freq ? ` · <span class="freq" title="Parties du top où ${esc(e.freq.coup)} a été joué dans cette position">📊 ${e.freq.n} partie(s) du top</span>` : (parFreq ? ' · 📊 rare au top' : '')}</div></div>
           <div class="dash-bar"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
           <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) ? '🔒 Pro' : this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
         </li>`;
@@ -260,6 +273,11 @@ export class TrainingPage {
     </div>`;
     this.el.querySelector('[data-back]').addEventListener('click', () => { this.view = null; this.renderSetup(); window.scrollTo(0, 0); });
     this.el.querySelectorAll('[data-crep]').forEach((b) => b.addEventListener('click', () => { this.courseRep = b.dataset.crep; this.renderCourse(this.courseRep); }));
+    this.el.querySelectorAll('[data-cordre]').forEach((b) => b.addEventListener('click', () => {
+      this.prefs.cOrdre = b.dataset.cordre;
+      try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* stockage plein */ }
+      this.renderCourse(rep);
+    }));
     this.el.querySelectorAll('[data-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.lesson)));
   }
 

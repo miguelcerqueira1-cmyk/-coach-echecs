@@ -174,6 +174,14 @@ export function lessonSteps(entry, color, { complet = false } = {}) {
 }
 
 // Ordre conseillé des leçons : théorie d'abord, par famille, puis pièges et coups loufoques.
+// Ordre « les plus jouées d'abord » : fréquence observée dans les données Élite (entry.freq.n),
+// les fiches sans donnée ensuite, dans l'ordre conseillé. null si le répertoire n'a aucune donnée.
+export function courseOrderFreq(entries, rep) {
+  const base = courseOrder(entries, rep);
+  if (!base.some((e) => e.freq)) return null;
+  return base.map((e, i) => ({ e, i })).sort((a, b) => (b.e.freq?.n ?? -1) - (a.e.freq?.n ?? -1) || a.i - b.i).map((x) => x.e);
+}
+
 export function courseOrder(entries, rep) {
   const rank = { theorie: 0, piege: 1, loufoque: 2 };
   const fams = [];

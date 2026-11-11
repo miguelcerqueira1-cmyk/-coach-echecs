@@ -11,7 +11,7 @@ async function setup(page, { token = '', prefs = {} } = {}) {
       localStorage.clear();
       localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
-      localStorage.setItem('coach-echecs:entrainement', JSON.stringify({ complet: '0', ...p })); // lignes de la fiche seule, sauf test dédié
+      localStorage.setItem('coach-echecs:entrainement', JSON.stringify({ complet: '0', cOrdre: 'conseil', ...p })); // lignes de la fiche seule, sauf test dédié
       if (t) localStorage.setItem('coach-echecs:jeton-lichess', t);
       sessionStorage.setItem('e2e-init', '1');
     }
@@ -299,4 +299,20 @@ test('Ligne complète (suite Stockfish jusqu’au 15e coup) et rythme Blitz : tr
   await expect(recap).toContainText('Temps moyen', { timeout: 15000 });
   await expect(recap).toContainText('✘ 1 ratée');
   await expect(recap).toContainText('temps écoulé');
+});
+
+test('Cours : variantes classées de la plus jouée à la moins jouée (données Élite), bascule vers l’ordre conseillé', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches', cOrdre: 'freq' } });
+  await page.goto('./#/entrainement');
+  await page.click('[data-course="gd"]');
+  await expect(page.locator('[data-cordre="freq"]')).toHaveAttribute('aria-pressed', 'true');
+  const counts = await page.locator('.course-item .freq').allTextContents();
+  const n = counts.map((t) => parseInt(t.replace(/\D+/g, ''), 10));
+  expect(n.length).toBeGreaterThan(5);
+  expect(n).toEqual([...n].sort((a, b) => b - a));
+  await expect(page.locator('.course')).toContainText('Fréquence observée');
+  await page.click('[data-cordre="conseil"]');
+  await expect(page.locator('.course-item').first()).toContainText('Variante orthodoxe');
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:entrainement')));
+  expect(prefs.cOrdre).toBe('conseil');
 });

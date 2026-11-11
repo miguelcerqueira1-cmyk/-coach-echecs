@@ -1,0 +1,327 @@
+{
+ "source": "Élite (parties blitz/rapide du top Lichess et Chess.com, tournois retransmis)",
+ "date": "2026-11-11",
+ "parties": {
+  "total": 2237,
+  "li": 1093,
+  "cc": 907,
+  "bc": 237,
+  "gd": 1448,
+  "ck": 789,
+  "camp": 1395
+ },
+ "entries": {
+  "gd-orthodoxe": {
+   "n": 6,
+   "ply": 11,
+   "coup": "Nbd7",
+   "rep": "gd"
+  },
+  "gd-ff4": {
+   "n": 105,
+   "ply": 7,
+   "coup": "Be7",
+   "rep": "gd"
+  },
+  "gd-echange": {
+   "n": 180,
+   "ply": 6,
+   "coup": "cxd5",
+   "rep": "gd"
+  },
+  "gd-tarrasch": {
+   "n": 28,
+   "ply": 5,
+   "coup": "c5",
+   "rep": "gd"
+  },
+  "gd-gda-central": {
+   "n": 2,
+   "ply": 5,
+   "coup": "e5",
+   "rep": "gd"
+  },
+  "gd-gda-classique": {
+   "n": 38,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "gd"
+  },
+  "gd-gda-b5": {
+   "n": 1,
+   "ply": 5,
+   "coup": "b5",
+   "rep": "gd"
+  },
+  "gd-slave": {
+   "n": 18,
+   "ply": 7,
+   "coup": "dxc4",
+   "rep": "gd"
+  },
+  "gd-slave-echange": {
+   "n": 26,
+   "ply": 4,
+   "coup": "cxd5",
+   "rep": "gd"
+  },
+  "gd-meran": {
+   "n": 43,
+   "ply": 8,
+   "coup": "e3",
+   "rep": "gd"
+  },
+  "gd-moscou": {
+   "n": 45,
+   "ply": 8,
+   "coup": "Bg5",
+   "rep": "gd"
+  },
+  "gd-albin": {
+   "n": 12,
+   "ply": 3,
+   "coup": "e5",
+   "rep": "gd"
+  },
+  "gd-chigorine": {
+   "n": 9,
+   "ply": 3,
+   "coup": "Nc6",
+   "rep": "gd"
+  },
+  "gd-marshall": {
+   "n": 7,
+   "ply": 3,
+   "coup": "Nf6",
+   "rep": "gd"
+  },
+  "gd-autrichienne": {
+   "n": 9,
+   "ply": 3,
+   "coup": "c5",
+   "rep": "gd"
+  },
+  "gd-englund": {
+   "n": 10,
+   "ply": 3,
+   "coup": "Nc6",
+   "rep": "gd"
+  },
+  "gd-ragozine": {
+   "n": 95,
+   "ply": 7,
+   "coup": "Bb4",
+   "rep": "gd"
+  },
+  "gd-semi-tarrasch": {
+   "n": 26,
+   "ply": 7,
+   "coup": "c5",
+   "rep": "gd"
+  },
+  "gd-lasker": {
+   "n": 11,
+   "ply": 11,
+   "coup": "h6",
+   "rep": "gd"
+  },
+  "gd-gda-cf6": {
+   "n": 6,
+   "ply": 5,
+   "coup": "Nf6",
+   "rep": "gd"
+  },
+  "gd-tchebanenko": {
+   "n": 23,
+   "ply": 7,
+   "coup": "a6",
+   "rep": "gd"
+  },
+  "gd-marshall-gambit": {
+   "n": 29,
+   "ply": 5,
+   "coup": "c6",
+   "rep": "gd"
+  },
+  "ck-avance-short": {
+   "n": 57,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "ck"
+  },
+  "ck-avance-tal": {
+   "n": 72,
+   "ply": 6,
+   "coup": "h4",
+   "rep": "ck"
+  },
+  "ck-avance-cc3": {
+   "n": 11,
+   "ply": 6,
+   "coup": "Nc3",
+   "rep": "ck"
+  },
+  "ck-avance-fd3": {
+   "n": 19,
+   "ply": 6,
+   "coup": "Bd3",
+   "rep": "ck"
+  },
+  "ck-echange": {
+   "n": 51,
+   "ply": 6,
+   "coup": "Bd3",
+   "rep": "ck"
+  },
+  "ck-panov": {
+   "n": 5,
+   "ply": 9,
+   "coup": "e6",
+   "rep": "ck"
+  },
+  "ck-classique": {
+   "n": 39,
+   "ply": 8,
+   "coup": "Ng3",
+   "rep": "ck"
+  },
+  "ck-karpov": {
+   "n": 11,
+   "ply": 8,
+   "coup": "Nf3",
+   "rep": "ck"
+  },
+  "ck-tartakower": {
+   "n": 78,
+   "ply": 7,
+   "coup": "Nf6",
+   "rep": "ck"
+  },
+  "ck-fantaisie": {
+   "n": 27,
+   "ply": 4,
+   "coup": "f3",
+   "rep": "ck"
+  },
+  "ck-deux-cavaliers": {
+   "n": 41,
+   "ply": 5,
+   "coup": "Bg4",
+   "rep": "ck"
+  },
+  "ck-panov-acceleree": {
+   "n": 16,
+   "ply": 2,
+   "coup": "c4",
+   "rep": "ck"
+  },
+  "ck-kia": {
+   "n": 12,
+   "ply": 2,
+   "coup": "d3",
+   "rep": "ck"
+  },
+  "ck-fd3": {
+   "n": 7,
+   "ply": 4,
+   "coup": "Bd3",
+   "rep": "ck"
+  },
+  "ck-gambit-f3": {
+   "n": 2,
+   "ply": 6,
+   "coup": "f3",
+   "rep": "ck"
+  },
+  "ck-fc4": {
+   "n": 2,
+   "ply": 2,
+   "coup": "Bc4",
+   "rep": "ck"
+  },
+  "ck-avance-fe3": {
+   "n": 2,
+   "ply": 6,
+   "coup": "Be3",
+   "rep": "ck"
+  },
+  "ck-avance-c5": {
+   "n": 64,
+   "ply": 5,
+   "coup": "c5",
+   "rep": "ck"
+  },
+  "ck-panov-cc6": {
+   "n": 15,
+   "ply": 9,
+   "coup": "Nc6",
+   "rep": "ck"
+  },
+  "ck-deux-cavaliers-cf6": {
+   "n": 21,
+   "ply": 5,
+   "coup": "dxe4",
+   "rep": "ck"
+  },
+  "ck-cd2": {
+   "n": 42,
+   "ply": 4,
+   "coup": "Nd2",
+   "rep": "ck"
+  },
+  "ck-cg5-ce6": {
+   "n": 2,
+   "ply": 8,
+   "coup": "Ng5",
+   "rep": "ck"
+  },
+  "ck-df3": {
+   "n": 1,
+   "ply": 2,
+   "coup": "Qf3",
+   "rep": "ck"
+  },
+  "gdrn-orthodoxe": {
+   "n": 11,
+   "ply": 11,
+   "coup": "h6",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-cambridge": {
+   "n": 2,
+   "ply": 8,
+   "coup": "e3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-elephant": {
+   "n": 2,
+   "ply": 8,
+   "coup": "cxd5",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-echange": {
+   "n": 180,
+   "ply": 6,
+   "coup": "cxd5",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-dc2-c5": {
+   "n": 6,
+   "ply": 11,
+   "coup": "Nbd7",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-slave": {
+   "n": 114,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-slave-echange": {
+   "n": 26,
+   "ply": 4,
+   "coup": "cxd5",
+   "rep": "gdr-noirs"
+  }
+ }
+}

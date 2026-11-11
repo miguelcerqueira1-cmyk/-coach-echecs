@@ -11,6 +11,8 @@ const tsv = 'abcde'.split('').map((f) => readFileSync(join(root, `data/chess-ope
 const index = buildEcoIndex(tsv);
 const verif = JSON.parse(readFileSync(join(root, 'data/verification.json'), 'utf8'));
 // Suites Stockfish au-delà des fiches (scripts/prolonge-lignes.mjs) : gardées si la fiche n'a pas changé.
+// Fréquence de chaque fiche dans les données Élite (scripts/frequences.mjs).
+const freqs = existsSync(join(root, 'data/frequences.json')) ? JSON.parse(readFileSync(join(root, 'data/frequences.json'), 'utf8')) : { entries: {} };
 const prolong = existsSync(join(root, 'data/prolongations.json')) ? JSON.parse(readFileSync(join(root, 'data/prolongations.json'), 'utf8')) : { entries: {} };
 
 const claim = (c) => {
@@ -46,6 +48,7 @@ const entries = LIGNES.map((e) => {
     piege: claim(e.piege),
     verification: fresh ? v : null,
     suite,
+    freq: freqs.entries[e.id] ? { n: freqs.entries[e.id].n, coup: freqs.entries[e.id].coup, ply: freqs.entries[e.id].ply } : null,
   };
 });
 
@@ -53,6 +56,7 @@ mkdirSync(join(root, 'site/data'), { recursive: true });
 writeFileSync(join(root, 'site/data/repertoire.json'), JSON.stringify({
   repertoires: REPERTOIRES,
   moteur: { nom: verif.engine, profondeur: verif.depth, date: verif.date },
+  frequences: freqs.date ? { source: freqs.source, date: freqs.date } : null,
   entries,
 }));
 console.log(`repertoire: ${entries.length} fiches, ${entries.filter((e) => e.verification).length} vérifiées → site/data/repertoire.json`);

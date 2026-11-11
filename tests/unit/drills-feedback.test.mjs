@@ -41,3 +41,17 @@ test('ligne complète : la suite Stockfish prolonge la fiche, marquée « moteur
   assert.equal(t.moy, 2500);
   assert.deepEqual(t.lents.map((x) => x.ms), [4000, 2500]);
 });
+
+test('fréquences : coup qui définit une fiche, ordre « plus jouées d’abord »', async () => {
+  const { coupDefinissant } = await import('../../scripts/frequences.mjs');
+  const { courseOrderFreq } = await import('../../site/js/lesson-core.js');
+  assert.equal(coupDefinissant(['a', 'b', 'c', 'd'], [['a', 'b', 'x'], ['a', 'y']]), 2);
+  assert.equal(coupDefinissant(['a', 'b'], [['a', 'b', 'c']]), 1, 'fiche préfixe d’une autre : son dernier coup');
+  const E = [
+    { id: 'x', rep: 'r', badge: 'theorie', famille: 'F', freq: { n: 3 } },
+    { id: 'y', rep: 'r', badge: 'piege', famille: 'F', freq: { n: 50 } },
+    { id: 'z', rep: 'r', badge: 'theorie', famille: 'G' },
+  ];
+  assert.deepEqual(courseOrderFreq(E, 'r').map((e) => e.id), ['y', 'x', 'z']);
+  assert.equal(courseOrderFreq(E.map(({ freq, ...e }) => e), 'r'), null, 'sans donnée : pas de classement');
+});
