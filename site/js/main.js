@@ -793,6 +793,16 @@ function renderCoach() {
   el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? 'L’explication arrive automatiquement quand c’est à vous de jouer.' : 'Touchez « Expliquer » pour une explication du conseil.'}</p>`;
 }
 
+// Moteur en panne (souvent après une mise en arrière-plan sur iPhone) : redémarrage automatique au
+// retour sur la page, et au plus une fois par minute sinon ; le bouton « Redémarrer » reste là.
+let lastAutoRestart = 0;
+async function autoRestartEngine() {
+  if (engine.state !== 'error' || document.hidden || Date.now() - lastAutoRestart < 60000) return;
+  lastAutoRestart = Date.now();
+  try { await engine.restart(); onPositionChanged('restart'); } catch { renderAdvice(); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { lastAutoRestart = 0; autoRestartEngine(); } });
+
 function renderEnginePill(s) {
   const el = $('engine-pill');
   if (s.state === 'loading') {
@@ -809,6 +819,7 @@ function renderEnginePill(s) {
     el.textContent = 'Moteur en panne';
     el.title = s.message;
     engine.lastError = s.message;
+    setTimeout(autoRestartEngine, 1500);
     optimal.setEngine('error', null);
     if (state.game) { state.analysis.status = 'engine-error'; state.analysis.error = s.message; renderAdvice(); }
   }

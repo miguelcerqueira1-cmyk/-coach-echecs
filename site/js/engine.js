@@ -221,7 +221,13 @@ export class Engine {
     job.started = performance.now();
     this._send(`go movetime ${job.movetime}`);
     // Si le moteur ne rend pas de « bestmove », on le déclare en panne au lieu d'inventer un conseil.
-    job.watchdog = setTimeout(() => this._fail('Le moteur ne répond plus (délai dépassé)'), job.movetime + 20000);
+    // Page en arrière-plan (téléphone verrouillé, autre appli) : le navigateur suspend le moteur ;
+    // on attend le retour au lieu de le déclarer en panne.
+    const watch = () => {
+      if (typeof document !== 'undefined' && document.hidden) { job.watchdog = setTimeout(watch, 5000); return; }
+      this._fail('Le moteur ne répond plus (délai dépassé)');
+    };
+    job.watchdog = setTimeout(watch, job.movetime + 20000);
   }
 
   async restart() {
