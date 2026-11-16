@@ -316,3 +316,24 @@ test('Cours : variantes classées de la plus jouée à la moins jouée (données
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:entrainement')));
   expect(prefs.cOrdre).toBe('conseil');
 });
+
+test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie lancée avec 5 s par coup', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  const r = page.locator('[data-routine]');
+  await expect(r).toContainText('Ma routine du jour');
+  await expect(r).toContainText('Son coup d’abord');
+  const n = await r.locator('[data-bloc]').count();
+  expect([1, 6]).toContain(n);
+  await r.locator('[data-bloc]').first().check();
+  await expect(page.locator('[data-routine] .routine-prog')).toHaveText(`1 / ${n}`);
+  await page.fill('[data-suivi="problemes"]', '7');
+  await page.locator('[data-suivi="problemes"]').blur();
+  await page.reload();
+  await expect(page.locator('[data-routine] .routine-prog')).toHaveText(`1 / ${n}`);
+  await expect(page.locator('[data-suivi="problemes"]')).toHaveValue('7');
+  await page.locator('[data-routine] .routine-hist summary').click();
+  await expect(page.locator('.routine-table')).toContainText('7/10');
+  await page.click('[data-routine-theorie]');
+  await expect(page.locator('#page-entrainement [data-timer]')).toBeVisible();
+});

@@ -179,6 +179,13 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   de parties Élite où le coup qui définit la fiche a été joué) → `entry.freq` ; ordre par défaut
   quand le répertoire a des données (gd, ck, gdr-noirs), bascule « Ordre conseillé ». Données
   figées : relancer `node scripts/frequences.mjs` pour les rafraîchir.
+- **Ma routine du jour** (`routine-core.js`, carte en haut de l'Entraînement) : 6 blocs lun–sam
+  (tactique anti-tunnel sur thèmes Lichess « Pièce en prise » / « Coup défensif » en alternance,
+  Puzzle Rush, théorie lancée en ligne complète 5 s/coup, 1 partie rapide 10 min, analyse moteur
+  coupé, Blitz 5 max), dimanche théorie seule ; cases cochées et suivi du soir (menaces ratées,
+  Blitz joués, problèmes /10) dans `coach-echecs:routine-v1` ; historique 7 jours, série.
+  Méthode convenue avec l'utilisateur (Lichess Blitz ~1040, Chess.com rapide ~750) : habitude
+  « Son coup d'abord » contre la vision tunnel ; bilan prévu après 4 semaines (vers le 2026-12-14).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

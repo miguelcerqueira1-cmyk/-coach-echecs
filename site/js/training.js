@@ -17,6 +17,7 @@ import { LessonView } from './cours.js';
 import { courseOrder, courseOrderFreq } from './lesson-core.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
+import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
@@ -97,6 +98,7 @@ export class TrainingPage {
     const lock = isPro() ? '' : ' <span class="lock-badge">🔒 Pro</span>';
     const nSort = reelles.filter((x) => x.kind === 'sortie').length;
     this.el.innerHTML = `<div class="train-hub">
+      ${this.routineHtml()}
       <section class="card hub-head">
         <div class="hub-stats">
           <div><span class="hub-big">🔥 ${board.streak}</span><span class="muted small">jour(s) d’affilée</span></div>
@@ -188,6 +190,9 @@ export class TrainingPage {
     }));
     // Modules réservés à BlitzRefute Pro : fenêtre de paiement sinon.
     const need = (reason, fn) => () => (isPro() ? fn() : openPaywall({ reason }));
+    this.bindRoutine(need('L’entraînement en répétition espacée', () => {
+      this.runDrill('lignes', pickFiches(board, { n: 3 }), { preset: { complet: '1', lTemps: 5, lRepet: 1 } });
+    }));
     this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
     this.el.querySelector('[data-real]')?.addEventListener('click', need('« Mes vraies erreurs »', () => this.runReelles()));
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
@@ -311,11 +316,12 @@ export class TrainingPage {
 
   // ---------- Modules Lignes / Anti-trash ----------
 
-  runDrill(kind, ids, { timeLimit = 10, then = null, guided = false } = {}) {
+  // preset : réglages imposés pour cette séance seulement (ex. routine du jour).
+  runDrill(kind, ids, { timeLimit = 10, then = null, guided = false, preset = null } = {}) {
     if (!ids.length) { this.renderSetup(); return; }
     this.s = null;
     const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));
-    const p = this.prefs;
+    const p = { ...this.prefs, ...preset };
     this.drill = new DrillRunner({
       el: this.el, data: this.data, kind, ids, tree, timeLimit, guided, engine: this.engine,
       complet: p.complet !== '0',
@@ -335,6 +341,56 @@ export class TrainingPage {
         this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
     });
+  }
+
+  // ---------- Ma routine du jour (routine-core.js) ----------
+
+  routineHtml() {
+    const date = jour();
+    const data = charger();
+    const j = data.jours[date] || { faits: [] };
+    const { dimanche, blocs } = blocsDuJour(date);
+    const faits = blocs.filter((b) => j.faits.includes(b.id)).length;
+    const s = serie(data, date);
+    const lien = (l) => (l.interne ? `<a class="btn-link" href="${esc(l.url)}">${esc(l.label)} →</a>` : `<a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`);
+    const hist = historique(data, date, 7);
+    const v = (x) => (x == null ? '—' : x);
+    return `<details class="card routine" data-routine ${this.routineFermee ? '' : 'open'}>
+      <summary><h2>📅 Ma routine du jour</h2> <span class="routine-prog">${faits} / ${blocs.length}</span>${s ? ` <span class="badge ok">🔥 ${s} jour(s) complet(s)</span>` : ''}</summary>
+      <p class="routine-rule"><strong>Son coup d’abord :</strong> avant chaque coup, un coup d’œil à la pièce qu’il vient de bouger (que menace-t-elle ?), puis mon coup est-il sûr ?</p>
+      ${dimanche ? '<p class="small muted">Dimanche : jour off. Seulement 10 min de théorie, le reste se repose.</p>' : ''}
+      <ol class="routine-list">${blocs.map((b, i) => {
+        const ok = j.faits.includes(b.id);
+        const bloque = b.id === 'blitz' && !blocs.filter((x) => x.id !== 'blitz').every((x) => j.faits.includes(x.id));
+        return `<li class="routine-item ${ok ? 'done' : ''}">
+          <label class="routine-check"><input type="checkbox" data-bloc="${b.id}" ${ok ? 'checked' : ''}> <span><strong>${i + 1}. ${esc(b.titre)}</strong> <span class="muted small">· ${b.min} min</span></span></label>
+          <p class="small">${esc(b.texte)}${bloque ? ' <span class="muted">(après les blocs 1 à 5)</span>' : ''}</p>
+          <div class="routine-actions">${b.lien ? lien(b.lien) : ''}${b.action === 'theorie' ? '<button type="button" class="small-btn primary" data-routine-theorie>▶ Lancer (ligne complète, 5 s)</button>' : ''}</div>
+        </li>`;
+      }).join('')}</ol>
+      <h3>Le soir : mes 3 chiffres</h3>
+      <div class="routine-suivi">${Object.entries(SUIVI).map(([k, d]) => `<label>${esc(d.label)} <input type="number" inputmode="numeric" min="${d.min}" max="${d.max}" data-suivi="${k}" value="${j[k] ?? ''}"></label>`).join('')}</div>
+      <details class="routine-hist"><summary class="small">Mes 7 derniers jours</summary>
+        <table class="routine-table"><thead><tr><th>Jour</th><th>Blocs</th><th>Menaces ratées</th><th>Blitz</th><th>Problèmes</th></tr></thead>
+        <tbody>${hist.map((h) => `<tr><td>${esc(new Date(`${h.date}T12:00:00`).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }))}</td><td>${h.faits}/${h.total}</td><td>${v(h.menaces)}</td><td>${v(h.blitz)}</td><td>${h.problemes == null ? '—' : `${h.problemes}/10`}</td></tr>`).join('')}</tbody></table>
+        <p class="muted tiny">Le chiffre qui compte : les menaces ratées. S’il baisse sur 2 à 3 semaines, tu progresses.</p>
+      </details>
+    </details>`;
+  }
+
+  bindRoutine(lancerTheorie) {
+    const el = this.el.querySelector('[data-routine]');
+    if (!el) return;
+    const date = jour();
+    el.addEventListener('toggle', () => { this.routineFermee = !el.open; });
+    el.querySelectorAll('[data-bloc]').forEach((c) => c.addEventListener('change', () => {
+      enregistrer(cocher(charger(), date, c.dataset.bloc, c.checked));
+      this.renderSetup();
+    }));
+    el.querySelectorAll('[data-suivi]').forEach((inp) => inp.addEventListener('change', () => {
+      enregistrer(noter(charger(), date, inp.dataset.suivi, inp.value));
+    }));
+    el.querySelector('[data-routine-theorie]')?.addEventListener('click', lancerTheorie);
   }
 
   // « Mes vraies erreurs » : positions de vos parties réelles (Mes parties) à corriger.
