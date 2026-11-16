@@ -192,6 +192,9 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   sorties, punitions ratées ; état « à revoir » (sortie, punition ratée, ou < 40 % des points sur 2+
   parties) / « solide » (2+ parties, ≥ 60 %, sans sortie). Affiché dans Apprendre (résumé, ligne par
   variante, ordre « ⚠ À revoir d'abord »).
+  Sous chaque variante : « 🎮 Mes parties dans cette variante » (date, adversaire, résultat, coup où
+  la partie quitte la fiche) et « ▶ Rejouer ma partie » (coups gardés, 120 demi-coups max, ouverts
+  sur l'échiquier Moteur via `openGame` de TrainingPage).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

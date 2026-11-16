@@ -105,6 +105,14 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await expect(page.locator('[data-bilan]').first()).toBeVisible();
   await page.click('[data-cordre="revoir"]');
   await expect(page.locator('.course-item').first().locator('.var-bilan')).toContainText('À revoir');
+  // Mes parties dans cette variante : ma vraie partie, rejouée sur l'échiquier Moteur.
+  const det = page.locator('.course-item').first().locator('[data-mes-parties]');
+  await det.locator('summary').click();
+  await expect(det).toContainText('je quitte la fiche au coup 2.');
+  await det.locator('[data-replay]').first().click();
+  await expect(page.locator('#page-moteur')).toBeVisible();
+  const ply = await page.evaluate(() => window.__coach.state.game.ply);
+  expect(ply).toBeGreaterThan(4);
 });
 
 test('Mes parties : erreur explicite si l’export Lichess est refusé', async ({ page }) => {

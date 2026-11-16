@@ -74,9 +74,12 @@ export function recordSortie(p, { gameId, ficheId = null, rep, ply, date, pos = 
 
 // Résultat d'une vraie partie dans une variante (une fois par partie ; mise à jour si réimportée).
 // sortie : je suis sorti des fiches ; punition : j'ai laissé passer une punition prévue.
-export function recordPartie(p, { gameId, ficheId, rep, outcome, date, sortie = false, punition = false }) {
+// Pour la relecture : coups (120 demi-coups au plus), ma couleur, adversaire, lien, et le demi-coup
+// où la partie quitte la fiche (ecart).
+export function recordPartie(p, { gameId, ficheId, rep, outcome, date, sortie = false, punition = false, san = null, color = null, opp = null, url = null, ecart = null }) {
   if (!gameId || !ficheId || !['victoire', 'défaite', 'nulle'].includes(outcome)) return p;
   const rec = { gameId, ficheId, rep, outcome, date, sortie, punition };
+  if (san) Object.assign(rec, { san: san.slice(0, 120), color, opp, url, ecart });
   const list = (p.parties || []).filter((x) => x.gameId !== gameId);
   p.parties = [...list, rec].slice(-400);
   return p;

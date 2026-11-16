@@ -82,7 +82,12 @@ export class GamesPage {
       const couleurs = Object.fromEntries(Object.entries(this.data?.repertoires || {}).map(([id, r]) => [id, r.couleur]));
       // Sortie de fiche : la variante est celle que la fiche attendait ; sinon la plus suivie.
       const fj = d?.who === 'moi' && d.fiche ? { ficheId: d.fiche.id, rep: d.rep } : ficheJouee(g, this.data?.entries || [], choisis(), couleurs);
-      if (fj) recordPartie(p, { gameId: g.id, ficheId: fj.ficheId, rep: fj.rep, outcome: g.outcome, date: g.date, sortie: d?.who === 'moi', punition: d?.who === 'adversaire-erreur' && !d.punished });
+      if (fj) {
+        recordPartie(p, {
+          gameId: g.id, ficheId: fj.ficheId, rep: fj.rep, outcome: g.outcome, date: g.date, sortie: d?.who === 'moi', punition: d?.who === 'adversaire-erreur' && !d.punished,
+          san: g.san, color: g.color, opp: g.color === 'w' ? g.black : g.white, url: g.url, ecart: d?.who === 'moi' ? d.ply : (fj.ply ?? null),
+        });
+      }
       if (pos || (d?.who === 'moi' && d.fiche)) {
         recordSortie(p, { gameId: g.id, ficheId: d.who === 'moi' ? d.fiche?.id || null : d.err?.id || null, rep: d.rep, ply: d.ply, date: g.date, pos, opp: g.color === 'w' ? g.black : g.white, url: g.url });
       }

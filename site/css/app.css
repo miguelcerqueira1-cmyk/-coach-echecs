@@ -772,3 +772,6 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .var-bilan { margin-top: .15rem; font-weight: 600; }
 .var-bilan.revoir { color: var(--warn); }
 .var-bilan.solide { color: var(--best); }
+.mes-parties-var { margin-top: .2rem; }
+.mes-parties-var ul { list-style: none; padding: 0; margin: .3rem 0; display: grid; gap: .35rem; }
+.mes-parties-var li { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; justify-content: space-between; }

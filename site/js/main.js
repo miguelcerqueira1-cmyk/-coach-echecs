@@ -123,7 +123,13 @@ async function init() {
         repertoirePage.show();
       }
       if (page === 'entrainement') {
-        trainingPage ??= new TrainingPage({ el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel });
+        trainingPage ??= new TrainingPage({
+          el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel,
+          // Relecture d'une de mes vraies parties (Apprendre > Mes parties dans cette variante).
+          openGame: (r) => openSanInBoard(r.san, r.color || 'w', `votre partie contre ${r.opp || 'l’adversaire'}`, {
+            headers: { White: r.color === 'b' ? (r.opp || '?') : 'Moi', Black: r.color === 'b' ? 'Moi' : (r.opp || '?'), Site: r.url || '', Date: (r.date || '').slice(0, 10).replace(/-/g, '.'), Result: '' },
+          }),
+        });
         trainingPage.show();
       }
       if (page === 'parties') ensureGamesPage().show();

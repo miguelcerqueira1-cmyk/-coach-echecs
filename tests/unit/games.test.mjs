@@ -187,6 +187,8 @@ test('bilan par variante : variante jouée dans une partie, résultats, état «
   p = recordPartie(p, { gameId: 'd', ficheId: 'y', rep: 'gd', outcome: 'défaite' });
   p = recordPartie(p, { gameId: 'e', ficheId: 'z', rep: 'gd', outcome: 'victoire', sortie: true });
   p = recordPartie(p, { gameId: 'f', ficheId: 'w', rep: 'gd', outcome: 'en cours' });
+  p = recordPartie(p, { gameId: 'g', ficheId: 'v', rep: 'gd', outcome: 'victoire', san: Array(150).fill('e4'), color: 'w', opp: 'Adv', ecart: 3 });
+  assert.deepEqual([p.parties.at(-1).san.length, p.parties.at(-1).opp, p.parties.at(-1).ecart], [120, 'Adv', 3], 'coups gardés pour la relecture (120 au plus)');
   const b = bilanFiches(p);
   assert.deepEqual([b.x.n, b.x.v, b.x.etat], [2, 2, 'solide'], 'réimport : mise à jour, pas de doublon');
   assert.equal(b.y.etat, 'revoir');

@@ -44,8 +44,9 @@ const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; 
 const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 export class TrainingPage {
-  constructor({ el, engine, client, getFilter, filterLabel }) {
+  constructor({ el, engine, client, getFilter, filterLabel, openGame = null }) {
     this.el = el;
+    this.openGame = openGame; // relecture d'une de mes vraies parties sur l'échiquier Moteur
     this.engine = engine;
     this.client = client;
     this.getFilter = getFilter;
@@ -289,7 +290,7 @@ export class TrainingPage {
         const isNext = next?.id === e.id;
         return `<li class="course-item ${isNext ? 'next' : ''}">
           <div class="course-main"><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
-            ${bilan[e.id] ? (() => { const b = bilan[e.id]; return `<div class="small var-bilan ${b.etat}" data-bilan="${e.id}">${{ revoir: '⚠ À revoir', solide: '✅ Solide', neutre: '🎮' }[b.etat]} · ${b.n} partie(s) : ${b.v} V · ${b.nul} N · ${b.d} D${b.sorties ? ` · ${b.sorties} sortie(s) de fiche` : ''}${b.punitions ? ` · ${b.punitions} punition(s) ratée(s)` : ''}</div>`; })() : ''}
+            ${bilan[e.id] ? (() => { const b = bilan[e.id]; return `<div class="small var-bilan ${b.etat}" data-bilan="${e.id}">${{ revoir: '⚠ À revoir', solide: '✅ Solide', neutre: '🎮' }[b.etat]} · ${b.n} partie(s) : ${b.v} V · ${b.nul} N · ${b.d} D${b.sorties ? ` · ${b.sorties} sortie(s) de fiche` : ''}${b.punitions ? ` · ${b.punitions} punition(s) ratée(s)` : ''}</div>${this.mesPartiesHtml(e)}`; })() : ''}
             <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %${e.freq ? ` · <span class="freq" title="Parties du top où ${esc(e.freq.coup)} a été joué dans cette position">📊 ${e.freq.n} partie(s) du top</span>` : (parFreq ? ' · 📊 rare au top' : '')}</div></div>
           <div class="dash-bar"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
           <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) ? '🔒 Pro' : this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
@@ -298,6 +299,10 @@ export class TrainingPage {
     </div>`;
     this.el.querySelector('[data-back]').addEventListener('click', () => { this.view = null; this.renderSetup(); window.scrollTo(0, 0); });
     this.el.querySelectorAll('[data-crep]').forEach((b) => b.addEventListener('click', () => { this.courseRep = b.dataset.crep; this.renderCourse(this.courseRep); }));
+    this.el.querySelectorAll('[data-replay]').forEach((b) => b.addEventListener('click', () => {
+      const r = (this.progress.parties || []).find((x) => x.gameId === b.dataset.replay);
+      if (r?.san) this.openGame?.(r);
+    }));
     this.el.querySelectorAll('[data-cordre]').forEach((b) => b.addEventListener('click', () => {
       this.prefs.cOrdre = b.dataset.cordre;
       try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* stockage plein */ }
@@ -361,6 +366,23 @@ export class TrainingPage {
         this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
     });
+  }
+
+  // Mes vraies parties dans une variante : résultat, coup où la partie quitte la fiche, relecture.
+  mesPartiesHtml(e) {
+    const list = (this.progress.parties || []).filter((x) => x.ficheId === e.id).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    if (!list.length) return '';
+    const res = { victoire: '✅ gagnée', défaite: '❌ perdue', nulle: '½ nulle' };
+    const ecart = (x) => {
+      if (x.ecart == null) return '';
+      const no = `${Math.floor(x.ecart / 2) + 1}${x.ecart % 2 ? '…' : '.'}`;
+      return x.sortie ? ` · je quitte la fiche au coup ${no}` : x.ecart >= e.uci.length ? ' · fiche suivie jusqu’au bout' : ` · l’adversaire quitte la fiche au coup ${no}`;
+    };
+    return `<details class="mes-parties-var" data-mes-parties="${e.id}"><summary class="small">🎮 Mes parties dans cette variante (${list.length})</summary>
+      <ul class="small">${list.map((x) => `<li><span>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${res[x.outcome] || ''}${ecart(x)}</span>
+        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}">▶ Rejouer ma partie</button>` : '<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la rejouer)</span>'}${x.url ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
+      <p class="muted tiny">« Rejouer » ouvre ta partie sur l’échiquier du Moteur : avance coup par coup (◀ ▶) et compare avec la leçon ; le moteur analyse chaque position.</p>
+    </details>`;
   }
 
   // ---------- Ma routine du jour (routine-core.js) ----------
