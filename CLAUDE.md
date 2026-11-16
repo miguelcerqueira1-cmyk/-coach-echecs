@@ -195,6 +195,9 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   Sous chaque variante : « 🎮 Mes parties dans cette variante » (date, adversaire, résultat, coup où
   la partie quitte la fiche) et « ▶ Rejouer ma partie » (coups gardés, 120 demi-coups max, ouverts
   sur l'échiquier Moteur via `openGame` de TrainingPage).
+  Dans la leçon (étape « Les coups ») : « 🎮 Comparer avec ma partie » (choix d'une de mes parties
+  de la variante, bascule 📖 Théorie / 🎮 Ma partie sur le même échiquier, 1er écart entouré, ligne
+  « Ma partie : X · théorie : Y » sous l'échiquier).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

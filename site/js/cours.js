@@ -15,7 +15,10 @@ const STAGES = ['Présentation', 'Les coups', 'À retenir', 'À vous'];
 const BADGE = { theorie: 'Théorie', piege: 'Piège Blitz', loufoque: 'Coup loufoque' };
 
 export class LessonView {
-  constructor({ el, data, entry, onPractice, onClose, complet = false }) {
+  // mesParties : mes vraies parties dans cette variante (coups gardés), pour la comparaison.
+  constructor({ el, data, entry, onPractice, onClose, complet = false, mesParties = [] }) {
+    this.mesParties = mesParties;
+    this.cmp = null; // { idx, vue: 'theorie' | 'partie' } : comparaison avec une de mes parties
     this.el = el;
     this.data = data;
     this.e = entry;
@@ -74,7 +77,29 @@ export class LessonView {
     return n;
   }
 
+  // Comparaison : coups de ma partie (fenêtre de la leçon) et premier écart avec la théorie.
+  partie() {
+    const r = this.cmp && this.mesParties[this.cmp.idx];
+    if (!r) return null;
+    const san = r.san.slice(0, this.steps.length);
+    let ecart = san.findIndex((m, i) => m !== this.steps[i]?.san);
+    if (ecart < 0) ecart = san.length < this.steps.length ? san.length : null;
+    return { r, san, ecart };
+  }
+
+  drawPartie(ply) {
+    const p = this.partie();
+    const c = new Chess();
+    let last = null;
+    for (const m of p.san.slice(0, ply + 1)) { try { last = c.move(m); } catch { break; } }
+    this.board.setPosition(c, { lastMove: last });
+    const ours = (ply % 2 === 0 ? 'w' : 'b') === this.color;
+    this.board.setArrows(last ? [{ from: last.from, to: last.to, kind: ply === p.ecart ? 'threat' : ours ? 'best' : 'reply' }] : []);
+    this.el.querySelector('[data-name]').innerHTML = `<strong>🎮 Ma partie</strong>${p.r.opp ? ` contre ${esc(p.r.opp)}` : ''} <span class="muted tiny">· ${ply < 0 ? 'position de départ' : `après ${esc(coupNo(ply, p.san[ply]))}`}</span>`;
+  }
+
   drawAt(ply, { arrow = true } = {}) {
+    if (this.stage === 1 && this.cmp?.vue === 'partie' && this.partie()) { this.drawPartie(ply); return; }
     const c = new Chess();
     for (const s of this.steps.slice(0, ply + 1)) c.move(s.san);
     const last = c.history({ verbose: true }).at(-1) || null;
@@ -120,13 +145,23 @@ export class LessonView {
         under.innerHTML = `<div class="card lesson-step"><p class="muted small">Coup ${this.ply + 1} / ${total} · ${s.ours ? '<strong>votre coup</strong>' : 'coup de l’adversaire'}</p>
           <h2 class="lesson-move ${s.ours ? 'ours' : 'theirs'}">${esc(s.label)}</h2>
           ${s.nom ? `<p class="lesson-newname">📛 Vous entrez dans : <strong>${esc(s.nom.fr)}</strong> <span class="muted tiny">(${esc(s.nom.eco)})</span></p>` : ''}
+          ${this.cmpLigneHtml()}
           <ul class="lesson-notes">${s.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>
           ${this.ply === total - 1 ? '<div class="actions"><button type="button" class="primary" data-next>À retenir →</button></div>' : ''}</div>`;
         under.querySelector('[data-next]')?.addEventListener('click', () => this.go(2));
       }
       panel.innerHTML = `<h2>Les coups de la ligne</h2><p class="small muted">Touchez un coup pour y aller. En vert : vos coups.</p>
         <p class="moves-annot">${this.steps.map((x) => `${x.ply === this.nFiche ? '<span class="suite-sep small muted" title="Au-delà de la fiche : meilleurs coups de Stockfish">🤖 suite Stockfish :</span> ' : ''}<button type="button" class="m ${x.ours ? 'mine' : ''} ${x.moteur ? 'moteur' : ''} ${x.ply === this.ply ? 'current' : ''}" data-ply="${x.ply}">${esc(x.label)}</button>`).join(' ')}</p>`;
+      panel.insertAdjacentHTML('beforeend', this.cmpPanelHtml());
       panel.querySelectorAll('[data-ply]').forEach((b) => b.addEventListener('click', () => { this.stop(); this.ply = Number(b.dataset.ply); this.render(); }));
+      panel.querySelector('[data-cmp-select]')?.addEventListener('change', (ev) => {
+        const v = ev.target.value;
+        this.cmp = v === '' ? null : { idx: Number(v), vue: this.cmp?.vue || 'partie' };
+        const p = this.partie();
+        if (p?.ecart != null) this.ply = Math.min(p.ecart, this.steps.length - 1);
+        this.render();
+      });
+      panel.querySelectorAll('[data-cmp-vue]').forEach((b) => b.addEventListener('click', () => { this.cmp.vue = b.dataset.cmpVue; this.render(); }));
       nav.innerHTML = `<button type="button" data-prev aria-label="Coup précédent" ${this.ply < 0 ? 'disabled' : ''}>◀</button>
         <button type="button" class="primary" data-play>${this.timer ? '⏸ Pause' : '▶ Lecture'}</button>
         <button type="button" data-step aria-label="Coup suivant" ${this.ply >= total - 1 ? 'disabled' : ''}>Suivant ▶</button>`;
@@ -250,6 +285,34 @@ export class LessonView {
     this.renderDrill();
   }
 
+  // Panneau « Comparer avec ma partie » : choix de la partie, vue théorie / ma partie, 2 lignes de coups.
+  cmpPanelHtml() {
+    if (!this.mesParties.length) return '';
+    const res = { victoire: 'gagnée', défaite: 'perdue', nulle: 'nulle' };
+    const p = this.partie();
+    const lbl = (i, m) => `${i % 2 === 0 ? `${i / 2 + 1}. ` : ''}${sanFr(m)}`;
+    const lblComplet = (i, m) => coupNo(i, m);
+    return `<div class="lesson-cmp" data-cmp>
+      <h3>🎮 Comparer avec ma partie</h3>
+      <select data-cmp-select aria-label="Ma partie à comparer"><option value="">— Choisir une de mes parties —</option>${this.mesParties.map((r, i) => `<option value="${i}" ${this.cmp?.idx === i ? 'selected' : ''}>${esc(r.date ? new Date(r.date).toLocaleDateString('fr-FR') : '')}${r.opp ? ` · contre ${esc(r.opp)}` : ''} · ${res[r.outcome] || ''}</option>`).join('')}</select>
+      ${p ? `<div class="chips"><button type="button" class="chip" data-cmp-vue="theorie" aria-pressed="${this.cmp.vue === 'theorie'}">📖 Théorie</button><button type="button" class="chip" data-cmp-vue="partie" aria-pressed="${this.cmp.vue === 'partie'}">🎮 Ma partie</button></div>
+        <p class="small">${p.ecart == null ? '✅ Ta partie suit la théorie sur toute la ligne.' : `Ta partie quitte la théorie au coup <strong>${esc(lblComplet(p.ecart, p.san[p.ecart] || '…'))}</strong>${p.san[p.ecart] ? ` (théorie : <strong>${esc(sanFr(this.steps[p.ecart].san))}</strong>)` : ''} — ${(p.ecart % 2 === 0 ? 'w' : 'b') === this.color ? 'c’est toi qui en sors' : 'c’est l’adversaire qui en sort'}.`}</p>
+        <p class="small muted">Ma partie :</p>
+        <p class="moves-annot">${p.san.map((m, i) => `<button type="button" class="m ${i === p.ecart ? 'ecart' : ''} ${p.ecart != null && i > p.ecart ? 'apres' : ''} ${i === this.ply ? 'current' : ''}" data-ply="${i}">${esc(lbl(i, m))}</button>`).join(' ')}</p>` : ''}
+    </div>`;
+  }
+
+  // Sous l'échiquier : le coup de la théorie et celui de ma partie à cette étape.
+  cmpLigneHtml() {
+    const p = this.partie();
+    if (!p) return '';
+    const t = this.steps[this.ply]?.san;
+    const m = p.san[this.ply];
+    if (!m) return '<p class="cmp-ligne small muted">Ma partie s’arrête avant ce coup.</p>';
+    const meme = m === t;
+    return `<p class="cmp-ligne small ${meme ? 'same' : 'diff'}">${meme ? '✔ Même coup dans ma partie' : `✘ Ma partie : <strong>${esc(sanFr(m))}</strong> · théorie : <strong>${esc(sanFr(t))}</strong>`}${this.ply === p.ecart ? ' — <strong>c’est ici que ta partie quitte la théorie</strong>' : ''}</p>`;
+  }
+
   stop() { clearInterval(this.timer); this.timer = null; }
 
   togglePlay() {
@@ -278,6 +341,11 @@ export class LessonView {
       i++;
     }, 700);
   }
+}
+
+// « 6… Cbd7 » / « 7. Tc1 » : coup numéroté, même pour les Noirs.
+function coupNo(i, san) {
+  return `${Math.floor(i / 2) + 1}${i % 2 ? '…' : '.'} ${sanFr(san)}`;
 }
 
 function lineFr(sans) {

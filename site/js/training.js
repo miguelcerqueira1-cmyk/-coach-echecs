@@ -283,7 +283,7 @@ export class TrainingPage {
           ${solides.length ? `<p class="small">✅ <strong>Solides :</strong> ${solides.map((e) => esc(e.nom)).join(', ')}</p>` : ''}
           <p class="muted tiny">« À revoir » : tu es sorti de la fiche, tu as raté une punition prévue, ou tu as perdu plus de 60 % des points sur 2 parties ou plus. Une défaite ne vient pas forcément de l’ouverture.</p>`
         : '<p class="small muted">🎮 Importe tes parties dans « Mes parties » : chaque variante affichera ici tes résultats (gagnées, perdues, sorties de fiche).</p>'}</div>
-      <p class="small muted">${parFreq ? `Classées par fréquence réelle : nombre de parties du top blitz/rapide (Lichess, Chess.com, tournois) où le coup qui définit la variante a été joué${src ? `, données du ${esc(new Date(src.date).toLocaleDateString('fr-FR'))}` : ''}. Fréquence observée, pas une évaluation ; à votre niveau, les coups loufoques sont plus fréquents qu’au top.` : 'Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques.'} Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
+      <p class="small muted">${parFreq ? `Classées par fréquence réelle : nombre de parties du top blitz/rapide (Lichess, Chess.com, tournois) où le coup qui définit la variante a été joué${src ? `, données du ${esc(new Date(src.date).toLocaleDateString('fr-FR'))}` : ''}. Fréquence observée, pas une évaluation ; à votre niveau, les coups loufoques sont plus fréquents qu’au top.` : (revoir ? 'Les variantes à revoir d’après mes vraies parties en tête, puis celles jouées sans souci, puis les autres.' : 'Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques.')} Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
       ${groups.map(({ g, items }) => `<h3 class="course-group">${esc(g)}</h3><ol class="course-list" start="${n + 1}">${items.map((e) => {
         n++;
         const f = byId[e.id];
@@ -321,6 +321,7 @@ export class TrainingPage {
     window.scrollTo(0, 0);
     this.lesson = new LessonView({
       el: this.el, data: this.data, entry, complet: this.prefs.complet !== '0',
+      mesParties: ((this.progress || loadProgress()).parties || []).filter((x) => x.ficheId === entry.id && x.san?.length).sort((a, b) => String(b.date).localeCompare(String(a.date))),
       onClose: () => { this.lesson = null; this.renderSetup(); },
       onPractice: (fid) => this.runDrill('lignes', [fid], {
         guided: true,

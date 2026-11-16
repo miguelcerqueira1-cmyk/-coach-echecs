@@ -775,3 +775,11 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .mes-parties-var { margin-top: .2rem; }
 .mes-parties-var ul { list-style: none; padding: 0; margin: .3rem 0; display: grid; gap: .35rem; }
 .mes-parties-var li { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; justify-content: space-between; }
+/* Leçon : comparer avec ma partie */
+.lesson-cmp { margin-top: .8rem; padding-top: .6rem; border-top: 1px solid var(--border); }
+.lesson-cmp select { width: 100%; margin: .3rem 0; }
+.moves-annot .m.ecart { color: var(--threat); font-weight: 700; box-shadow: inset 0 0 0 1px var(--threat); }
+.moves-annot .m.apres { opacity: .6; }
+.cmp-ligne { margin: .3rem 0; padding: .35rem .6rem; border-radius: 8px; background: var(--surface-2); }
+.cmp-ligne.same { box-shadow: inset 4px 0 0 var(--best); }
+.cmp-ligne.diff { box-shadow: inset 4px 0 0 var(--threat); }

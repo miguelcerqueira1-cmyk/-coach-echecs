@@ -113,6 +113,20 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await expect(page.locator('#page-moteur')).toBeVisible();
   const ply = await page.evaluate(() => window.__coach.state.game.ply);
   expect(ply).toBeGreaterThan(4);
+  // Leçon : comparer la théorie avec ma partie, écart signalé, bascule théorie / ma partie.
+  await page.goto('./#/entrainement');
+  await page.locator('[data-course="gd"], [data-crep="gd"]').first().click();
+  await page.click('[data-cordre="revoir"]');
+  await page.locator('.course-item').first().locator('button[data-lesson]').click();
+  await page.click('[data-panel] [data-next]');
+  const cmp = page.locator('[data-cmp]');
+  await cmp.locator('[data-cmp-select]').selectOption('0');
+  await expect(cmp).toContainText('Ta partie quitte la théorie au coup');
+  await expect(cmp).toContainText('c’est toi qui en sors');
+  await expect(cmp.locator('.m.ecart')).toHaveCount(1);
+  await expect(page.locator('.cmp-ligne')).toContainText('c’est ici que ta partie quitte la théorie');
+  await cmp.locator('[data-cmp-vue="theorie"]').click();
+  await expect(page.locator('[data-cmp-vue="theorie"]')).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('Mes parties : erreur explicite si l’export Lichess est refusé', async ({ page }) => {
