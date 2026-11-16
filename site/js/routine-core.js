@@ -21,9 +21,9 @@ export function blocsDuJour(date = jour()) {
   const dimanche = new Date(`${date}T12:00:00Z`).getUTCDay() === 0;
   const theme = THEMES[numJour(date) % THEMES.length];
   const tous = [
-    { id: 'tactique', titre: 'Tactique anti-tunnel', min: 15, texte: `10 problèmes sans chrono, thème « ${theme.nom} ». Avant de jouer : qu’a changé le dernier coup adverse ?`, lien: { url: theme.url, label: `Lichess : ${theme.nom}` } },
+    { id: 'tactique', titre: 'Tactique anti-tunnel', min: 15, texte: `10 problèmes sans chrono, thème « ${theme.nom} », ici dans l’appli. Avant de jouer : qu’a changé le dernier coup adverse ?`, action: 'problemes', theme, lien: { url: theme.url, label: `ou sur Lichess` } },
     { id: 'vitesse', titre: 'Vitesse', min: 5, texte: 'Un seul Puzzle Rush de 3 minutes : échauffement des réflexes.', lien: { url: 'https://www.chess.com/puzzles/rush', label: 'Chess.com : Puzzle Rush' } },
-    { id: 'theorie', titre: 'Théorie', min: 10, texte: 'S’entraîner : ligne complète, 5 s par coup, 3 lignes.', action: 'theorie' },
+    { id: 'theorie', titre: 'Théorie', min: 10, texte: 'Apprendre 1 nouvelle variante, puis réviser celles déjà apprises, sans chrono. Le rythme Blitz (5 s par coup) ne vient que sur les variantes maîtrisées.', action: 'theorie' },
     { id: 'rapide', titre: '1 partie rapide', min: 25, texte: 'Une partie en 10 minutes. À CHAQUE coup : « son coup d’abord ».', lien: { url: 'https://www.chess.com/play/online', label: 'Chess.com : jouer' } },
     { id: 'analyse', titre: 'Analyse', min: 10, texte: 'Rejoue ta partie rapide moteur coupé : compte les menaces adverses ratées. Ensuite seulement, Game Review.', lien: { url: '#/parties', label: 'Mes parties', interne: true } },
     { id: 'blitz', titre: 'Blitz (récompense)', min: 15, texte: '5 parties maximum. 2 défaites d’affilée = stop pour aujourd’hui.', lien: { url: 'https://lichess.org/', label: 'Lichess : jouer' } },

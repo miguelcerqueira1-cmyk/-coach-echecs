@@ -787,3 +787,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .hub-reglages { margin-top: .5rem; }
 .hub-reglages > summary { cursor: pointer; color: var(--muted); }
 .hub-dash > summary { cursor: pointer; }
+
+/* Problèmes Lichess dans l'appli (routine : tactique anti-tunnel) */
+.train-status.ok { box-shadow: inset 4px 0 0 var(--best, #3fb950); }
+.train-status.err { box-shadow: inset 4px 0 0 var(--error); color: var(--error); }

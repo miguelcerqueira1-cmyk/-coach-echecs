@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 // Mode Entraînement avec le vrai Stockfish. Lichess est simulé (coups légaux et fréquences).
 import { test, expect } from '@playwright/test';
 import { Chess } from '../../site/vendor/chess.js';
@@ -318,7 +319,7 @@ test('Cours : variantes classées de la plus jouée à la moins jouée (données
   expect(prefs.cOrdre).toBe('conseil');
 });
 
-test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie lancée avec 5 s par coup', async ({ page }) => {
+test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie progressive (apprendre puis réviser sans chrono)', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
   const r = page.locator('[data-routine]');
@@ -335,6 +336,56 @@ test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie la
   await expect(page.locator('[data-suivi="problemes"]')).toHaveValue('7');
   await page.locator('[data-routine] .routine-hist summary').click();
   await expect(page.locator('.routine-table')).toContainText('7/10');
+  // Aucune leçon suivie : pas de révision « à l'aveugle », on commence par apprendre.
+  await expect(page.locator('[data-routine-theorie]')).toHaveCount(0);
+  await expect(r).toContainText('La révision s’ouvre après ta première leçon');
+  await page.click('[data-routine-lecon]');
+  await expect(page.locator('#page-entrainement .lesson, #page-entrainement [data-lesson-view]').first()).toBeVisible();
+  // Une leçon suivie (non maîtrisée) : révision de cette variante, sans chrono.
+  await page.evaluate(() => {
+    const p = JSON.parse(localStorage.getItem('coach-echecs:progression-v1') || '{}');
+    p.cours = { 'gd-orthodoxe': { vue: Date.now(), n: 1 } };
+    localStorage.setItem('coach-echecs:progression-v1', JSON.stringify(p));
+  });
+  await page.reload();
+  await expect(page.locator('[data-routine-theorie]')).toContainText('sans chrono');
   await page.click('[data-routine-theorie]');
-  await expect(page.locator('#page-entrainement [data-timer]')).toBeVisible();
+  await expect(page.locator('#page-entrainement [data-drill="lignes"]')).toBeVisible();
+  await expect(page.locator('#page-entrainement [data-timer]')).toHaveCount(0);
+  await expect(page.locator('#page-entrainement [data-head]')).toContainText('1 / 1');
+});
+
+test('Routine : 10 problèmes Lichess dans l’appli (dernier coup adverse, coup faux refusé, solution)', async ({ page }) => {
+  await setup(page);
+  const fx = JSON.parse(readFileSync(new URL('../fixtures/puzzle-hanging.json', import.meta.url), 'utf8'));
+  let k = 0;
+  await page.route(/https:\/\/lichess\.org\/api\/puzzle\/next/, (r) => {
+    k++;
+    r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ ...fx, puzzle: { ...fx.puzzle, id: `test${k}` } }) });
+  });
+  await page.goto('./#/entrainement');
+  const btn = page.locator('[data-routine-problemes]');
+  if (!(await btn.count())) test.skip(true, 'dimanche : pas de bloc tactique');
+  await btn.click();
+  const P = page.locator('#page-entrainement [data-puzzles]');
+  await expect(P).toContainText('Problème 1 / 10');
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Il a joué', { timeout: 10000 });
+  // Coup faux (roi en h7) : refusé, rien ne bouge.
+  await sq(page, 'g8').click();
+  await sq(page, 'h7').click();
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Raté du premier coup');
+  // Bonne solution : Tb6, l'appli répond Tc8+, puis Rh7.
+  await sq(page, 'a6').click();
+  await sq(page, 'b6').click();
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Continue', { timeout: 5000 });
+  await sq(page, 'g8').click();
+  await sq(page, 'h7').click();
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Résolu (après une erreur');
+  await page.click('#page-entrainement [data-next]');
+  await expect(P).toContainText('Problème 2 / 10');
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Il a joué', { timeout: 10000 });
+  await page.click('#page-entrainement [data-solution]');
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('Solution', { timeout: 8000 });
+  await page.click('#page-entrainement [data-quit]');
+  await expect(page.locator('.hub-result')).toContainText('Problèmes : 0 / 2');
 });

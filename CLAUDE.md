@@ -184,6 +184,15 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   Puzzle Rush, théorie lancée en ligne complète 5 s/coup, 1 partie rapide 10 min, analyse moteur
   coupé, Blitz 5 max), dimanche théorie seule ; cases cochées et suivi du soir (menaces ratées,
   Blitz joués, problèmes /10) dans `coach-echecs:routine-v1` ; historique 7 jours, série.
+  **Tactique dans l'appli** (2026-11-16, `puzzles.js` / `puzzles-core.js`) : 10 problèmes de l'API
+  publique Lichess `GET /api/puzzle/next?angle=<thème>&difficulty=easier` (anonyme, base CC0),
+  joués sur l'échiquier de l'appli : dernier coup adverse rejoué, coup faux refusé (règle Lichess :
+  tout mat accepté), « Voir la solution » ; réussi = sans erreur ni solution ; 10 faits → suivi du
+  soir « problèmes /10 » rempli et bloc coché ; lien « ou sur Lichess » gardé (iframe impossible :
+  X-Frame-Options). **Théorie progressive** (`planTheorie`, progress.js) : bouton « 📖 Apprendre :
+  <prochaine leçon> » (répertoire le moins avancé) + révision des seules variantes déjà apprises
+  (leçon suivie), sans chrono et fiche seule ; rythme Blitz (ligne complète, 5 s) seulement si
+  toutes sont maîtrisées (≥ 80 %).
   Méthode convenue avec l'utilisateur (Lichess Blitz ~1040, Chess.com rapide ~750) : habitude
   « Son coup d'abord » contre la vision tunnel ; bilan prévu après 4 semaines (vers le 2026-12-14).
 - **Bilan par variante (mes vraies parties)** : à l'import, chaque partie terminée est reliée à

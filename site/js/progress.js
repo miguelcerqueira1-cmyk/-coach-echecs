@@ -180,3 +180,14 @@ export function pickFiches(board, { rep = null, n = 3, needPunition = false } = 
     .slice(0, n)
     .map((f) => f.id);
 }
+
+// Théorie de la routine : on ne révise que des variantes déjà apprises (leçon suivie), les plus
+// urgentes d'abord. Rythme Blitz (ligne complète, 5 s par coup) seulement si toutes sont maîtrisées
+// (≥ 80 %) ; sinon ligne de la fiche, temps libre.
+export const SEUIL_RAPIDE = 80;
+export function planTheorie(board, cours = {}, { n = 3, peut = () => true } = {}) {
+  const apprises = board.fiches.filter((f) => cours[f.id] && peut(f.id));
+  const ids = pickFiches({ fiches: apprises }, { n });
+  const choisies = apprises.filter((f) => ids.includes(f.id));
+  return { ids, apprises: apprises.length, rapide: !!ids.length && choisies.every((f) => f.pct >= SEUIL_RAPIDE) };
+}
