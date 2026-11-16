@@ -380,7 +380,7 @@ export class TrainingPage {
     };
     return `<details class="mes-parties-var" data-mes-parties="${e.id}"><summary class="small">🎮 Mes parties dans cette variante (${list.length})</summary>
       <ul class="small">${list.map((x) => `<li><span>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${res[x.outcome] || ''}${ecart(x)}</span>
-        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}" data-replay-fiche="${esc(e.id)}">▶ Comparer avec la théorie</button>` : '<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la comparer)</span>'}${x.url ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
+        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}" data-replay-fiche="${esc(e.id)}">▶ Comparer avec la théorie</button>` : '<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la comparer)</span>'}${/^https:\/\//.test(x.url || "") ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
       <p class="muted tiny">« Comparer » ouvre la leçon sur le coup où ta partie quitte la théorie : bascule 📖 Théorie / 🎮 Ma partie sur le même échiquier.</p>
     </details>`;
   }

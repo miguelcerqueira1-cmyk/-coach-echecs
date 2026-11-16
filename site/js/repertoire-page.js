@@ -543,8 +543,11 @@ export class RepertoirePage {
     const tr = this.el.querySelector(`tr[data-id="${e.id}"]`);
     if (!tr) return;
     const live = this.live.get(e.id) || {};
-    tr.querySelector('[data-label="Évaluation"]').innerHTML = this.evalCell(e, live);
-    tr.querySelector('[data-label="Statistiques"]').innerHTML = this.statsCell(live, e);
+    // Ligne verrouillée (formule gratuite) : pas de cellules à mettre à jour.
+    const ev = tr.querySelector('[data-label="Évaluation"]');
+    const st = tr.querySelector('[data-label="Statistiques"]');
+    if (ev) ev.innerHTML = this.evalCell(e, live);
+    if (st) st.innerHTML = this.statsCell(live, e);
     if (this.sort && this.sort !== 'eval') {
       clearTimeout(this.sortTimer);
       this.sortTimer = setTimeout(() => {

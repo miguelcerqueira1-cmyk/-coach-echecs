@@ -425,7 +425,7 @@ export class GamesPage {
         <div class="actions">
           <button type="button" class="${done ? '' : 'primary'}" data-analyse="${esc(g.id)}">${done ? 'Voir l’analyse' : 'Analyser'}</button>
           <button type="button" data-open="${esc(g.id)}">Ouvrir sur l’échiquier</button>
-          ${g.url ? `<a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">Sur ${esc(g.site)}</a>` : ''}
+          ${/^https:\/\//.test(g.url || "") ? `<a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">Sur ${esc(g.site)}</a>` : ''}
         </div>
       </article>`;
     }).join('')}</div>`;

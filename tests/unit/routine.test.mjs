@@ -32,3 +32,13 @@ test('routine : cases cochées, suivi borné, historique et série de jours comp
   assert.equal(serie(d, '2026-11-17'), 1, 'aujourd’hui pas fini : la série d’hier compte');
   assert.equal(serie(d, '2026-11-18'), 0);
 });
+
+test('routine : données abîmées → routine vide, pas de plantage', async () => {
+  const { charger, historique } = await import('../../site/js/routine-core.js');
+  for (const raw of ['{}', '[1]', 'null', '{"jours":null}', '{oups']) {
+    const st = { getItem: () => raw };
+    const d = charger(st);
+    assert.deepEqual(d.jours, {});
+    assert.equal(historique(d, '2026-11-16').length, 7);
+  }
+});

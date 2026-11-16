@@ -32,6 +32,28 @@ export function parseInfo(line) {
   return info;
 }
 
+// Lignes MultiPV rendues à l'arrêt. À l'arrêt, les lignes ne sont pas synchrones (profondeurs
+// différentes, ligne 1 mise à jour avant la ligne 2) : deux lignes peuvent commencer par le même
+// coup. On garde, pour chaque premier coup, sa ligne exacte la plus profonde (la plus récente à
+// profondeur égale), puis les n plus profondes / meilleures, en gardant toujours le coup final.
+const cpDe = (i) => (i.score.type === 'mate' ? (i.score.value > 0 ? 1e5 - i.score.value : -1e5 - i.score.value) : i.score.value);
+export function linesCompletes(job, bestmove) {
+  const n = job.multipv;
+  if (n <= 1) return job.lines.slice(1, 2).filter(Boolean);
+  const parCoup = new Map();
+  for (const l of job.byDepth) for (const i of l || []) {
+    if (!i?.pv?.length) continue;
+    const prev = parCoup.get(i.pv[0]);
+    if (!prev || i.depth >= prev.depth) parCoup.set(i.pv[0], i);
+  }
+  const tri = [...parCoup.values()].sort((x, y) => y.depth - x.depth || cpDe(y) - cpDe(x));
+  let garde = tri.slice(0, n);
+  const best = parCoup.get(bestmove);
+  if (best && !garde.includes(best)) garde = [best, ...garde.slice(0, n - 1)];
+  if (garde.length < 2 || !best) return job.lines.slice(1, n + 1).filter(Boolean);
+  return garde.sort((x, y) => cpDe(y) - cpDe(x));
+}
+
 export class Engine {
   constructor({ baseUrl = './engine/', onStatus = () => {} } = {}) {
     this.baseUrl = baseUrl;
@@ -144,6 +166,9 @@ export class Engine {
       if (info && info.pv && info.score) {
         // Une borne (lowerbound/upperbound) n'est pas une évaluation exacte : on garde la dernière exacte.
         if (!info.bound || !job.lines[k]) job.lines[k] = info;
+        // Lignes par profondeur : à l'arrêt, on préfère la dernière profondeur complète (sinon une
+        // ligne 2 d'une profondeur plus ancienne peut répéter le nouveau meilleur coup).
+        if (!info.bound && info.depth) (job.byDepth[info.depth] ??= [])[k] = info;
         if (k === 1) {
           if (!info.bound || !job.last) job.last = info;
           if (!job.cancelled && job.onInfo) job.onInfo(info);
@@ -157,7 +182,7 @@ export class Engine {
         ponder: parts[3] || null,
         info: job.last || null,
         // Lignes MultiPV (1 = meilleure), chacune avec sa propre profondeur au moment de l'arrêt.
-        lines: job.lines.slice(1, job.multipv + 1).filter(Boolean),
+        lines: linesCompletes(job, parts[1]),
         movetime: job.movetime,
         elapsedMs: Math.round(performance.now() - job.started),
         token: job.token,
@@ -184,7 +209,7 @@ export class Engine {
   analyze({ position, movetime, token, onInfo, multipv = 1 }) {
     if (this.state !== 'ready') return Promise.reject(new Error('Moteur indisponible'));
     return new Promise((resolve, reject) => {
-      const job = { position, movetime, token, onInfo, multipv: Math.min(5, Math.max(1, multipv | 0)), lines: [], resolve, reject, cancelled: false };
+      const job = { position, movetime, token, onInfo, multipv: Math.min(5, Math.max(1, multipv | 0)), lines: [], byDepth: [], resolve, reject, cancelled: false };
       if (this.pending) this.pending.resolve({ cancelled: true, token: this.pending.token });
       this.pending = job;
       if (this.current) {

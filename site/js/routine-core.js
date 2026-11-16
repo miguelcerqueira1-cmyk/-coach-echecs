@@ -32,7 +32,7 @@ export function blocsDuJour(date = jour()) {
 }
 
 export function charger(storage = globalThis.localStorage) {
-  try { return JSON.parse(storage.getItem(KEY) || 'null') || { jours: {} }; } catch { return { jours: {} }; }
+  try { const d = JSON.parse(storage.getItem(KEY) || 'null'); return d && typeof d.jours === 'object' && d.jours ? d : { jours: {} }; } catch { return { jours: {} }; }
 }
 
 export function enregistrer(data, storage = globalThis.localStorage) {
