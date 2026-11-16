@@ -766,3 +766,9 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .routine-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
 .routine-table th, .routine-table td { padding: .25rem .3rem; text-align: center; border-bottom: 1px solid var(--border); }
 .routine-table th:first-child, .routine-table td:first-child { text-align: left; }
+/* Bilan de mes vraies parties par variante (Apprendre) */
+.mes-variantes { margin: .6rem 0; }
+.mes-variantes p { margin: .25rem 0; }
+.var-bilan { margin-top: .15rem; font-weight: 600; }
+.var-bilan.revoir { color: var(--warn); }
+.var-bilan.solide { color: var(--best); }

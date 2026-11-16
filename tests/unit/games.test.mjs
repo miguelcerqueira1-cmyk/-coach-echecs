@@ -168,3 +168,28 @@ test('PGN collé : alerte de déviation (erreur adverse connue, sortie de théor
   assert.deepEqual(a2.ligne, ['d4', 'd5', 'c4']);
   assert.equal(al(['f4', 'e5'], 'w').niveau, 'info');
 });
+
+test('bilan par variante : variante jouée dans une partie, résultats, état « à revoir » / « solide »', async () => {
+  const { ficheJouee } = await import('../../site/js/games-core.js');
+  const { recordPartie, bilanFiches } = await import('../../site/js/progress.js');
+  const orth = data.entries.find((e) => e.id === 'gd-orthodoxe');
+  const g = { ...game(orth.san.slice(0, 10).concat(['a3']), 'w') };
+  const fj = ficheJouee(g, data.entries, ['gd', 'ck']);
+  assert.equal(fj.rep, 'gd');
+  assert.ok(fj.ply >= 10);
+  assert.equal(ficheJouee(game(['d4', 'd5'], 'w'), data.entries, ['gd']), null, 'moins de 4 demi-coups en commun');
+  assert.equal(ficheJouee(g, data.entries, ['ck']), null, 'répertoire non choisi');
+  let p = { lignes: {}, drills: {}, jours: [], sorties: [], cours: {} };
+  p = recordPartie(p, { gameId: 'a', ficheId: 'x', rep: 'gd', outcome: 'victoire' });
+  p = recordPartie(p, { gameId: 'b', ficheId: 'x', rep: 'gd', outcome: 'nulle' });
+  p = recordPartie(p, { gameId: 'b', ficheId: 'x', rep: 'gd', outcome: 'victoire' });
+  p = recordPartie(p, { gameId: 'c', ficheId: 'y', rep: 'gd', outcome: 'défaite' });
+  p = recordPartie(p, { gameId: 'd', ficheId: 'y', rep: 'gd', outcome: 'défaite' });
+  p = recordPartie(p, { gameId: 'e', ficheId: 'z', rep: 'gd', outcome: 'victoire', sortie: true });
+  p = recordPartie(p, { gameId: 'f', ficheId: 'w', rep: 'gd', outcome: 'en cours' });
+  const b = bilanFiches(p);
+  assert.deepEqual([b.x.n, b.x.v, b.x.etat], [2, 2, 'solide'], 'réimport : mise à jour, pas de doublon');
+  assert.equal(b.y.etat, 'revoir');
+  assert.equal(b.z.etat, 'revoir', 'sortie de fiche');
+  assert.equal(b.w, undefined, 'partie non terminée ignorée');
+});

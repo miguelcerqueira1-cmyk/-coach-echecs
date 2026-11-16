@@ -187,6 +187,25 @@ export function alertePgn(game, d) {
   return { niveau: 'ok', texte: 'Vous avez suivi vos fiches jusqu’au bout ✔', ligne: null };
 }
 
+// Variante (fiche) jouée dans une vraie partie : la fiche de mes répertoires choisis, de ma couleur,
+// qui suit la partie le plus loin (au moins 4 demi-coups en commun). null si aucune.
+export function ficheJouee(game, entries, reps = null, couleurs = {}) {
+  if (!game?.san?.length) return null;
+  const c = new Chess();
+  const uci = [];
+  for (const s of game.san.slice(0, 40)) { try { uci.push(c.move(s).lan); } catch { break; } }
+  let best = null;
+  for (const e of entries) {
+    if (reps && !reps.includes(e.rep)) continue;
+    if ((couleurs[e.rep] || (e.rep === 'ck' ? 'b' : 'w')) !== game.color) continue;
+    let k = 0;
+    while (k < e.uci.length && k < uci.length && e.uci[k] === uci[k]) k++;
+    if (k < 4) continue;
+    if (!best || k > best.ply || (k === best.ply && e.uci.length < best.len)) best = { ficheId: e.id, rep: e.rep, nom: e.nom, ply: k, len: e.uci.length };
+  }
+  return best && { ficheId: best.ficheId, rep: best.rep, nom: best.nom, ply: best.ply };
+}
+
 // Position d'une vraie partie à retravailler (module « Mes vraies erreurs » de l'Entraînement) :
 // - sortie : à vous de jouer, vous avez quitté les fiches (attendu : un coup des fiches) ;
 // - punition : l'adversaire a commis l'erreur prévue par une fiche et vous ne l'avez pas punie

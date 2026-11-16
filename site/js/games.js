@@ -2,13 +2,13 @@
 // sortie du répertoire, analyse Stockfish coup par coup et bilan de chaque partie.
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
-import { loadProgress, saveProgress, recordSortie } from './progress.js';
+import { loadProgress, saveProgress, recordSortie, recordPartie } from './progress.js';
 import { loadPgnTolerant } from './game.js';
 import { choisis, REPERTOIRES } from './mon-repertoire.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
-  positionARevoir, alertePgn,
+  positionARevoir, alertePgn, ficheJouee,
 } from './games-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -78,6 +78,11 @@ export class GamesPage {
       const d = g.deviation;
       if (g.local) continue; // partie de l'échiquier Moteur : pas une vraie partie
       const pos = positionARevoir(g, d);
+      // Variante jouée et résultat (bilan par variante dans Entraînement > Apprendre).
+      const couleurs = Object.fromEntries(Object.entries(this.data?.repertoires || {}).map(([id, r]) => [id, r.couleur]));
+      // Sortie de fiche : la variante est celle que la fiche attendait ; sinon la plus suivie.
+      const fj = d?.who === 'moi' && d.fiche ? { ficheId: d.fiche.id, rep: d.rep } : ficheJouee(g, this.data?.entries || [], choisis(), couleurs);
+      if (fj) recordPartie(p, { gameId: g.id, ficheId: fj.ficheId, rep: fj.rep, outcome: g.outcome, date: g.date, sortie: d?.who === 'moi', punition: d?.who === 'adversaire-erreur' && !d.punished });
       if (pos || (d?.who === 'moi' && d.fiche)) {
         recordSortie(p, { gameId: g.id, ficheId: d.who === 'moi' ? d.fiche?.id || null : d.err?.id || null, rep: d.rep, ply: d.ply, date: g.date, pos, opp: g.color === 'w' ? g.black : g.white, url: g.url });
       }

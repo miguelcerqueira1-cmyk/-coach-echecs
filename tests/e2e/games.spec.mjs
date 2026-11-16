@@ -97,6 +97,14 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await expect(page.locator('.hub-result')).toContainText('Mes vraies erreurs : 1 position(s) corrigée(s)');
   const left = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')).sorties.filter((x) => x.corrige).length);
   expect(left).toBe(1);
+  // Apprendre : bilan de mes vraies parties par variante (sortie 2.Cf3 → variante à revoir).
+  await page.click('[data-course="gd"]');
+  const mv = page.locator('[data-mes-variantes]');
+  await expect(mv).toContainText('D’après mes');
+  await expect(mv).toContainText('À revoir');
+  await expect(page.locator('[data-bilan]').first()).toBeVisible();
+  await page.click('[data-cordre="revoir"]');
+  await expect(page.locator('.course-item').first().locator('.var-bilan')).toContainText('À revoir');
 });
 
 test('Mes parties : erreur explicite si l’export Lichess est refusé', async ({ page }) => {

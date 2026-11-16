@@ -72,6 +72,35 @@ export function recordSortie(p, { gameId, ficheId = null, rep, ply, date, pos = 
   return p;
 }
 
+// Résultat d'une vraie partie dans une variante (une fois par partie ; mise à jour si réimportée).
+// sortie : je suis sorti des fiches ; punition : j'ai laissé passer une punition prévue.
+export function recordPartie(p, { gameId, ficheId, rep, outcome, date, sortie = false, punition = false }) {
+  if (!gameId || !ficheId || !['victoire', 'défaite', 'nulle'].includes(outcome)) return p;
+  const rec = { gameId, ficheId, rep, outcome, date, sortie, punition };
+  const list = (p.parties || []).filter((x) => x.gameId !== gameId);
+  p.parties = [...list, rec].slice(-400);
+  return p;
+}
+
+// Bilan de mes vraies parties par variante. etat : 'revoir' (sortie, punition manquée, ou moins de
+// 40 % des points sur 2 parties ou plus), 'solide' (2 parties ou plus, 60 % des points, aucune
+// sortie), sinon 'neutre'. Le résultat d'une partie ne dépend pas que de l'ouverture.
+export function bilanFiches(p) {
+  const out = {};
+  for (const x of p.parties || []) {
+    const b = out[x.ficheId] ??= { n: 0, v: 0, nul: 0, d: 0, sorties: 0, punitions: 0 };
+    b.n++;
+    if (x.outcome === 'victoire') b.v++; else if (x.outcome === 'défaite') b.d++; else b.nul++;
+    if (x.sortie) b.sorties++;
+    if (x.punition) b.punitions++;
+  }
+  for (const b of Object.values(out)) {
+    b.score = (b.v + b.nul / 2) / b.n;
+    b.etat = b.sorties || b.punitions || (b.n >= 2 && b.score < 0.4) ? 'revoir' : (b.n >= 2 && b.score >= 0.6 ? 'solide' : 'neutre');
+  }
+  return out;
+}
+
 // Positions de vraies parties encore à corriger (les plus récentes d'abord).
 export function vraiesErreurs(p) {
   return (p.sorties || []).filter((x) => x.moves && x.expected?.length && !x.corrige)
