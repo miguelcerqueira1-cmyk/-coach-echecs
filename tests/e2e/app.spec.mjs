@@ -336,7 +336,9 @@ test('mode « Indice d’abord » : coup caché jusqu’à « Montrer le coup »
   await page.click('#btn-hint3');
   await expect(advice).toContainText('Coup conseillé par le moteur');
   await expect(page.locator('.board-arrows line.arrow-best')).toHaveCount(1);
-  await expect(advice.locator('.cand-list li')).toHaveCount(3);
+  // MultiPV 3 sur un budget court : Stockfish peut ne rendre que 2 lignes à temps (affichées telles quelles).
+  await expect.poll(() => advice.locator('.cand-list li').count()).toBeGreaterThanOrEqual(2);
+  expect(await advice.locator('.cand-list li').count()).toBeLessThanOrEqual(3);
   // Coup suivant : le masquage reprend à zéro.
   await page.click('#btn-play-best');
   await waitAdvice(page);
