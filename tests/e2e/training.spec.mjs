@@ -348,11 +348,17 @@ test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie pr
     localStorage.setItem('coach-echecs:progression-v1', JSON.stringify(p));
   });
   await page.reload();
-  await expect(page.locator('[data-routine-theorie]')).toContainText('sans chrono');
+  await expect(page.locator('[data-routine-theorie]')).toContainText('relire puis jouer');
   await page.click('[data-routine-theorie]');
   await expect(page.locator('#page-entrainement [data-drill="lignes"]')).toBeVisible();
   await expect(page.locator('#page-entrainement [data-timer]')).toHaveCount(0);
   await expect(page.locator('#page-entrainement [data-head]')).toContainText('1 / 1');
+  // Révision d'abord : la ligne défile, puis « À moi de jouer ».
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Révision');
+  await expect(page.locator('#page-entrainement [data-relire-coups] span.cur')).toHaveCount(1, { timeout: 5000 });
+  await page.click('#page-entrainement [data-relire-go2]');
+  await expect(page.locator('#page-entrainement [data-relire-go2]')).toHaveCount(0);
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('À vous', { timeout: 10000 });
 });
 
 test('Routine : 10 problèmes Lichess dans l’appli (dernier coup adverse, coup faux refusé, solution)', async ({ page }) => {
@@ -366,8 +372,14 @@ test('Routine : 10 problèmes Lichess dans l’appli (dernier coup adverse, coup
   await page.goto('./#/entrainement');
   const btn = page.locator('[data-routine-problemes]');
   if (!(await btn.count())) test.skip(true, 'dimanche : pas de bloc tactique');
-  await btn.click();
+  await page.selectOption('[data-routine-niveau]', 'easier');
+  await page.reload();
+  await expect(page.locator('[data-routine-niveau]')).toHaveValue('easier');
+  let url = '';
+  page.on('request', (r) => { if (r.url().includes('/api/puzzle/next')) url = r.url(); });
+  await page.locator('[data-routine-problemes]').click();
   const P = page.locator('#page-entrainement [data-puzzles]');
+  await expect.poll(() => url).toContain('difficulty=easier');
   await expect(P).toContainText('Problème 1 / 10');
   await expect(page.locator('#page-entrainement [data-status]')).toContainText('Il a joué', { timeout: 10000 });
   // Coup faux (roi en h7) : refusé, rien ne bouge.

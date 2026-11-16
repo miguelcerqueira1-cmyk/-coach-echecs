@@ -10,6 +10,15 @@ export const THEMES = [
   { id: 'defensiveMove', nom: 'Coup défensif', url: 'https://lichess.org/training/defensiveMove' },
 ];
 
+// Niveau des problèmes Lichess (paramètre `difficulty` de l'API, sans compte : relatif à 1500).
+// Fourchettes observées le 2026-11-16 sur l'API (thème « Pièce en prise »).
+export const NIVEAUX = [
+  { id: 'easiest', nom: 'Très facile (≈ 700–850)' },
+  { id: 'easier', nom: 'Facile (≈ 950–1250)' },
+  { id: 'normal', nom: 'Moyen (≈ 1500)' },
+];
+export const niveauProblemes = (data) => (NIVEAUX.some((n) => n.id === data?.niveau) ? data.niveau : 'easiest');
+
 // Date locale « AAAA-MM-JJ ».
 export function jour(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

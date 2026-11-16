@@ -12,7 +12,8 @@ const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] 
 
 export class PuzzleRunner {
   // theme : { id, nom, url } (routine-core THEMES) ; queue : file Lichess (une requête à la fois).
-  constructor({ el, queue, theme, n = N_PROBLEMES, onDone }) {
+  constructor({ el, queue, theme, n = N_PROBLEMES, difficulty = 'easiest', onDone }) {
+    this.difficulty = difficulty;
     this.el = el;
     this.queue = queue;
     this.theme = theme;
@@ -45,7 +46,7 @@ export class PuzzleRunner {
         <p class="small"><strong>Son coup d’abord :</strong> regarde le coup qu’il vient de jouer (surligné). Qu’a-t-il changé ? Puis trouve le meilleur coup.</p>
         <div data-head class="small"></div>
         <div data-feedback class="small"></div>
-        <p class="muted tiny">Problèmes de la base Lichess (licence CC0), niveau « plus facile ». Ils ne comptent pas pour ton classement Lichess.</p>
+        <p class="muted tiny">Problèmes de la base Lichess (licence CC0). Niveau réglable dans la routine. Ils ne comptent pas pour ton classement Lichess.</p>
       </section>
     </div>`;
     this.board = new Board(this.$('[data-board]'), { piecesUrl: './pieces/', onMove: (mv) => this.onMove(mv) });
@@ -59,7 +60,7 @@ export class PuzzleRunner {
   // Un problème Lichess pas encore vu dans la séance (3 essais en cas de doublon).
   async charger() {
     for (let essai = 0; essai < 3; essai++) {
-      const r = await this.queue.run(urlProbleme(this.theme.id), { headers: { accept: 'application/json' } });
+      const r = await this.queue.run(urlProbleme(this.theme.id, this.difficulty), { headers: { accept: 'application/json' } });
       if (!r.res.ok) throw new Error(`Lichess : erreur ${r.res.status}`);
       const p = lireProbleme(await r.res.json());
       if (p && !this.vus.has(p.id)) { this.vus.add(p.id); return p; }

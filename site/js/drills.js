@@ -27,8 +27,11 @@ export class DrillRunner {
   // complet : lignes prolongées par la suite Stockfish ; tempsCoup : secondes par coup (0 = libre,
   // « rythme Blitz » : trop lent = position ratée) ; repeter : refaire une ligne jusqu'à N fois
   // d'affilée sans faute.
-  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone, complet = false, tempsCoup = 0, repeter = 1 }) {
+  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone, complet = false, tempsCoup = 0, repeter = 1, apercu = false }) {
     this.complet = complet;
+    this.apercu = apercu; // relire la ligne (coups animés) avant de la jouer
+    this.apercuVu = new Set();
+    this.relireTour = 0;
     this.tempsCoup = tempsCoup;
     this.repeter = repeter;
     this.times = []; // { ms, e, i } : temps de réflexion par coup (lignes)
@@ -145,11 +148,54 @@ export class DrillRunner {
   startLine() {
     const c = this.cur;
     c.steps = lineSteps(c.e, c.color, { complet: this.complet });
+    if (this.apercu && !this.guided && !this.apercuVu.has(c.e.id)) { this.apercuVu.add(c.e.id); this.relire(c); return; }
     this.chess = new Chess();
     this.log(this.guided
       ? `Rejouez la ligne que vous venez d’apprendre. En cas d’hésitation : un indice, puis le coup.`
       : `Ligne « ${esc(c.e.nom)} » : l’application joue l’adversaire, à vous les coups ${c.color === 'w' ? 'blancs' : 'noirs'}.`, 'muted');
     this.advance();
+  }
+
+  // Révision avant l'exercice : la ligne défile sur l'échiquier (coups écrits dessous), puis
+  // « À moi de jouer ». Rien n'est noté pendant la relecture.
+  relire(c) {
+    this.chess = new Chess();
+    this.draw();
+    this.status('📖 Révision : regarde la ligne, puis joue-la.', 'player');
+    this.feedback(`<div class="card relire"><p class="small"><strong>Ligne « ${esc(c.e.nom)} »</strong> (tes coups : ${c.color === 'w' ? 'Blancs' : 'Noirs'})</p>
+      <p class="relire-coups" data-relire-coups>${c.steps.map((x, i) => `<span data-k="${i}">${esc(this.coupTexte(c.steps, i))}</span>`).join(' ')}</p>
+      ${c.e.plan ? `<p class="small muted">Plan : ${esc(c.e.plan)}</p>` : ''}
+      <div class="actions"><button type="button" data-relire-revoir>↺ Revoir</button><button type="button" class="primary" data-relire-go>À moi de jouer →</button></div></div>`);
+    const coups = [...this.el.querySelectorAll('[data-relire-coups] span')];
+    let i = 0;
+    const tour = ++this.relireTour;
+    const pas = () => {
+      if (!this.alive || this.relireTour !== tour || this.cur !== c || i >= c.steps.length) return;
+      const m = this.chess.move(toObj(c.steps[i].uci));
+      coups.forEach((el, k) => el.classList.toggle('cur', k === i));
+      this.draw({ arrows: [{ from: m.from, to: m.to, kind: c.steps[i].ours ? 'best' : 'reply' }] });
+      i++;
+      setTimeout(pas, 1100);
+    };
+    setTimeout(pas, 500);
+    this.$('[data-relire-revoir]').addEventListener('click', () => this.relire(c));
+    // Même bouton sous l'échiquier (sur téléphone, le panneau est plus bas).
+    this.$('[data-relire-go2]')?.remove();
+    this.$('[data-quit]').insertAdjacentHTML('beforebegin', '<button type="button" class="primary" data-relire-go2>À moi de jouer →</button>');
+    const go = () => {
+      this.relireTour++;
+      this.$('[data-relire-go2]')?.remove();
+      this.feedback('');
+      this.board.setArrows([]);
+      this.startLine();
+    };
+    this.$('[data-relire-go]').addEventListener('click', go);
+    this.$('[data-relire-go2]').addEventListener('click', go);
+  }
+
+  coupTexte(steps, i) {
+    const no = Math.floor(i / 2) + 1;
+    return i % 2 === 0 ? `${no}. ${sanFr(steps[i].san)}` : (i === 0 ? `${no}… ${sanFr(steps[i].san)}` : sanFr(steps[i].san));
   }
 
   advance() {

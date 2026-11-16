@@ -192,7 +192,10 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   X-Frame-Options). **Théorie progressive** (`planTheorie`, progress.js) : bouton « 📖 Apprendre :
   <prochaine leçon> » (répertoire le moins avancé) + révision des seules variantes déjà apprises
   (leçon suivie), sans chrono et fiche seule ; rythme Blitz (ligne complète, 5 s) seulement si
-  toutes sont maîtrisées (≥ 80 %).
+  toutes sont maîtrisées (≥ 80 %). Révision avant de jouer (option `apercu` de DrillRunner,
+  `relire`) : la ligne défile coup par coup (flèches, coups écrits, plan), puis « À moi de jouer ».
+  Niveau des problèmes réglable (`NIVEAUX` : très facile ≈ 700–850 par défaut, facile ≈ 950–1250,
+  moyen ≈ 1500 ; fourchettes observées sur l'API sans compte) dans `routine-v1.niveau`.
   Méthode convenue avec l'utilisateur (Lichess Blitz ~1040, Chess.com rapide ~750) : habitude
   « Son coup d'abord » contre la vision tunnel ; bilan prévu après 4 semaines (vers le 2026-12-14).
 - **Bilan par variante (mes vraies parties)** : à l'import, chaque partie terminée est reliée à

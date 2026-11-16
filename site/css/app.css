@@ -791,3 +791,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 /* Problèmes Lichess dans l'appli (routine : tactique anti-tunnel) */
 .train-status.ok { box-shadow: inset 4px 0 0 var(--best, #3fb950); }
 .train-status.err { box-shadow: inset 4px 0 0 var(--error); color: var(--error); }
+/* Révision avant l'exercice (relire la ligne) */
+.relire-coups { line-height: 1.9; }
+.relire-coups span { padding: .1rem .3rem; border-radius: 6px; }
+.relire-coups span.cur { background: var(--accent); color: var(--accent-contrast); font-weight: 700; }

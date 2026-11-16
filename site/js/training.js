@@ -18,7 +18,7 @@ import { LessonView } from './cours.js';
 import { courseOrder, courseOrderFreq } from './lesson-core.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
-import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI } from './routine-core.js';
+import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI, NIVEAUX, niveauProblemes } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
@@ -197,7 +197,7 @@ export class TrainingPage {
     this.bindRoutine(need('L’entraînement en répétition espacée', () => {
       // Seulement des variantes déjà apprises ; rythme Blitz uniquement si elles sont maîtrisées.
       const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
-      this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '1', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1 } });
+      this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '1', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
     this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
     this.el.querySelector('[data-real]')?.addEventListener('click', need('« Positions de mes parties »', () => this.runReelles()));
@@ -355,6 +355,7 @@ export class TrainingPage {
       complet: p.complet !== '0',
       tempsCoup: kind === 'lignes' && !guided ? Number(p.lTemps) || 0 : 0,
       repeter: kind === 'lignes' && !guided ? Number(p.lRepet) || 1 : 1,
+      apercu: kind === 'lignes' && !guided && !!p.apercu,
       progress: this.progress || loadProgress(),
       gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
       onDone: (r) => {
@@ -401,7 +402,7 @@ export class TrainingPage {
     const lecon = this.prochaineLecon(next, seen);
     const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
     const theorie = `${lecon ? `<button type="button" class="small-btn primary" data-routine-lecon="${esc(lecon.id)}">📖 Apprendre : ${esc(lecon.nom)}</button>` : ''}${plan.ids.length
-      ? `<button type="button" class="small-btn${lecon ? '' : ' primary'}" data-routine-theorie>${plan.rapide ? '⚡ Réviser en rythme Blitz (5 s par coup)' : `🔁 Réviser ${plan.ids.length} variante(s) apprise(s), sans chrono`}</button>`
+      ? `<button type="button" class="small-btn${lecon ? '' : ' primary'}" data-routine-theorie>${plan.rapide ? '⚡ Réviser en rythme Blitz (5 s par coup)' : `🔁 Réviser ${plan.ids.length} variante(s) apprise(s) : relire puis jouer`}</button>`
       : '<span class="muted tiny">La révision s’ouvre après ta première leçon.</span>'}`;
     const data = charger();
     const j = data.jours[date] || { faits: [] };
@@ -421,7 +422,7 @@ export class TrainingPage {
         return `<li class="routine-item ${ok ? 'done' : ''}">
           <label class="routine-check"><input type="checkbox" data-bloc="${b.id}" ${ok ? 'checked' : ''}> <span><strong>${i + 1}. ${esc(b.titre)}</strong> <span class="muted small">· ${b.min} min</span></span></label>
           <p class="small">${esc(b.texte)}${bloque ? ' <span class="muted">(après les blocs 1 à 5)</span>' : ''}</p>
-          <div class="routine-actions">${b.action === 'problemes' ? '<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button>' : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>
+          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>
         </li>`;
       }).join('')}</ol>
       <h3>Le soir : mes 3 chiffres</h3>
@@ -449,6 +450,7 @@ export class TrainingPage {
     el.querySelector('[data-routine-theorie]')?.addEventListener('click', lancerTheorie);
     el.querySelector('[data-routine-lecon]')?.addEventListener('click', (ev) => this.openLesson(ev.currentTarget.dataset.routineLecon));
     el.querySelector('[data-routine-problemes]')?.addEventListener('click', () => this.runProblemes());
+    el.querySelector('[data-routine-niveau]')?.addEventListener('change', (ev) => { const d = charger(); d.niveau = ev.target.value; enregistrer(d); });
   }
 
   // 10 problèmes Lichess du thème du jour, dans l'application. Bilan → suivi du soir (« problèmes
@@ -460,7 +462,7 @@ export class TrainingPage {
     this.s = null;
     window.scrollTo(0, 0);
     this.drill = new PuzzleRunner({
-      el: this.el, queue: this.client.queue, theme: bloc.theme,
+      el: this.el, queue: this.client.queue, theme: bloc.theme, difficulty: niveauProblemes(charger()),
       onDone: (r) => {
         this.drill = null;
         this.view = null;

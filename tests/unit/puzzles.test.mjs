@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { lireProbleme, verdict, bilan, urlProbleme } from '../../site/js/puzzles-core.js';
 import { planTheorie } from '../../site/js/progress.js';
+import { niveauProblemes } from '../../site/js/routine-core.js';
 
 const fx = (f) => JSON.parse(readFileSync(new URL(`../fixtures/${f}`, import.meta.url)));
 
@@ -48,4 +49,10 @@ test('théorie de la routine : seulement les variantes apprises, Blitz seulement
   const p2 = planTheorie(board, { b: {}, c: {} });
   assert.equal(p2.rapide, true);
   assert.deepEqual(planTheorie(board, { b: {}, c: {} }, { peut: (id) => id !== 'b' }).ids, ['c']);
+});
+
+test('niveau des problèmes : très facile par défaut, valeur inconnue ignorée', () => {
+  assert.equal(niveauProblemes({}), 'easiest');
+  assert.equal(niveauProblemes({ niveau: 'easier' }), 'easier');
+  assert.equal(niveauProblemes({ niveau: 'expert' }), 'easiest');
 });
