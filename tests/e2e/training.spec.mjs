@@ -107,7 +107,7 @@ test('Révision espacée : position ratée revient, réussie s’espace, compteu
 });
 
 const status = (page) => page.locator('#page-entrainement [data-status]');
-const openAll = (page) => page.evaluate(() => document.querySelectorAll('.dash-more').forEach((d) => { d.open = true; }));
+const openAll = (page) => page.evaluate(() => document.querySelectorAll('.dash-more, [data-dashboard]').forEach((d) => { d.open = true; }));
 async function ours(page, uci) {
   await expect(status(page)).toContainText('À vous', { timeout: 10000 });
   await move(page, uci);
@@ -185,7 +185,8 @@ test('Drill anti-trash : punition réussie dans le temps, puis ratée avec la so
 test('Accueil Entraînement sur téléphone @mobile : modules et progression lisibles', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
-  await expect(page.locator('[data-today]')).toBeVisible();
+  await expect(page.locator('[data-routine]')).toBeVisible();
+  await openAll(page);
   await expect(page.locator('.dash-row').first()).toBeVisible();
   // En cas d'échec, le message liste les éléments qui dépassent (diagnostic Safari).
   const wide = await page.evaluate(() => {

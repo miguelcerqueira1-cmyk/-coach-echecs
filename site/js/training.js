@@ -44,9 +44,8 @@ const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; 
 const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 export class TrainingPage {
-  constructor({ el, engine, client, getFilter, filterLabel, openGame = null }) {
+  constructor({ el, engine, client, getFilter, filterLabel }) {
     this.el = el;
-    this.openGame = openGame; // relecture d'une de mes vraies parties sur l'échiquier Moteur
     this.engine = engine;
     this.client = client;
     this.getFilter = getFilter;
@@ -106,16 +105,8 @@ export class TrainingPage {
           ${actifs.map((id) => `<div><span class="hub-big">${board.byRep[id].pct} %</span><span class="muted small">${esc(REPERTOIRES[id].titre)}</span></div>`).join('')}
           <div><span class="hub-big">${actifs.reduce((a, id) => a + board.byRep[id].due, 0)}</span><span class="muted small">position(s) à revoir</span></div>
         </div>
-        <button type="button" class="primary hub-today" data-today>⚡ Séance du jour <span class="small">(3 lignes + 3 punitions, ≈ 5 min)</span>${lock}</button>
       </section>
-      <section class="card hub-card hub-real" data-reelles>
-        <h2>🎯 Mes vraies erreurs${lock}</h2>
-        ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
-        <ul class="small real-list">${reelles.slice(0, 3).map((x) => `<li>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${x.kind === 'punition' ? 'punition manquée' : 'sortie du répertoire'}${x.ficheNom ? ` (« ${esc(x.ficheNom)} »)` : ''}</li>`).join('')}</ul>
-        <div class="actions"><button type="button" class="primary" data-real>Revoir mes vraies erreurs</button></div>`
-    : '<p class="small muted">Aucune position à corriger pour l’instant. Importez vos parties dans « Mes parties » : quand vous sortez de vos fiches ou laissez passer une punition prévue, la position arrive ici.</p>'}
-      </section>
-      <p class="hub-path muted small">Le parcours conseillé : <strong>1. Apprendre</strong> une variante (leçon), <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux en blitz.</p>
+      <p class="hub-path muted small">Pas d’idée ? Suis la routine du jour ci-dessus. Sinon : <strong>1. Apprendre</strong> une variante, <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux.</p>
       <div class="hub-grid">
         <section class="card hub-card hub-learn">
           <h2>📖 1. Apprendre</h2>
@@ -136,23 +127,34 @@ export class TrainingPage {
         <section class="card hub-card">
           <h2>📚 2. S’entraîner${lock}</h2>
           <p class="small">L’application joue l’adversaire, vous jouez la théorie de mémoire. Erreur : le plan et le bon coup, et la position revient en fin de séance.</p>
+          <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
+          <details class="hub-reglages"><summary class="small">⚙ Réglages : ${p.lN} lignes · ${p.complet === '0' ? 'fiche seule' : 'ligne complète'} · ${Number(p.lTemps) ? `${p.lTemps} s par coup` : 'temps libre'}${Number(p.lRepet) > 1 ? ` · ${p.lRepet} fois sans faute` : ''}</summary>
           <label class="row">Répertoire ${repSel('lRep', p.lRep)}</label>
           <label class="row">Lignes ${opt('lN', [3, 5, 8], p.lN)}</label>
           <label class="row">Longueur ${opt('complet', ['1', '0'], p.complet, (v) => (v === '1' ? 'Complète (jusqu’au 15e coup)' : 'Fiche seule'))}</label>
           <label class="row">Temps par coup ${opt('lTemps', [0, 10, 5, 3], p.lTemps, (v) => (Number(v) ? `${v} s (rythme Blitz)` : 'Libre'))}</label>
           <label class="row">Répétitions ${opt('lRepet', [1, 3], p.lRepet, (v) => (Number(v) > 1 ? `Jusqu’à ${v} fois d’affilée sans faute` : '1 fois'))}</label>
-          <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
+          </details>
         </section>
         <section class="card hub-card">
           <h2>⏱ 3. Réflexes anti-trash${lock}</h2>
           <p class="small">Un coup douteux de blitz est joué : enchaînez la punition avant la fin du chrono. ${nTrash} exercices.</p>
+          <div class="actions"><button type="button" class="primary" data-trash>Commencer</button></div>
+          <details class="hub-reglages"><summary class="small">⚙ Réglages : ${p.tN} exercices · ${p.tTime} s</summary>
           <label class="row">Répertoire ${repSel('tRep', p.tRep)}</label>
           <label class="row">Exercices ${opt('tN', [5, 10, 20], p.tN)}</label>
           <label class="row">Temps ${opt('tTime', [10, 20, 30], p.tTime, (v) => `${v} s`)}</label>
-          <div class="actions"><button type="button" class="primary" data-trash>Commencer</button></div>
+          </details>
         </section>
       </div>
-      <section class="card hub-dash" data-dashboard>${this.dashboardHtml(board)}</section>
+      <section class="card hub-card hub-real" data-reelles>
+        <h2>🎯 Positions de mes parties${lock}</h2>
+        ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
+        <ul class="small real-list">${reelles.slice(0, 3).map((x) => `<li>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${x.kind === 'punition' ? 'punition manquée' : 'sortie du répertoire'}${x.ficheNom ? ` (« ${esc(x.ficheNom)} »)` : ''}</li>`).join('')}</ul>
+        <div class="actions"><button type="button" class="primary" data-real>Rejouer ces positions</button></div>`
+    : '<p class="small muted">Aucune position à corriger pour l’instant. Quand, dans tes parties Lichess / Chess.com (onglet « Mes parties »), tu sors de tes fiches ou laisses passer une punition prévue, la position arrive ici.</p>'}
+      </section>
+      <details class="card hub-dash" data-dashboard ${this.dashOpen ? 'open' : ''}><summary><strong>📊 Progression par variante</strong> <span class="muted small">(maîtrise, positions à revoir)</span></summary>${this.dashboardHtml(board)}</details>
       <details class="card hub-other" data-other-modes>
         <summary>Autres modes : partie contre l’adversaire, positions isolées</summary>
         <div class="train-setup">
@@ -195,7 +197,7 @@ export class TrainingPage {
       this.runDrill('lignes', pickFiches(board, { n: 3 }), { preset: { complet: '1', lTemps: 5, lRepet: 1 } });
     }));
     this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
-    this.el.querySelector('[data-real]')?.addEventListener('click', need('« Mes vraies erreurs »', () => this.runReelles()));
+    this.el.querySelector('[data-real]')?.addEventListener('click', need('« Positions de mes parties »', () => this.runReelles()));
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
     this.el.querySelector('[data-lines]').addEventListener('click', need('L’entraînement en répétition espacée', () => {
       this.runDrill('lignes', pickFiches(board, { rep: this.prefs.lRep || null, n: Number(this.prefs.lN) || 3 }));
@@ -205,15 +207,14 @@ export class TrainingPage {
     this.el.querySelector('[data-trash]').addEventListener('click', need('Le module Réflexes anti-trash', () => {
       this.runDrill('trash', shuffle(trashIds(this.prefs.tRep || null)).slice(0, Number(this.prefs.tN) || 5), { timeLimit: Number(this.prefs.tTime) || 10 });
     }));
-    this.el.querySelector('[data-today]').addEventListener('click', need('La séance du jour', () => {
-      const trash = shuffle(trashIds(null)).slice(0, 3);
-      this.runDrill('lignes', pickFiches(board, { n: 3 }), { then: () => this.runDrill('trash', trash, { timeLimit: Number(this.prefs.tTime) || 10 }) });
-    }));
     this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', need('La révision des lignes', () => this.runDrill('lignes', [b.dataset.dashLine]))));
     this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', need('Le drill de punition', () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 }))));
     this.el.querySelectorAll('[data-dash-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.dashLesson)));
+    const dash = this.el.querySelector('[data-dashboard]');
+    dash?.addEventListener('toggle', () => { this.dashOpen = dash.open; });
     this.el.querySelectorAll('[data-dash-rep]').forEach((b) => b.addEventListener('click', () => {
       this.dashRep = b.dataset.dashRep;
+      this.dashOpen = true;
       this.renderSetup();
       this.el.querySelector('[data-dashboard]').scrollIntoView({ block: 'start' });
     }));
@@ -259,7 +260,7 @@ export class TrainingPage {
     const solides = joues.filter((e) => bilan[e.id].etat === 'solide');
     const next = list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const groups = [];
-    if (revoir) groups.push({ g: 'À revoir d’abord (d’après mes parties)', items: list });
+    if (revoir) groups.push({ g: 'Mes points faibles d’abord (d’après mes parties)', items: list });
     else if (parFreq) groups.push({ g: 'Les plus jouées d’abord', items: list });
     else {
       for (const e of list) {
@@ -276,7 +277,7 @@ export class TrainingPage {
         <div class="chips">${this.actifs().map((r) => `<button type="button" class="chip" data-crep="${r}" aria-pressed="${r === rep}">${repLabel(r)}</button>`).join('')}</div>
       </div>
       <h2>📖 Cours : ${esc(REPERTOIRES[rep].titre)} avec les ${couleurDe(rep) === 'w' ? 'Blancs' : 'Noirs'}</h2>
-      <div class="chips" role="group" aria-label="Ordre des leçons">${dispo ? `<button type="button" class="chip" data-cordre="freq" aria-pressed="${parFreq}">📊 Les plus jouées d’abord</button>` : ''}<button type="button" class="chip" data-cordre="revoir" aria-pressed="${!!revoir}">⚠ À revoir d’abord</button><button type="button" class="chip" data-cordre="conseil" aria-pressed="${!parFreq && !revoir}">Ordre conseillé</button></div>
+      <div class="chips" role="group" aria-label="Ordre des leçons">${dispo ? `<button type="button" class="chip" data-cordre="freq" aria-pressed="${parFreq}">📊 Les plus jouées d’abord</button>` : ''}<button type="button" class="chip" data-cordre="revoir" aria-pressed="${!!revoir}">⚠ Mes points faibles d’abord</button><button type="button" class="chip" data-cordre="conseil" aria-pressed="${!parFreq && !revoir}">Ordre conseillé</button></div>
       <div class="card mes-variantes" data-mes-variantes>${joues.length
         ? `<p class="small"><strong>🎮 D’après mes ${joues.reduce((a, e) => a + bilan[e.id].n, 0)} partie(s) dans ces variantes :</strong></p>
           ${aRevoir.length ? `<p class="small">⚠ <strong>À revoir :</strong> ${aRevoir.map((e) => `<button type="button" class="link-btn" data-lesson="${e.id}">${esc(e.nom)}</button>`).join(', ')}</p>` : '<p class="small">Aucune variante à revoir pour l’instant 👍</p>'}
@@ -299,10 +300,7 @@ export class TrainingPage {
     </div>`;
     this.el.querySelector('[data-back]').addEventListener('click', () => { this.view = null; this.renderSetup(); window.scrollTo(0, 0); });
     this.el.querySelectorAll('[data-crep]').forEach((b) => b.addEventListener('click', () => { this.courseRep = b.dataset.crep; this.renderCourse(this.courseRep); }));
-    this.el.querySelectorAll('[data-replay]').forEach((b) => b.addEventListener('click', () => {
-      const r = (this.progress.parties || []).find((x) => x.gameId === b.dataset.replay);
-      if (r?.san) this.openGame?.(r);
-    }));
+    this.el.querySelectorAll('[data-replay]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.replayFiche, { cmpGameId: b.dataset.replay })));
     this.el.querySelectorAll('[data-cordre]').forEach((b) => b.addEventListener('click', () => {
       this.prefs.cOrdre = b.dataset.cordre;
       try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* stockage plein */ }
@@ -311,7 +309,8 @@ export class TrainingPage {
     this.el.querySelectorAll('[data-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.lesson)));
   }
 
-  openLesson(id) {
+  // cmpGameId : ouvrir directement la comparaison avec cette partie (étape « Les coups »).
+  openLesson(id, { cmpGameId = null } = {}) {
     const entry = this.data.entries.find((e) => e.id === id);
     if (!entry) return;
     if (!canOpenFiche(id)) { openPaywall({ reason: `La leçon « ${entry.nom} »` }); return; }
@@ -320,7 +319,7 @@ export class TrainingPage {
     this.courseRep = entry.rep;
     window.scrollTo(0, 0);
     this.lesson = new LessonView({
-      el: this.el, data: this.data, entry, complet: this.prefs.complet !== '0',
+      el: this.el, data: this.data, entry, complet: this.prefs.complet !== '0', cmpGameId,
       mesParties: ((this.progress || loadProgress()).parties || []).filter((x) => x.ficheId === entry.id && x.san?.length).sort((a, b) => String(b.date).localeCompare(String(a.date))),
       onClose: () => { this.lesson = null; this.renderSetup(); },
       onPractice: (fid) => this.runDrill('lignes', [fid], {
@@ -381,8 +380,8 @@ export class TrainingPage {
     };
     return `<details class="mes-parties-var" data-mes-parties="${e.id}"><summary class="small">🎮 Mes parties dans cette variante (${list.length})</summary>
       <ul class="small">${list.map((x) => `<li><span>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${res[x.outcome] || ''}${ecart(x)}</span>
-        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}">▶ Rejouer ma partie</button>` : '<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la rejouer)</span>'}${x.url ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
-      <p class="muted tiny">« Rejouer » ouvre ta partie sur l’échiquier du Moteur : avance coup par coup (◀ ▶) et compare avec la leçon ; le moteur analyse chaque position.</p>
+        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}" data-replay-fiche="${esc(e.id)}">▶ Comparer avec la théorie</button>` : '<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la comparer)</span>'}${x.url ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
+      <p class="muted tiny">« Comparer » ouvre la leçon sur le coup où ta partie quitte la théorie : bascule 📖 Théorie / 🎮 Ma partie sur le même échiquier.</p>
     </details>`;
   }
 
@@ -436,7 +435,7 @@ export class TrainingPage {
     el.querySelector('[data-routine-theorie]')?.addEventListener('click', lancerTheorie);
   }
 
-  // « Mes vraies erreurs » : positions de vos parties réelles (Mes parties) à corriger.
+  // « Positions de mes parties » : positions de vos parties réelles (Mes parties) à corriger.
   runReelles() {
     const list = vraiesErreurs(loadProgress());
     if (!list.length) { this.renderSetup(); return; }
@@ -451,7 +450,7 @@ export class TrainingPage {
         this.drill = null;
         this.view = null;
         this.renderSetup();
-        this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(`Mes vraies erreurs : ${r.ok} position(s) corrigée(s).`)}</p>`);
+        this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(`Positions de mes parties : ${r.ok} corrigée(s).`)}</p>`);
       },
     });
   }
@@ -468,7 +467,7 @@ export class TrainingPage {
     const fiches = board.fiches.filter((f) => f.rep === rep);
     const r = board.byRep[rep];
     const tab = (k) => `<button type="button" class="chip" data-dash-rep="${k}" aria-pressed="${rep === k}">${repLabel(k, { camp: false })}</button>`;
-    return `<h2>📊 Progression par variante</h2>
+    return `
       <div class="chips">${actifs.map(tab).join('')}</div>
       <p class="small">Maîtrise moyenne <strong>${r.pct} %</strong> · ${r.maitrisees} / ${r.total} variante(s) maîtrisée(s) (≥ 80 %) · ${r.due} position(s) à revoir.
         ${board.bestDrill ? ` · Record anti-trash : ${(board.bestDrill / 1000).toFixed(1).replace('.', ',')} s` : ''}</p>

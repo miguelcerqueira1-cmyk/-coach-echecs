@@ -783,3 +783,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .cmp-ligne { margin: .3rem 0; padding: .35rem .6rem; border-radius: 8px; background: var(--surface-2); }
 .cmp-ligne.same { box-shadow: inset 4px 0 0 var(--best); }
 .cmp-ligne.diff { box-shadow: inset 4px 0 0 var(--threat); }
+/* Réglages repliés sous « Commencer » (S'entraîner, anti-trash) ; progression repliée */
+.hub-reglages { margin-top: .5rem; }
+.hub-reglages > summary { cursor: pointer; color: var(--muted); }
+.hub-dash > summary { cursor: pointer; }

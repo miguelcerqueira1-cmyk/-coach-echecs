@@ -16,9 +16,10 @@ const BADGE = { theorie: 'Théorie', piege: 'Piège Blitz', loufoque: 'Coup louf
 
 export class LessonView {
   // mesParties : mes vraies parties dans cette variante (coups gardés), pour la comparaison.
-  constructor({ el, data, entry, onPractice, onClose, complet = false, mesParties = [] }) {
+  constructor({ el, data, entry, onPractice, onClose, complet = false, mesParties = [], cmpGameId = null }) {
     this.mesParties = mesParties;
     this.cmp = null; // { idx, vue: 'theorie' | 'partie' } : comparaison avec une de mes parties
+    this.cmpGameId = cmpGameId; // ouverture directe sur la comparaison avec cette partie
     this.el = el;
     this.data = data;
     this.e = entry;
@@ -32,6 +33,14 @@ export class LessonView {
     this.timer = null;
     this.alive = true;
     this.layout();
+    // Ouverture directe depuis « Mes parties dans cette variante » : étape « Les coups », sur l'écart.
+    const i = cmpGameId ? this.mesParties.findIndex((r) => r.gameId === cmpGameId) : -1;
+    if (i >= 0) {
+      this.cmp = { idx: i, vue: 'partie' };
+      this.stage = 1;
+      const p = this.partie();
+      this.ply = Math.min(p?.ecart ?? 0, this.steps.length - 1);
+    }
     this.render();
   }
 

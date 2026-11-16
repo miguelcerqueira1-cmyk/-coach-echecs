@@ -206,7 +206,7 @@ export function ficheJouee(game, entries, reps = null, couleurs = {}) {
   return best && { ficheId: best.ficheId, rep: best.rep, nom: best.nom, ply: best.ply };
 }
 
-// Position d'une vraie partie à retravailler (module « Mes vraies erreurs » de l'Entraînement) :
+// Position d'une vraie partie à retravailler (module « Positions de mes parties » de l'Entraînement) :
 // - sortie : à vous de jouer, vous avez quitté les fiches (attendu : un coup des fiches) ;
 // - punition : l'adversaire a commis l'erreur prévue par une fiche et vous ne l'avez pas punie
 //   (attendu : le 1er coup de la punition, vérifiée par Stockfish).

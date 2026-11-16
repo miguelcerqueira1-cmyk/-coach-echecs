@@ -21,7 +21,7 @@ export const PRO_FEATURES = [
   ['📚', 'L’encyclopédie complète', 'Toutes les variantes de vos ouvertures : plans, pièges, réfutations vérifiées par Stockfish, vidéos'],
   ['⏱', 'Réflexes anti-trash', 'Punitions chronométrées des coups douteux du Blitz'],
   ['🧠', 'Répétition espacée', 'Les lignes reviennent juste avant que vous les oubliiez'],
-  ['🎯', 'Mes vraies erreurs', 'Vos sorties de répertoire Lichess / Chess.com transformées en exercices'],
+  ['🎯', 'Positions de mes parties', 'Vos sorties de répertoire Lichess / Chess.com transformées en exercices'],
   ['📖', 'Tous les cours', 'Chaque variante en leçon pas à pas, piège et punition à jouer'],
 ];
 

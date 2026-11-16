@@ -94,7 +94,7 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await sq(first.expected[0].slice(0, 2)).click(); await sq(first.expected[0].slice(2, 4)).click();
   await expect(page.locator('#page-entrainement [data-log]')).toContainText('position corrigée');
   await page.click('#page-entrainement [data-quit]');
-  await expect(page.locator('.hub-result')).toContainText('Mes vraies erreurs : 1 position(s) corrigée(s)');
+  await expect(page.locator('.hub-result')).toContainText('Positions de mes parties : 1 corrigée(s)');
   const left = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')).sorties.filter((x) => x.corrige).length);
   expect(left).toBe(1);
   // Apprendre : bilan de mes vraies parties par variante (sortie 2.Cf3 → variante à revoir).
@@ -105,26 +105,17 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await expect(page.locator('[data-bilan]').first()).toBeVisible();
   await page.click('[data-cordre="revoir"]');
   await expect(page.locator('.course-item').first().locator('.var-bilan')).toContainText('À revoir');
-  // Mes parties dans cette variante : ma vraie partie, rejouée sur l'échiquier Moteur.
+  // Mes parties dans cette variante → la leçon s'ouvre sur l'écart, comparaison théorie / ma partie.
   const det = page.locator('.course-item').first().locator('[data-mes-parties]');
   await det.locator('summary').click();
   await expect(det).toContainText('je quitte la fiche au coup 2.');
   await det.locator('[data-replay]').first().click();
-  await expect(page.locator('#page-moteur')).toBeVisible();
-  const ply = await page.evaluate(() => window.__coach.state.game.ply);
-  expect(ply).toBeGreaterThan(4);
-  // Leçon : comparer la théorie avec ma partie, écart signalé, bascule théorie / ma partie.
-  await page.goto('./#/entrainement');
-  await page.locator('[data-course="gd"], [data-crep="gd"]').first().click();
-  await page.click('[data-cordre="revoir"]');
-  await page.locator('.course-item').first().locator('button[data-lesson]').click();
-  await page.click('[data-panel] [data-next]');
   const cmp = page.locator('[data-cmp]');
-  await cmp.locator('[data-cmp-select]').selectOption('0');
   await expect(cmp).toContainText('Ta partie quitte la théorie au coup');
   await expect(cmp).toContainText('c’est toi qui en sors');
   await expect(cmp.locator('.m.ecart')).toHaveCount(1);
   await expect(page.locator('.cmp-ligne')).toContainText('c’est ici que ta partie quitte la théorie');
+  await expect(page.locator('[data-name]')).toContainText('Ma partie');
   await cmp.locator('[data-cmp-vue="theorie"]').click();
   await expect(page.locator('[data-cmp-vue="theorie"]')).toHaveAttribute('aria-pressed', 'true');
 });

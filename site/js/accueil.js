@@ -81,7 +81,7 @@ export class AccueilPage {
         <article class="card acc-plan pro">
           <h3>Pro</h3>
           <p class="acc-price">29 € <span class="small muted">accès à vie</span></p>
-          <ul class="small"><li>Toutes les variantes de vos ouvertures</li><li>Réflexes anti-trash et répétition espacée</li><li>Mes vraies erreurs, tous les cours</li></ul>
+          <ul class="small"><li>Toutes les variantes de vos ouvertures</li><li>Réflexes anti-trash et répétition espacée</li><li>Positions de mes parties, tous les cours</li></ul>
           <p class="pro-soon small">Le paiement en ligne ouvre bientôt.</p>
         </article>
       </section>

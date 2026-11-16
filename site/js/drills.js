@@ -4,9 +4,9 @@
 // - « Anti-trash » : un coup douteux adverse est joué, vous devez enchaîner la punition
 //   de la fiche avant la fin du chronomètre.
 // Coup refusé : case rouge, secousse et bulle (raison tirée de chess.js ou du piège de la fiche).
-// Série de réussites du premier coup ; en fin de séance, bilan et « Revoir uniquement mes
-// erreurs » : les positions ratées reviennent jusqu'à ce qu'elles soient toutes validées.
-// - « Mes vraies erreurs » (kind 'reelles') : positions de vos parties Lichess/Chess.com où vous
+// Série de réussites du premier coup ; en fin de séance, bilan et « Refaire mes erreurs de la séance »
+// : les positions ratées reviennent jusqu'à ce qu'elles soient toutes validées.
+// - « Positions de mes parties » (kind 'reelles') : positions de vos parties Lichess/Chess.com où vous
 //   avez quitté les fiches ou manqué une punition ; une position validée sort de la liste.
 // Les coups attendus sont ceux des fiches (lignes vérifiées par Stockfish) ; rien n'est inventé.
 import { Chess } from '../vendor/chess.js';
@@ -63,7 +63,7 @@ export class DrillRunner {
   colorOf(e) { return this.data.repertoires[e.rep].couleur; }
 
   layout() {
-    const title = { trash: '⏱ Drill anti-trash', reelles: '🎯 Mes vraies erreurs' }[this.kind] || (this.guided ? '📖 À vous : pratique guidée' : '📚 Lignes du répertoire');
+    const title = { trash: '⏱ Drill anti-trash', reelles: '🎯 Positions de mes parties' }[this.kind] || (this.guided ? '📖 À vous : pratique guidée' : '📚 Lignes du répertoire');
     this.el.innerHTML = `<div class="train-layout drill" data-drill="${this.kind}">
       <section>
         <div class="train-status" data-status></div>
@@ -265,7 +265,7 @@ export class DrillRunner {
       ${isTrap ? `<p class="small">⚠ C’est le piège de la fiche : ${esc(trap.texte)}</p>` : ''}
       ${step.moteur ? '<p class="small muted">🤖 Ce coup fait partie de la suite conseillée par Stockfish, au-delà de la fiche.</p>' : ''}
       ${plan}
-      <p class="small muted">Elle sera proposée dans « Revoir uniquement mes erreurs » en fin de séance.</p>
+      <p class="small muted">Elle sera proposée dans « Refaire mes erreurs de la séance » à la fin.</p>
       <div class="actions"><button type="button" class="primary" data-continue>J’ai compris, continuer</button></div>
     </div>`);
     this.log(`✘ ${esc(sanFr(mv.san))} — attendu ${esc(good)}`, 'ko');
@@ -344,7 +344,7 @@ export class DrillRunner {
       <p class="recap-nums"><span class="ok">✔ ${this.okFirst} réussie${pl(this.okFirst)}</span> · <span class="ko">✘ ${n} ratée${pl(n)}</span>${this.streak.best ? ` · 🔥 meilleure série ${this.streak.best}` : ''}</p>
       <p class="small muted">Réussie = trouvée du premier coup. ${n ? 'Positions à revoir :' : ''}</p>
       ${n ? `<ul class="small">${this.missed.map((m) => `<li>${esc(this.missedLabel(m))}</li>`).join('')}</ul>` : ''}
-      <div class="actions">${n ? '<button type="button" class="primary" data-review>🎯 Revoir uniquement mes erreurs</button>' : ''}<button type="button" data-end>Terminer</button></div>
+      <div class="actions">${n ? '<button type="button" class="primary" data-review>🎯 Refaire mes erreurs de la séance</button>' : ''}<button type="button" data-end>Terminer</button></div>
     </div>`);
     this.$('[data-review]')?.addEventListener('click', () => this.startReview());
     this.$('[data-end]').addEventListener('click', () => this.done());
