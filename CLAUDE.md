@@ -196,6 +196,9 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   guidée et la théorie de la routine (révision et rythme Blitz) n'utilisent que la ligne de la fiche ;
   la suite Stockfish (« Longueur : complète ») reste un choix de S'entraîner. Révision avant de jouer (option `apercu` de DrillRunner,
   `relire`) : la ligne défile coup par coup (flèches, coups écrits, plan), puis « À moi de jouer ».
+  **📒 Mes variantes apprises** (bloc Théorie, repliable) : leçons suivies, la plus récente d'abord
+  (ECO, nom, ouverture, date, coups de la fiche en notation française, maîtrise), « Revoir la
+  leçon », « 📋 Copier la liste » (presse-papiers, pour les notes de l'utilisateur).
   Niveau des problèmes réglable (`NIVEAUX` : très facile ≈ 700–850 par défaut, facile ≈ 950–1250,
   moyen ≈ 1500 ; fourchettes observées sur l'API sans compte) dans `routine-v1.niveau`.
   Méthode convenue avec l'utilisateur (Lichess Blitz ~1040, Chess.com rapide ~750) : habitude

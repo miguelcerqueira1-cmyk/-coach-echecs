@@ -795,3 +795,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .relire-coups { line-height: 1.9; }
 .relire-coups span { padding: .1rem .3rem; border-radius: 6px; }
 .relire-coups span.cur { background: var(--accent); color: var(--accent-contrast); font-weight: 700; }
+/* Routine : mes variantes apprises */
+.routine-appris { margin: .5rem 0 0 1.9rem; }
+.appris-list { padding-left: 1.2rem; display: grid; gap: .6rem; margin: .5rem 0; }
+.appris-coups { margin: .2rem 0; overflow-wrap: anywhere; }

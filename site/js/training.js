@@ -392,6 +392,30 @@ export class TrainingPage {
 
   // ---------- Ma routine du jour (routine-core.js) ----------
 
+  // « Mes variantes apprises » : leçons suivies, la plus récente d'abord (nom, ECO, coups, maîtrise),
+  // à recopier dans ses notes (bouton Copier) ou à revoir.
+  apprises() {
+    const cours = this.progress.cours || {};
+    return this.data.entries.filter((e) => cours[e.id]).sort((a, b) => (cours[b.id].vue || 0) - (cours[a.id].vue || 0));
+  }
+
+  coupsTexte(e) {
+    return e.san.map((s, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${sanFr(s)}` : sanFr(s))).join(' ');
+  }
+
+  apprisesHtml(board) {
+    const list = this.apprises();
+    if (!list.length) return '';
+    const pct = (id) => board.fiches.find((f) => f.id === id)?.pct ?? 0;
+    return `<details class="routine-appris" data-appris><summary class="small"><strong>📒 Mes variantes apprises (${list.length})</strong></summary>
+      <ol class="appris-list">${list.map((e) => `<li><div><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
+        <span class="muted tiny">· ${esc(REPERTOIRES[e.rep]?.titre || e.rep)} · apprise le ${esc(new Date(this.progress.cours[e.id].vue).toLocaleDateString('fr-FR'))} · maîtrise ${pct(e.id)} %</span></div>
+        <p class="small appris-coups">${esc(this.coupsTexte(e))}</p>
+        <button type="button" class="small-btn" data-appris-lecon="${esc(e.id)}">Revoir la leçon</button></li>`).join('')}</ol>
+      <div class="actions"><button type="button" class="small-btn" data-appris-copier>📋 Copier la liste (pour mes notes)</button> <span class="small muted" data-appris-msg></span></div>
+    </details>`;
+  }
+
   // Prochaine leçon de la routine : le répertoire le moins avancé qui a encore une leçon à voir.
   prochaineLecon(next, seen) {
     const reps = this.actifs().filter((r) => next(r)).sort((a, b) => seen(a) - seen(b));
@@ -423,7 +447,7 @@ export class TrainingPage {
         return `<li class="routine-item ${ok ? 'done' : ''}">
           <label class="routine-check"><input type="checkbox" data-bloc="${b.id}" ${ok ? 'checked' : ''}> <span><strong>${i + 1}. ${esc(b.titre)}</strong> <span class="muted small">· ${b.min} min</span></span></label>
           <p class="small">${esc(b.texte)}${bloque ? ' <span class="muted">(après les blocs 1 à 5)</span>' : ''}</p>
-          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>
+          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
         </li>`;
       }).join('')}</ol>
       <h3>Le soir : mes 3 chiffres</h3>
@@ -451,6 +475,17 @@ export class TrainingPage {
     el.querySelector('[data-routine-theorie]')?.addEventListener('click', lancerTheorie);
     el.querySelector('[data-routine-lecon]')?.addEventListener('click', (ev) => this.openLesson(ev.currentTarget.dataset.routineLecon));
     el.querySelector('[data-routine-problemes]')?.addEventListener('click', () => this.runProblemes());
+    const appris = el.querySelector('[data-appris]');
+    if (appris) {
+      appris.open = !!this.apprisOuvert;
+      appris.addEventListener('toggle', () => { this.apprisOuvert = appris.open; });
+    }
+    el.querySelectorAll('[data-appris-lecon]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.apprisLecon)));
+    el.querySelector('[data-appris-copier]')?.addEventListener('click', async () => {
+      const txt = this.apprises().map((e) => `${e.eco} ${e.nom} (${REPERTOIRES[e.rep]?.titre || e.rep})\n${this.coupsTexte(e)}`).join('\n\n');
+      const msg = el.querySelector('[data-appris-msg]');
+      try { await navigator.clipboard.writeText(txt); msg.textContent = '✔ Copié : colle-le dans tes notes.'; } catch { msg.textContent = 'Copie impossible ici : appuie longuement sur le texte pour le sélectionner.'; }
+    });
     el.querySelector('[data-routine-niveau]')?.addEventListener('change', (ev) => { const d = charger(); d.niveau = ev.target.value; enregistrer(d); });
   }
 

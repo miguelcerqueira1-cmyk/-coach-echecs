@@ -349,6 +349,12 @@ test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie pr
   });
   await page.reload();
   await expect(page.locator('[data-routine-theorie]')).toContainText('relire puis jouer');
+  // Mes variantes apprises : nom, ECO, coups en notation française, revoir la leçon.
+  await page.click('[data-appris] summary');
+  await expect(page.locator('[data-appris]')).toContainText('Mes variantes apprises (1)');
+  await expect(page.locator('[data-appris] .appris-coups')).toContainText('1. d4 d5 2. c4');
+  await page.click('[data-appris-copier]');
+  await expect(page.locator('[data-appris-msg]')).not.toBeEmpty();
   await page.click('[data-routine-theorie]');
   await expect(page.locator('#page-entrainement [data-drill="lignes"]')).toBeVisible();
   await expect(page.locator('#page-entrainement [data-timer]')).toHaveCount(0);
