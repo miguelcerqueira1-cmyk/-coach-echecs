@@ -192,7 +192,9 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   X-Frame-Options). **Théorie progressive** (`planTheorie`, progress.js) : bouton « 📖 Apprendre :
   <prochaine leçon> » (répertoire le moins avancé) + révision des seules variantes déjà apprises
   (leçon suivie), sans chrono et fiche seule ; rythme Blitz (ligne complète, 5 s) seulement si
-  toutes sont maîtrisées (≥ 80 %). Révision avant de jouer (option `apercu` de DrillRunner,
+  toutes sont maîtrisées (≥ 80 %). **Même longueur partout (2026-11-17)** : la leçon, sa pratique
+  guidée et la théorie de la routine (révision et rythme Blitz) n'utilisent que la ligne de la fiche ;
+  la suite Stockfish (« Longueur : complète ») reste un choix de S'entraîner. Révision avant de jouer (option `apercu` de DrillRunner,
   `relire`) : la ligne défile coup par coup (flèches, coups écrits, plan), puis « À moi de jouer ».
   Niveau des problèmes réglable (`NIVEAUX` : très facile ≈ 700–850 par défaut, facile ≈ 950–1250,
   moyen ≈ 1500 ; fourchettes observées sur l'API sans compte) dans `routine-v1.niveau`.

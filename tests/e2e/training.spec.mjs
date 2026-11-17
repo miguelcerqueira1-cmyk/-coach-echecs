@@ -275,13 +275,13 @@ test('Cours : leçon pas à pas (nom officiel à chaque étape), à retenir, pui
 test('Ligne complète (suite Stockfish jusqu’au 15e coup) et rythme Blitz : trop lent = raté, bilan des temps', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches', complet: '1', lTemps: 3 } });
   await page.goto('./#/entrainement');
-  // Cours : la ligne continue au-delà de la fiche, signalée comme suite Stockfish.
+  // Cours : même longueur que les exercices de la leçon (ligne de la fiche, sans suite Stockfish).
   await page.click('[data-course="gd"]');
   await page.click('[data-lesson="gd-orthodoxe"]');
-  await expect(page.locator('[data-panel]')).toContainText('suite conseillée par Stockfish');
   await page.click('[data-panel] [data-next]');
-  await expect(page.locator('[data-panel] .suite-sep')).toContainText('suite Stockfish');
-  await expect(page.locator('[data-panel] .m.moteur').first()).toBeVisible();
+  await expect(page.locator('[data-panel] .m').first()).toBeVisible();
+  await expect(page.locator('[data-panel] .m.moteur')).toHaveCount(0);
+  await expect(page.locator('[data-panel] .suite-sep')).toHaveCount(0);
   await page.click('[data-close]');
   // S'entraîner : 3 s par coup ; on laisse filer le 1er coup.
   const full = await page.evaluate(async () => {

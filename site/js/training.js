@@ -197,7 +197,7 @@ export class TrainingPage {
     this.bindRoutine(need('L’entraînement en répétition espacée', () => {
       // Seulement des variantes déjà apprises ; rythme Blitz uniquement si elles sont maîtrisées.
       const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
-      this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '1', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
+      this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '0', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
     this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
     this.el.querySelector('[data-real]')?.addEventListener('click', need('« Positions de mes parties »', () => this.runReelles()));
@@ -322,11 +322,12 @@ export class TrainingPage {
     this.courseRep = entry.rep;
     window.scrollTo(0, 0);
     this.lesson = new LessonView({
-      el: this.el, data: this.data, entry, complet: this.prefs.complet !== '0', cmpGameId,
+      el: this.el, data: this.data, entry, complet: false, cmpGameId, // la leçon enseigne la ligne de la fiche
       mesParties: ((this.progress || loadProgress()).parties || []).filter((x) => x.ficheId === entry.id && x.san?.length).sort((a, b) => String(b.date).localeCompare(String(a.date))),
       onClose: () => { this.lesson = null; this.renderSetup(); },
       onPractice: (fid) => this.runDrill('lignes', [fid], {
         guided: true,
+        preset: { complet: '0' }, // même longueur que la leçon
         then: () => {
           const p = loadProgress();
           recordLesson(p, fid);
