@@ -191,6 +191,8 @@ jobs:
         run: npm run build
         env:
           COACH_API_URL: ${{ needs.worker.outputs.url }}
+          # Variable du dépôt (Settings → Variables) : adresse de contact affichée dans l'Aide.
+          SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
       # Depuis la v4, les fichiers cachés (.nojekyll) sont exclus par défaut : on les garde.
       - uses: actions/upload-pages-artifact@v5
         with:

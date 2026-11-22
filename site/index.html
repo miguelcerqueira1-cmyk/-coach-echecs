@@ -167,9 +167,18 @@
   </dialog>
 
   <!-- Réglages -->
+  <dialog id="dlg-aide" class="dlg-aide" aria-labelledby="aide-title">
+    <form method="dialog">
+      <h2 id="aide-title">❓ Aide et contact</h2>
+      <div data-aide-corps></div>
+      <div class="dlg-actions"><button value="close" class="primary">Fermer</button></div>
+    </form>
+  </dialog>
+
   <dialog id="dlg-settings">
     <form method="dialog" id="form-settings">
       <h2>Réglages</h2>
+      <div class="dlg-actions left"><button type="button" id="set-aide-btn">❓ Aide, questions fréquentes et contact</button></div>
       <label class="row">Budget de calcul
         <select id="set-budget"></select>
       </label>

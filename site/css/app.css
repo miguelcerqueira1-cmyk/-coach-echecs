@@ -824,3 +824,8 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .tour-num { font-size: .78rem; color: var(--muted, inherit); opacity: .8; }
 .tour-actions { display: flex; justify-content: space-between; gap: .5rem; margin-top: .6rem; }
 .tour-cible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: var(--radius); transition: outline-color .2s; }
+/* Aide et contact */
+.dlg-aide { max-width: 40rem; }
+.dlg-aide .faq { border-bottom: 1px solid var(--border); padding: .35rem 0; }
+.dlg-aide .faq summary { cursor: pointer; font-weight: 600; }
+.dlg-aide textarea { width: 100%; font-size: 16px; }

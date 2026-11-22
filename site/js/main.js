@@ -19,6 +19,7 @@ import { OptimalPanel, DEFAULT_FILTER } from './optimal.js';
 import { initRouter } from './router.js';
 import { terminerConnexion, connecter as connecterLichess } from './lichess-auth.js';
 import { aFaire as visiteAFaire, lancerVisite } from './tour.js';
+import { ouvrirAide } from './aide.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
@@ -1014,6 +1015,13 @@ function bindUi() {
   $('btn-settings').onclick = openSettings;
   $('set-ouvertures-btn').addEventListener('click', () => { $('dlg-settings').close(); location.hash = '#/ouvertures'; });
   $('set-visite-btn').addEventListener('click', () => { $('dlg-settings').close(); lancerVisite(); });
+  $('set-aide-btn').addEventListener('click', () => {
+    $('dlg-settings').close();
+    ouvrirAide({
+      supportEmail: state.config.supportEmail || '',
+      infos: () => ({ build: state.config.build || '', page: location.hash || '#/moteur', ua: navigator.userAgent, ecran: `${innerWidth}×${innerHeight}`, moteur: engine.state }),
+    });
+  });
   $('btn-live').onclick = () => viewAt(state.game.ply);
   $('moves').onclick = (e) => { const b = e.target.closest('[data-ply]'); if (b) viewAt(Number(b.dataset.ply)); };
   document.querySelectorAll('[data-nav]').forEach((b) => {

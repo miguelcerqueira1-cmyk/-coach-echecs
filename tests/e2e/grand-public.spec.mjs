@@ -140,3 +140,22 @@ test('accueil et choix des ouvertures sur téléphone @mobile : pas de défileme
   await expect(page.locator('#page-ouvertures [data-rep="gd"]')).toBeVisible();
   expect(await overflow()).toBeLessThanOrEqual(0);
 });
+
+test('Aide : questions fréquentes, signaler un problème (message préparé, diagnostic joint)', async ({ page }) => {
+  await setup(page, { existant: true });
+  await page.goto('./#/moteur');
+  await page.click('#btn-settings');
+  await page.click('#set-aide-btn');
+  const dlg = page.locator('#dlg-aide');
+  await expect(dlg).toBeVisible();
+  await expect(dlg.locator('.faq')).toHaveCount(8);
+  await dlg.locator('.faq summary', { hasText: 'installer' }).click();
+  await expect(dlg).toContainText('Sur l’écran d’accueil');
+  await dlg.locator('[data-bug-envoyer]').click();
+  await expect(dlg.locator('[data-bug-msg]')).toContainText('Décris le problème');
+  await dlg.locator('[data-bug]').fill('Le bouton ne répond pas.');
+  await dlg.locator('[data-bug-envoyer]').click();
+  await expect(dlg.locator('[data-bug-msg]')).toContainText(/copié|Copie impossible|messagerie/);
+  await dlg.locator('button[value="close"]').click();
+  await expect(dlg).toBeHidden();
+});
