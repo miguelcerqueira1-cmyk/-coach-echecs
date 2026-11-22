@@ -10,6 +10,7 @@ import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
   positionARevoir, alertePgn, ficheJouee, analyseTemps, bilanTempsParties, horlogesPgn, lireCadence,
 } from './games-core.js';
+import { connecter as connecterLichess, deconnecter as deconnecterLichess } from './lichess-auth.js';
 import { jour, charger as chargerRoutine, enregistrer as enregistrerRoutine, noter as noterRoutine } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -22,7 +23,9 @@ function load(k, d) { try { return { ...d, ...JSON.parse(localStorage.getItem(k)
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* stockage plein */ } }
 
 export class GamesPage {
-  constructor({ el, engine, client, getToken, openGame, openLine = null }) {
+  constructor({ el, engine, client, getToken, setToken = () => {}, authMessage = '', openGame, openLine = null }) {
+    this.setToken = setToken;
+    this.authMsg = authMessage; // résultat de « Se connecter avec Lichess », affiché dans le bandeau
     this.el = el;
     this.openLine = openLine; // (san, color, label) : ligne ouverte sur l'échiquier Moteur
     this.engine = engine;
@@ -108,7 +111,7 @@ export class GamesPage {
     if (tok) headers.authorization = 'Bearer ' + tok;
     const r = await this.client.queue.run(url, { headers });
     const res = r.res;
-    if (res.status === 404) throw new Error(tok ? 'compte introuvable ou export refusé par Lichess' : 'export refusé : ajoutez votre jeton Lichess (⚙ Réglages) et réessayez');
+    if (res.status === 404) throw new Error(tok ? 'compte introuvable ou export refusé par Lichess' : 'Lichess demande une connexion : appuie sur « Se connecter avec Lichess » ci-dessus');
     if (res.status === 401) throw new Error('jeton Lichess refusé');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
@@ -294,6 +297,7 @@ export class GamesPage {
     this.el.innerHTML = `
       <div class="card games-form">
         <h2>Mes parties</h2>
+        ${this.lichessHtml()}
         <div class="games-inputs">
           <label>Pseudo Lichess <input type="text" data-p="lichess" value="${esc(p.lichess)}" autocapitalize="off" spellcheck="false" placeholder="ex. MonPseudo"></label>
           <label>Pseudo Chess.com <input type="text" data-p="chesscom" value="${esc(p.chesscom)}" autocapitalize="off" spellcheck="false" placeholder="ex. MonPseudo"></label>
@@ -303,7 +307,7 @@ export class GamesPage {
         </div>
         <div class="actions"><button type="button" class="primary" data-import>Charger mes parties</button></div>
         <ul class="games-status">${st('Lichess')}${st('Chess.com')}${this.status.general ? `<li class="error-text">${esc(this.status.general)}</li>` : ''}</ul>
-        <p class="muted small">Lichess : l’export utilise votre jeton (⚙) s’il est enregistré. Chess.com : API publique, sans compte. Rien n’est envoyé ailleurs ; l’analyse est faite par Stockfish sur votre appareil.</p>
+        <p class="muted small">Lichess : tes parties sont chargées grâce à la connexion (ou au jeton de ⚙). Chess.com : API publique, sans compte. Rien n’est envoyé ailleurs ; l’analyse est faite par Stockfish sur votre appareil.</p>
       </div>
       ${this.pgnHtml()}
       ${this.summaryHtml()}
@@ -609,7 +613,28 @@ export class GamesPage {
       <p class="muted tiny">Courbe d’évaluation Stockfish (haut : avantage Blancs, bas : avantage Noirs) — vous avez les ${color === 'w' ? 'Blancs' : 'Noirs'}.</p>`;
   }
 
+  // Bandeau Lichess : connecté (pseudo, se déconnecter) ou bouton de connexion.
+  lichessHtml() {
+    const tok = this.getToken();
+    const msg = this.authMsg ? `<p class="small ${this.authMsg.startsWith('✔') ? 'ok-text' : 'error-text'}" data-lichess-msg>${esc(this.authMsg)}</p>` : '';
+    if (tok) {
+      const qui = this.prefs.lichessConnecte || this.prefs.lichess;
+      return `<div class="lichess-auth ok" data-lichess-auth>✔ Lichess connecté${qui ? ` : <strong>${esc(qui)}</strong>` : ''} <button type="button" class="link-btn" data-lichess-logout>Se déconnecter</button>${msg}</div>`;
+    }
+    return `<div class="lichess-auth" data-lichess-auth><button type="button" class="primary" data-lichess-login>♞ Se connecter avec Lichess</button>
+      <p class="muted small">Nécessaire pour charger tes parties Lichess. Connexion officielle sur lichess.org : ton mot de passe n’est jamais vu par l’appli.</p>${msg}</div>`;
+  }
+
   bind() {
+    this.el.querySelector('[data-lichess-login]')?.addEventListener('click', () => connecterLichess('#/parties'));
+    this.el.querySelector('[data-lichess-logout]')?.addEventListener('click', async () => {
+      await deconnecterLichess(this.getToken());
+      this.setToken('');
+      delete this.prefs.lichessConnecte;
+      save(PREFS, this.prefs);
+      this.authMsg = 'Déconnecté de Lichess sur cet appareil.';
+      this.render();
+    });
     this.el.querySelectorAll('[data-p]').forEach((inp) => inp.addEventListener('change', () => {
       this.prefs[inp.dataset.p] = inp.value.trim();
       save(PREFS, this.prefs);

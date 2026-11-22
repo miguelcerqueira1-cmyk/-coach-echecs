@@ -232,6 +232,13 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   pendule avant le coup, « ▶ Analyser cette position sur l'échiquier » (Moteur, `openLine`).
   Routine : suivi du soir « Blitz perdus au temps » (`temps`, rempli à l'import s'il est vide) ;
   chrono des problèmes (`CHRONOS` 0/30/15 s, `routine-v1.chrono` ; temps écoulé = raté).
+- **Se connecter avec Lichess (2026-11-22, `lichess-auth.js`)** : depuis fin 2026, l'export des
+  parties Lichess répond 404 sans jeton. Connexion OAuth2 PKCE officielle (client_id `blitzrefute`,
+  sans inscription ni secret, aucune permission demandée) : départ `connecter(retour)` (vérificateur
+  dans `coach-echecs:lichess-oauth`, 15 min), retour `?code=&state=` traité au démarrage de main.js
+  (`terminerConnexion` : POST /api/token, GET /api/account), jeton rangé dans `jeton-lichess` (secret,
+  jamais exporté), pseudo + `lichessConnecte` dans `mes-parties`, adresse nettoyée → `#/parties`.
+  Bandeau dans Mes parties (connecté / « Se déconnecter » = DELETE /api/token) et bouton dans ⚙.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

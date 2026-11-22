@@ -17,6 +17,7 @@ import * as store from './storage.js';
 import { LichessClient } from './lichess.js';
 import { OptimalPanel, DEFAULT_FILTER } from './optimal.js';
 import { initRouter } from './router.js';
+import { terminerConnexion, connecter as connecterLichess } from './lichess-auth.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
@@ -88,6 +89,22 @@ async function init() {
   // Avant toute écriture locale : première visite → page d'accueil (sauf lien direct vers une page).
   const { premiereVisite } = initChoix();
   if (premiereVisite && !location.hash.replace(/^#\/?/, '')) history.replaceState(null, '', '#/accueil');
+  // Retour de « Se connecter avec Lichess » (?code=…) : jeton enregistré sur l'appareil, pseudo
+  // rempli dans Mes parties, adresse nettoyée.
+  const auth = await terminerConnexion();
+  if (auth) {
+    history.replaceState(null, '', location.pathname + auth.retour);
+    if (auth.ok) {
+      store.setLichessToken(auth.token);
+      try {
+        const k = 'coach-echecs:mes-parties';
+        const mp = JSON.parse(localStorage.getItem(k) || '{}');
+        if (auth.username) { mp.lichess = auth.username; mp.lichessConnecte = auth.username; }
+        localStorage.setItem(k, JSON.stringify(mp));
+      } catch { /* stockage plein */ }
+    }
+    state.authMessage = auth.ok ? `✔ Connecté à Lichess${auth.username ? ` : ${auth.username}` : ''}. Tes parties peuvent être chargées.` : auth.message;
+  }
   applyAppearance(state.settings);
   fillSelects();
   restoreGame();
@@ -1100,6 +1117,7 @@ function bindUi() {
     }
     state.settings.apiUrl = prevApi;
   };
+  $('connect-lichess').onclick = () => connecterLichess('#/parties');
   $('clear-lichess').onclick = () => {
     store.setLichessToken('');
     $('set-lichess').value = '';
@@ -1301,6 +1319,7 @@ function openSanInBoard(san, color, label, { animate = false, headers = null } =
 function ensureGamesPage() {
   gamesPage ??= new GamesPage({
     el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
+    setToken: (t) => store.setLichessToken(t), authMessage: state.authMessage || '',
     openLine: (san, color, label) => openSanInBoard(san, color, label),
     openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`, {
       headers: { White: g.white, Black: g.black, WhiteElo: g.whiteElo ? String(g.whiteElo) : '', BlackElo: g.blackElo ? String(g.blackElo) : '', Site: g.url || '', Date: (g.date || '').slice(0, 10).replace(/-/g, '.'), Result: g.result || '' },

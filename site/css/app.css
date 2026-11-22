@@ -807,3 +807,6 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .temps-bar span { display: block; height: 100%; background: var(--accent); }
 @media (max-width: 480px) { .temps-ph { grid-template-columns: 1fr auto; } .temps-ph .temps-bar { grid-column: 1 / -1; grid-row: 2; } }
 .temps-cap { display: inline-block; margin-bottom: .3rem; color: var(--accent); }
+/* Mes parties : connexion Lichess */
+.lichess-auth { margin: .4rem 0 .8rem; }
+.lichess-auth.ok { padding: .5rem .7rem; border-radius: var(--radius); background: var(--surface-2); }

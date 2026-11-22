@@ -135,7 +135,7 @@ test('Mes parties : erreur explicite si l’export Lichess est refusé', async (
   await page.route('https://lichess.org/api/games/user/**', (r) => r.fulfill({ status: 404, headers: CORS, json: { error: 'Not found' } }));
   await page.goto('./#/parties');
   await page.click('[data-import]');
-  await expect(page.locator('.games-status')).toContainText('ajoutez votre jeton Lichess');
+  await expect(page.locator('.games-status')).toContainText('Se connecter avec Lichess');
   await expect(page.locator('.games-status')).toContainText('Chess.com : 1 partie(s)');
 });
 
@@ -254,4 +254,36 @@ test('Mes parties : partie collée en PGN, déviation connue signalée, réfutat
   await expect(page.locator('#page-moteur')).toBeVisible();
   const g = await page.evaluate(() => window.__coach.state.game.record.moves?.length ?? window.__coach.state.game.ply);
   expect(g).toBeGreaterThanOrEqual(5);
+});
+
+test('Se connecter avec Lichess : aller-retour officiel, jeton gardé, pseudo rempli, déconnexion', async ({ page }) => {
+  await setup(page, { token: '' });
+  let revoque = false;
+  await page.route(/https:\/\/lichess\.org\/oauth\?/, (r) => {
+    const u = new URL(r.request().url());
+    expect(u.searchParams.get('code_challenge_method')).toBe('S256');
+    const back = `${u.searchParams.get('redirect_uri')}?code=c0de&state=${u.searchParams.get('state')}`;
+    return r.fulfill({ status: 302, headers: { location: back } });
+  });
+  await page.route('https://lichess.org/api/token', (r) => {
+    if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
+    if (r.request().method() === 'DELETE') { revoque = true; return r.fulfill({ status: 204, headers: CORS }); }
+    expect(new URLSearchParams(r.request().postData()).get('code')).toBe('c0de');
+    return r.fulfill({ headers: CORS, json: { access_token: 'lio_test', expires_in: 31536000 } });
+  });
+  await page.route('https://lichess.org/api/account', (r) => {
+    if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
+    return r.fulfill({ headers: CORS, json: { username: 'LeugiMC' } });
+  });
+  await page.goto('./#/parties');
+  await page.click('[data-lichess-login]');
+  await expect(page.locator('[data-lichess-auth]')).toContainText('Lichess connecté : LeugiMC', { timeout: 15000 });
+  expect(page.url()).not.toContain('code=');
+  expect(page.url()).toContain('#/parties');
+  expect(await page.evaluate(() => localStorage.getItem('coach-echecs:jeton-lichess'))).toBe('lio_test');
+  await expect(page.locator('[data-lichess-msg]')).toContainText('Connecté à Lichess');
+  await page.click('[data-lichess-logout]');
+  await expect(page.locator('[data-lichess-login]')).toBeVisible();
+  expect(revoque).toBe(true);
+  expect(await page.evaluate(() => localStorage.getItem('coach-echecs:jeton-lichess'))).toBeNull();
 });
