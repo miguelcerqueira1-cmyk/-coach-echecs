@@ -201,6 +201,12 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   leçon », « 📋 Copier la liste » (presse-papiers, pour les notes de l'utilisateur).
   Niveau des problèmes réglable (`NIVEAUX` : très facile ≈ 700–850 par défaut, facile ≈ 950–1250,
   moyen ≈ 1500 ; fourchettes observées sur l'API sans compte) dans `routine-v1.niveau`.
+  **Routine pour chacun (2026-11-22)** : profil `routine-v1.profil` {temps 20/45/90, sites
+  lichess/chesscom, cadences bullet/blitz/rapide}, demandé par 3 questions au premier lancement
+  (« ⚙ Modifier » ensuite) ; sans profil mais avec un historique → `PROFIL_HISTORIQUE` (routine
+  d'origine, 6 blocs, inchangée). `blocsDuJour(date, profil)` : 20 min = 5 problèmes + théorie ;
+  ≥ 45 min = vitesse (Puzzle Rush si Chess.com, sinon Puzzle Storm Lichess), partie rapide + analyse
+  si Rapide, parties courtes (3 ou 5 max) si Bullet/Blitz ; liens vers le 1er site choisi.
   Méthode convenue avec l'utilisateur (Lichess Blitz ~1040, Chess.com rapide ~750) : habitude
   « Son coup d'abord » contre la vision tunnel ; bilan prévu après 4 semaines (vers le 2026-12-14).
 - **Bilan par variante (mes vraies parties)** : à l'import, chaque partie terminée est reliée à

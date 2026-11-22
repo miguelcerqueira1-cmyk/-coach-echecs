@@ -18,7 +18,7 @@ import { LessonView } from './cours.js';
 import { courseOrder, courseOrderFreq } from './lesson-core.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
-import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI, NIVEAUX, niveauProblemes, CHRONOS, chronoProblemes } from './routine-core.js';
+import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI, NIVEAUX, niveauProblemes, CHRONOS, chronoProblemes, profilDe, normaliserProfil, TEMPS, SITES, CADENCES } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
@@ -422,6 +422,44 @@ export class TrainingPage {
     return reps.length ? next(reps[0]) : null;
   }
 
+  profilTexte(p) {
+    return `${p.temps} min par jour · ${p.sites.map((x) => SITES[x]).join(' + ')} · ${p.cadences.map((x) => CADENCES[x]).join(', ')}`;
+  }
+
+  // Trois questions pour construire la routine (premier lancement, ou « Modifier »).
+  profilHtml(profil) {
+    const p = profil || { temps: 45, sites: [], cadences: [] };
+    const chk = (name, val, label, on) => `<label class="chip-check"><input type="${name === 'temps' ? 'radio' : 'checkbox'}" name="rp-${name}" value="${val}" ${on ? 'checked' : ''}> ${esc(label)}</label>`;
+    return `<section class="card routine routine-setup" data-routine data-routine-profil>
+      <h2>📅 Construisons ta routine</h2>
+      <p class="small">Trois questions, et l’appli te prépare chaque jour un programme adapté. Tu pourras les changer quand tu veux.</p>
+      <fieldset><legend>⏱ Combien de temps par jour ?</legend>${TEMPS.map((t) => chk('temps', t, `${t} min`, Number(p.temps) === t)).join('')}</fieldset>
+      <fieldset><legend>🌐 Où joues-tu ?</legend>${Object.entries(SITES).map(([k, l]) => chk('sites', k, l, p.sites.includes(k))).join('')}</fieldset>
+      <fieldset><legend>⚡ Quelles cadences joues-tu ?</legend>${Object.entries(CADENCES).map(([k, l]) => chk('cadences', k, l, p.cadences.includes(k))).join('')}</fieldset>
+      <p class="error-text small" data-profil-err></p>
+      <div class="actions"><button type="button" class="primary" data-profil-ok>Créer ma routine</button>${profil ? '<button type="button" data-profil-annuler>Annuler</button>' : ''}</div>
+    </section>`;
+  }
+
+  bindProfil() {
+    const el = this.el.querySelector('[data-routine-profil]');
+    if (!el) return false;
+    const val = (name) => [...el.querySelectorAll(`input[name="rp-${name}"]:checked`)].map((i) => i.value);
+    el.querySelector('[data-profil-ok]').addEventListener('click', () => {
+      if (!val('sites').length || !val('cadences').length) {
+        el.querySelector('[data-profil-err]').textContent = 'Choisis au moins un site et une cadence.';
+        return;
+      }
+      const d = charger();
+      d.profil = normaliserProfil({ temps: val('temps')[0], sites: val('sites'), cadences: val('cadences') });
+      enregistrer(d);
+      this.editRoutine = false;
+      this.renderSetup();
+    });
+    el.querySelector('[data-profil-annuler]')?.addEventListener('click', () => { this.editRoutine = false; this.renderSetup(); });
+    return true;
+  }
+
   routineHtml(board, next, seen) {
     const date = jour();
     const lecon = this.prochaineLecon(next, seen);
@@ -430,8 +468,10 @@ export class TrainingPage {
       ? `<button type="button" class="small-btn${lecon ? '' : ' primary'}" data-routine-theorie>${plan.rapide ? '⚡ Réviser en rythme Blitz (5 s par coup)' : `🔁 Réviser ${plan.ids.length} variante(s) apprise(s) : relire puis jouer`}</button>`
       : '<span class="muted tiny">La révision s’ouvre après ta première leçon.</span>'}`;
     const data = charger();
+    const profil = profilDe(data);
+    if (!profil || this.editRoutine) return this.profilHtml(profil);
     const j = data.jours[date] || { faits: [] };
-    const { dimanche, blocs } = blocsDuJour(date);
+    const { dimanche, blocs } = blocsDuJour(date, profil);
     const faits = blocs.filter((b) => j.faits.includes(b.id)).length;
     const s = serie(data, date);
     const lien = (l) => (l.interne ? `<a class="btn-link" href="${esc(l.url)}">${esc(l.label)} →</a>` : `<a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`);
@@ -440,14 +480,15 @@ export class TrainingPage {
     return `<details class="card routine" data-routine ${this.routineFermee ? '' : 'open'}>
       <summary><h2>📅 Ma routine du jour</h2> <span class="routine-prog">${faits} / ${blocs.length}</span>${s ? ` <span class="badge ok">🔥 ${s} jour(s) complet(s)</span>` : ''}</summary>
       <p class="routine-rule"><strong>Son coup d’abord :</strong> avant chaque coup, un coup d’œil à la pièce qu’il vient de bouger (que menace-t-elle ?), puis mon coup est-il sûr ?</p>
-      ${dimanche ? '<p class="small muted">Dimanche : jour off. Seulement 10 min de théorie, le reste se repose.</p>' : ''}
+      <p class="small muted routine-profil">Ma routine : ${esc(this.profilTexte(profil))} · <button type="button" class="link-btn" data-routine-edit>⚙ Modifier</button></p>
+      ${dimanche ? '<p class="small muted">Dimanche : jour off. Seulement la théorie, le reste se repose.</p>' : ''}
       <ol class="routine-list">${blocs.map((b, i) => {
         const ok = j.faits.includes(b.id);
         const bloque = b.id === 'blitz' && !blocs.filter((x) => x.id !== 'blitz').every((x) => j.faits.includes(x.id));
         return `<li class="routine-item ${ok ? 'done' : ''}">
           <label class="routine-check"><input type="checkbox" data-bloc="${b.id}" ${ok ? 'checked' : ''}> <span><strong>${i + 1}. ${esc(b.titre)}</strong> <span class="muted small">· ${b.min} min</span></span></label>
           <p class="small">${esc(b.texte)}${bloque ? ' <span class="muted">(après les blocs 1 à 5)</span>' : ''}</p>
-          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label><label class="small routine-niveau">Chrono <select data-routine-chrono>${CHRONOS.map((t) => `<option value="${t}" ${t === chronoProblemes(data) ? 'selected' : ''}>${t ? `${t} s par problème` : 'Sans chrono'}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
+          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les ${b.n || 10} problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label><label class="small routine-niveau">Chrono <select data-routine-chrono>${CHRONOS.map((t) => `<option value="${t}" ${t === chronoProblemes(data) ? 'selected' : ''}>${t ? `${t} s par problème` : 'Sans chrono'}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
         </li>`;
       }).join('')}</ol>
       <h3>Le soir : mes 3 chiffres</h3>
@@ -461,8 +502,10 @@ export class TrainingPage {
   }
 
   bindRoutine(lancerTheorie) {
+    if (this.bindProfil()) return;
     const el = this.el.querySelector('[data-routine]');
     if (!el) return;
+    el.querySelector('[data-routine-edit]')?.addEventListener('click', (ev) => { ev.preventDefault(); this.editRoutine = true; this.renderSetup(); });
     const date = jour();
     el.addEventListener('toggle', () => { this.routineFermee = !el.open; });
     el.querySelectorAll('[data-bloc]').forEach((c) => c.addEventListener('change', () => {
@@ -494,22 +537,24 @@ export class TrainingPage {
   // réussis sur 10 ») et bloc coché quand les 10 sont faits.
   runProblemes() {
     const date = jour();
-    const bloc = blocsDuJour(date).blocs.find((b) => b.id === 'tactique');
+    const bloc = blocsDuJour(date, profilDe(charger())).blocs.find((b) => b.id === 'tactique');
     if (!bloc) return;
     this.s = null;
     window.scrollTo(0, 0);
     this.drill = new PuzzleRunner({
-      el: this.el, queue: this.client.queue, theme: bloc.theme, difficulty: niveauProblemes(charger()), chrono: chronoProblemes(charger()),
+      el: this.el, queue: this.client.queue, theme: bloc.theme, n: bloc.n || 10, difficulty: niveauProblemes(charger()), chrono: chronoProblemes(charger()),
       onDone: (r) => {
         this.drill = null;
         this.view = null;
-        if (r.total >= 10) {
-          let d = noter(charger(), date, 'problemes', r.ok);
+        const n = bloc.n || 10;
+        if (r.total >= n) {
+          // Le suivi du soir compte sur 10 : noté seulement pour une série de 10.
+          let d = n === 10 ? noter(charger(), date, 'problemes', r.ok) : charger();
           d = cocher(d, date, 'tactique', true);
           enregistrer(d);
         }
         this.renderSetup();
-        const msg = r.total ? `Problèmes : ${r.ok} / ${r.total} réussi(s) du premier coup${r.total >= 10 ? ' (noté dans ton suivi du soir)' : ''}.` : 'Problèmes interrompus.';
+        const msg = r.total ? `Problèmes : ${r.ok} / ${r.total} réussi(s) du premier coup${r.total >= n && n === 10 ? ' (noté dans ton suivi du soir)' : ''}.` : 'Problèmes interrompus.';
         this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
     });

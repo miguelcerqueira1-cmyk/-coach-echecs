@@ -5,18 +5,20 @@ import { Chess } from '../../site/vendor/chess.js';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-async function setup(page, { token = '', prefs = {} } = {}) {
+// routine : profil de la routine du jour (null = premier lancement, les 3 questions s'affichent).
+async function setup(page, { token = '', prefs = {}, routine = { temps: 90, sites: ['lichess', 'chesscom'], cadences: ['blitz', 'rapide'] } } = {}) {
   await page.route(/https:\/\/lichess\.org\//, (r) => r.abort());
-  await page.addInitScript(([t, p]) => {
+  await page.addInitScript(([t, p, r]) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
       localStorage.setItem('coach-echecs:pro', '{"pro":true}'); // tests fonctionnels en formule Pro (pro.spec.mjs : formule gratuite)
       localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
       localStorage.setItem('coach-echecs:entrainement', JSON.stringify({ complet: '0', cOrdre: 'conseil', ...p })); // lignes de la fiche seule, sauf test dédié
       if (t) localStorage.setItem('coach-echecs:jeton-lichess', t);
+      if (r) localStorage.setItem('coach-echecs:routine-v1', JSON.stringify({ jours: {}, profil: r }));
       sessionStorage.setItem('e2e-init', '1');
     }
-  }, [token, prefs]);
+  }, [token, prefs, routine]);
 }
 
 const engineReady = (page) => page.waitForFunction(() => window.__coach?.engine.state === 'ready', null, { timeout: 60000 });
@@ -320,9 +322,28 @@ test('Cours : variantes classées de la plus jouée à la moins jouée (données
 });
 
 test('Ma routine du jour : blocs à cocher (gardés), suivi du soir, théorie progressive (apprendre puis réviser sans chrono)', async ({ page }) => {
-  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' }, routine: null });
   await page.goto('./#/entrainement');
+  // Premier lancement : 3 questions ; sans site ni cadence, refus expliqué.
+  const q = page.locator('[data-routine-profil]');
+  await expect(q).toContainText('Construisons ta routine');
+  await q.locator('input[name="rp-sites"][value="chesscom"]').uncheck().catch(() => {});
+  await q.locator('[data-profil-ok]').click();
+  await expect(q.locator('[data-profil-err]')).toContainText('au moins un site');
+  await q.locator('input[name="rp-temps"][value="20"]').check();
+  await q.locator('input[name="rp-sites"][value="lichess"]').check();
+  await q.locator('input[name="rp-cadences"][value="blitz"]').check();
+  await q.locator('[data-profil-ok]').click();
   const r = page.locator('[data-routine]');
+  await expect(r).toContainText('Ma routine : 20 min par jour · Lichess · Blitz');
+  // 20 min : tactique (5 problèmes) + théorie seulement (dimanche : théorie seule).
+  expect([1, 2]).toContain(await r.locator('[data-bloc]').count());
+  // Modifier : 90 min, Lichess + Chess.com, Blitz + Rapide → la routine complète de 6 blocs.
+  await r.locator('[data-routine-edit]').click();
+  await q.locator('input[name="rp-temps"][value="90"]').check();
+  await q.locator('input[name="rp-sites"][value="chesscom"]').check();
+  await q.locator('input[name="rp-cadences"][value="rapide"]').check();
+  await q.locator('[data-profil-ok]').click();
   await expect(r).toContainText('Ma routine du jour');
   await expect(r).toContainText('Son coup d’abord');
   const n = await r.locator('[data-bloc]').count();

@@ -810,3 +810,9 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 /* Mes parties : connexion Lichess */
 .lichess-auth { margin: .4rem 0 .8rem; }
 .lichess-auth.ok { padding: .5rem .7rem; border-radius: var(--radius); background: var(--surface-2); }
+/* Routine : les 3 questions */
+.routine-setup fieldset { border: 1px solid var(--border); border-radius: var(--radius); margin: .6rem 0; padding: .5rem .7rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+.routine-setup legend { font-weight: 650; padding: 0 .3rem; }
+.chip-check { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border: 1px solid var(--border); border-radius: 99px; cursor: pointer; }
+.chip-check:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.routine-profil { margin: .2rem 0 .5rem; }

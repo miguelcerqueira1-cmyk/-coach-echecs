@@ -29,17 +29,54 @@ export function jour(d = new Date()) {
 
 const numJour = (date) => Math.floor(Date.parse(`${date}T12:00:00Z`) / 86400000);
 
-export function blocsDuJour(date = jour()) {
+// Profil de routine (3 questions au premier lancement) : temps par jour, sites, cadences.
+// Profil « historique » : la routine d'origine (6 blocs, ~80 min, Lichess + Chess.com, Blitz +
+// Rapide), gardée telle quelle pour les utilisateurs qui avaient déjà commencé.
+export const TEMPS = [20, 45, 90];
+export const SITES = { lichess: 'Lichess', chesscom: 'Chess.com' };
+export const CADENCES = { bullet: 'Bullet', blitz: 'Blitz', rapide: 'Rapide' };
+export const PROFIL_HISTORIQUE = { temps: 90, sites: ['lichess', 'chesscom'], cadences: ['blitz', 'rapide'] };
+
+// Profil enregistré, sinon historique si la routine a déjà servi, sinon null (questions à poser).
+export function profilDe(data) {
+  const p = data?.profil;
+  if (p && TEMPS.includes(Number(p.temps)) && Array.isArray(p.sites) && Array.isArray(p.cadences)) return p;
+  return data && Object.keys(data.jours || {}).length ? PROFIL_HISTORIQUE : null;
+}
+
+export function normaliserProfil({ temps, sites = [], cadences = [] } = {}) {
+  const t = TEMPS.includes(Number(temps)) ? Number(temps) : 45;
+  const si = sites.filter((x) => SITES[x]);
+  const ca = cadences.filter((x) => CADENCES[x]);
+  return { temps: t, sites: si.length ? si : ['lichess'], cadences: ca.length ? ca : ['blitz'] };
+}
+
+const JOUER = { lichess: { url: 'https://lichess.org/', label: 'Lichess : jouer' }, chesscom: { url: 'https://www.chess.com/play/online', label: 'Chess.com : jouer' } };
+const VITESSE = {
+  chesscom: { texte: 'Un seul Puzzle Rush de 3 minutes : échauffement des réflexes.', lien: { url: 'https://www.chess.com/puzzles/rush', label: 'Chess.com : Puzzle Rush' } },
+  lichess: { texte: 'Un seul Puzzle Storm de 3 minutes : échauffement des réflexes.', lien: { url: 'https://lichess.org/storm', label: 'Lichess : Puzzle Storm' } },
+};
+
+export function blocsDuJour(date = jour(), profil = PROFIL_HISTORIQUE) {
+  const p = profil || PROFIL_HISTORIQUE;
   const dimanche = new Date(`${date}T12:00:00Z`).getUTCDay() === 0;
   const theme = THEMES[numJour(date) % THEMES.length];
+  const historique = p === PROFIL_HISTORIQUE;
+  // Site pour jouer : Chess.com pour la partie longue et Lichess pour le Blitz dans la routine
+  // d'origine ; sinon le premier site choisi.
+  const site = p.sites[0];
+  const vit = VITESSE[p.sites.includes('chesscom') ? 'chesscom' : 'lichess'];
+  const rapide = p.cadences.includes('rapide');
+  const court = p.cadences.filter((c) => c !== 'rapide');
+  const nomCourt = court.map((c) => CADENCES[c]).join(' / ');
   const tous = [
-    { id: 'tactique', titre: 'Tactique anti-tunnel', min: 15, texte: `10 problèmes, thème « ${theme.nom} », ici dans l’appli (chrono au choix). Avant de jouer : qu’a changé le dernier coup adverse ?`, action: 'problemes', theme, lien: { url: theme.url, label: `ou sur Lichess` } },
-    { id: 'vitesse', titre: 'Vitesse', min: 5, texte: 'Un seul Puzzle Rush de 3 minutes : échauffement des réflexes.', lien: { url: 'https://www.chess.com/puzzles/rush', label: 'Chess.com : Puzzle Rush' } },
-    { id: 'theorie', titre: 'Théorie', min: 10, texte: 'Apprendre 1 nouvelle variante, puis réviser celles déjà apprises, sans chrono. Le rythme Blitz (5 s par coup) ne vient que sur les variantes maîtrisées.', action: 'theorie' },
-    { id: 'rapide', titre: '1 partie rapide', min: 25, texte: 'Une partie en 10 minutes. À CHAQUE coup : « son coup d’abord ».', lien: { url: 'https://www.chess.com/play/online', label: 'Chess.com : jouer' } },
-    { id: 'analyse', titre: 'Analyse', min: 10, texte: 'Rejoue ta partie rapide moteur coupé : compte les menaces adverses ratées. Ensuite seulement, Game Review.', lien: { url: '#/parties', label: 'Mes parties', interne: true } },
-    { id: 'blitz', titre: 'Blitz (récompense)', min: 15, texte: '5 parties maximum. 2 défaites d’affilée = stop pour aujourd’hui.', lien: { url: 'https://lichess.org/', label: 'Lichess : jouer' } },
-  ];
+    { id: 'tactique', titre: 'Tactique anti-tunnel', min: p.temps === 20 ? 8 : 15, texte: `${p.temps === 20 ? 5 : 10} problèmes, thème « ${theme.nom} », ici dans l’appli (chrono au choix). Avant de jouer : qu’a changé le dernier coup adverse ?`, action: 'problemes', n: p.temps === 20 ? 5 : 10, theme, lien: { url: theme.url, label: 'ou sur Lichess' } },
+    p.temps >= 45 && { id: 'vitesse', titre: 'Vitesse', min: 5, ...vit },
+    { id: 'theorie', titre: 'Théorie', min: p.temps === 20 ? 12 : 10, texte: 'Apprendre 1 nouvelle variante, puis réviser celles déjà apprises, sans chrono. Le rythme Blitz (5 s par coup) ne vient que sur les variantes maîtrisées.', action: 'theorie' },
+    p.temps >= 45 && rapide && { id: 'rapide', titre: '1 partie rapide', min: 25, texte: 'Une partie en 10 minutes. À CHAQUE coup : « son coup d’abord ».', lien: historique ? JOUER.chesscom : JOUER[site] },
+    p.temps >= 45 && rapide && { id: 'analyse', titre: 'Analyse', min: 10, texte: 'Rejoue ta partie rapide moteur coupé : compte les menaces adverses ratées. Ensuite seulement, l’analyse du moteur (Mes parties).', lien: { url: '#/parties', label: 'Mes parties', interne: true } },
+    p.temps >= 45 && court.length && { id: 'blitz', titre: `${nomCourt} (récompense)`, min: p.temps >= 90 ? 15 : 10, texte: `${p.temps >= 90 ? 5 : 3} parties maximum. 2 défaites d’affilée = stop pour aujourd’hui.`, lien: historique ? JOUER.lichess : JOUER[site] },
+  ].filter(Boolean);
   return dimanche ? { dimanche, blocs: tous.filter((b) => b.id === 'theorie') } : { dimanche, blocs: tous };
 }
 
@@ -81,7 +118,7 @@ export function historique(data, date = jour(), n = 7) {
   for (let i = 0; i < n; i++) {
     const d = jour(new Date((t - i) * 86400000 + 12 * 3600000));
     const j = data.jours[d] || { faits: [] };
-    out.push({ date: d, faits: j.faits.length, total: blocsDuJour(d).blocs.length, menaces: j.menaces ?? null, blitz: j.blitz ?? null, temps: j.temps ?? null, problemes: j.problemes ?? null });
+    out.push({ date: d, faits: j.faits.length, total: blocsDuJour(d, profilDe(data)).blocs.length, menaces: j.menaces ?? null, blitz: j.blitz ?? null, temps: j.temps ?? null, problemes: j.problemes ?? null });
   }
   return out;
 }
@@ -92,7 +129,7 @@ export function serie(data, date = jour()) {
   for (let i = 0; ; i++) {
     const d = jour(new Date((t - i) * 86400000 + 12 * 3600000));
     const j = data.jours[d];
-    const total = blocsDuJour(d).blocs.length;
+    const total = blocsDuJour(d, profilDe(data)).blocs.length;
     if (j && j.faits.length >= total) s++;
     else if (i > 0) break; // aujourd'hui pas encore fini : la série d'hier compte
     if (i > 400) break;
