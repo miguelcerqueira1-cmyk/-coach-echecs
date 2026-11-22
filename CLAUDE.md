@@ -245,6 +245,11 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   (`terminerConnexion` : POST /api/token, GET /api/account), jeton rangé dans `jeton-lichess` (secret,
   jamais exporté), pseudo + `lichessConnecte` dans `mes-parties`, adresse nettoyée → `#/parties`.
   Bandeau dans Mes parties (connecté / « Se déconnecter » = DELETE /api/token) et bouton dans ⚙.
+- **Visite guidée (2026-11-22, `tour.js`)** : 6 étapes (routine, Apprendre, Répertoire, Mes parties,
+  échiquier, ⚙), bulle fixée en bas, élément entouré (`.tour-cible`) et amené à l'écran, page changée
+  par le hash. Lancée une fois après le PREMIER choix d'ouvertures (`coach-echecs:visite` =
+  'a-faire' posé par choix.js, 'faite' à la fin ou « Passer ») ; les utilisateurs existants ne la
+  voient pas ; « Revoir la visite guidée » dans ⚙.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

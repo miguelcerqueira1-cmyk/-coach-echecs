@@ -2,6 +2,7 @@
 // contre 1.d4), un ou plusieurs répertoires par étape, étape passable. Enregistré dans
 // Mon répertoire ; l'application est ensuite rechargée pour que toutes les pages suivent le choix.
 import { GROUPES, REPERTOIRES, parGroupe, choisis, aChoisi, enregistrer } from './mon-repertoire.js';
+import { marquer as marquerVisite } from './tour.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ETAPES = Object.keys(GROUPES);
@@ -63,7 +64,9 @@ export class ChoixPage {
     this.el.querySelector('[data-choix-next]').addEventListener('click', () => {
       if (!last) { this.step++; this.render(); window.scrollTo(0, 0); return; }
       try {
+        const premierChoix = !aChoisi();
         enregistrer([...this.sel]);
+        if (premierChoix) marquerVisite('a-faire'); // nouvel utilisateur : visite guidée au rechargement
       } catch (e) {
         this.error = e.message;
         this.render();

@@ -816,3 +816,11 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .chip-check { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border: 1px solid var(--border); border-radius: 99px; cursor: pointer; }
 .chip-check:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, transparent); }
 .routine-profil { margin: .2rem 0 .5rem; }
+/* Visite guidée */
+.tour-bulle { position: fixed; left: 1rem; right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom)); max-width: 30rem; margin: 0 auto; z-index: 1000;
+  background: var(--surface); border: 2px solid var(--accent); border-radius: var(--radius); padding: .8rem 1rem; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.tour-bulle h3 { margin: .1rem 0 .3rem; }
+.tour-bulle p { margin: .2rem 0; }
+.tour-num { font-size: .78rem; color: var(--muted, inherit); opacity: .8; }
+.tour-actions { display: flex; justify-content: space-between; gap: .5rem; margin-top: .6rem; }
+.tour-cible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: var(--radius); transition: outline-color .2s; }

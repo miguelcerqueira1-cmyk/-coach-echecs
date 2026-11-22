@@ -56,9 +56,25 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await choisir(page, ['indienne-roi']);
   await expect(ch.locator('.choix-recap')).toContainText('Système de Londres · Défense sicilienne · Défense indienne du Roi');
   await ch.locator('[data-choix-next]').click();
-  // Rechargé sur le Répertoire : seulement les ouvertures choisies ; le Londres a ses fiches
+  // Nouvel utilisateur : visite guidée (6 étapes, une seule fois), la page suit chaque étape.
+  const tour = page.locator('.tour-bulle');
+  await expect(tour).toContainText('1 / 6');
+  await expect(tour).toContainText('Ta routine du jour');
+  await expect(page).toHaveURL(/#\/entrainement$/);
+  await expect(page.locator('.tour-cible')).toHaveCount(1);
+  for (let i = 2; i <= 6; i++) {
+    await tour.locator('[data-tour-suivant]').click();
+    await expect(tour).toContainText(`${i} / 6`);
+  }
+  await expect(page).toHaveURL(/#\/moteur$/);
+  await tour.locator('[data-tour-suivant]').click();
+  await expect(tour).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('coach-echecs:visite'))).toBe('faite');
+  await page.goto('./#/repertoire');
+  await page.reload();
+  await expect(page.locator('.tour-bulle')).toHaveCount(0);
+  // Répertoire : seulement les ouvertures choisies ; le Londres a ses fiches
   // (1 gratuite, les autres verrouillées), l'Indienne du Roi est annoncée « bientôt ».
-  await expect(page).toHaveURL(/#\/repertoire$/);
   const rep = page.locator('#page-repertoire');
   await expect(rep.locator('tr[data-id="lon-classique"]:not([data-locked])')).toBeVisible();
   await expect(rep.locator('[data-view]')).toHaveCount(4); // 3 ouvertures + Anti-trash

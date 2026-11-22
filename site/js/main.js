@@ -18,6 +18,7 @@ import { LichessClient } from './lichess.js';
 import { OptimalPanel, DEFAULT_FILTER } from './optimal.js';
 import { initRouter } from './router.js';
 import { terminerConnexion, connecter as connecterLichess } from './lichess-auth.js';
+import { aFaire as visiteAFaire, lancerVisite } from './tour.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
@@ -157,6 +158,8 @@ async function init() {
       }
     },
   });
+  // Premier lancement, ouvertures choisies : visite guidée (une fois).
+  if (visiteAFaire()) setTimeout(() => lancerVisite(), 900);
   try {
     await engine.load();
   } catch { /* état d'erreur déjà affiché */ }
@@ -1010,6 +1013,7 @@ function bindUi() {
   $('btn-export').onclick = openExport;
   $('btn-settings').onclick = openSettings;
   $('set-ouvertures-btn').addEventListener('click', () => { $('dlg-settings').close(); location.hash = '#/ouvertures'; });
+  $('set-visite-btn').addEventListener('click', () => { $('dlg-settings').close(); lancerVisite(); });
   $('btn-live').onclick = () => viewAt(state.game.ply);
   $('moves').onclick = (e) => { const b = e.target.closest('[data-ply]'); if (b) viewAt(Number(b.dataset.ply)); };
   document.querySelectorAll('[data-nav]').forEach((b) => {
