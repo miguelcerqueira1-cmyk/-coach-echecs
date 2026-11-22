@@ -450,7 +450,7 @@ export class GamesPage {
       <p class="small">Cadence ${g.tc.initial >= 60 ? `${Math.round(g.tc.initial / 60)}` : `${g.tc.initial} s `}+${g.tc.increment} · temps moyen par coup <strong>${sec(a.moy)}</strong> · il te restait <strong>${sec(a.resteFin)}</strong> après ton dernier coup.</p>
       <div class="temps-phases">${a.phases.map((p) => `<div class="temps-ph"><span class="small">${esc(p.phase)}</span><span class="temps-bar"><span style="width:${Math.round((100 * p.moy) / max)}%"></span></span><span class="small"><strong>${sec(p.moy)}</strong> / coup (${p.n})</span></div>`).join('')}</div>
       <h4>Mes plus longues réflexions</h4>
-      ${a.longs.length ? `<ul>${a.longs.map((m) => `<li><button type="button" class="link-btn" data-ply="${m.i}">${moveNo(m.i)} ${fr(m.san)}</button> : <strong>${sec(m.s)}</strong>${m.facile ? ' — <span class="warn-text">coup simple</span> : la position n’a presque pas changé (perte &lt; 0,5 pion). Ce temps aurait servi plus tard.' : m.loss != null && m.loss >= 120 ? ' — et le coup était une erreur malgré la réflexion.' : ''}</li>`).join('')}</ul>` : `<p class="small">Aucune réflexion de plus de ${sec(a.seuil)} : bon rythme.</p>`}
+      ${a.longs.length ? `<ul>${a.longs.map((m) => `<li><button type="button" class="small-btn" data-temps-ply="${m.i}" data-temps-s="${m.s}" data-temps-reste="${m.reste}">♟ Voir ${moveNo(m.i)} ${fr(m.san)}</button> <strong>${sec(m.s)}</strong>${m.facile ? ' — <span class="warn-text">coup simple</span> : la position n’a presque pas changé (perte &lt; 0,5 pion). Ce temps aurait servi plus tard.' : m.loss != null && m.loss >= 120 ? ' — et le coup était une erreur malgré la réflexion.' : ''}</li>`).join('')}</ul>` : `<p class="small">Aucune réflexion de plus de ${sec(a.seuil)} : bon rythme.</p>`}
       <p class="muted tiny">Temps tiré des pendules de la partie ; « coup simple » d'après l'analyse Stockfish de la partie.</p>
     </section>`;
   }
@@ -525,6 +525,11 @@ export class GamesPage {
     this.reviewBoard.setOrientation(g.color);
     this.showPly(g, plies, b.errors[0]?.i ?? 0);
     box.querySelectorAll('[data-ply]').forEach((el) => el.addEventListener('click', () => this.showPly(g, plies, Number(el.dataset.ply))));
+    // Plus longues réflexions : la position au moment où j'ai réfléchi, échiquier ramené à l'écran.
+    box.querySelectorAll('[data-temps-ply]').forEach((el) => el.addEventListener('click', () => {
+      this.showPly(g, plies, Number(el.dataset.tempsPly), { temps: { s: Number(el.dataset.tempsS), reste: Number(el.dataset.tempsReste) } });
+      box.querySelector('[data-review-board]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }));
     box.querySelectorAll('[data-exo]').forEach((el) => el.addEventListener('click', () => {
       this.showPly(g, plies, Number(el.dataset.exo), { exo: true });
       box.querySelector('[data-review-board]').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -559,7 +564,7 @@ export class GamesPage {
     </section>`;
   }
 
-  showPly(g, plies, i, { exo = false } = {}) {
+  showPly(g, plies, i, { exo = false, temps = null } = {}) {
     const p = plies[i];
     if (!p || !p.fenBefore) return;
     if (exo) {
@@ -580,6 +585,14 @@ export class GamesPage {
       cap.innerHTML = `Avant ${moveNo(i)} ${fr(p.san)} (${p.mover === g.color ? 'vous' : 'adversaire'}) : évaluation ${esc(formatScore({ type: 'cp', value: p.cpBefore }))}`
         + (p.bestSan ? ` · meilleur coup : <strong>${fr(p.bestSan)}</strong>` : ' · coup joué = meilleur coup du moteur')
         + (p.cls ? ` · <strong>${esc(p.cls.label)}</strong>` : '');
+      if (temps) {
+        const sec = (x) => `${x.toFixed(1).replace('.', ',')} s`;
+        // Pendule avant le coup = pendule après le coup + temps passé − incrément.
+        const avant = temps.reste + temps.s - (g.tc?.increment || 0);
+        cap.innerHTML = `<span class="temps-cap">⏱ <strong>Tu as réfléchi ${sec(temps.s)} ici</strong> (il te restait ${sec(Math.max(0, avant))} avant ce coup). Flèche rouge : ton coup ; verte : celui du moteur.</span><br>${cap.innerHTML}`
+          + (this.openLine ? `<br><button type="button" class="small-btn" data-temps-moteur>▶ Analyser cette position sur l’échiquier</button>` : '');
+        cap.querySelector('[data-temps-moteur]')?.addEventListener('click', () => this.openLine(g.san.slice(0, i), g.color, `ta partie contre ${g.color === 'w' ? g.black : g.white}, avant ${moveNo(i)} ${sanFr(p.san)}`));
+      }
     }
     this.el.querySelectorAll('.moves-annot .m').forEach((b) => b.classList.toggle('current', Number(b.dataset.ply) === i));
   }

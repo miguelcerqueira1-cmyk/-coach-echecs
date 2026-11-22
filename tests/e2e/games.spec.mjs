@@ -70,6 +70,11 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   const t = page.locator('[data-temps]');
   await expect(t).toContainText('Perdue au temps');
   await expect(t).toContainText('35,0 s');
+  // Voir la longue réflexion sur l'échiquier : position avant 4.Ff4, temps affiché, ouverture possible sur le Moteur.
+  await t.locator('[data-temps-ply]').first().click();
+  await expect(page.locator('[data-review-caption]')).toContainText('Tu as réfléchi 35,0 s ici');
+  await expect(page.locator('[data-review-caption]')).toContainText('Avant 4. Ff4');
+  await expect(page.locator('[data-temps-moteur]')).toBeVisible();
   await expect(page.locator('.eval-graph')).toBeVisible();
   await page.locator('.moves-annot .m').nth(4).click();
   await expect(page.locator('[data-review-caption]')).toContainText('Avant 3. Fg5');

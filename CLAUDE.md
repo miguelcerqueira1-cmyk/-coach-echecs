@@ -227,7 +227,9 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   games-core : `tempsParCoup`, `analyseTemps` (moyenne par phase, 3 plus longues réflexions
   ≥ max(10 s, 8 % du temps initial), « coup simple » si perte Stockfish < 0,5, « perdue au temps
   avec l'avantage » si dernière éval ≥ +1), `bilanTempsParties`. Mes parties : résumé « ⏱ Mon
-  temps sur ces N parties », badge « ⌛ au temps », section « ⏱ Mon temps » dans l'analyse.
+  temps sur ces N parties », badge « ⌛ au temps », section « ⏱ Mon temps » dans l'analyse ; « ♟ Voir » une
+  longue réflexion : position avant le coup sur l'échiquier d'analyse (ramené à l'écran), temps passé et
+  pendule avant le coup, « ▶ Analyser cette position sur l'échiquier » (Moteur, `openLine`).
   Routine : suivi du soir « Blitz perdus au temps » (`temps`, rempli à l'import s'il est vide) ;
   chrono des problèmes (`CHRONOS` 0/30/15 s, `routine-v1.chrono` ; temps écoulé = raté).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
