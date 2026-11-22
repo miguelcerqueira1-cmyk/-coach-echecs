@@ -221,6 +221,15 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   revoir d'abord » → « Mes points faibles d'abord » ; fin de séance : « Refaire mes erreurs de la
   séance » ; une partie de la liste « Mes parties dans cette variante » ouvre la comparaison dans la
   leçon (plus de relecture sur la page Moteur depuis Apprendre).
+- **Gestion du temps (2026-11-22)** : import Lichess avec `clocks=true` (centièmes, une entrée en
+  trop pour le joueur tombé, ignorée), Chess.com et PGN collé par `[%clk]` + `TimeControl` ;
+  `finTemps` ('moi'/'adversaire') d'après `status: outoftime`, `result: timeout` ou `Termination`.
+  games-core : `tempsParCoup`, `analyseTemps` (moyenne par phase, 3 plus longues réflexions
+  ≥ max(10 s, 8 % du temps initial), « coup simple » si perte Stockfish < 0,5, « perdue au temps
+  avec l'avantage » si dernière éval ≥ +1), `bilanTempsParties`. Mes parties : résumé « ⏱ Mon
+  temps sur ces N parties », badge « ⌛ au temps », section « ⏱ Mon temps » dans l'analyse.
+  Routine : suivi du soir « Blitz perdus au temps » (`temps`, rempli à l'import s'il est vide) ;
+  chrono des problèmes (`CHRONOS` 0/30/15 s, `routine-v1.chrono` ; temps écoulé = raté).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

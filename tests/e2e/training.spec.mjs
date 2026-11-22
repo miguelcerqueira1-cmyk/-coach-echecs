@@ -379,14 +379,17 @@ test('Routine : 10 problèmes Lichess dans l’appli (dernier coup adverse, coup
   const btn = page.locator('[data-routine-problemes]');
   if (!(await btn.count())) test.skip(true, 'dimanche : pas de bloc tactique');
   await page.selectOption('[data-routine-niveau]', 'easier');
+  await page.selectOption('[data-routine-chrono]', '15');
   await page.reload();
   await expect(page.locator('[data-routine-niveau]')).toHaveValue('easier');
+  await expect(page.locator('[data-routine-chrono]')).toHaveValue('15');
   let url = '';
   page.on('request', (r) => { if (r.url().includes('/api/puzzle/next')) url = r.url(); });
   await page.locator('[data-routine-problemes]').click();
   const P = page.locator('#page-entrainement [data-puzzles]');
   await expect.poll(() => url).toContain('difficulty=easier');
   await expect(P).toContainText('Problème 1 / 10');
+  await expect(P.locator('[data-timer]')).toBeVisible();
   await expect(page.locator('#page-entrainement [data-status]')).toContainText('Il a joué', { timeout: 10000 });
   // Coup faux (roi en h7) : refusé, rien ne bouge.
   await sq(page, 'g8').click();

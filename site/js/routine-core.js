@@ -17,6 +17,9 @@ export const NIVEAUX = [
   { id: 'easier', nom: 'Facile (≈ 950–1250)' },
   { id: 'normal', nom: 'Moyen (≈ 1500)' },
 ];
+// Chrono par problème (secondes, 0 = sans chrono) : s'entraîner à trouver vite, sans tout calculer.
+export const CHRONOS = [0, 30, 15];
+export const chronoProblemes = (data) => (CHRONOS.includes(Number(data?.chrono)) ? Number(data.chrono) : 0);
 export const niveauProblemes = (data) => (NIVEAUX.some((n) => n.id === data?.niveau) ? data.niveau : 'easiest');
 
 // Date locale « AAAA-MM-JJ ».
@@ -30,7 +33,7 @@ export function blocsDuJour(date = jour()) {
   const dimanche = new Date(`${date}T12:00:00Z`).getUTCDay() === 0;
   const theme = THEMES[numJour(date) % THEMES.length];
   const tous = [
-    { id: 'tactique', titre: 'Tactique anti-tunnel', min: 15, texte: `10 problèmes sans chrono, thème « ${theme.nom} », ici dans l’appli. Avant de jouer : qu’a changé le dernier coup adverse ?`, action: 'problemes', theme, lien: { url: theme.url, label: `ou sur Lichess` } },
+    { id: 'tactique', titre: 'Tactique anti-tunnel', min: 15, texte: `10 problèmes, thème « ${theme.nom} », ici dans l’appli (chrono au choix). Avant de jouer : qu’a changé le dernier coup adverse ?`, action: 'problemes', theme, lien: { url: theme.url, label: `ou sur Lichess` } },
     { id: 'vitesse', titre: 'Vitesse', min: 5, texte: 'Un seul Puzzle Rush de 3 minutes : échauffement des réflexes.', lien: { url: 'https://www.chess.com/puzzles/rush', label: 'Chess.com : Puzzle Rush' } },
     { id: 'theorie', titre: 'Théorie', min: 10, texte: 'Apprendre 1 nouvelle variante, puis réviser celles déjà apprises, sans chrono. Le rythme Blitz (5 s par coup) ne vient que sur les variantes maîtrisées.', action: 'theorie' },
     { id: 'rapide', titre: '1 partie rapide', min: 25, texte: 'Une partie en 10 minutes. À CHAQUE coup : « son coup d’abord ».', lien: { url: 'https://www.chess.com/play/online', label: 'Chess.com : jouer' } },
@@ -54,10 +57,12 @@ export function cocher(data, date, bloc, fait) {
   return data;
 }
 
-// Suivi du soir : menaces ratées (partie rapide), parties de Blitz, problèmes réussis sur 10.
+// Suivi du soir : menaces ratées (partie rapide), parties de Blitz, Blitz perdus au temps (rempli
+// tout seul par « Mes parties » s'il est vide), problèmes réussis sur 10.
 export const SUIVI = {
   menaces: { label: 'Menaces adverses ratées dans ma partie rapide', min: 0, max: 50 },
   blitz: { label: 'Parties de Blitz jouées (5 max)', min: 0, max: 50 },
+  temps: { label: 'Blitz perdus au temps', min: 0, max: 50 },
   problemes: { label: 'Problèmes réussis du 1er coup, sur 10', min: 0, max: 10 },
 };
 
@@ -76,7 +81,7 @@ export function historique(data, date = jour(), n = 7) {
   for (let i = 0; i < n; i++) {
     const d = jour(new Date((t - i) * 86400000 + 12 * 3600000));
     const j = data.jours[d] || { faits: [] };
-    out.push({ date: d, faits: j.faits.length, total: blocsDuJour(d).blocs.length, menaces: j.menaces ?? null, blitz: j.blitz ?? null, problemes: j.problemes ?? null });
+    out.push({ date: d, faits: j.faits.length, total: blocsDuJour(d).blocs.length, menaces: j.menaces ?? null, blitz: j.blitz ?? null, temps: j.temps ?? null, problemes: j.problemes ?? null });
   }
   return out;
 }

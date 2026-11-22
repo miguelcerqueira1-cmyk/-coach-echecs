@@ -799,3 +799,10 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .routine-appris { margin: .5rem 0 0 1.9rem; }
 .appris-list { padding-left: 1.2rem; display: grid; gap: .6rem; margin: .5rem 0; }
 .appris-coups { margin: .2rem 0; overflow-wrap: anywhere; }
+/* Mes parties : analyse du temps */
+.warn-text { color: var(--reply, #f0a24b); }
+.temps-phases { display: grid; gap: .35rem; margin: .5rem 0; }
+.temps-ph { display: grid; grid-template-columns: 8.5rem 1fr auto; gap: .5rem; align-items: center; }
+.temps-bar { height: .55rem; border-radius: 99px; background: var(--surface-2, rgba(127,127,127,.2)); overflow: hidden; }
+.temps-bar span { display: block; height: 100%; background: var(--accent); }
+@media (max-width: 480px) { .temps-ph { grid-template-columns: 1fr auto; } .temps-ph .temps-bar { grid-column: 1 / -1; grid-row: 2; } }

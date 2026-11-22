@@ -8,8 +8,9 @@ import { choisis, REPERTOIRES } from './mon-repertoire.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
-  positionARevoir, alertePgn, ficheJouee,
+  positionARevoir, alertePgn, ficheJouee, analyseTemps, bilanTempsParties, horlogesPgn, lireCadence,
 } from './games-core.js';
+import { jour, charger as chargerRoutine, enregistrer as enregistrerRoutine, noter as noterRoutine } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fr = (san) => esc(sanFr(san));
@@ -101,7 +102,7 @@ export class GamesPage {
   // ---------- Import ----------
 
   async fetchLichess(user, max) {
-    const url = `https://lichess.org/api/games/user/${encodeURIComponent(user)}?max=${max}&moves=true&opening=true&finished=true`;
+    const url = `https://lichess.org/api/games/user/${encodeURIComponent(user)}?max=${max}&moves=true&opening=true&finished=true&clocks=true`;
     const headers = { accept: 'application/x-ndjson' };
     const tok = this.getToken();
     if (tok) headers.authorization = 'Bearer ' + tok;
@@ -164,7 +165,18 @@ export class GamesPage {
     for (const g of this.games) g.isNew = !!last && g.date > last;
     if (this.games.length) { this.prefs.lastSeen = this.games[0].date; save(PREFS, this.prefs); }
     this.noteSorties(this.games);
+    this.noteRoutine(this.games);
     this.render();
+  }
+
+  // Suivi du soir de la routine : « Blitz perdus au temps » aujourd'hui, rempli s'il est vide.
+  noteRoutine(games) {
+    const today = jour();
+    const blitz = games.filter((g) => g.speed === 'Blitz' && jour(new Date(g.date)) === today);
+    if (!blitz.length) return;
+    const d = chargerRoutine();
+    if (d.jours[today]?.temps != null) return;
+    enregistrerRoutine(noterRoutine(d, today, 'temps', blitz.filter((g) => g.finTemps === 'moi').length));
   }
 
   filtered() {
@@ -340,6 +352,11 @@ export class GamesPage {
       date: d ? new Date(Date.UTC(+d[1], +d[2] - 1, +d[3])).toISOString() : base.date,
       whiteElo: Number(h.WhiteElo) || null, blackElo: Number(h.BlackElo) || null,
     };
+    // Pendules du PGN ([%clk …]) et fin au temps (« Time forfeit », « won on time »).
+    const clocks = horlogesPgn(raw);
+    const tc = lireCadence(h.TimeControl);
+    if (tc && clocks.length === san.length) { g.clocks = clocks; g.tc = tc; }
+    if (/time/i.test(h.Termination || '') && ['1-0', '0-1'].includes(h.Result)) g.finTemps = (h.Result === '1-0' ? 'b' : 'w') === color ? 'moi' : 'adversaire';
     g.deviation = repertoireDeviation(g, this.data?.entries || [], choisis());
     this.games = [g, ...this.games.filter((x) => x.id !== g.id)];
     this.noteSorties([g]);
@@ -408,16 +425,46 @@ export class GamesPage {
     return '<span class="ok">Répertoire suivi jusqu’au bout des fiches ✔</span>';
   }
 
+  // Résumé du temps sur les parties affichées : défaites au temps, temps moyen par coup et par phase.
+  tempsResumeHtml(list) {
+    const b = bilanTempsParties(list.filter((g) => !g.local));
+    if (!b.avecPendule && !b.perduesTemps) return '';
+    const sec = (x) => `${x.toFixed(1).replace('.', ',')} s`;
+    return `<div class="card temps-resume" data-temps-resume><h3>⏱ Mon temps sur ces ${b.parties} parties</h3>
+      <p><strong>${b.perduesTemps}</strong> perdue(s) au temps${b.gagneesTemps ? ` · ${b.gagneesTemps} gagnée(s) au temps` : ''}.</p>
+      ${b.phases.length ? `<p class="small">Temps moyen par coup : ${b.phases.map((p) => `${esc(p.phase)} <strong>${sec(p.moy)}</strong>`).join(' · ')}</p>` : ''}
+      <p class="muted tiny">Calculé avec les pendules enregistrées par ${esc([...new Set(list.filter((g) => g.clocks).map((g) => g.site))].join(' et ') || 'Lichess / Chess.com')}. Ouvre une partie pour voir où ton temps est parti.</p></div>`;
+  }
+
+  // Analyse du temps d'une partie (section du bilan).
+  tempsHtml(g, plies) {
+    const a = analyseTemps(g, plies);
+    if (!a) return g.finTemps === 'moi' ? '<section class="card temps"><h3>⏱ Mon temps</h3><p>⌛ Partie perdue au temps (pendules non disponibles pour le détail).</p></section>' : '';
+    const sec = (x) => `${x.toFixed(1).replace('.', ',')} s`;
+    const max = Math.max(...a.phases.map((p) => p.moy), 1);
+    const verdict = a.perduAvecAvantage
+      ? `⌛ <strong>Perdue au temps alors que tu étais mieux</strong> (${esc(formatScore({ type: 'cp', value: a.avantage }))} selon Stockfish à la fin). Le problème n'était pas l'échiquier mais la pendule.`
+      : a.finTemps === 'moi' ? '⌛ <strong>Partie perdue au temps.</strong>' : a.finTemps === 'adversaire' ? 'Ton adversaire a perdu au temps.' : '';
+    return `<section class="card temps" data-temps><h3>⏱ Mon temps</h3>
+      ${verdict ? `<p>${verdict}</p>` : ''}
+      <p class="small">Cadence ${g.tc.initial >= 60 ? `${Math.round(g.tc.initial / 60)}` : `${g.tc.initial} s `}+${g.tc.increment} · temps moyen par coup <strong>${sec(a.moy)}</strong> · il te restait <strong>${sec(a.resteFin)}</strong> après ton dernier coup.</p>
+      <div class="temps-phases">${a.phases.map((p) => `<div class="temps-ph"><span class="small">${esc(p.phase)}</span><span class="temps-bar"><span style="width:${Math.round((100 * p.moy) / max)}%"></span></span><span class="small"><strong>${sec(p.moy)}</strong> / coup (${p.n})</span></div>`).join('')}</div>
+      <h4>Mes plus longues réflexions</h4>
+      ${a.longs.length ? `<ul>${a.longs.map((m) => `<li><button type="button" class="link-btn" data-ply="${m.i}">${moveNo(m.i)} ${fr(m.san)}</button> : <strong>${sec(m.s)}</strong>${m.facile ? ' — <span class="warn-text">coup simple</span> : la position n’a presque pas changé (perte &lt; 0,5 pion). Ce temps aurait servi plus tard.' : m.loss != null && m.loss >= 120 ? ' — et le coup était une erreur malgré la réflexion.' : ''}</li>`).join('')}</ul>` : `<p class="small">Aucune réflexion de plus de ${sec(a.seuil)} : bon rythme.</p>`}
+      <p class="muted tiny">Temps tiré des pendules de la partie ; « coup simple » d'après l'analyse Stockfish de la partie.</p>
+    </section>`;
+  }
+
   listHtml() {
     const list = this.filtered();
     if (!this.games.length) return '';
     if (!list.length) return '<p class="muted pad">Aucune partie pour cette cadence.</p>';
-    return `<div class="games-list">${list.map((g) => {
+    return `${this.tempsResumeHtml(list)}<div class="games-list">${list.map((g) => {
       const opp = g.color === 'w' ? `${g.black} (${g.blackElo ?? '?'})` : `${g.white} (${g.whiteElo ?? '?'})`;
       const done = this.cache[g.id];
       return `<article class="card game-card ${g.id === this.selected ? 'selected' : ''}">
         <div class="game-top">${g.isNew ? '<span class="badge ok">Nouveau</span> ' : ''}<span class="badge">${esc(g.site)}</span> <span class="badge">${esc(g.speed)}</span>
-          <span class="res ${g.outcome === 'victoire' ? 'ok' : g.outcome === 'défaite' ? 'ko' : ''}">${esc(g.outcome)}</span>
+          <span class="res ${g.outcome === 'victoire' ? 'ok' : g.outcome === 'défaite' ? 'ko' : ''}">${esc(g.outcome)}</span>${g.finTemps === 'moi' ? ' <span class="badge err" title="Partie perdue au temps">⌛ au temps</span>' : g.finTemps === 'adversaire' ? ' <span class="badge" title="L’adversaire a perdu au temps">⌛ gagnée au temps</span>' : ''}
           <span class="muted small">${new Date(g.date).toLocaleDateString('fr-FR')}</span></div>
         <p><span class="dot ${g.color}"></span> ${g.color === 'w' ? 'Blancs' : 'Noirs'} contre <strong>${esc(opp)}</strong> · ${Math.ceil(g.san.length / 2)} coups</p>
         <p class="small muted">${esc(g.opening)}</p>
@@ -468,6 +515,7 @@ export class GamesPage {
           <p class="muted tiny">Pistes déduites des calculs de Stockfish (${this.prefs.precision} ms par position) et des règles, sans IA.</p>
         </div>
       </div>
+      ${this.tempsHtml(g, plies)}
       ${this.reportHtml(g, plies, b, cached)}
       <h3>Coups</h3>
       <p class="moves-annot">${plies.map((p) => `<button type="button" class="m ${p.mover === g.color ? 'mine' : ''} ${p.cls ? 'c-' + p.cls.id : ''}" data-ply="${p.i}">${p.i % 2 === 0 ? `${p.i / 2 + 1}.` : ''}${fr(p.san)}${p.cls && p.mover === g.color ? p.cls.mark : ''}</button>`).join(' ')}</p>

@@ -42,6 +42,103 @@ export function parseLichessGame(g, username) {
     speed: SPEED_FR[g.speed] || g.speed, rated: !!g.rated, color,
     white: wName, black: bName, whiteElo: g.players?.white?.rating ?? null, blackElo: g.players?.black?.rating ?? null,
     result, outcome: resultFor(result, color), opening: g.opening ? `${g.opening.eco} ${g.opening.name}` : '', san,
+    ...tempsLichess(g, color, san.length),
+  };
+}
+
+// ---------- Temps (pendule) ----------
+// clocks[i] : secondes restantes au joueur qui vient de jouer le demi-coup i ; tc : cadence.
+// finTemps : 'moi' | 'adversaire' | null (partie perdue au temps).
+function tempsLichess(g, color, n) {
+  const out = { clocks: null, tc: null, finTemps: null };
+  // Lichess ajoute, après le dernier coup, la pendule du joueur au trait (0 s s'il est tombé).
+  if (Array.isArray(g.clocks) && n && (g.clocks.length === n || g.clocks.length === n + 1) && g.clock) {
+    out.clocks = g.clocks.slice(0, n).map((c) => c / 100);
+    out.tc = { initial: g.clock.initial, increment: g.clock.increment || 0 };
+  }
+  if (g.status === 'outoftime' && g.winner) out.finTemps = (g.winner === 'white' ? 'b' : 'w') === color ? 'moi' : 'adversaire';
+  return out;
+}
+
+// « 180+2 » → { initial: 180, increment: 2 } (null pour une cadence par jour « 1/86400 »).
+export function lireCadence(tc) {
+  const m = /^(\d+)(?:\+(\d+))?$/.exec(String(tc || '').trim());
+  return m ? { initial: +m[1], increment: +(m[2] || 0) } : null;
+}
+
+// Commentaires [%clk h:mm:ss(.d)] d'un PGN, dans l'ordre des coups → secondes.
+export function horlogesPgn(pgn) {
+  const out = [];
+  for (const m of String(pgn || '').matchAll(/\[%clk\s+(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)\]/g)) out.push(+m[1] * 3600 + +m[2] * 60 + +m[3]);
+  return out;
+}
+
+// Temps passé sur chaque demi-coup (secondes) : pendule précédente du même joueur − pendule
+// actuelle + incrément. null si les pendules manquent.
+export function tempsParCoup(game) {
+  const { clocks, tc } = game;
+  if (!clocks?.length || !tc) return null;
+  return clocks.map((c, i) => {
+    const avant = i >= 2 ? clocks[i - 2] : tc.initial;
+    return Math.max(0, Math.round((avant - c + tc.increment) * 10) / 10);
+  });
+}
+
+const PHASES_T = ['ouverture', 'milieu de partie', 'finale'];
+
+// Analyse du temps d'une partie (mes coups) : moyenne par phase, plus longues réflexions (avec la
+// perte Stockfish si l'analyse existe : réflexion longue sur un coup facile), temps restant à la fin.
+// plies : analyseGame (facultatif) ; sans analyse, phase par numéro de coup.
+export function analyseTemps(game, plies = []) {
+  const t = tempsParCoup(game);
+  if (!t) return null;
+  const mine = [];
+  for (let i = 0; i < t.length; i++) {
+    if ((i % 2 === 0 ? 'w' : 'b') !== game.color) continue;
+    const p = plies[i] || {};
+    const phase = p.phase || (i < 20 ? 'ouverture' : i < 60 ? 'milieu de partie' : 'finale');
+    mine.push({ i, san: game.san[i], s: t[i], phase, loss: p.loss ?? null, cpBefore: p.cpBefore ?? null, reste: game.clocks[i] });
+  }
+  if (!mine.length) return null;
+  const total = mine.reduce((a, m) => a + m.s, 0);
+  const phases = PHASES_T.map((ph) => {
+    const l = mine.filter((m) => m.phase === ph);
+    return l.length ? { phase: ph, n: l.length, moy: l.reduce((a, m) => a + m.s, 0) / l.length, total: l.reduce((a, m) => a + m.s, 0) } : null;
+  }).filter(Boolean);
+  // Réflexion longue : au moins 10 s et au moins 8 % du temps de départ.
+  const seuil = Math.max(10, game.tc.initial * 0.08);
+  const longs = mine.filter((m) => m.s >= seuil).sort((a, b) => b.s - a.s).slice(0, 3)
+    .map((m) => ({ ...m, facile: m.loss != null && m.loss < 50 }));
+  const fin = mine.at(-1);
+  // Avantage au moment de la chute : dernière évaluation connue, de mon point de vue.
+  const dernier = [...plies].reverse().find((p) => p?.cpAfter != null);
+  const avantage = dernier ? (game.color === 'w' ? dernier.cpAfter : -dernier.cpAfter) : null;
+  return {
+    total, moy: total / mine.length, phases, longs, seuil,
+    resteFin: fin.reste, finTemps: game.finTemps || null,
+    perduAvecAvantage: game.finTemps === 'moi' && avantage != null && avantage >= 100,
+    avantage,
+  };
+}
+
+// Bilan du temps sur plusieurs parties : défaites au temps, moyenne par phase (sans analyse).
+export function bilanTempsParties(games) {
+  const avec = games.filter((g) => g.clocks?.length && g.tc);
+  const parPhase = {};
+  for (const g of avec) {
+    const a = analyseTemps(g);
+    for (const p of a?.phases || []) {
+      const x = parPhase[p.phase] ||= { n: 0, total: 0 };
+      x.n += p.n;
+      x.total += p.total;
+    }
+  }
+  return {
+    parties: games.length,
+    avecPendule: avec.length,
+    perduesTemps: games.filter((g) => g.finTemps === 'moi').length,
+    gagneesTemps: games.filter((g) => g.finTemps === 'adversaire').length,
+    phases: PHASES_T.filter((p) => parPhase[p]).map((p) => ({ phase: p, moy: parPhase[p].total / parPhase[p].n })),
   };
 }
 
@@ -62,6 +159,19 @@ export function parseChessComGame(g, username) {
     speed: SPEED_FR[g.time_class] || g.time_class, rated: !!g.rated, color,
     white: g.white.username, black: g.black.username, whiteElo: g.white.rating ?? null, blackElo: g.black.rating ?? null,
     result, outcome: resultFor(result, color), opening: [h.ECO, ecoName].filter(Boolean).join(' '), san: c.history(),
+    ...tempsChessCom(g, h, color, c.history().length),
+  };
+}
+
+function tempsChessCom(g, h, color, n) {
+  const clocks = horlogesPgn(g.pgn);
+  const tc = lireCadence(h.TimeControl || g.time_control);
+  const moi = color === 'w' ? g.white : g.black;
+  const lui = color === 'w' ? g.black : g.white;
+  return {
+    clocks: tc && clocks.length === n ? clocks : null,
+    tc: tc && clocks.length === n ? tc : null,
+    finTemps: moi?.result === 'timeout' ? 'moi' : lui?.result === 'timeout' ? 'adversaire' : null,
   };
 }
 

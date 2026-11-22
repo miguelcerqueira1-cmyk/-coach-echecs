@@ -12,7 +12,8 @@ const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] 
 
 export class PuzzleRunner {
   // theme : { id, nom, url } (routine-core THEMES) ; queue : file Lichess (une requête à la fois).
-  constructor({ el, queue, theme, n = N_PROBLEMES, difficulty = 'easiest', onDone }) {
+  constructor({ el, queue, theme, n = N_PROBLEMES, difficulty = 'easiest', chrono = 0, onDone }) {
+    this.chrono = chrono; // secondes par problème (0 = sans chrono) ; temps écoulé = raté
     this.difficulty = difficulty;
     this.el = el;
     this.queue = queue;
@@ -34,6 +35,7 @@ export class PuzzleRunner {
     this.el.innerHTML = `<div class="train-layout drill" data-puzzles>
       <section>
         <div class="train-status" data-status></div>
+        ${this.chrono ? '<div class="drill-timer" data-timer><span></span></div>' : ''}
         <div class="board-wrap" data-board></div>
         <div class="actions">
           <button type="button" data-solution>💡 Voir la solution</button>
@@ -46,7 +48,7 @@ export class PuzzleRunner {
         <p class="small"><strong>Son coup d’abord :</strong> regarde le coup qu’il vient de jouer (surligné). Qu’a-t-il changé ? Puis trouve le meilleur coup.</p>
         <div data-head class="small"></div>
         <div data-feedback class="small"></div>
-        <p class="muted tiny">Problèmes de la base Lichess (licence CC0). Niveau réglable dans la routine. Ils ne comptent pas pour ton classement Lichess.</p>
+        <p class="muted tiny">Problèmes de la base Lichess (licence CC0). Niveau et chrono réglables dans la routine. Ils ne comptent pas pour ton classement Lichess.</p>
       </section>
     </div>`;
     this.board = new Board(this.$('[data-board]'), { piecesUrl: './pieces/', onMove: (mv) => this.onMove(mv) });
@@ -91,8 +93,31 @@ export class PuzzleRunner {
       this.chess.move(p.dernier);
       this.dessiner(true);
       this.status(`Il a joué <strong>${esc(sanFr(p.dernier.san))}</strong>. À toi : trouve le meilleur coup.`, 'player');
+      this.lancerChrono();
     }, 700);
   }
+
+  // ---------- Chrono (option de la routine) ----------
+  lancerChrono() {
+    this.arreterChrono();
+    if (!this.chrono) return;
+    const c = this.cur;
+    const t0 = performance.now();
+    const bar = this.$('[data-timer]');
+    this.timer = setInterval(() => {
+      if (!this.alive || this.cur !== c || c.fini) { this.arreterChrono(); return; }
+      const left = Math.max(0, 1 - (performance.now() - t0) / (this.chrono * 1000));
+      bar.querySelector('span').style.width = `${Math.round(left * 100)}%`;
+      bar.classList.toggle('low', left < 0.3);
+      if (left <= 0) {
+        this.arreterChrono();
+        c.horsTemps = true;
+        this.status('⏱ Temps écoulé : ce problème compte comme raté. Tu peux le finir ou voir la solution.', 'err');
+      }
+    }, 100);
+  }
+
+  arreterChrono() { clearInterval(this.timer); this.timer = null; }
 
   dessiner(interactive) {
     const last = this.chess.history({ verbose: true }).at(-1) || null;
@@ -132,9 +157,10 @@ export class PuzzleRunner {
   reussi() {
     const c = this.cur;
     c.fini = true;
-    const ok = !c.erreurs && !c.vu;
+    this.arreterChrono();
+    const ok = !c.erreurs && !c.vu && !c.horsTemps;
     this.resultats.push({ id: this.p.id, reussi: ok });
-    this.status(ok ? '✔ Résolu du premier coup !' : '✔ Résolu (après une erreur : ne compte pas comme réussi).', ok ? 'ok' : '');
+    this.status(ok ? '✔ Résolu du premier coup !' : c.horsTemps && !c.erreurs ? '✔ Résolu, mais après le temps : ne compte pas comme réussi.' : '✔ Résolu (après une erreur : ne compte pas comme réussi).', ok ? 'ok' : '');
     this.board.showBubble(ok ? '✔ Résolu !' : '✔ Résolu', 'ok');
     this.finProbleme();
   }
@@ -144,6 +170,7 @@ export class PuzzleRunner {
     if (!c || c.fini) return;
     c.vu = true;
     c.fini = true;
+    this.arreterChrono();
     this.$('[data-solution]').hidden = true;
     const sans = [];
     while (c.i < this.p.solution.length && this.alive) {
@@ -178,6 +205,7 @@ export class PuzzleRunner {
   finir() {
     if (!this.alive) return;
     this.alive = false;
+    this.arreterChrono();
     this.onDone(bilan(this.resultats));
   }
 

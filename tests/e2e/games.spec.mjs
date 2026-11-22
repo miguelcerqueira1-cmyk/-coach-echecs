@@ -6,9 +6,11 @@ const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 
 const lichessGames = [
   // Blancs, sortie du répertoire au 2e coup (2.Cf3 au lieu de 2.c4), gaffe ensuite.
-  { id: 'aaaa1111', rated: true, variant: 'standard', speed: 'blitz', createdAt: 1760900000000, status: 'resign', winner: 'black',
+  // Perdue au temps (pendules Lichess en centièmes de seconde, 3+0) : 35 s sur 4.Ff4.
+  { id: 'aaaa1111', rated: true, variant: 'standard', speed: 'blitz', createdAt: 1760900000000, status: 'outoftime', winner: 'black',
     players: { white: { user: { name: 'LeugiMC' }, rating: 985 }, black: { user: { name: 'Adversaire1' }, rating: 1002 } },
-    opening: { eco: 'D02', name: 'Queen\'s Pawn Game' }, moves: 'd4 d5 Nf3 Nf6 Bg5 Ne4 Bf4 Nc6 e3 e5 dxe5 Bb4+ c3 Bxc3+' },
+    opening: { eco: 'D02', name: 'Queen\'s Pawn Game' }, moves: 'd4 d5 Nf3 Nf6 Bg5 Ne4 Bf4 Nc6 e3 e5 dxe5 Bb4+ c3 Bxc3+',
+    clocks: [18000, 18000, 17800, 17700, 17000, 17500, 13500, 17300, 13300, 17000, 13000, 16800, 12800, 16500, 0], clock: { initial: 180, increment: 0 } },
   // Noirs, Caro-Kann, victoire.
   { id: 'bbbb2222', rated: true, variant: 'standard', speed: 'blitz', createdAt: 1760800000000, status: 'mate', winner: 'black',
     players: { white: { user: { name: 'Adversaire2' }, rating: 960 }, black: { user: { name: 'LeugiMC' }, rating: 980 } },
@@ -65,6 +67,9 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await page.locator('.game-card').filter({ hasText: 'Adversaire1' }).locator('[data-analyse]').click();
   await expect(page.locator('.analysis-card')).toContainText('Trois pistes de travail', { timeout: 60000 });
   await expect(page.locator('.analysis-card')).toContainText('Revoir l’ouverture');
+  const t = page.locator('[data-temps]');
+  await expect(t).toContainText('Perdue au temps');
+  await expect(t).toContainText('35,0 s');
   await expect(page.locator('.eval-graph')).toBeVisible();
   await page.locator('.moves-annot .m').nth(4).click();
   await expect(page.locator('[data-review-caption]')).toContainText('Avant 3. Fg5');

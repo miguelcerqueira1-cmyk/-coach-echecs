@@ -18,7 +18,7 @@ import { LessonView } from './cours.js';
 import { courseOrder, courseOrderFreq } from './lesson-core.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
-import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI, NIVEAUX, niveauProblemes } from './routine-core.js';
+import { jour, blocsDuJour, charger, enregistrer, cocher, noter, historique, serie, SUIVI, NIVEAUX, niveauProblemes, CHRONOS, chronoProblemes } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PREFS = 'coach-echecs:entrainement';
@@ -447,15 +447,15 @@ export class TrainingPage {
         return `<li class="routine-item ${ok ? 'done' : ''}">
           <label class="routine-check"><input type="checkbox" data-bloc="${b.id}" ${ok ? 'checked' : ''}> <span><strong>${i + 1}. ${esc(b.titre)}</strong> <span class="muted small">· ${b.min} min</span></span></label>
           <p class="small">${esc(b.texte)}${bloque ? ' <span class="muted">(après les blocs 1 à 5)</span>' : ''}</p>
-          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
+          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les 10 problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label><label class="small routine-niveau">Chrono <select data-routine-chrono>${CHRONOS.map((t) => `<option value="${t}" ${t === chronoProblemes(data) ? 'selected' : ''}>${t ? `${t} s par problème` : 'Sans chrono'}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
         </li>`;
       }).join('')}</ol>
       <h3>Le soir : mes 3 chiffres</h3>
       <div class="routine-suivi">${Object.entries(SUIVI).map(([k, d]) => `<label>${esc(d.label)} <input type="number" inputmode="numeric" min="${d.min}" max="${d.max}" data-suivi="${k}" value="${j[k] ?? ''}"></label>`).join('')}</div>
       <details class="routine-hist"><summary class="small">Mes 7 derniers jours</summary>
-        <table class="routine-table"><thead><tr><th>Jour</th><th>Blocs</th><th>Menaces ratées</th><th>Blitz</th><th>Problèmes</th></tr></thead>
-        <tbody>${hist.map((h) => `<tr><td>${esc(new Date(`${h.date}T12:00:00`).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }))}</td><td>${h.faits}/${h.total}</td><td>${v(h.menaces)}</td><td>${v(h.blitz)}</td><td>${h.problemes == null ? '—' : `${h.problemes}/10`}</td></tr>`).join('')}</tbody></table>
-        <p class="muted tiny">Le chiffre qui compte : les menaces ratées. S’il baisse sur 2 à 3 semaines, tu progresses.</p>
+        <table class="routine-table"><thead><tr><th>Jour</th><th>Blocs</th><th>Menaces ratées</th><th>Blitz</th><th>Au temps</th><th>Problèmes</th></tr></thead>
+        <tbody>${hist.map((h) => `<tr><td>${esc(new Date(`${h.date}T12:00:00`).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }))}</td><td>${h.faits}/${h.total}</td><td>${v(h.menaces)}</td><td>${v(h.blitz)}</td><td>${v(h.temps)}</td><td>${h.problemes == null ? '—' : `${h.problemes}/10`}</td></tr>`).join('')}</tbody></table>
+        <p class="muted tiny">Les chiffres qui comptent : les menaces ratées et les Blitz perdus au temps. S’ils baissent sur 2 à 3 semaines, tu progresses.</p>
       </details>
     </details>`;
   }
@@ -487,6 +487,7 @@ export class TrainingPage {
       try { await navigator.clipboard.writeText(txt); msg.textContent = '✔ Copié : colle-le dans tes notes.'; } catch { msg.textContent = 'Copie impossible ici : appuie longuement sur le texte pour le sélectionner.'; }
     });
     el.querySelector('[data-routine-niveau]')?.addEventListener('change', (ev) => { const d = charger(); d.niveau = ev.target.value; enregistrer(d); });
+    el.querySelector('[data-routine-chrono]')?.addEventListener('change', (ev) => { const d = charger(); d.chrono = Number(ev.target.value); enregistrer(d); });
   }
 
   // 10 problèmes Lichess du thème du jour, dans l'application. Bilan → suivi du soir (« problèmes
@@ -498,7 +499,7 @@ export class TrainingPage {
     this.s = null;
     window.scrollTo(0, 0);
     this.drill = new PuzzleRunner({
-      el: this.el, queue: this.client.queue, theme: bloc.theme, difficulty: niveauProblemes(charger()),
+      el: this.el, queue: this.client.queue, theme: bloc.theme, difficulty: niveauProblemes(charger()), chrono: chronoProblemes(charger()),
       onDone: (r) => {
         this.drill = null;
         this.view = null;
