@@ -3,7 +3,7 @@
 // dans site/data/repertoires/<id>.js ; un répertoire sans fiche est affiché « bientôt ».
 //
 // - couleur : camp joué ('w' Blancs, 'b' Noirs) ;
-// - groupe : 'blancs' | 'contre-e4' | 'contre-d4' (étapes de l'écran de choix) ;
+// - groupe : 'blancs' | 'contre-e4' | 'contre-d4' | 'autres' (étapes de l'écran de choix) ;
 // - racine : coups SAN qui définissent l'entrée dans le répertoire (point de départ de l'arbre) ;
 // - gratuites : fiches ouvertes dans la formule gratuite (au plus une par répertoire, sauf
 //   historique : la Caro-Kann en garde deux) ;
@@ -13,6 +13,7 @@ export const GROUPES = {
   blancs: { id: 'blancs', titre: 'Avec les Blancs', question: 'Avec les Blancs, je joue…' },
   'contre-e4': { id: 'contre-e4', titre: 'Contre 1.e4', question: 'Avec les Noirs, contre 1.e4, je joue…' },
   'contre-d4': { id: 'contre-d4', titre: 'Contre 1.d4', question: 'Avec les Noirs, contre 1.d4, je joue…' },
+  autres: { id: 'autres', titre: 'Contre 1.c4 / 1.Cf3', question: 'Avec les Noirs, contre 1.c4 ou 1.Cf3, je joue…' },
 };
 
 export const REPERTOIRES = {
@@ -30,11 +31,16 @@ export const REPERTOIRES = {
   scandinave: { id: 'scandinave', titre: 'Défense scandinave', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'd5'], sousTitre: 'Jouée avec les Noirs : 1.e4 d5', gratuites: ['scan-da5'], elite: false },
   pirc: { id: 'pirc', titre: 'Défense Pirc', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'd6'], sousTitre: 'Jouée avec les Noirs : 1.e4 d6 2.d4 Cf6 3.Cc3 g6', gratuites: ['pirc-classique'], elite: false },
   alekhine: { id: 'alekhine', titre: 'Défense Alekhine', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'Nf6'], sousTitre: 'Jouée avec les Noirs : 1.e4 Cf6, provoquer puis attaquer les pions blancs', gratuites: ['ale-moderne'], elite: false },
+  najdorf: { id: 'najdorf', titre: 'Sicilienne Najdorf', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'c5', 'Nf3', 'd6'], sousTitre: 'Jouée avec les Noirs : 1.e4 c5 2.Cf3 d6 3.d4 cxd4 4.Cxd4 Cf6 5.Cc3 a6', gratuites: ['naj-anglaise'], elite: false },
+  dragon: { id: 'dragon', titre: 'Sicilienne Dragon', couleur: 'b', groupe: 'contre-e4', racine: ['e4', 'c5', 'Nf3', 'd6', 'd4', 'cxd4', 'Nxd4', 'Nf6', 'Nc3', 'g6'], sousTitre: 'Jouée avec les Noirs : 1.e4 c5 2.Cf3 d6 3.d4 cxd4 4.Cxd4 Cf6 5.Cc3 g6', gratuites: ['dragon-yougoslave'], elite: false },
   'indienne-roi': { id: 'indienne-roi', titre: 'Défense indienne du Roi', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'g6'], sousTitre: 'Jouée avec les Noirs : 1.d4 Cf6 2.c4 g6, puis …Fg7, …d6, …O-O', gratuites: ['kid-classique'], elite: false },
   'gdr-noirs': { id: 'gdr-noirs', titre: 'Gambit Dame refusé / Slave (Noirs)', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'd5'], sousTitre: 'Joué avec les Noirs : 1.d4 d5 2.c4 e6 ou 2…c6', gratuites: ['gdrn-orthodoxe'], elite: false },
   'contre-londres': { id: 'contre-londres', titre: 'Contre le Système de Londres', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'd5', 'Bf4'], sousTitre: 'Joué avec les Noirs : 1.d4 d5 2.Ff4, plans avec …c5 et …Db6', gratuites: ['cl-c5-db6'], elite: false },
+  grunfeld: { id: 'grunfeld', titre: 'Défense Grünfeld', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'g6'], sousTitre: 'Jouée avec les Noirs : 1.d4 Cf6 2.c4 g6 3.Cc3 d5', gratuites: ['grun-echange'], elite: false },
   hollandaise: { id: 'hollandaise', titre: 'Défense hollandaise', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'f5'], sousTitre: 'Jouée avec les Noirs : 1.d4 f5, systèmes Leningrad et Stonewall', gratuites: ['hol-leningrad'], elite: false },
   'nimzo-qid': { id: 'nimzo-qid', titre: 'Nimzo-indienne / Indienne de la Dame', couleur: 'b', groupe: 'contre-d4', racine: ['d4', 'Nf6', 'c4', 'e6'], sousTitre: 'Jouées avec les Noirs : 1.d4 Cf6 2.c4 e6 3.Cc3 Fb4 ou 3.Cf3 b6', gratuites: ['nimzo-rubinstein'], elite: false },
+  'contre-anglaise': { id: 'contre-anglaise', titre: 'Contre l’Anglaise (1.c4 e5)', couleur: 'b', groupe: 'autres', racine: ['c4', 'e5'], sousTitre: 'Jouée avec les Noirs : 1.c4 e5, une Sicilienne inversée', gratuites: ['ca-dragon-inverse'], elite: false },
+  'contre-reti': { id: 'contre-reti', titre: 'Contre 1.Cf3 (Réti)', couleur: 'b', groupe: 'autres', racine: ['Nf3', 'd5'], sousTitre: 'Jouée avec les Noirs : 1.Cf3 d5, avec …Cf6, …c6 et le Fou c8 dehors', gratuites: ['cr-kia'], elite: false },
 };
 
 // Choix par défaut d'un utilisateur existant (avant le passage grand public) : rien ne change.

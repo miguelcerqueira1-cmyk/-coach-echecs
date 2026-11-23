@@ -1,4 +1,4 @@
-// Site grand public : page d'accueil de première visite, choix des ouvertures en 3 étapes,
+// Site grand public : page d'accueil de première visite, choix des ouvertures en 4 étapes,
 // répertoires « bientôt », changement de choix dans ⚙, utilisateur existant (Gambit Dame + Caro-Kann).
 import { test, expect } from '@playwright/test';
 
@@ -20,7 +20,7 @@ const choisir = async (page, ids) => {
   for (const id of ids) await page.click(`#page-ouvertures [data-rep="${id}"]`);
 };
 
-test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indienne du Roi), ouvertures « bientôt »', async ({ page }) => {
+test('première visite : accueil, choix en 4 étapes (Londres, Sicilienne, Indienne du Roi), ouvertures « bientôt »', async ({ page }) => {
   await setup(page);
   // Données servies sans les fiches de l'Indienne du Roi : couvre l'affichage « bientôt »
   // d'un répertoire sans contenu (tous les répertoires réels en ont désormais).
@@ -42,11 +42,10 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   const ch = page.locator('#page-ouvertures');
   await expect(ch.locator('[data-choix-q]')).toHaveText('Avec les Blancs, je joue…');
   // Rien choisi : la validation finale est refusée.
-  for (let i = 0; i < 2; i++) await ch.locator('[data-choix-next]').click();
+  for (let i = 0; i < 3; i++) await ch.locator('[data-choix-next]').click();
   await ch.locator('[data-choix-next]').click();
   await expect(ch.locator('[data-choix-err]')).toHaveText('Choisissez au moins une ouverture.');
-  await ch.locator('[data-choix-prev]').click();
-  await ch.locator('[data-choix-prev]').click();
+  for (let i = 0; i < 3; i++) await ch.locator('[data-choix-prev]').click();
   await choisir(page, ['londres']);
   await expect(ch.locator('[data-rep="londres"]')).toHaveAttribute('aria-pressed', 'true');
   await ch.locator('[data-choix-next]').click();
@@ -54,6 +53,8 @@ test('première visite : accueil, choix en 3 étapes (Londres, Sicilienne, Indie
   await choisir(page, ['sicilienne']);
   await ch.locator('[data-choix-next]').click();
   await choisir(page, ['indienne-roi']);
+  await ch.locator('[data-choix-next]').click();
+  await expect(ch.locator('[data-choix-q]')).toHaveText('Avec les Noirs, contre 1.c4 ou 1.Cf3, je joue…');
   await expect(ch.locator('.choix-recap')).toContainText('Système de Londres · Défense sicilienne · Défense indienne du Roi');
   await ch.locator('[data-choix-next]').click();
   // Nouvel utilisateur : visite guidée (6 étapes, une seule fois), la page suit chaque étape.
@@ -110,8 +111,7 @@ test('utilisateur existant : Gambit Dame + Caro-Kann gardés, choix modifié dan
   await ch.locator('[data-choix-next]').click();
   await expect(ch.locator('[data-rep="ck"]')).toHaveAttribute('aria-pressed', 'true');
   await choisir(page, ['ck', 'sicilienne']);
-  await ch.locator('[data-choix-next]').click();
-  await ch.locator('[data-choix-next]').click();
+  for (let i = 0; i < 3; i++) await ch.locator('[data-choix-next]').click();
   await expect(page).toHaveURL(/#\/repertoire$/);
   const rep = page.locator('#page-repertoire');
   await expect(rep.locator('[data-view="gd"]')).toBeVisible();

@@ -52,12 +52,13 @@ test('erreur adverse connue non punie (2…Fg4 ? 3.Db3 au lieu de cxd5)', () => 
   assert.deepEqual(d.expected, ['cxd5']);
 });
 
-test('Caro-Kann : 1…e5 contre 1.e4 est une sortie du répertoire ; 1.d4 d5 avec les Noirs relève du GD refusé ; contre 1.c4, hors répertoire', () => {
+test('Caro-Kann : 1…e5 contre 1.e4 est une sortie du répertoire ; 1.d4 d5 avec les Noirs relève du GD refusé ; contre 1.c4, hors répertoire (sauf « Contre l’Anglaise »)', () => {
   // Joueur Caro-Kann (choix d'origine) : 1…e5 sort de SON répertoire, même si « 1…e5 (Noirs) » existe.
   assert.equal(repertoireDeviation(game(['e4', 'e5'], 'b'), data.entries, ['gd', 'ck', 'gdr-noirs']).who, 'moi');
   assert.equal(repertoireDeviation(game(['e4', 'e5'], 'b'), data.entries, ['e5-noirs']).rep, 'e5-noirs');
   assert.equal(repertoireDeviation(game(['d4', 'd5'], 'b'), data.entries).rep, 'gdr-noirs');
-  assert.equal(repertoireDeviation(game(['c4', 'e5'], 'b'), data.entries).rep, null);
+  assert.equal(repertoireDeviation(game(['c4', 'e5'], 'b'), data.entries, ['gd', 'ck']).rep, null);
+  assert.equal(repertoireDeviation(game(['c4', 'e5'], 'b'), data.entries).rep, 'contre-anglaise');
 });
 
 test('analyse : gaffe détectée par la perte d’évaluation, bilan factuel', () => {

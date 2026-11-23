@@ -10,13 +10,15 @@ maîtriser tes ouvertures et détruire les pièges en Blitz. » Les clés localS
 `coach-echecs:` (données des utilisateurs conservées).
 
 Application web **en français** d'entraînement aux ouvertures, **grand public** (joueurs de club /
-blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **19 répertoires** : avec les
+blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **24 répertoires** : avec les
 Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Anglaise), contre 1.e4
-(Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine), contre 1.d4 (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **191 fiches** (2026-11-23) : Gambit Dame 31,
-Caro-Kann 27 (répertoire historique du créateur), Italienne 10, Espagnole 10, Londres 9, Écossaise 5,
+(Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Najdorf, Dragon), contre 1.c4 /
+1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4 (+ Grünfeld) (Indienne du Roi, GD refusé / Slave, Contre le
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **233 fiches** (2026-11-23) : Gambit Dame 31,
+Caro-Kann 27 (répertoire historique du créateur), Italienne 10, Espagnole 10, Londres 9, Écossaise 10,
 Anglaise 8, 1…e5 8, Sicilienne 9 (système Taimanov), Française 8, Scandinave 8, Indienne du Roi 8,
-GD refusé / Slave 10, Contre le Londres 4, Hollandaise 5, Nimzo / Indienne de la Dame 8, Pirc 7, Alekhine 8, Catalane 8 ; toutes
+GD refusé / Slave 10, Contre le Londres 8, Hollandaise 5, Nimzo / Indienne de la Dame 8, Pirc 7, Alekhine 8, Catalane 8, Grünfeld 8, Najdorf 7,
+Dragon 7, Contre l'Anglaise 5, Contre 1.Cf3 6 ; toutes
 vérifiées par Stockfish (profondeur 18). Objectif de l'utilisateur : le plus de répertoires et de
 variantes possible (concurrencer les grands sites d'entraînement, prix plus bas, options en plus).
 Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans rien installer.
@@ -43,7 +45,7 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
 | Page | Contenu |
 |---|---|
 | `#/accueil` | Page publique (1re visite, logo) : marque, fonctions, ouvertures (fiches publiées / « bientôt »), formules Gratuit / Pro 29 €, « Choisir mes ouvertures ». |
-| `#/ouvertures` | Choix en 3 étapes (Blancs, contre 1.e4, contre 1.d4), plusieurs ou aucun par étape, au moins un au total ; enregistré puis rechargement sur `#/repertoire`. Aussi depuis ⚙ « Mes ouvertures ». |
+| `#/ouvertures` | Choix en 4 étapes (Blancs, contre 1.e4, contre 1.d4, contre 1.c4 / 1.Cf3 — groupe `autres`), plusieurs ou aucun par étape, au moins un au total ; enregistré puis rechargement sur `#/repertoire`. Aussi depuis ⚙ « Mes ouvertures ». |
 | `#/moteur` | Échiquier ; conseil Stockfish après chaque coup réellement joué (confirmer pour l'enregistrer) ; panneau « Coup optimal » (Stockfish local, Lichess Cloud Eval, meilleur % de victoire à mon niveau, coup des maîtres, coup de l'Élite) ; navigation ⏮◀▶⏭ et analyse des positions passées ; explication gratuite sans IA (ou Claude si configuré) ; mode « Indice d'abord » ; noms/Elo des joueurs au-dessus de l'échiquier ; « Jouer la suite jusqu'à la fin » (théorie des maîtres puis Stockfish) ; « Bilan de la partie » ; import/export PGN/FEN. |
 | `#/repertoire` | Fiches des ouvertures choisies (168 au total) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
 | `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir, piège et punition **jouables coup par coup** sur l'échiquier → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **🎯 Positions de mes parties** (ex-« Mes vraies erreurs » : sorties de répertoire et punitions manquées de mes parties Lichess/Chess.com, à rejouer jusqu'à validation), **📊 progression** par variante, repliée (maîtrise %, série 🔥, sorties réelles ⚠). Point d'entrée : **📅 Ma routine du jour** en haut (a remplacé « Séance du jour »). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
@@ -91,7 +93,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/pwa.js                   Service worker, bandeau de mise à jour
   js/installation.js / installation-core.js  Guide d'installation, rappels de sauvegarde, stockage persistant
   js/router.js                Navigation par hash
-  data/repertoires/meta.js    Les 19 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
+  data/repertoires/meta.js    Les 24 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
   data/repertoires/<id>.js    **Fiches d'un répertoire** (à éditer : `export default [ …fiches ]`)
   data/repertoire.js          Agrège (REPERTOIRES, GROUPES, BADGES, LIGNES) + conventions des fiches ;
                               repertoire.json, elite.json, joueurs.json GÉNÉRÉS
@@ -419,9 +421,15 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   Alekhine (8), Catalane (8) ; 191 fiches. Lignes tactiques : Pirc 6.Fxh6?? (Byrne), Alekhine
   5…Cd7? Cxf7 (piège), 9…e6? Dxf7# (piège Alburt), 4.Fxf7+?? (punition), Catalane 6…Fb7? Fxb7.
   Traductions ajoutées dans nomFr (Ouverture catalane, Attaque autrichienne, quatre pions…).
+- FAIT (2026-11-23, branche de travail, PAS publié) : lot 2 — Grünfeld (8), Najdorf (7), Dragon (7),
+  Contre l'Anglaise 1.c4 e5 (5), Contre 1.Cf3 d5 (6), Écossaise +5, Contre le Londres +4 ; 233 fiches.
+  Nouveau groupe de choix `autres` (« Contre 1.c4 / 1.Cf3 », 4e étape). Lignes tactiques : Grünfeld
+  9.Dxd5? (punition), 5…Cb4? et 6…Dxd4? (pièges) ; Najdorf 7.Cf5? et 7.Cd5? (punitions), 7…Cxe4?
+  (piège Sozin) ; Dragon 7…Cg4? contre Fe2 (piège), 7.Fe3? contre Fc4 (punition), 8…Cg4? Levenfish
+  (piège) ; Anglaise 6.Fxb7?? ; Écossaise 3…f6 4…fxe5? (punition). nomFr : ~50 noms ajoutés.
 - Ensuite (idées validées en principe) : plus de répertoires et de variantes, par lots vérifiés
-  (lot 2 : Grünfeld, Najdorf / Dragon, contre 1.c4 / 1.Cf3, compléter Écossaise et
-  Contre le Londres) — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
+  (lot 3 possible : Benoni / Benko, Bogo-indienne, Philidor, Vienne avec les Blancs, Smith-Morra,
+  compléter Italienne / Espagnole / Londres) — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
   chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
   partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
   anonymes sans cookies.

@@ -1,5 +1,5 @@
-// Écran « Mes ouvertures » (#/ouvertures) : choix en 3 étapes (avec les Blancs, contre 1.e4,
-// contre 1.d4), un ou plusieurs répertoires par étape, étape passable. Enregistré dans
+// Écran « Mes ouvertures » (#/ouvertures) : choix en 4 étapes (avec les Blancs, contre 1.e4,
+// contre 1.d4, contre 1.c4 / 1.Cf3), un ou plusieurs répertoires par étape, étape passable. Enregistré dans
 // Mon répertoire ; l'application est ensuite rechargée pour que toutes les pages suivent le choix.
 import { GROUPES, REPERTOIRES, parGroupe, choisis, aChoisi, enregistrer } from './mon-repertoire.js';
 import { marquer as marquerVisite } from './tour.js';

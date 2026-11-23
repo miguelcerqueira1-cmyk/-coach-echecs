@@ -39,6 +39,11 @@ import f_hollandaise from './repertoires/hollandaise.js';
 import f_pirc from './repertoires/pirc.js';
 import f_alekhine from './repertoires/alekhine.js';
 import f_catalane from './repertoires/catalane.js';
+import f_grunfeld from './repertoires/grunfeld.js';
+import f_najdorf from './repertoires/najdorf.js';
+import f_dragon from './repertoires/dragon.js';
+import f_contre_anglaise from './repertoires/contre-anglaise.js';
+import f_contre_reti from './repertoires/contre-reti.js';
 import { REPERTOIRES, GROUPES } from './repertoires/meta.js';
 
 export { REPERTOIRES, GROUPES };
@@ -70,6 +75,11 @@ const PAR_REPERTOIRE = {
   'pirc': f_pirc,
   'alekhine': f_alekhine,
   'catalane': f_catalane,
+  'grunfeld': f_grunfeld,
+  'najdorf': f_najdorf,
+  'dragon': f_dragon,
+  'contre-anglaise': f_contre_anglaise,
+  'contre-reti': f_contre_reti,
 };
 
 export const LIGNES = Object.keys(REPERTOIRES).flatMap((id) => PAR_REPERTOIRE[id] || []);
