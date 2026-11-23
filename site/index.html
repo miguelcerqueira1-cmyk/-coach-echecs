@@ -47,6 +47,7 @@
       <span id="coach-pill" class="pill" title="État des explications Claude">Claude…</span>
       <span id="plan-pill" class="pill plan" title="Votre formule">Gratuit</span>
     </div>
+    <button id="btn-langue" class="lang-btn" type="button" data-no-i18n title="English / Français">EN</button>
     <button id="btn-pro" class="pro-cta" type="button">⚡ Passer Pro</button>
     <button id="btn-settings" class="icon-btn" type="button" aria-label="Réglages" title="Réglages">⚙</button>
   </header>
@@ -181,6 +182,9 @@
   <dialog id="dlg-settings">
     <form method="dialog" id="form-settings">
       <h2>Réglages</h2>
+      <label class="row" data-no-i18n>Langue / Language
+        <select id="set-langue"><option value="fr">Français</option><option value="en">English</option></select>
+      </label>
       <div class="dlg-actions left"><button type="button" id="set-aide-btn">❓ Aide, questions fréquentes et contact</button></div>
       <label class="row">Budget de calcul
         <select id="set-budget"></select>

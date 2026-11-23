@@ -187,3 +187,32 @@ test('Ma progression : courbe Lichess, classements Chess.com, routine sur 4 sema
   await page.click('[data-periode="0"]');
   await expect(page.locator('[data-periode="0"]')).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('version anglaise : bouton EN, interface traduite, notation anglaise, retour en français', async ({ page }) => {
+  await setup(page, { existant: true });
+  await page.goto('./#/moteur');
+  await page.click('#btn-langue');
+  await expect(page.locator('.tabs [data-page="entrainement"]')).toHaveText('Training');
+  await expect(page.locator('#btn-langue')).toHaveText('FR');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await page.goto('./#/repertoire');
+  await expect(page.locator('#page-repertoire')).toContainText('Queen’s Gambit');
+  await page.goto('./#/entrainement');
+  await expect(page.locator('#page-entrainement')).toContainText('Puzzles by theme');
+  await expect(page.locator('#page-entrainement')).toContainText('Play against Stockfish');
+  // Le choix de langue n'est pas une « donnée » de visiteur : il est exporté avec le reste, pas un secret.
+  await page.click('#btn-settings');
+  await expect(page.locator('#set-langue')).toHaveValue('en');
+  await page.selectOption('#set-langue', 'fr');
+  await expect(page.locator('.tabs [data-page="entrainement"]')).toHaveText('Entraînement');
+});
+
+test('première visite : choisir l’anglais sur l’accueil ne compte pas comme un ancien utilisateur', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await expect(page).toHaveURL(/#\/accueil$/);
+  await page.click('#btn-langue');
+  await expect(page).toHaveURL(/#\/accueil$/);
+  await expect(page.locator('#page-accueil')).toContainText('Choose my openings');
+  expect(await page.evaluate(() => localStorage.getItem('coach-echecs:mon-repertoire'))).toBeNull();
+});

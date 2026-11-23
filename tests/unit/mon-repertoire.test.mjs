@@ -88,3 +88,15 @@ test('sortie de répertoire générique : Sicilienne, et plusieurs répertoires 
   assert.equal(d3.ply, 1);
   assert.match(d3.note, /Défense sicilienne\) prévoit c5 ici/);
 });
+
+test('rechargement pendant la 1re visite (partie vide, cache, langue) : toujours une première visite', async () => {
+  const { initChoix: ic } = await import('../../site/js/mon-repertoire.js');
+  const m = new Mem();
+  m.setItem('coach-echecs:partie:v1', JSON.stringify({ v: 1, moves: [] }));
+  m.setItem('coach-echecs:lichess-cache-v1', '{}');
+  m.setItem('coach-echecs:langue', 'en');
+  assert.deepEqual(ic(m), { premiereVisite: true });
+  const n = new Mem();
+  n.setItem('coach-echecs:partie:v1', JSON.stringify({ v: 1, moves: [{ uci: 'e2e4' }] }));
+  assert.deepEqual(ic(n), { premiereVisite: false });
+});

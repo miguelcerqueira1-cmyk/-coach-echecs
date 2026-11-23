@@ -5,6 +5,7 @@
 //   plans viennent du texte rédigé de la fiche.
 import { Chess } from '../vendor/chess.js';
 import { sanFr } from './analysis.js';
+import { langue } from './i18n.js';
 
 const HEADS = [
   ["Queen's Gambit Declined", 'Gambit Dame refusé'],
@@ -164,6 +165,7 @@ const GENERIC = [
 // « Queen's Gambit Declined: Orthodox Defense, Main Line » → « Gambit Dame refusé : Défense orthodoxe, ligne principale »
 export function nomFr(name) {
   if (!name) return '';
+  if (langue() === 'en') return name; // version anglaise : nom officiel de la base (anglais)
   const parts = name.split(/(: |, )/);
   return parts.map((p, i) => {
     if (p === ': ' || p === ', ') return p === ': ' ? ' : ' : ', ';

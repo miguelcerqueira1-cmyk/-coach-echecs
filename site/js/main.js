@@ -7,6 +7,7 @@ import { ChoixPage } from './choix.js';
 import './pwa.js'; // service worker, bandeau de mise à jour
 import { demarrer as demarrerInstallation, sauvegarder } from './installation.js';
 import { demarrerSync } from './sync.js';
+import { initLangue, langue, choisirLangue } from './i18n.js';
 import { Game, parseMoveText } from './game.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
 import { Engine } from './engine.js';
@@ -92,6 +93,13 @@ function filterLabel() {
 }
 
 async function init() {
+  // Langue (avant tout affichage) : en anglais, la traduction suit chaque rendu.
+  try { await initLangue(); } catch { /* reste en français */ }
+  $('btn-langue').textContent = langue() === 'en' ? 'FR' : 'EN';
+  $('btn-langue').title = langue() === 'en' ? 'Passer en français' : 'Switch to English';
+  $('btn-langue').onclick = () => choisirLangue(langue() === 'en' ? 'fr' : 'en');
+  $('set-langue').value = langue();
+  $('set-langue').onchange = (e) => choisirLangue(e.target.value);
   // Avant toute écriture locale : première visite → page d'accueil (sauf lien direct vers une page).
   const { premiereVisite } = initChoix();
   if (premiereVisite && !location.hash.replace(/^#\/?/, '')) history.replaceState(null, '', '#/accueil');

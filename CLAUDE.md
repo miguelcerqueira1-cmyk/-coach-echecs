@@ -300,6 +300,37 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   `beforeinstallprompt`), ordinateur ; « Sauvegarder maintenant ». `navigator.storage.persist()`
   demandé si installée, après installation et à chaque sauvegarde. Fichier `blitzrefute-donnees-
   AAAA-MM-JJ.json` ; date de la dernière sauvegarde dans ⚙ Mes données.
+- **Problèmes par thème (2026-11-23, `problemes-core.js`, carte « 🧩 5. » de l'Entraînement)** : 26
+  thèmes Lichess (`angle` de /api/puzzle/next ; mix, pièce en prise et mat en 1 gratuits), joués
+  avec PuzzleRunner (`onResultat`, `difficulty` fonction, `vus`). Classement propre à l'appli
+  (`coach-echecs:problemes-v1` : départ 1200, Elo K=40 sur 20 problèmes puis 20, à partir de la
+  difficulté publiée par Lichess ; jamais présenté comme un classement Lichess), difficulté demandée
+  selon le classement (`difficultePour`), réussite par thème, thèmes faibles, historique par jour.
+- **Partie contre Stockfish (2026-11-23, `partie-stockfish(-core).js`, carte « 🤖 6. »)** : 10
+  niveaux — 1–6 « Skill Level » 0–12, 7–9 « UCI_LimitStrength + UCI_Elo » 1500/1900/2400 (échelle
+  officielle Stockfish, PAS Lichess/Chess.com : ne jamais l'affirmer), 10 pleine force ; option
+  `force` de `engine.analyze` (setoption seulement si changement, tout autre calcul repasse à pleine
+  force). Couleur au choix/hasard, départ depuis la fin d'une fiche, reprendre, abandonner, fin de
+  partie par chess.js, bilan par niveau (`coach-echecs:stockfish-v1`), analyse sur la page Moteur
+  (`openSan` passé à TrainingPage). Niveaux 1–4 gratuits.
+- **Synchronisation entre appareils (2026-11-23, `sync.js` / `sync-core.js`, Worker)** : code secret
+  32 caractères (base32 Crockford, `coach-echecs:sync-cle`, secret jamais exporté) ; identifiant
+  serveur = SHA-256(« blitzrefute-sync-id: » + code), contenu = « Mes données » chiffré AES-GCM
+  (clé = SHA-256(« blitzrefute-sync-cle: » + code)), gzip si disponible. Worker : `/v1/sync/<id>`
+  GET/PUT/DELETE sans code d'accès, Durable Object `SyncStore` (un par code, morceaux de 100 Ko,
+  2 Mo max, version → 409 si périmée), limite `SYNC_PER_HOUR` par IP ; migration `v2` dans
+  wrangler.toml. Client : état `coach-echecs:sync-v1` (version, empreinte, auto), décision au
+  démarrage (rien/envoyer/recevoir/conflit), envoi au passage en arrière-plan, bandeau de conflit.
+  **Inactif tant que le Worker n'est pas déployé** (apiUrl vide → la section le dit).
+- **Version anglaise (2026-11-23, `i18n.js` / `i18n-en.js`)** : `coach-echecs:langue` ('fr' par
+  défaut ; bouton EN/FR dans l'en-tête, ⚙ « Langue / Language »). En anglais : traduction à
+  l'affichage (MutationObserver sur les textes et placeholder/aria-label/title ; `EXACT` ≈ 640
+  textes + `MOTIFS` regex ; `[data-no-i18n]` pour exclure), `window.confirm` traduit, `sanFr` rend
+  la notation anglaise, `nomFr` le nom ECO anglais. **Le contenu des fiches (plans, structures,
+  textes des pièges/punitions, noms de fiches), les commentaires des leçons, l'explication gratuite
+  et une partie des messages dynamiques restent en français** : à traduire par lots (ajouter des
+  entrées à EXACT/MOTIFS ou des champs `en` dans les fiches). La langue ne compte pas comme
+  « utilisateur existant » ; une partie vide et les caches non plus (correctif du même jour).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
@@ -362,7 +393,7 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
-`youtube-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
+`youtube-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `problemes-v1`, `stockfish-v1`, `langue`, `sync-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`, `sync-cle`.
 
 ## 7. Commandes
 
@@ -435,8 +466,11 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   …Cxb5? Dxf7# et 5…Dxf2+?, Smith-Morra piège sibérien (h3? …Cd4, Dh2#) et 7…Dd6? (d5, Fb5+),
   Espagnole arche de Noé (8.Dxd4?). Feuille de route des ouvertures TERMINÉE (demande de
   l'utilisateur : « après c'est bon »).
-- Ensuite (idées validées en principe) : problèmes par thème avec classement propre, partie contre
-  Stockfish à niveau réglable, synchronisation, version anglaise ; vidéos des nouveaux répertoires — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
+- FAIT (2026-11-23, branche de travail, PAS publié) : problèmes par thème (classement propre),
+  partie contre Stockfish (10 niveaux), synchronisation chiffrée (serveur à déployer), version
+  anglaise de l'interface (contenu des fiches encore en français).
+- Ensuite : traduire le contenu des fiches en anglais ; déployer le Worker (synchro) ; vidéos des
+  nouveaux répertoires — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
   chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
   partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
   anonymes sans cookies.

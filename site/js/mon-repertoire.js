@@ -16,10 +16,18 @@ function lire(storage) {
 }
 
 // Données d'un utilisateur existant (autres que l'apparence) : il garde Gambit Dame + Caro-Kann.
+// Ne comptent pas : la langue, les caches, l'état propre à l'appareil, et la partie vide que
+// l'échiquier enregistre dès la première visite (sinon un simple rechargement — par exemple le
+// changement de langue — ferait passer un nouveau visiteur pour un ancien utilisateur).
+const NEUTRES = ['coach-echecs:langue', 'coach-echecs:lichess-cache-v1', 'coach-echecs:installation-v1', 'coach-echecs:youtube-v1'];
+function partieVide(storage, k) {
+  if (k !== 'coach-echecs:partie:v1') return false;
+  try { return !(JSON.parse(storage.getItem(k))?.moves?.length); } catch { return false; }
+}
 export function utilisateurExistant(storage = localStorage) {
   for (let i = 0; i < storage.length; i++) {
     const k = storage.key(i);
-    if (k?.startsWith('coach-echecs:') && k !== KEY) return true;
+    if (k?.startsWith('coach-echecs:') && k !== KEY && !NEUTRES.includes(k) && !partieVide(storage, k)) return true;
   }
   return false;
 }

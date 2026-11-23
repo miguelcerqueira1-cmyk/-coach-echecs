@@ -3,6 +3,7 @@
 // la variante est tronquée au premier coup qui ne serait pas légal.
 import { Chess } from '../vendor/chess.js';
 import { uciToMoveObj } from './game.js';
+import { langue } from './i18n.js';
 
 export const BUDGETS = {
   rapide: { label: 'Rapide', movetime: 1000 },
@@ -19,6 +20,7 @@ export function pieceName(p) { return PIECE_NAMES[p]; }
 
 // SAN anglaise → notation française (C, F, T, D, R).
 export function sanFr(san) {
+  if (langue() === 'en') return san; // version anglaise : notation anglaise (N, B, R, Q, K)
   return san.replace(/^[NBRQK]/, (p) => PIECE_FR[p.toLowerCase()]).replace(/=([NBRQ])/, (_, p) => '=' + PIECE_FR[p.toLowerCase()]);
 }
 

@@ -859,3 +859,6 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .prog-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .6rem; }
 .prog-chiffres > div { display: flex; flex-direction: column; }
 .hub-prog { margin: .2rem 0 .6rem; }
+
+/* Choix de la langue (en-tête) */
+.lang-btn { border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 999px; padding: .25rem .6rem; font: inherit; font-size: .8rem; font-weight: 650; cursor: pointer; }
