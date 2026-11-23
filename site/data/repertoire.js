@@ -44,6 +44,11 @@ import f_najdorf from './repertoires/najdorf.js';
 import f_dragon from './repertoires/dragon.js';
 import f_contre_anglaise from './repertoires/contre-anglaise.js';
 import f_contre_reti from './repertoires/contre-reti.js';
+import f_benoni from './repertoires/benoni.js';
+import f_bogo from './repertoires/bogo.js';
+import f_philidor from './repertoires/philidor.js';
+import f_viennoise from './repertoires/viennoise.js';
+import f_smith_morra from './repertoires/smith-morra.js';
 import { REPERTOIRES, GROUPES } from './repertoires/meta.js';
 
 export { REPERTOIRES, GROUPES };
@@ -80,6 +85,11 @@ const PAR_REPERTOIRE = {
   'dragon': f_dragon,
   'contre-anglaise': f_contre_anglaise,
   'contre-reti': f_contre_reti,
+  'benoni': f_benoni,
+  'bogo': f_bogo,
+  'philidor': f_philidor,
+  'viennoise': f_viennoise,
+  'smith-morra': f_smith_morra,
 };
 
 export const LIGNES = Object.keys(REPERTOIRES).flatMap((id) => PAR_REPERTOIRE[id] || []);

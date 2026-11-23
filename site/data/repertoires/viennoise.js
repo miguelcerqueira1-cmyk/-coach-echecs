@@ -1,0 +1,86 @@
+// Fiches du répertoire « Partie viennoise » (format et conventions : en-tête de site/data/repertoire.js).
+// Toute ligne tactique (punition, piège) doit être vérifiée par Stockfish : npm run verify:repertoire.
+//
+// 1.e4 e5 2.Cc3 : développer le Cavalier avant le Cf3, pour garder la poussée f4 ou attaquer f7 avec
+// Fc4 et la Dame.
+
+export default [
+  {
+    id: 'vie-gambit', rep: 'viennoise', famille: 'Gambit viennois', nom: '2…Cf6 3.f4 d5', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nc3 Nf6 3. f4 d5 4. fxe5 Nxe4 5. Nf3 Be7 6. d4 O-O 7. Bd3 f5',
+    plan: 'f4 attaque e5 ; après …d5 et …Cxe4, le pion e5 donne de l’espace : Cf3, d4, Fd3 et roque, puis attaque à l’aile roi (le Cavalier e4 est la cible à chasser).',
+    structure: 'Pion blanc e5 avancé, colonne f semi-ouverte pour les Blancs.',
+    punition: null,
+    piege: null,
+    cases: 'e4 (Cavalier à chasser), colonne f, e5',
+    echanger: 'Fou d3 contre le Cavalier e4',
+    conserver: 'Pion e5',
+    video: { recherche: 'Vienna Gambit 3.f4 d5 main line', url: null },
+  },
+  {
+    id: 'vie-fc4-cxe4', rep: 'viennoise', famille: 'Variante Fc4', nom: '2…Cf6 3.Fc4 Cxe4 4.Dh5', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Qh5 Nd6 5. Bb3 Nc6 6. Nb5 g6 7. Qf3 f5 8. Qd5 Qe7 9. Nxc7+ Kd8 10. Nxa8 b6',
+    plan: 'Contre la prise en e4, Dh5 menace mat en f7 : le Cavalier noir recule en d6. Puis Fb3, Cb5 et Df3-d5 visent f7 et c7 ; les Blancs gagnent la Tour a8, les Noirs piègent ensuite le Cavalier a8 (position très tranchante).',
+    structure: 'Partie ouverte et sauvage : matériel blanc de plus, développement noir en avance.',
+    punition: {
+      ligne: '1. e4 e5 2. Nc3 Nf6 3. Bc4 Nxe4 4. Qh5 Nd6 5. Bb3 Nc6 6. Nb5 Nxb5? 7. Qxf7#',
+      texte: 'Prendre le Cavalier b5 oublie la menace sur f7 : le Cavalier d6 ne défend plus f7 et Dxf7 est mat.',
+    },
+    piege: null,
+    cases: 'f7, c7, a8',
+    echanger: 'Rien : les menaces sur f7 comptent plus que le matériel',
+    conserver: 'Fou b3 (diagonale vers f7)',
+    video: { recherche: 'Vienna 3.Bc4 Nxe4 4.Qh5 Frankenstein-Dracula', url: null },
+  },
+  {
+    id: 'vie-dg4', rep: 'viennoise', famille: 'Variante Fc4', nom: '2…Cc6 3.Fc4 Fc5 4.Dg4', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nc3 Nc6 3. Bc4 Bc5 4. Qg4 Qf6 5. Nd5 Qxf2+ 6. Kd1 Kf8 7. Nh3 Qd4 8. d3',
+    plan: 'Dg4 attaque g7 ; si …Df6, Cd5 attaque c7 et la Dame. Prendre en f2 coûte cher aux Noirs : Rd1, Ch3 et Tf1 chassent la Dame et les Blancs ont une forte avance de développement.',
+    structure: 'Roi blanc en d1 mais pièces très actives ; Dame noire exposée.',
+    punition: {
+      ligne: '1. e4 e5 2. Nc3 Nc6 3. Bc4 Bc5 4. Qg4 Qf6 5. Nd5 Qxf2+? 6. Kd1 Kf8 7. Nh3 Qd4 8. d3',
+      texte: 'Gagner le pion f2 avec échec semble fort, mais la Dame noire se retrouve en l’air : Ch3, d3 puis Tf1 la chassent et la menace Cxc7 reste. Les Blancs sont nettement mieux.',
+    },
+    piege: null,
+    cases: 'g7, c7, f2',
+    echanger: 'Rien : garder les pièces pour l’attaque',
+    conserver: 'Cavalier d5',
+    video: { recherche: 'Vienna 2...Nc6 3.Bc4 Bc5 4.Qg4 trap', url: null },
+  },
+  {
+    id: 'vie-fc5', rep: 'viennoise', famille: 'Variante Fc4', nom: '2…Fc5 3.Fc4 Cf6 4.d3', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nc3 Bc5 3. Bc4 Nf6 4. d3 d6 5. f4 Nc6 6. Nf3',
+    plan: 'Contre le Fou c5, d3 puis f4 : on retrouve un Gambit du Roi refusé où les Blancs ont déjà développé Cc3 et Fc4. Plan : Cf3, roque, puis f5 ou Ca4 contre le Fou c5.',
+    structure: 'Pions blancs d3/e4/f4 ; tension en e5.',
+    punition: null,
+    piege: null,
+    cases: 'f4 (rupture), a4 (contre le Fou c5), g1-a7',
+    echanger: 'Cavalier a4 contre le Fou c5',
+    conserver: 'Fou c4',
+    video: { recherche: 'Vienna 2...Bc5 3.Bc4 Nf6 4.d3', url: null },
+  },
+  {
+    id: 'vie-cf6-cc6', rep: 'viennoise', famille: 'Variante Fc4', nom: '2…Cf6 3.Fc4 Cc6 4.d3', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nc3 Nf6 3. Bc4 Nc6 4. d3 Bb4 5. Bg5 h6 6. Bxf6 Bxc3+ 7. bxc3 Qxf6',
+    plan: 'Jeu tranquille : d3, Fg5 (clouage) et Ce2 ou Cf3 ; plus tard f4. Après les échanges, structure de pions doublés mais Fou c4 actif.',
+    structure: 'Pions blancs doublés en c ; centre fermé.',
+    punition: null,
+    piege: null,
+    cases: 'f4, d5, f7',
+    echanger: 'Fou g5 contre le Cavalier f6',
+    conserver: 'Fou c4',
+    video: { recherche: 'Vienna 2...Nf6 3.Bc4 Nc6 4.d3', url: null },
+  },
+  {
+    id: 'vie-g3', rep: 'viennoise', famille: 'Variante fianchetto', nom: '2…Cf6 3.g3 d5', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nc3 Nf6 3. g3 d5 4. exd5 Nxd5 5. Bg2 Nxc3 6. bxc3 Bd6 7. Nf3 O-O 8. O-O',
+    plan: 'Fianchetto du Fou roi : après …d5 et les échanges, le Fou g2 vise l’aile dame ; Tb1, d3 et Cd2-c4 contre e5.',
+    structure: 'Pions blancs doublés en c mais colonne b ouverte et Fou g2 actif.',
+    punition: null,
+    piege: null,
+    cases: 'b7, e5, c4',
+    echanger: 'Rien de pressé',
+    conserver: 'Fou g2',
+    video: { recherche: 'Vienna 3.g3 d5 Mieses', url: null },
+  },
+];

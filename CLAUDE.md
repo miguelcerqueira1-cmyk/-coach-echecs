@@ -10,15 +10,17 @@ maîtriser tes ouvertures et détruire les pièges en Blitz. » Les clés localS
 `coach-echecs:` (données des utilisateurs conservées).
 
 Application web **en français** d'entraînement aux ouvertures, **grand public** (joueurs de club /
-blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **24 répertoires** : avec les
-Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Anglaise), contre 1.e4
-(Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Najdorf, Dragon), contre 1.c4 /
-1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4 (+ Grünfeld) (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **233 fiches** (2026-11-23) : Gambit Dame 31,
-Caro-Kann 27 (répertoire historique du créateur), Italienne 10, Espagnole 10, Londres 9, Écossaise 10,
+blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **29 répertoires** : avec les
+Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Viennoise, Smith-Morra,
+Anglaise), contre 1.e4 (Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Philidor,
+Najdorf, Dragon), contre 1.c4 / 1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4
+(+ Grünfeld, Benoni / Benko, Bogo-indienne) (Indienne du Roi, GD refusé / Slave, Contre le
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **269 fiches** (2026-11-23) : Gambit Dame 31,
+Caro-Kann 27 (répertoire historique du créateur), Italienne 12, Espagnole 13, Londres 12, Écossaise 10,
 Anglaise 8, 1…e5 8, Sicilienne 9 (système Taimanov), Française 8, Scandinave 8, Indienne du Roi 8,
 GD refusé / Slave 10, Contre le Londres 8, Hollandaise 5, Nimzo / Indienne de la Dame 8, Pirc 7, Alekhine 8, Catalane 8, Grünfeld 8, Najdorf 7,
-Dragon 7, Contre l'Anglaise 5, Contre 1.Cf3 6 ; toutes
+Dragon 7, Contre l'Anglaise 5, Contre 1.Cf3 6, Benoni / Benko 6,
+Bogo-indienne 5, Philidor 5, Viennoise 6, Smith-Morra 6 ; toutes
 vérifiées par Stockfish (profondeur 18). Objectif de l'utilisateur : le plus de répertoires et de
 variantes possible (concurrencer les grands sites d'entraînement, prix plus bas, options en plus).
 Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans rien installer.
@@ -93,7 +95,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/pwa.js                   Service worker, bandeau de mise à jour
   js/installation.js / installation-core.js  Guide d'installation, rappels de sauvegarde, stockage persistant
   js/router.js                Navigation par hash
-  data/repertoires/meta.js    Les 24 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
+  data/repertoires/meta.js    Les 29 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
   data/repertoires/<id>.js    **Fiches d'un répertoire** (à éditer : `export default [ …fiches ]`)
   data/repertoire.js          Agrège (REPERTOIRES, GROUPES, BADGES, LIGNES) + conventions des fiches ;
                               repertoire.json, elite.json, joueurs.json GÉNÉRÉS
@@ -427,9 +429,14 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   9.Dxd5? (punition), 5…Cb4? et 6…Dxd4? (pièges) ; Najdorf 7.Cf5? et 7.Cd5? (punitions), 7…Cxe4?
   (piège Sozin) ; Dragon 7…Cg4? contre Fe2 (piège), 7.Fe3? contre Fc4 (punition), 8…Cg4? Levenfish
   (piège) ; Anglaise 6.Fxb7?? ; Écossaise 3…f6 4…fxe5? (punition). nomFr : ~50 noms ajoutés.
-- Ensuite (idées validées en principe) : plus de répertoires et de variantes, par lots vérifiés
-  (lot 3 possible : Benoni / Benko, Bogo-indienne, Philidor, Vienne avec les Blancs, Smith-Morra,
-  compléter Italienne / Espagnole / Londres) — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
+- FAIT (2026-11-23, branche de travail, PAS publié) : lot 3 — Benoni / Benko (6), Bogo-indienne (5),
+  Philidor (5), Viennoise (6, Blancs), Smith-Morra (6, Blancs), Italienne +2, Espagnole +3, Londres
+  +3 ; 269 fiches. Tactique : Bogo …Df6? (Dxe4), Philidor 4…Fe7? (Dd5) et mat de Légal, Viennoise
+  …Cxb5? Dxf7# et 5…Dxf2+?, Smith-Morra piège sibérien (h3? …Cd4, Dh2#) et 7…Dd6? (d5, Fb5+),
+  Espagnole arche de Noé (8.Dxd4?). Feuille de route des ouvertures TERMINÉE (demande de
+  l'utilisateur : « après c'est bon »).
+- Ensuite (idées validées en principe) : problèmes par thème avec classement propre, partie contre
+  Stockfish à niveau réglable, synchronisation, version anglaise ; vidéos des nouveaux répertoires — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
   chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
   partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
   anonymes sans cookies.

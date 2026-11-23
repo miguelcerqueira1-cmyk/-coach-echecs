@@ -17,8 +17,8 @@ class Mem {
   setItem(k, v) { this.m.set(k, String(v)); }
 }
 
-test('répertoires : 24, quatre groupes, racines légales, fiches gratuites existantes', () => {
-  assert.equal(Object.keys(REPERTOIRES).length, 24);
+test('répertoires : 29, quatre groupes, racines légales, fiches gratuites existantes', () => {
+  assert.equal(Object.keys(REPERTOIRES).length, 29);
   for (const r of Object.values(REPERTOIRES)) {
     assert.ok(GROUPES[r.groupe], r.id);
     assert.equal(r.couleur, r.groupe === 'blancs' ? 'w' : 'b', r.id);
@@ -26,7 +26,7 @@ test('répertoires : 24, quatre groupes, racines légales, fiches gratuites exis
   }
   const ids = new Set(LIGNES.map((e) => e.id));
   for (const id of FICHES_GRATUITES) assert.ok(ids.has(id), id);
-  assert.deepEqual(FICHES_GRATUITES, ['gd-orthodoxe', 'ita-giuoco-piano', 'esp-fermee', 'lon-classique', 'eco-fc5', 'cat-fermee', 'ang-sicilienne-inversee', 'ck-classique', 'ck-avance-short', 'e5-italienne', 'sic-taimanov', 'fr-avance', 'scan-da5', 'pirc-classique', 'ale-moderne', 'naj-anglaise', 'dragon-yougoslave', 'kid-classique', 'gdrn-orthodoxe', 'cl-c5-db6', 'grun-echange', 'hol-leningrad', 'nimzo-rubinstein', 'ca-dragon-inverse', 'cr-kia']);
+  assert.deepEqual(FICHES_GRATUITES, ['gd-orthodoxe', 'ita-giuoco-piano', 'esp-fermee', 'lon-classique', 'eco-fc5', 'cat-fermee', 'vie-gambit', 'sm-accepte', 'ang-sicilienne-inversee', 'ck-classique', 'ck-avance-short', 'e5-italienne', 'sic-taimanov', 'fr-avance', 'scan-da5', 'pirc-classique', 'ale-moderne', 'phi-hanham', 'naj-anglaise', 'dragon-yougoslave', 'kid-classique', 'gdrn-orthodoxe', 'cl-c5-db6', 'grun-echange', 'ben-moderne', 'bogo-de7', 'hol-leningrad', 'nimzo-rubinstein', 'ca-dragon-inverse', 'cr-kia']);
   // Une fiche gratuite appartient à son répertoire ; un répertoire avec contenu en a au moins une.
   for (const r of Object.values(REPERTOIRES)) {
     for (const id of r.gratuites) assert.equal(LIGNES.find((e) => e.id === id).rep, r.id);

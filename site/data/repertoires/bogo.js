@@ -1,0 +1,70 @@
+// Fiches du répertoire « Défense bogo-indienne » (format et conventions : en-tête de site/data/repertoire.js).
+// Toute ligne tactique (punition, piège) doit être vérifiée par Stockfish : npm run verify:repertoire.
+//
+// 1.d4 Cf6 2.c4 e6 3.Cf3 Fb4+ : un échec simple pour échanger ou dévier le Fou de cases noires blanc.
+
+export default [
+  {
+    id: 'bogo-de7', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 De7 5.g3 Cc6', badge: 'theorie',
+    ligne: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 Qe7 5. g3 Nc6 6. Bg2 Bxd2+ 7. Nbxd2 d6 8. O-O a5 9. e4 e5 10. d5 Nb8',
+    plan: 'La Dame protège le Fou b4 ; …Cc6, …d6 et …e5 construisent un centre solide. Après d5, le Cavalier recule en b8 pour revenir par a6 ou d7 ; …a5 fixe l’aile dame.',
+    structure: 'Centre fermé (d5/e5) ; Fous de cases noires échangés, bons Cavaliers noirs.',
+    punition: null,
+    piege: null,
+    cases: 'e5, c5, a5',
+    echanger: 'Fou b4 contre le Fou d2',
+    conserver: 'Pion e5',
+    video: { recherche: 'Bogo-Indian 4.Bd2 Qe7 5.g3 Nc6', url: null },
+  },
+  {
+    id: 'bogo-fxd2', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 Fxd2+ 5.Dxd2', badge: 'piege',
+    ligne: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 Bxd2+ 5. Qxd2 O-O 6. Nc3 d5 7. e3 Nbd7',
+    plan: 'Échanger tout de suite les Fous, roquer et bloquer avec …d5 : position solide de Gambit Dame refusé, sans mauvais Fou de cases noires à garder.',
+    structure: 'Structure de Gambit Dame refusé (d5/e6) ; jeu calme.',
+    punition: null,
+    piege: {
+      ligne: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 Bxd2+ 5. Qxd2 Ne4 6. Qc2 Qf6? 7. Qxe4',
+      texte: 'Sauter en e4 attaque la Dame, mais après Dc2 le Cavalier doit être défendu (…d5 ou …f5). …Df6 ne le protège pas : Dxe4 gagne une pièce.',
+    },
+    cases: 'e4, d5, c4',
+    echanger: 'Fou b4 contre le Fou d2',
+    conserver: 'Pion d5',
+    video: { recherche: 'Bogo-Indian 4.Bd2 Bxd2+ 5.Qxd2', url: null },
+  },
+  {
+    id: 'bogo-a5', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 a5 5.g3 d5', badge: 'theorie',
+    ligne: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 a5 5. g3 d5 6. Bg2 Nbd7 7. Qc2 c6 8. O-O O-O',
+    plan: '…a5 soutient le Fou b4 (il peut rester en b4 sans être échangé) ; puis …d5, …Cbd7, …c6 et roque : une Catalane fermée solide.',
+    structure: 'Pions noirs a5/c6/d5/e6 ; si Fxb4 …axb4, la colonne a s’ouvre pour la Tour noire.',
+    punition: null,
+    piege: null,
+    cases: 'b4, e4, c4',
+    echanger: 'Fou b4 seulement si les Blancs prennent (…axb4)',
+    conserver: 'Pion d5',
+    video: { recherche: 'Bogo-Indian 4.Bd2 a5', url: null },
+  },
+  {
+    id: 'bogo-cbd2', rep: 'bogo', famille: '4.Cbd2', nom: '4.Cbd2 b6 5.a3 Fxd2+', badge: 'theorie',
+    ligne: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Nbd2 b6 5. a3 Bxd2+ 6. Bxd2 Bb7 7. g3 O-O 8. Bg2 d6',
+    plan: 'Contre Cbd2 (qui garde la paire de Fous), …b6 et …Fb7 contrôlent e4 ; après a3, échanger en d2 et jouer …d6, …Cbd7 et …e5 contre les deux Fous blancs.',
+    structure: 'Paire de Fous blanche ; les Noirs ferment le centre pour la neutraliser.',
+    punition: null,
+    piege: null,
+    cases: 'e4, e5, d6',
+    echanger: 'Fou b4 contre le Cavalier d2',
+    conserver: 'Fou b7',
+    video: { recherche: 'Bogo-Indian 4.Nbd2 b6', url: null },
+  },
+  {
+    id: 'bogo-fe7', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 Fe7 (repli)', badge: 'theorie',
+    ligne: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+ 4. Bd2 Be7 5. Nc3 d5 6. Bf4 O-O 7. e3',
+    plan: 'Reculer le Fou en e7 : le Fou d2 blanc est mal placé et doit rejouer. On retrouve un Gambit Dame refusé où les Noirs ont gagné un temps.',
+    structure: 'Gambit Dame refusé ; Fou blanc qui a perdu un temps (d2 puis f4).',
+    punition: null,
+    piege: null,
+    cases: 'd5, c5, e4',
+    echanger: 'Pion d5 contre c4 au bon moment (…dxc4)',
+    conserver: 'Pion d5',
+    video: { recherche: 'Bogo-Indian 4.Bd2 Be7 retreat', url: null },
+  },
+];
