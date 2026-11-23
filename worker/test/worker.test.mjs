@@ -139,3 +139,28 @@ test('verrouillage après 10 échecs d’authentification', async () => {
   const r = await call('/v1/status');
   assert.equal(r.status, 429);
 });
+
+test('synchronisation : sans code d’accès, versions, conflit 409, gros contenu découpé, effacement', async () => {
+  const id = 'a'.repeat(64);
+  let r = await call(`/v1/sync/${id}`, { code: '' });
+  assert.equal(r.status, 404);
+  assert.equal((await call('/v1/sync/pas-un-id', { code: '' })).status, 400);
+  const gros = 'v1.0.' + 'x'.repeat(250 * 1024); // plusieurs morceaux de 100 Ko
+  r = await call(`/v1/sync/${id}`, { code: '', method: 'PUT', body: { data: gros, version: 0 } });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).version, 1);
+  r = await call(`/v1/sync/${id}`, { code: '' });
+  const lu = await r.json();
+  assert.equal(lu.version, 1);
+  assert.equal(lu.data, gros);
+  // Écriture basée sur une version périmée : refusée.
+  r = await call(`/v1/sync/${id}`, { code: '', method: 'PUT', body: { data: 'v1.0.autre', version: 0 } });
+  assert.equal(r.status, 409);
+  assert.equal((await r.json()).version, 1);
+  r = await call(`/v1/sync/${id}`, { code: '', method: 'PUT', body: { data: 'v1.0.court', version: 1 } });
+  assert.equal(r.status, 200);
+  assert.equal((await (await call(`/v1/sync/${id}`, { code: '' })).json()).data, 'v1.0.court');
+  assert.equal((await call(`/v1/sync/${id}`, { code: '', method: 'PUT', body: { data: 'en clair', version: 2 } })).status, 400);
+  assert.equal((await call(`/v1/sync/${id}`, { code: '', method: 'DELETE' })).status, 204);
+  assert.equal((await call(`/v1/sync/${id}`, { code: '' })).status, 404);
+});

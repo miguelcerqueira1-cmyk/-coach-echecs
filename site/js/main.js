@@ -6,6 +6,7 @@ import { AccueilPage } from './accueil.js';
 import { ChoixPage } from './choix.js';
 import './pwa.js'; // service worker, bandeau de mise à jour
 import { demarrer as demarrerInstallation, sauvegarder } from './installation.js';
+import { demarrerSync } from './sync.js';
 import { Game, parseMoveText } from './game.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
 import { Engine } from './engine.js';
@@ -167,6 +168,8 @@ async function init() {
   if (visiteAFaire()) setTimeout(() => lancerVisite(), 900);
   // Guide d'installation et rappels de sauvegarde (jamais pendant la visite guidée).
   demarrerInstallation();
+  // Synchronisation entre appareils (si activée) : section des réglages, envoi / réception automatiques.
+  demarrerSync({ apiUrl: () => state.settings.apiUrl || state.config.apiUrl });
   try {
     await engine.load();
   } catch { /* état d'erreur déjà affiché */ }

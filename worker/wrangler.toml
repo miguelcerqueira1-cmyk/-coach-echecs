@@ -17,7 +17,16 @@ ALLOWED_ORIGINS = "http://localhost:4173"
 name = "GATE"
 class_name = "Gate"
 
+# Synchronisation entre appareils (un objet par code, contenu chiffré sur l'appareil).
+[[durable_objects.bindings]]
+name = "SYNC"
+class_name = "SyncStore"
+
 # Durable Object à stockage SQLite : disponible sur l'offre gratuite.
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Gate"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["SyncStore"]

@@ -36,6 +36,16 @@ export class Gate extends DurableObject {
     await this.ctx.storage.put('fails', f);
   }
 
+  // Synchronisation : limite par IP et par heure (lectures et écritures).
+  async consumeSync(ip, perHour) {
+    const hour = Math.floor(Date.now() / 3600000);
+    const f = await this._get('sync', { period: hour, ips: {} });
+    if ((f.ips[ip] || 0) >= perHour) return false;
+    f.ips[ip] = (f.ips[ip] || 0) + 1;
+    await this.ctx.storage.put('sync', f);
+    return true;
+  }
+
   // Relais Opening Explorer : limite séparée, sans toucher au quota Claude.
   async consumeExplorer(perMinute) {
     const minute = Math.floor(Date.now() / 60000);
@@ -67,13 +77,67 @@ export class Gate extends DurableObject {
   }
 }
 
+// Synchronisation entre appareils : un Durable Object par compte de synchronisation (identifiant
+// dérivé du code secret de l'utilisateur, 64 caractères hexadécimaux). Le contenu est CHIFFRÉ sur
+// l'appareil (AES-GCM, clé dérivée du même code) : le serveur ne stocke qu'un bloc illisible.
+// Version incrémentée à chaque écriture : une écriture basée sur une version périmée est refusée (409).
+const SYNC_MAX = 2 * 1024 * 1024;
+const SYNC_CHUNK = 100 * 1024;
+export class SyncStore extends DurableObject {
+  async lire() {
+    const meta = await this.ctx.storage.get('meta');
+    if (!meta) return null;
+    const keys = Array.from({ length: meta.n }, (_, i) => `c${i}`);
+    const parts = await this.ctx.storage.get(keys);
+    return { version: meta.version, updatedAt: meta.updatedAt, data: keys.map((k) => parts.get(k) || '').join('') };
+  }
+
+  async ecrire(data, attendu) {
+    const meta = await this.ctx.storage.get('meta');
+    const version = meta?.version || 0;
+    if (attendu !== version) return { ok: false, version };
+    const n = Math.ceil(data.length / SYNC_CHUNK) || 1;
+    const entries = {};
+    for (let i = 0; i < n; i++) entries[`c${i}`] = data.slice(i * SYNC_CHUNK, (i + 1) * SYNC_CHUNK);
+    const nouveau = { version: version + 1, updatedAt: new Date().toISOString(), n };
+    await this.ctx.storage.put({ ...entries, meta: nouveau });
+    if (meta && meta.n > n) await this.ctx.storage.delete(Array.from({ length: meta.n - n }, (_, i) => `c${n + i}`));
+    return { ok: true, version: nouveau.version, updatedAt: nouveau.updatedAt };
+  }
+
+  async effacer() { await this.ctx.storage.deleteAll(); }
+}
+
+async function syncRoute(request, env, url, headers) {
+  const id = url.pathname.slice('/v1/sync/'.length);
+  if (!/^[0-9a-f]{64}$/.test(id)) return json({ error: 'Identifiant de synchronisation invalide' }, 400, headers);
+  if (!env.SYNC) return json({ error: 'Synchronisation non configurée sur ce serveur.' }, 503, headers);
+  const gate = env.GATE.get(env.GATE.idFromName('global'));
+  const ip = request.headers.get('cf-connecting-ip') || 'inconnue';
+  if (!(await gate.consumeSync(ip, Number(env.SYNC_PER_HOUR || 120)))) return json({ error: 'Trop de synchronisations cette heure-ci. Réessayez plus tard.' }, 429, headers);
+  const store = env.SYNC.get(env.SYNC.idFromName(id));
+  if (request.method === 'GET') {
+    const r = await store.lire();
+    return r ? json(r, 200, headers) : json({ error: 'Aucune donnée pour ce code.' }, 404, headers);
+  }
+  if (request.method === 'DELETE') { await store.effacer(); return new Response(null, { status: 204, headers }); }
+  if (request.method !== 'PUT') return json({ error: 'Méthode non autorisée' }, 405, headers);
+  const raw = await request.text();
+  if (raw.length > SYNC_MAX + 1024) return json({ error: 'Données trop volumineuses pour la synchronisation (2 Mo maximum).' }, 413, headers);
+  let body;
+  try { body = JSON.parse(raw); } catch { return json({ error: 'JSON invalide' }, 400, headers); }
+  if (typeof body?.data !== 'string' || !/^v1\./.test(body.data) || !Number.isInteger(body.version) || body.version < 0) return json({ error: 'Contenu de synchronisation invalide' }, 400, headers);
+  const r = await store.ecrire(body.data, body.version);
+  return r.ok ? json(r, 200, headers) : json({ error: 'Les données ont changé sur un autre appareil.', version: r.version }, 409, headers);
+}
+
 function corsHeaders(env, origin) {
   const allowed = (env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
   const h = { vary: 'Origin' };
   if (origin && allowed.includes(origin)) {
     h['access-control-allow-origin'] = origin;
     h['access-control-allow-headers'] = 'authorization, content-type';
-    h['access-control-allow-methods'] = 'GET, POST, OPTIONS';
+    h['access-control-allow-methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
     h['access-control-max-age'] = '86400';
   }
   return { headers: h, allowed: !origin || allowed.includes(origin) };
@@ -134,6 +198,8 @@ export default {
       return new Response('API Coach Échecs : accès réservé.\n', { headers: { 'content-type': 'text/plain; charset=utf-8' } });
     }
     if (!cors.allowed) return json({ error: 'Origine non autorisée' }, 403, cors.headers);
+    // Synchronisation : ouverte à tous les utilisateurs (pas de code d'accès), contenu chiffré.
+    if (url.pathname.startsWith('/v1/sync/')) return syncRoute(request, env, url, cors.headers);
     if (!['/v1/status', '/v1/explain', '/v1/explorer'].includes(url.pathname)) return json({ error: 'Introuvable' }, 404, cors.headers);
 
     if (!env.ACCESS_CODE || env.ACCESS_CODE.length < 8) {
