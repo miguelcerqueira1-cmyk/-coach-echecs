@@ -80,4 +80,4 @@ Chaque modification de la branche `main` republie le site automatiquement.
 
 ## Licence
 
-GPL-3.0-or-later (Stockfish est sous GPLv3). Pièces : Colin M.L. Burnett (GPLv2+).
+GPL-3.0-or-later (Stockfish est sous GPLv3). Pièces : « Celtic » de Maurizio Monge (MIT, voir site/pieces/LICENSE.txt).

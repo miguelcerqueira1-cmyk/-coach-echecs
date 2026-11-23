@@ -1,5 +1,5 @@
 // Génère les icônes PNG de l'application installable (site/icons/) à partir du cavalier
-// blanc cburnett (site/pieces/wN.svg), sur fond « Nuit néon ». À relancer seulement si
+// blanc « Celtic » (site/pieces/wN.svg), sur fond « Nuit néon ». À relancer seulement si
 // l'icône change : les PNG sont versionnés. Usage : node scripts/icons.mjs
 import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

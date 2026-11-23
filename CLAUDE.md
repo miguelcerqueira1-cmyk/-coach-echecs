@@ -93,7 +93,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
                               repertoire.json, elite.json, joueurs.json GÉNÉRÉS
   js/mon-repertoire.js        Ouvertures choisies (`coach-echecs:mon-repertoire`), filtrerData
   js/accueil.js, js/choix.js  Page d'accueil publique, écran de choix des ouvertures
-  pieces/                     SVG cburnett ; vendor/ et engine/ GÉNÉRÉS (postinstall)
+  pieces/                     SVG « Celtic » (Maurizio Monge, MIT, LICENSE.txt) ; vendor/ et engine/ GÉNÉRÉS (postinstall)
 worker/src/                   Cloudflare Worker (API Claude, relais explorer) : index.js, prompt.js
 scripts/                      vendor, build (→ dist/), serve, icons, repertoire (ECO + noms par coup → JSON),
                               verify-repertoire (+ uci-node, Stockfish Node), probe-line,
@@ -303,7 +303,7 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   public et le JS, drapeau modifiable) ; GitHub Pages interdit un usage principalement commercial
   (SaaS) → avant de vendre : hébergement (ex. Cloudflare Pages), dépôt privé, vérification de
   licence côté serveur (Worker) + paiement (Stripe) ; conditions d'usage commercial des API
-  Lichess / Chess.com et licences (Stockfish GPLv3, pièces cburnett GPL) à vérifier.
+  Lichess / Chess.com et licences (Stockfish GPLv3 ; pièces « Celtic » MIT depuis le 2026-11-23, auparavant cburnett GPL) à vérifier.
 
 - **Décisions de vente (2026-10-26)** : prix **29 € accès à vie** ; paiement **Lemon Squeezy**
   (revendeur officiel : TVA, factures, clés de licence) ; statut micro-entreprise **en cours de
