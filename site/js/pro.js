@@ -23,6 +23,7 @@ export const PRO_FEATURES = [
   ['🧠', 'Répétition espacée', 'Les lignes reviennent juste avant que vous les oubliiez'],
   ['🎯', 'Positions de mes parties', 'Vos sorties de répertoire Lichess / Chess.com transformées en exercices'],
   ['📖', 'Tous les cours', 'Chaque variante en leçon pas à pas, piège et punition à jouer'],
+  ['♚', 'Toutes les finales essentielles', 'Lucena, Philidor, opposition, règle du carré : jouées contre Stockfish'],
 ];
 
 export function isPro() {

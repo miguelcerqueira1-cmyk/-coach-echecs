@@ -13,6 +13,8 @@ import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { PuzzleRunner } from './puzzles.js';
+import { FinaleRunner, chargerFinales } from './finales.js';
+import FINALES from '../data/finales.js';
 import { loadProgress, saveProgress, dashboard, pickFiches, planTheorie, recordLesson, vraiesErreurs, markCorrige, bilanFiches } from './progress.js';
 import { LessonView } from './cours.js';
 import { courseOrder, courseOrderFreq } from './lesson-core.js';
@@ -148,6 +150,7 @@ export class TrainingPage {
           </details>
         </section>
       </div>
+      ${this.finalesHtml()}
       <section class="card hub-card hub-real" data-reelles>
         <h2>🎯 Positions de mes parties${lock}</h2>
         ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
@@ -200,6 +203,12 @@ export class TrainingPage {
       this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '0', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
     this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
+    this.el.querySelectorAll('[data-finale-id]').forEach((b) => b.addEventListener('click', () => {
+      const f = FINALES.find((x) => x.id === b.dataset.finaleId);
+      if (!f) return;
+      if (!f.gratuit && !isPro()) { openPaywall({ reason: `La finale « ${f.titre} »` }); return; }
+      this.runFinale(f);
+    }));
     this.el.querySelector('[data-real]')?.addEventListener('click', need('« Positions de mes parties »', () => this.runReelles()));
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
     this.el.querySelector('[data-lines]').addEventListener('click', need('L’entraînement en répétition espacée', () => {
@@ -557,6 +566,33 @@ export class TrainingPage {
         const msg = r.total ? `Problèmes : ${r.ok} / ${r.total} réussi(s) du premier coup${r.total >= n && n === 10 ? ' (noté dans ton suivi du soir)' : ''}.` : 'Problèmes interrompus.';
         this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
+    });
+  }
+
+  // Finales essentielles : liste (réussies ✔, sans indice ⭐) et partie contre Stockfish.
+  finalesHtml() {
+    const p = chargerFinales();
+    const ok = FINALES.filter((f) => p[f.id]?.ok).length;
+    const but = { mat: 'mater', promotion: 'aller à dame', nulle: 'tenir la nulle' };
+    return `<section class="card hub-card hub-finales" data-finales>
+      <h2>♚ 4. Finales essentielles</h2>
+      <p class="small">Les finales à connaître, jouées contre Stockfish : il vérifie après chaque coup que tu gardes le bon résultat. ${ok} / ${FINALES.length} réussie(s).</p>
+      <ul class="finales-list">${FINALES.map((f) => {
+        const r = p[f.id];
+        const etat = r?.sansIndice ? '⭐' : r?.ok ? '✔' : '';
+        const lock = !f.gratuit && !isPro() ? ' <span class="lock-badge">🔒 Pro</span>' : '';
+        return `<li><button type="button" class="finale-btn" data-finale-id="${f.id}"><span>${etat ? `<span class="finale-etat">${etat}</span> ` : ''}<strong>${esc(f.titre)}</strong>${lock}</span><span class="muted tiny">but : ${but[f.but]}</span></button></li>`;
+      }).join('')}</ul>
+      <p class="muted tiny">✔ réussie · ⭐ réussie sans indice</p>
+    </section>`;
+  }
+
+  runFinale(f) {
+    this.s = null;
+    window.scrollTo(0, 0);
+    this.drill = new FinaleRunner({
+      el: this.el, engine: this.engine, finale: f,
+      onDone: () => { this.drill?.destroy?.(); this.drill = null; this.view = null; this.renderSetup(); },
     });
   }
 

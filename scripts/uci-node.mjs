@@ -37,7 +37,8 @@ export class NodeEngine {
     this.send(`go depth ${depth}`);
     const best = await this.wait((l) => l.startsWith('bestmove'));
     const infos = this.lines.filter((l) => l.startsWith('info depth') && l.includes(' pv ') && !l.includes('bound'));
-    const last = infos.at(-1) || '';
+    // Mat trouvé très vite : parfois seules des lignes « bound » ; on prend alors la dernière avec un score.
+    const last = infos.at(-1) || this.lines.filter((l) => l.startsWith('info depth') && / score /.test(l)).at(-1) || '';
     const sc = last.match(/score (cp|mate) (-?\d+)/);
     const d = last.match(/ depth (\d+)/);
     return {

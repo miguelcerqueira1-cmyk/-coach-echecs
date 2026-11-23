@@ -431,3 +431,29 @@ test('Routine : 10 problèmes Lichess dans l’appli (dernier coup adverse, coup
   await page.click('#page-entrainement [data-quit]');
   await expect(page.locator('.hub-result')).toContainText('Problèmes : 0 / 2');
 });
+
+test('Finales essentielles : jouer contre Stockfish, indice, verdict, progression', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/entrainement');
+  await engineReady(page);
+  const card = page.locator('[data-finales]');
+  await expect(card).toContainText('Finales essentielles');
+  await expect(card.locator('[data-finale-id]')).toHaveCount(8);
+  // Mat avec deux Tours : 1.Th5 (Stockfish) puis la réponse adverse.
+  await card.locator('[data-finale-id="escalier"]').click();
+  const F = page.locator('#page-entrainement [data-finale="escalier"]');
+  await expect(F).toContainText('La méthode');
+  await page.click('#page-entrainement [data-indice]');
+  await expect(page.locator('#page-entrainement .board-arrows line.arrow-best')).toHaveCount(1, { timeout: 15000 });
+  await sq(page, 'h1').click();
+  await sq(page, 'h5').click();
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Il a joué', { timeout: 15000 });
+  await expect(F.locator('[data-compte]')).toContainText('Coups joués : 1');
+  await page.click('#page-entrainement [data-quit]');
+  await expect(page.locator('[data-finales]')).toBeVisible();
+  // Progression : une réussie notée apparaît avec ✔.
+  await page.evaluate(() => localStorage.setItem('coach-echecs:finales-v1', JSON.stringify({ dame: { ok: true, sansIndice: true, essais: 1 } })));
+  await page.reload();
+  await expect(page.locator('[data-finales]')).toContainText('1 / 8 réussie(s)');
+  await expect(page.locator('[data-finale-id="dame"]')).toContainText('⭐');
+});

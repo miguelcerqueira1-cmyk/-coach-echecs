@@ -1,0 +1,63 @@
+{
+ "engine": "Stockfish 18 Lite WASM",
+ "depth": 20,
+ "date": "2026-11-23",
+ "finales": {
+  "escalier": {
+   "fen": "8/8/8/4k3/8/8/8/R3K2R w - - 0 1",
+   "but": "mat",
+   "cp": 9993,
+   "ok": true,
+   "bestmove": "h1h5"
+  },
+  "dame": {
+   "fen": "8/8/8/4k3/8/8/8/4K2Q w - - 0 1",
+   "but": "mat",
+   "cp": 9990,
+   "ok": true,
+   "bestmove": "h1c6"
+  },
+  "tour": {
+   "fen": "8/8/8/3k4/8/8/8/4K2R w - - 0 1",
+   "but": "mat",
+   "cp": 458,
+   "ok": true,
+   "bestmove": "e1d2"
+  },
+  "opposition": {
+   "fen": "4k3/8/4K3/4P3/8/8/8/8 w - - 0 1",
+   "but": "promotion",
+   "cp": 1289,
+   "ok": true,
+   "bestmove": "e6f6"
+  },
+  "carre": {
+   "fen": "7k/8/8/p7/8/8/8/4K3 w - - 0 1",
+   "but": "nulle",
+   "cp": 0,
+   "ok": true,
+   "bestmove": "e1d2"
+  },
+  "opposition-nulle": {
+   "fen": "8/8/4k3/8/4P3/4K3/8/8 b - - 0 1",
+   "but": "nulle",
+   "cp": -1,
+   "ok": true,
+   "bestmove": "e6e5"
+  },
+  "lucena": {
+   "fen": "1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1",
+   "but": "promotion",
+   "cp": 482,
+   "ok": true,
+   "bestmove": "c1d1"
+  },
+  "philidor": {
+   "fen": "3k4/8/8/3PK3/8/8/7R/r7 b - - 0 1",
+   "but": "nulle",
+   "cp": -4,
+   "ok": true,
+   "bestmove": "a1g1"
+  }
+ }
+}

@@ -261,6 +261,16 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   sur l'accueil et dans la FAQ (9 questions). La page de contact de Lichess autorise l'usage
   commercial (« You are welcome to use Lichess for your activity, even commercial ») ; e-mail de
   confirmation envoyé par l'utilisateur (réponse à intégrer ici).
+- **Finales essentielles (2026-11-23)** : `site/data/finales.js` (8 positions : escalier, R+D, R+T,
+  opposition gagnante, carré, défense par l'opposition, Lucena, Philidor ; but mat / promotion /
+  nulle, limite de coups, méthode écrite ; 3 gratuites) vérifiées par `scripts/verify-finales.mjs`
+  (Stockfish profondeur 20 → `data/finales-verif.json`, `--check` en CI). `finales.js` (FinaleRunner,
+  carte « ♚ 4. Finales essentielles » de l'Entraînement) : Stockfish joue l'adversaire (500 ms) ;
+  après chaque coup, `finales-core.apresMonCoup` (seuils : gain ≥ +3 pour mat/promotion, ≥ −1,5
+  pour nulle ; pat = raté) ; échec → coup conseillé ; indice = flèche ; progression
+  `coach-echecs:finales-v1` (✔ réussie, ⭐ sans indice). Piège : Stockfish lite répond
+  « bestmove (none) » sur R+D avec le roi noir en d5 (position remplacée ; le coup est annulé si
+  le moteur ne répond pas).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
