@@ -4,8 +4,8 @@
 // personnelle : page, version, navigateur, taille d'écran, état du moteur.
 
 export const FAQ = [
-  ['Comment installer l’appli sur mon téléphone ?', 'iPhone : ouvre le site dans Safari, touche le bouton Partager puis « Sur l’écran d’accueil ». Android : dans Chrome, menu ⋮ puis « Installer l’application ». L’appli s’ouvre ensuite comme les autres, même hors connexion pour l’essentiel.'],
-  ['Où sont enregistrées mes données ?', 'Uniquement sur ton appareil : progression, routine, réglages. Rien n’est envoyé sur un serveur. Pour passer sur un autre appareil : ⚙ Réglages → Mes données → Exporter, puis Importer sur le nouvel appareil.'],
+  ['Comment installer l’appli sur mon téléphone ?', 'iPhone : ouvre le site dans Safari, touche le bouton Partager puis « Sur l’écran d’accueil ». Android : dans Chrome, menu ⋮ puis « Installer l’application ». L’appli s’ouvre ensuite comme les autres, même hors connexion pour l’essentiel. Le guide illustré est dans ⚙ Réglages → « 📲 Comment installer l’appli ».'],
+  ['Où sont enregistrées mes données ?', 'Uniquement sur ton appareil : progression, routine, réglages. Rien n’est envoyé sur un serveur. Pense à faire une sauvegarde de temps en temps (⚙ Réglages → Mes données → Exporter) : sur iPhone, Safari peut effacer les données d’un site non installé après quelques semaines sans visite. Pour passer sur un autre appareil : ⚙ Réglages → Mes données → Exporter, puis Importer sur le nouvel appareil.'],
   ['Comment charger mes parties ?', 'Page « Mes parties » : touche « Se connecter avec Lichess » (connexion officielle, ton mot de passe n’est jamais vu par l’appli) et/ou indique ton pseudo Chess.com, puis « Charger mes parties ».'],
   ['D’où viennent les coups conseillés et les évaluations ?', 'Du moteur Stockfish, qui calcule sur ton appareil. Les lignes des fiches sont vérifiées par Stockfish ; les problèmes viennent de la base publique de Lichess. Rien n’est inventé.'],
   ['Comment changer ma routine du jour ?', 'Entraînement → Ma routine du jour → « ⚙ Modifier » : temps par jour, sites et cadences.'],

@@ -1,12 +1,9 @@
 // Application installable : enregistrement du service worker (sw.js), bandeau
-// « Nouvelle version disponible » et aide à l'installation dans ⚙ Réglages.
+// « Nouvelle version disponible ». Guide d'installation et sauvegardes : installation.js.
 // Importé pour ses effets par main.js ; aucune dépendance au reste de l'application.
 
-const $ = (id) => document.getElementById(id);
 const UPDATE_CHECK_MS = 30 * 60 * 1000;
 
-const standalone = () => window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
-const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
 
 function injectStyle() {
   const style = document.createElement('style');
@@ -64,42 +61,6 @@ async function registerServiceWorker() {
   });
 }
 
-// Section « Installer l'application » ajoutée aux Réglages (avant « Avancé »).
-function installHelp() {
-  const form = $('form-settings');
-  if (!form) return;
-  const box = document.createElement('section');
-  box.id = 'pwa-install';
-  box.innerHTML = `<h3>Application sur l’écran d’accueil</h3>
-    <p class="muted small" id="pwa-install-text"></p>
-    <div class="dlg-actions left"><button type="button" id="pwa-install-btn" hidden>Installer l’application</button></div>`;
-  form.insertBefore(box, form.querySelector('details') || form.querySelector('.dlg-actions:last-of-type'));
-  const text = $('pwa-install-text');
-  const btn = $('pwa-install-btn');
-  const offline = 'Après une première visite en ligne, le moteur, les fiches du répertoire et l’entraînement fonctionnent hors connexion.';
-  if (standalone()) text.textContent = `Application installée. ${offline}`;
-  else if (isIos()) text.textContent = `Sur iPhone/iPad (Safari) : Partager → « Sur l’écran d’accueil ». ${offline}`;
-  else text.textContent = `Menu du navigateur → « Installer l’application » (Chrome, Edge) ou « Ajouter à l’écran d’accueil ». ${offline}`;
-  let deferred = null;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); // pas de bandeau imposé : le bouton reste discret dans les Réglages
-    deferred = e;
-    btn.hidden = false;
-  });
-  btn.onclick = async () => {
-    if (!deferred) return;
-    deferred.prompt();
-    try { await deferred.userChoice; } catch { /* rien */ }
-    deferred = null;
-    btn.hidden = true;
-  };
-  window.addEventListener('appinstalled', () => {
-    btn.hidden = true;
-    text.textContent = `Application installée. ${offline}`;
-  });
-}
-
 injectStyle();
-installHelp();
 if (document.readyState === 'complete') registerServiceWorker();
 else window.addEventListener('load', registerServiceWorker, { once: true });

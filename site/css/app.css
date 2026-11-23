@@ -829,6 +829,20 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .dlg-aide .faq { border-bottom: 1px solid var(--border); padding: .35rem 0; }
 .dlg-aide .faq summary { cursor: pointer; font-weight: 600; }
 .dlg-aide textarea { width: 100%; font-size: 16px; }
+/* Guide d'installation et rappels de sauvegarde */
+.inst-bandeau { position: fixed; left: 1rem; right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom)); max-width: 30rem; margin: 0 auto; z-index: 999;
+  background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius); padding: .7rem .9rem; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.inst-bandeau p { margin: 0; }
+.inst-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: .5rem; }
+.dlg-installer { max-width: 36rem; }
+.inst-etapes { list-style: none; padding: 0; margin: .4rem 0 .8rem; display: grid; gap: .55rem; }
+.inst-etape { display: grid; grid-template-columns: 1.7rem 1.9rem minmax(0, 1fr); align-items: center; gap: .4rem; }
+.inst-num { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); font-weight: 700; font-size: .85rem; }
+.inst-ico { display: inline-grid; place-items: center; color: var(--accent); font-size: 1.2rem; }
+.inst-ok { color: var(--accent); font-weight: 600; }
+.inst-autres { margin: .3rem 0 .6rem; }
+.inst-autres summary { cursor: pointer; font-weight: 600; }
+.inst-autres h4 { margin: .6rem 0 .2rem; }
 /* Finales essentielles */
 .finales-list { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .35rem; }
 .finale-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: .5rem; text-align: left; flex-wrap: wrap; }

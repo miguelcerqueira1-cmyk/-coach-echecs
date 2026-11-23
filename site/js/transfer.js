@@ -5,7 +5,7 @@
 const PREFIX = 'coach-echecs:';
 export const SECRETS = ['coach-echecs:jeton-lichess', 'coach-echecs:code-acces', 'coach-echecs:cle-youtube'];
 // Formule Pro : propre à l'appareil, jamais transportée par un fichier.
-const SKIP = [...SECRETS, 'coach-echecs:pro', 'coach-echecs:youtube-v1', 'coach-echecs:partie-illisible']; // caches et brouillons
+const SKIP = [...SECRETS, 'coach-echecs:pro', 'coach-echecs:youtube-v1', 'coach-echecs:partie-illisible', 'coach-echecs:installation-v1']; // caches, brouillons, état propre à l'appareil
 export const FORMAT = 'coach-echecs-donnees';
 
 function keysOf(storage) {

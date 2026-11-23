@@ -4,7 +4,8 @@ import { bindPaywall, renderPlan, openPaywall, setPaymentUrl } from './pro.js';
 import { initChoix, choisis, resume } from './mon-repertoire.js';
 import { AccueilPage } from './accueil.js';
 import { ChoixPage } from './choix.js';
-import './pwa.js'; // service worker, bandeau de mise à jour, aide à l'installation
+import './pwa.js'; // service worker, bandeau de mise à jour
+import { demarrer as demarrerInstallation, sauvegarder } from './installation.js';
 import { Game, parseMoveText } from './game.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
 import { Engine } from './engine.js';
@@ -26,7 +27,7 @@ import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
 import { YouTubeClient } from './youtube.js';
 import { THEMES, BOARDS, applyAppearance } from './theme.js';
-import { exportData, importData, describe } from './transfer.js';
+import { importData, describe } from './transfer.js';
 import { TrainingPage } from './training.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
@@ -164,6 +165,8 @@ async function init() {
   });
   // Premier lancement, ouvertures choisies : visite guidée (une fois).
   if (visiteAFaire()) setTimeout(() => lancerVisite(), 900);
+  // Guide d'installation et rappels de sauvegarde (jamais pendant la visite guidée).
+  demarrerInstallation();
   try {
     await engine.load();
   } catch { /* état d'erreur déjà affiché */ }
@@ -1086,15 +1089,8 @@ function bindUi() {
   $('dlg-settings').addEventListener('close', () => applyAppearance(state.settings));
   // Mes données : export / import par fichier (sans les secrets).
   $('data-export').onclick = () => {
-    const dump = exportData();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(dump)], { type: 'application/json' }));
-    a.download = `coach-echecs-donnees-${dump.exportedAt.slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    $('data-msg').textContent = `Fichier créé : ${describe(dump)}. Ouvrez l’appli sur l’autre appareil → ⚙ Réglages → Importer.`;
+    const dump = sauvegarder();
+    $('data-msg').textContent = `Fichier créé : ${describe(dump)}. Range-le en lieu sûr (Fichiers, Drive, e-mail) ; sur l’autre appareil : ⚙ Réglages → Importer.`;
   };
   $('data-import').onchange = async (ev) => {
     const f = ev.target.files?.[0];

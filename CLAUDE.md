@@ -88,7 +88,8 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/storage.js               localStorage (partie, réglages, secrets locaux)
   js/theme.js                 Thèmes / styles d'échiquier / couleur principale
   js/transfer.js              Export/import des données (sans secrets)
-  js/pwa.js                   Service worker, bandeau de mise à jour, aide à l'installation
+  js/pwa.js                   Service worker, bandeau de mise à jour
+  js/installation.js / installation-core.js  Guide d'installation, rappels de sauvegarde, stockage persistant
   js/router.js                Navigation par hash
   data/repertoires/meta.js    Les 16 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
   data/repertoires/<id>.js    **Fiches d'un répertoire** (à éditer : `export default [ …fiches ]`)
@@ -282,6 +283,19 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   (`coach-echecs:classements-v1`, 600 max, rempli à chaque import). Routine sur 4 semaines (jours
   actifs, complets, moyennes problèmes / menaces / au temps, tendances) ; entraînement (variantes
   apprises, finales, positions corrigées).
+- **Installation et sauvegardes (2026-11-23, `installation.js` / `installation-core.js`)** :
+  état propre à l'appareil `coach-echecs:installation-v1` (jours de visite, premiereDonnee,
+  derniereSauvegarde, refus ; jamais exporté, écrit seulement une fois des ouvertures choisies pour
+  ne pas fausser la 1re visite). Bandeau en bas (jamais pendant la visite guidée ni sur une
+  fenêtre ouverte), un seul à la fois : « 📲 Installe BlitzRefute » à partir du 2e jour de visite
+  si non installée (téléphone, ou ordinateur avec invitation du navigateur), « Plus tard » = 14 j
+  de calme, 3 refus max ; sinon « 💾 Pense à sauvegarder » (données depuis 7 j sans sauvegarde,
+  puis tous les 30 j, 14 j sur iPhone non installé ; « Plus tard » = 7 j). Guide `#dlg-installer`
+  (aussi ⚙ « 📲 Comment installer l'appli ») : étapes illustrées (icônes SVG dessinées) pour iPhone
+  Safari, iPhone autre navigateur (copier l'adresse pour Safari), Android (bouton direct si
+  `beforeinstallprompt`), ordinateur ; « Sauvegarder maintenant ». `navigator.storage.persist()`
+  demandé si installée, après installation et à chaque sauvegarde. Fichier `blitzrefute-donnees-
+  AAAA-MM-JJ.json` ; date de la dernière sauvegarde dans ⚙ Mes données.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
@@ -344,7 +358,7 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
-`youtube-v1`, `pro` (formule, propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
+`youtube-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`.
 
 ## 7. Commandes
 
@@ -393,11 +407,8 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   site web installable (PWA), pas d'App Store / Google Play pour l'instant** (pas de frais ni de
   commission de 15 %, paiement libre, mises à jour immédiates). Android (TWA, 25 $) plus tard si les
   ventes suivent ; iPhone seulement en cas de forte demande.
-- PROCHAINE ÉTAPE PROPOSÉE (pas encore commencée) : guide d'installation (bandeau « Installer
-  l'appli » après la 1re visite, étapes illustrées iPhone Safari → Partager → « Sur l'écran
-  d'accueil », bouton direct Android) + protection des données des clients (Safari peut effacer le
-  stockage d'un site non installé après quelques semaines sans visite : inciter à installer,
-  rappels de sauvegarde « Mes données », plus tard synchronisation entre appareils).
+- FAIT (2026-11-23) : 11. Guide d'installation + protection des données (voir § 5,
+  « Installation et sauvegardes »). Reste : synchronisation entre appareils (plus tard, serveur).
 - Ensuite (idées validées en principe) : plus de répertoires et de variantes, par lots vérifiés
   (Pirc, Alekhine, Catalane, Grünfeld, Najdorf / Dragon, contre 1.c4 / 1.Cf3, compléter Écossaise et
   Contre le Londres) — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
