@@ -1,4 +1,4 @@
-# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-10-26)
+# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-11-23)
 
 À lire en premier dans toute nouvelle session. Le code complet est dans le dépôt : ce fichier
 explique le but, l'organisation, les choix et les règles. Ne pas y recopier de code.
@@ -45,8 +45,9 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
 | `#/accueil` | Page publique (1re visite, logo) : marque, fonctions, ouvertures (fiches publiées / « bientôt »), formules Gratuit / Pro 29 €, « Choisir mes ouvertures ». |
 | `#/ouvertures` | Choix en 3 étapes (Blancs, contre 1.e4, contre 1.d4), plusieurs ou aucun par étape, au moins un au total ; enregistré puis rechargement sur `#/repertoire`. Aussi depuis ⚙ « Mes ouvertures ». |
 | `#/moteur` | Échiquier ; conseil Stockfish après chaque coup réellement joué (confirmer pour l'enregistrer) ; panneau « Coup optimal » (Stockfish local, Lichess Cloud Eval, meilleur % de victoire à mon niveau, coup des maîtres, coup de l'Élite) ; navigation ⏮◀▶⏭ et analyse des positions passées ; explication gratuite sans IA (ou Claude si configuré) ; mode « Indice d'abord » ; noms/Elo des joueurs au-dessus de l'échiquier ; « Jouer la suite jusqu'à la fin » (théorie des maîtres puis Stockfish) ; « Bilan de la partie » ; import/export PGN/FEN. |
-| `#/repertoire` | Fiches des ouvertures choisies (146 au total) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
+| `#/repertoire` | Fiches des ouvertures choisies (168 au total) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
 | `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir, piège et punition **jouables coup par coup** sur l'échiquier → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **🎯 Positions de mes parties** (ex-« Mes vraies erreurs » : sorties de répertoire et punitions manquées de mes parties Lichess/Chess.com, à rejouer jusqu'à validation), **📊 progression** par variante, repliée (maîtrise %, série 🔥, sorties réelles ⚠). Point d'entrée : **📅 Ma routine du jour** en haut (a remplacé « Séance du jour »). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
+| `#/progression` | « Ma progression » (hors onglets, liens depuis Entraînement et Mes parties) : courbes Lichess, classements Chess.com, routine sur 4 semaines, chiffres de l'entraînement. |
 | `#/parties` | Import des dernières parties Lichess/Chess.com (automatique à l'ouverture si pseudos enregistrés, badge « Nouveau »), sortie du répertoire, analyse Stockfish coup par coup, courbe, bilan, **rapport détaillé écrit** (note, déroulement, bons coups, erreurs expliquées avec la suite du moteur, occasions manquées, à retenir, exercices). |
 
 ⚙ Réglages : budget moteur, niveau des explications, mode d'aide, **apparence** (thème, échiquier,
@@ -89,7 +90,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/transfer.js              Export/import des données (sans secrets)
   js/pwa.js                   Service worker, bandeau de mise à jour, aide à l'installation
   js/router.js                Navigation par hash
-  data/repertoires/meta.js    Les 12 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
+  data/repertoires/meta.js    Les 16 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
   data/repertoires/<id>.js    **Fiches d'un répertoire** (à éditer : `export default [ …fiches ]`)
   data/repertoire.js          Agrège (REPERTOIRES, GROUPES, BADGES, LIGNES) + conventions des fiches ;
                               repertoire.json, elite.json, joueurs.json GÉNÉRÉS
@@ -379,6 +380,42 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   français, et économiser les tokens (pas de surveillance CI continue inutile, agents parallèles
   seulement pour les gros chantiers).
 
+## 8 bis. Où on en est (2026-11-23) et prochaines étapes
+
+Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) :
+- FAIT : 1. Se connecter avec Lichess · 2. Routine pour chacun (3 questions) · 3. Visite guidée ·
+  4. Aide / FAQ / contact (blitzrefute@gmail.com) · 5. Pièces « Celtic » (MIT) + icônes refaites ·
+  6. E-mail à Lichess rédigé et ENVOYÉ par l'utilisateur (réponse attendue → l'ajouter ici) ·
+  7. Mentions « application indépendante » · 8. Finales essentielles · 9. 4 nouvelles ouvertures
+  (168 fiches) · 10. Ma progression. Aussi : gestion du temps (Mes parties), problèmes Lichess dans
+  l'appli (niveau, chrono), révision « relire puis jouer », Mes variantes apprises, check-up complet.
+- DÉCISION (2026-11-23, proposée par l'utilisateur après avis de Gemini, approuvée) : **rester en
+  site web installable (PWA), pas d'App Store / Google Play pour l'instant** (pas de frais ni de
+  commission de 15 %, paiement libre, mises à jour immédiates). Android (TWA, 25 $) plus tard si les
+  ventes suivent ; iPhone seulement en cas de forte demande.
+- PROCHAINE ÉTAPE PROPOSÉE (pas encore commencée) : guide d'installation (bandeau « Installer
+  l'appli » après la 1re visite, étapes illustrées iPhone Safari → Partager → « Sur l'écran
+  d'accueil », bouton direct Android) + protection des données des clients (Safari peut effacer le
+  stockage d'un site non installé après quelques semaines sans visite : inciter à installer,
+  rappels de sauvegarde « Mes données », plus tard synchronisation entre appareils).
+- Ensuite (idées validées en principe) : plus de répertoires et de variantes, par lots vérifiés
+  (Pirc, Alekhine, Catalane, Grünfeld, Najdorf / Dragon, contre 1.c4 / 1.Cf3, compléter Écossaise et
+  Contre le Londres) — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
+  chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
+  partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
+  anonymes sans cookies.
+- CÔTÉ UTILISATEUR (en attente) : création de la micro-entreprise (pas encore faite), nom de domaine,
+  comptes Cloudflare et Lemon Squeezy ; ensuite : déménagement vers Cloudflare Pages + dépôt privé,
+  vrai verrou Pro (licences Lemon Squeezy via le Worker), pages légales, achat test.
+- Coaching de l'utilisateur : routine depuis le 2026-11-16 ; après 1 semaine, rapide > 90 % de
+  précision et presque toutes gagnées ; problème = Blitz perdus au temps (conseils donnés : budget de
+  temps, simplifier quand on est mieux, essayer le 5+3). Bilan prévu vers le 2026-12-14.
+- Leçons de session : un fichier de test a été vidé par erreur en le lisant et l'écrivant dans la
+  même instruction Python (`open(p,'w').write(open(p).read()…)` tronque le fichier avant la lecture) —
+  toujours lire dans une variable d'abord. L'environnement redémarre parfois sans node_modules :
+  `npm ci` (+ `cd worker && npm ci`) et recréer le lien PLAYWRIGHT_BROWSERS_PATH (chromium 1194 →
+  chrome-headless-shell 1243) pour les tests ; scripts Node hors tests : require('playwright') global.
+
 ## 9. Reste à faire / idées
 
 - **Vidéos** : chaînes toutes renseignées (rapport oEmbed de la CI du 2026-10-23). 9 fiches sans
@@ -395,11 +432,11 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, COACH_ACCESS_CODE) ne sont pas créés — payant à
   l'usage, décision de l'utilisateur ; l'explication gratuite fonctionne sans.
 - Élite : le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
-- Plus de fiches (146 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
+- Plus de fiches (168 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
 - Vidéos des nouveaux répertoires : aucune pour Sicilienne, Française, Scandinave, Indienne du Roi,
   GD refusé (Noirs), Nimzo / Indienne de la Dame ; 24 (Italienne/Espagnole) et 8 (Londres/Anglaise)
   depuis la vidéothèque Lichess. Données Élite : seulement gd et ck (`elite: true`).
-- Branche `licences-pro` (vrai verrou) écrite AVANT le grand public : à adapter aux 12 répertoires
+- Branche `licences-pro` (vrai verrou) écrite AVANT le grand public : à adapter aux 16 répertoires
   (fiches gratuites de meta.js) au moment de la vente.
 - Analyse : variantes d'analyse (`analysisBranches`)
   séparées de la partie réelle ; réclamation de nulle / abandon dans l'interface.
