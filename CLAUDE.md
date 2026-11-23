@@ -377,8 +377,14 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
 
 ## 8. Règles de travail (pour Claude)
 
-- Toujours lancer `npm test` et les tests Playwright avant de pousser ; pousser sur `main`
-  (`git push origin main`) puis suivre la CI (`gh run list`, annotations via l'API GitHub).
+- Toujours lancer `npm test` et les tests Playwright avant de pousser.
+- **NE PLUS PUBLIER SANS ACCORD (décision du 2026-11-23)** : un push sur `main` met le site en
+  ligne (deploy.yml). L'utilisateur veut que l'appli reste privée tant qu'elle n'est pas finie :
+  travailler et pousser sur une branche de travail, ne fusionner sur `main` que sur demande
+  explicite. Le site publié reste figé à la version du 2026-11-23 (commit 9709e12) ; le guide
+  d'installation (c6bdaaf) est sur `main` mais sa publication a été annulée — le prochain
+  déploiement le publiera. Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
+  officiel (création de la micro-entreprise).
 - Messages de commit en français, terminés par les deux lignes d'attribution demandées par la
   session ; ne jamais écrire de nom ou d'identifiant de modèle ailleurs dans le dépôt.
 - Playwright local : si le Chromium attendu manque dans /opt/pw-browsers, pointer
