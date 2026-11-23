@@ -210,17 +210,58 @@ function clouages(c, m) {
   return out;
 }
 
+// Textes des commentaires, en français et en anglais (langue de l'interface).
+const LE_EN = { p: 'the pawn', n: 'the knight', b: 'the bishop', r: 'the rook', q: 'the queen', k: 'the king' };
+const NOM_EN = { p: 'pawn', n: 'Knight', b: 'Bishop', r: 'Rook', q: 'Queen', k: 'King' };
+const TXT = {
+  fr: {
+    grandRoque: 'Grand roque : le Roi part à l’abri de l’autre côté et la Tour rejoint le centre.',
+    petitRoque: 'Petit roque : le Roi est à l’abri et la Tour entre en jeu.',
+    prend: (p, sq, ep) => `Prend ${LE[p]} en ${sq}${ep ? ' (prise en passant)' : ''}.`,
+    promotion: (p) => `Promotion en ${NOM[p]}.`,
+    centre: (sq) => `Pion au centre en ${sq} : il occupe et contrôle les cases centrales.`,
+    developpement: (p, sq) => `Développement : ${LE[p]} quitte sa case de départ pour ${sq}.`,
+    dameTot: 'La Dame sort tôt : elle peut devenir une cible pour les pièces adverses.',
+    tension: (sq) => `Attaque le pion en ${sq} : tension au centre.`,
+    attaque: (l) => `Attaque ${l.map(([p, sq]) => `${LE[p]} en ${sq}`).join(' et ')}.`,
+    cloue: (a, sa, b, sb) => `Cloue ${LE[a]} en ${sa} sur ${LE[b]} en ${sb}.`,
+    mat: 'Échec et mat !',
+    echec: 'Donne échec.',
+    pion: (f, t) => `Coup de pion ${f}-${t}.`,
+    piece: (p, f, t) => `${NOM[p]} de ${f} vers ${t}.`,
+    moteur: '🤖 Suite conseillée par Stockfish au-delà de la fiche (meilleur coup du moteur, pas une théorie publiée).',
+  },
+  en: {
+    grandRoque: 'Queenside castling: the king goes to safety on the other side and the rook joins the centre.',
+    petitRoque: 'Kingside castling: the king is safe and the rook comes into play.',
+    prend: (p, sq, ep) => `Takes ${LE_EN[p]} on ${sq}${ep ? ' (en passant)' : ''}.`,
+    promotion: (p) => `Promotes to a ${NOM_EN[p]}.`,
+    centre: (sq) => `Pawn to the centre on ${sq}: it occupies and controls the central squares.`,
+    developpement: (p, sq) => `Development: ${LE_EN[p]} leaves its starting square for ${sq}.`,
+    dameTot: 'The queen comes out early: it can become a target for the opponent’s pieces.',
+    tension: (sq) => `Attacks the pawn on ${sq}: tension in the centre.`,
+    attaque: (l) => `Attacks ${l.map(([p, sq]) => `${LE_EN[p]} on ${sq}`).join(' and ')}.`,
+    cloue: (a, sa, b, sb) => `Pins ${LE_EN[a]} on ${sa} to ${LE_EN[b]} on ${sb}.`,
+    mat: 'Checkmate!',
+    echec: 'Gives check.',
+    pion: (f, t) => `Pawn move ${f}-${t}.`,
+    piece: (p, f, t) => `${NOM_EN[p]} from ${f} to ${t}.`,
+    moteur: '🤖 Continuation suggested by Stockfish beyond the line (engine’s best move, not published theory).',
+  },
+};
+
 // Commentaires factuels d'un coup joué depuis `fen`.
-export function commentaires(fen, san) {
+export function commentaires(fen, san, l = langue()) {
+  const T = TXT[l] || TXT.fr;
   const c = new Chess(fen);
   const m = c.move(san);
   const out = [];
-  if (m.san.startsWith('O-O')) out.push(m.san.startsWith('O-O-O') ? 'Grand roque : le Roi part à l’abri de l’autre côté et la Tour rejoint le centre.' : 'Petit roque : le Roi est à l’abri et la Tour entre en jeu.');
-  if (m.captured) out.push(`Prend ${LE[m.captured]} en ${m.to}${m.isEnPassant() ? ' (prise en passant)' : ''}.`);
-  if (m.promotion) out.push(`Promotion en ${NOM[m.promotion]}.`);
-  if (m.piece === 'p' && !m.captured && CENTRE.includes(m.to)) out.push(`Pion au centre en ${m.to} : il occupe et contrôle les cases centrales.`);
-  if ((m.piece === 'n' || m.piece === 'b') && (m.from[1] === '1' || m.from[1] === '8')) out.push(`Développement : ${LE[m.piece]} quitte sa case de départ pour ${m.to}.`);
-  if (m.piece === 'q' && c.history().length <= 12 && !m.captured) out.push('La Dame sort tôt : elle peut devenir une cible pour les pièces adverses.');
+  if (m.san.startsWith('O-O')) out.push(m.san.startsWith('O-O-O') ? T.grandRoque : T.petitRoque);
+  if (m.captured) out.push(T.prend(m.captured, m.to, m.isEnPassant()));
+  if (m.promotion) out.push(T.promotion(m.promotion));
+  if (m.piece === 'p' && !m.captured && CENTRE.includes(m.to)) out.push(T.centre(m.to));
+  if ((m.piece === 'n' || m.piece === 'b') && (m.from[1] === '1' || m.from[1] === '8')) out.push(T.developpement(m.piece, m.to));
+  if (m.piece === 'q' && c.history().length <= 12 && !m.captured) out.push(T.dameTot);
   // Pièces adverses attaquées par la pièce jouée (pions compris pour la tension centrale).
   const cibles = [];
   for (const row of c.board()) for (const p of row) {
@@ -228,15 +269,14 @@ export function commentaires(fen, san) {
     if (c.attackers(p.square, m.color).includes(m.to)) cibles.push(p);
   }
   if (m.piece === 'p' && cibles.some((p) => p.type === 'p')) {
-    const t = cibles.find((p) => p.type === 'p');
-    out.push(`Attaque le pion en ${t.square} : tension au centre.`);
+    out.push(T.tension(cibles.find((p) => p.type === 'p').square));
   } else if (cibles.some((p) => p.type !== 'p')) {
-    out.push(`Attaque ${cibles.filter((p) => p.type !== 'p').map((p) => `${LE[p.type]} en ${p.square}`).join(' et ')}.`);
+    out.push(T.attaque(cibles.filter((p) => p.type !== 'p').map((p) => [p.type, p.square])));
   }
-  for (const k of clouages(c, m)) out.push(`Cloue ${LE[k.cloue.type]} en ${k.cloue.square} sur ${LE[k.derriere.type]} en ${k.derriere.square}.`);
-  if (m.san.endsWith('#')) out.push('Échec et mat !');
-  else if (m.san.endsWith('+')) out.push('Donne échec.');
-  if (!out.length) out.push(m.piece === 'p' ? `Coup de pion ${m.from}-${m.to}.` : `${NOM[m.piece]} de ${m.from} vers ${m.to}.`);
+  for (const k of clouages(c, m)) out.push(T.cloue(k.cloue.type, k.cloue.square, k.derriere.type, k.derriere.square));
+  if (m.san.endsWith('#')) out.push(T.mat);
+  else if (m.san.endsWith('+')) out.push(T.echec);
+  if (!out.length) out.push(m.piece === 'p' ? T.pion(m.from, m.to) : T.piece(m.piece, m.from, m.to));
   return out;
 }
 
@@ -253,7 +293,7 @@ export function lessonSteps(entry, color, { complet = false } = {}) {
     const step = {
       ply: i, san, sanFr: sanFr(san), label: `${no} ${sanFr(san)}`, uci: ucis[i], moteur,
       ours: (i % 2 === 0 ? 'w' : 'b') === color, fen,
-      notes: moteur ? ['🤖 Suite conseillée par Stockfish au-delà de la fiche (meilleur coup du moteur, pas une théorie publiée).', ...commentaires(fen, san)] : commentaires(fen, san),
+      notes: moteur ? [(TXT[langue()] || TXT.fr).moteur, ...commentaires(fen, san)] : commentaires(fen, san),
       nom: noms.has(i) ? { ...noms.get(i), fr: nomFr(noms.get(i).name) } : null,
     };
     c.move(san);

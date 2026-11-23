@@ -2,7 +2,7 @@
 // + résultats de vérification Stockfish (data/verification.json) quand ils correspondent au contenu.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { LIGNES, REPERTOIRES } from '../site/data/repertoire.js';
 import { playLine, buildEcoIndex, classify, entryFingerprint, epd } from '../site/js/lines.js';
 
@@ -20,6 +20,13 @@ const claim = (c) => {
   const l = playLine(c.ligne);
   return { ...c, san: l.san, uci: l.uci, marked: l.marked };
 };
+
+// Textes anglais des fiches (site/data/repertoires/en/<id>.js), joints à chaque fiche (champ `en`).
+const EN = {};
+for (const id of Object.keys(REPERTOIRES)) {
+  const f = join(root, `site/data/repertoires/en/${id}.js`);
+  if (existsSync(f)) Object.assign(EN, (await import(pathToFileURL(f).href)).default);
+}
 
 const entries = LIGNES.map((e) => {
   const main = playLine(e.ligne);
@@ -48,6 +55,7 @@ const entries = LIGNES.map((e) => {
     piege: claim(e.piege),
     verification: fresh ? v : null,
     suite,
+    en: EN[e.id] || null,
     freq: freqs.entries[e.id] ? { n: freqs.entries[e.id].n, coup: freqs.entries[e.id].coup, ply: freqs.entries[e.id].ply } : null,
   };
 });
@@ -59,4 +67,4 @@ writeFileSync(join(root, 'site/data/repertoire.json'), JSON.stringify({
   frequences: freqs.date ? { source: freqs.source, date: freqs.date } : null,
   entries,
 }));
-console.log(`repertoire: ${entries.length} fiches, ${entries.filter((e) => e.verification).length} vérifiées → site/data/repertoire.json`);
+console.log(`repertoire: ${entries.length} fiches, ${entries.filter((e) => e.verification).length} vérifiées, ${entries.filter((e) => e.en).length} traduites en anglais → site/data/repertoire.json`);

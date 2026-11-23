@@ -5,6 +5,7 @@
 // - utilisateur d'avant le passage grand public (données déjà présentes) : Gambit Dame +
 //   Caro-Kann, enregistré automatiquement pour que rien ne change.
 import { REPERTOIRES, GROUPES, CHOIX_HISTORIQUE } from '../data/repertoires/meta.js';
+import { localiserData } from './donnees-langue.js';
 
 export const KEY = 'coach-echecs:mon-repertoire';
 
@@ -58,7 +59,8 @@ export function enregistrer(ids, storage = localStorage, { auto = false } = {}) 
 }
 
 // Données du répertoire restreintes aux ouvertures choisies (toutes les fiches restent dans `tous`).
-export function filtrerData(data, ids = choisis()) {
+export function filtrerData(brut, ids = choisis()) {
+  const data = localiserData(brut);
   const set = new Set(ids);
   const keep = ids.filter((id) => data.repertoires?.[id]);
   return {

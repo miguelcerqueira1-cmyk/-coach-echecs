@@ -30,3 +30,24 @@ test('hors navigateur : français, notation française', () => {
   assert.equal(langue(), 'fr');
   assert.equal(sanFr('Nf3'), 'Cf3');
 });
+
+test('fiches : les 269 ont leur texte anglais, appliqué seulement en anglais', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { localiserFiche, localiserData } = await import('../../site/js/donnees-langue.js');
+  const d = JSON.parse(readFileSync(new URL('../../site/data/repertoire.json', import.meta.url), 'utf8'));
+  assert.ok(d.entries.every((e) => e.en && e.en.plan), 'chaque fiche a un plan en anglais');
+  const e = d.entries.find((x) => x.punition && x.en?.punition);
+  const en = localiserFiche(e, 'en');
+  assert.equal(en.plan, e.en.plan);
+  assert.equal(en.punition.texte, e.en.punition);
+  assert.deepEqual(en.punition.san, e.punition.san); // coups inchangés
+  assert.equal(localiserFiche(e, 'fr').plan, e.plan);
+  assert.equal(localiserData(d, 'fr'), d);
+});
+
+test('commentaires de leçon et explication en anglais', async () => {
+  const { commentaires } = await import('../../site/js/lesson-core.js');
+  const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  assert.deepEqual(commentaires(start, 'e4', 'en'), ['Pawn to the centre on e4: it occupies and controls the central squares.']);
+  assert.deepEqual(commentaires(start, 'Nf3', 'fr'), ['Développement : le Cavalier quitte sa case de départ pour f3.']);
+});

@@ -1,6 +1,7 @@
 // Écran « Mes ouvertures » (#/ouvertures) : choix en 4 étapes (avec les Blancs, contre 1.e4,
 // contre 1.d4, contre 1.c4 / 1.Cf3), un ou plusieurs répertoires par étape, étape passable. Enregistré dans
 // Mon répertoire ; l'application est ensuite rechargée pour que toutes les pages suivent le choix.
+import { localiserData } from './donnees-langue.js';
 import { GROUPES, REPERTOIRES, parGroupe, choisis, aChoisi, enregistrer } from './mon-repertoire.js';
 import { marquer as marquerVisite } from './tour.js';
 
@@ -22,7 +23,7 @@ export class ChoixPage {
     this.render();
     if (this.counts) return;
     try {
-      const data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json();
+      const data = localiserData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json());
       this.counts = {};
       for (const e of data.entries) this.counts[e.rep] = (this.counts[e.rep] || 0) + 1;
     } catch { this.counts = {}; }

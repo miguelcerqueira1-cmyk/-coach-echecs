@@ -1,6 +1,7 @@
 // Page d'accueil publique (#/accueil) : présentation de BlitzRefute, ouvertures couvertes,
 // formule Gratuit / Pro, puis « Choisir mes ouvertures ». Montrée à la première visite.
 // Aucun témoignage ni chiffre inventé : les nombres de fiches viennent de data/repertoire.json.
+import { localiserData } from './donnees-langue.js';
 import { GROUPES, REPERTOIRES, parGroupe, aChoisi } from './mon-repertoire.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -24,7 +25,7 @@ export class AccueilPage {
     this.render();
     if (this.counts) return;
     try {
-      const data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json();
+      const data = localiserData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json());
       this.counts = {};
       for (const e of data.entries) this.counts[e.rep] = (this.counts[e.rep] || 0) + 1;
     } catch { this.counts = {}; }

@@ -40,8 +40,23 @@ export function validateLine(fen, uciMoves) {
   return { moves: out, truncated };
 }
 
+const PIECE_EN = { p: 'Pawn', n: 'Knight', b: 'Bishop', r: 'Rook', q: 'Queen', k: 'King' };
+const en = () => langue() === 'en';
+const nombre = (x) => (en() ? x : x.replace('.', ','));
+
 export function describeMove(m) {
   if (!m) return '';
+  if (en()) {
+    if (m.san.startsWith('O-O-O')) return 'Queenside castling';
+    if (m.san.startsWith('O-O')) return 'Kingside castling';
+    let s = `${PIECE_EN[m.piece]} from ${m.from} to ${m.to}`;
+    if (m.isEnPassant()) s = `Pawn from ${m.from} takes en passant on ${m.to}`;
+    else if (m.captured) s += ` (takes ${PIECE_EN[m.captured].toLowerCase()})`;
+    if (m.promotion) s += `, promotes to ${PIECE_EN[m.promotion].toLowerCase()}`;
+    if (m.san.endsWith('#')) s += ', checkmate';
+    else if (m.san.endsWith('+')) s += ', check';
+    return s;
+  }
   if (m.san.startsWith('O-O-O')) return 'Grand roque';
   if (m.san.startsWith('O-O')) return 'Petit roque';
   let s = `${PIECE_NAMES[m.piece]} de ${m.from} vers ${m.to}`;
@@ -79,16 +94,25 @@ export function whitePovScore(score, turn) {
 export function formatScore(wScore) {
   if (!wScore) return '—';
   if (wScore.type === 'mate') {
-    if (wScore.value === 0) return 'Mat';
+    if (wScore.value === 0) return en() ? 'Mate' : 'Mat';
+    if (en()) return `Mate in ${Math.abs(wScore.value)} for ${wScore.value > 0 ? 'White' : 'Black'}`;
     return `Mat en ${Math.abs(wScore.value)} pour les ${wScore.value > 0 ? 'Blancs' : 'Noirs'}`;
   }
   const v = wScore.value / 100;
-  const txt = (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2).replace('.', ',');
+  const txt = (v > 0 ? '+' : v < 0 ? '−' : '') + nombre(Math.abs(v).toFixed(2));
   return txt;
 }
 
 export function scoreVerdict(wScore) {
   if (!wScore) return '';
+  if (en()) {
+    if (wScore.type === 'mate') return wScore.value > 0 ? 'forced win for White' : 'forced win for Black';
+    const w = wScore.value; const sd = w > 0 ? 'White' : 'Black'; const b = Math.abs(w);
+    if (b < 30) return 'balanced position';
+    if (b < 80) return `slight advantage for ${sd}`;
+    if (b < 200) return `clear advantage for ${sd}`;
+    return `decisive advantage for ${sd}`;
+  }
   if (wScore.type === 'mate') return wScore.value > 0 ? 'gain forcé pour les Blancs' : 'gain forcé pour les Noirs';
   const v = wScore.value;
   const side = v > 0 ? 'Blancs' : 'Noirs';
@@ -144,7 +168,7 @@ export function buildCandidates(fen, lines, bestLan, max = 3) {
 export function formatGap(gap) {
   if (gap == null) return '';
   const v = Math.min(0, gap);
-  return `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(2).replace('.', ',')}`;
+  return `${v < 0 ? '−' : ''}${nombre(Math.abs(v).toFixed(2))}`;
 }
 
 // Construit le conseil à partir du résultat moteur et de l'état de la partie.

@@ -1,6 +1,7 @@
 // Page « Mes parties » : import des dernières parties (Lichess, Chess.com), repérage de la
 // sortie du répertoire, analyse Stockfish coup par coup et bilan de chaque partie.
 import { Chess } from '../vendor/chess.js';
+import { localiserData } from './donnees-langue.js';
 import { Board } from './board.js';
 import { loadProgress, saveProgress, recordSortie, recordPartie } from './progress.js';
 import { loadPgnTolerant } from './game.js';
@@ -45,7 +46,7 @@ export class GamesPage {
 
   async show() {
     if (!this.data) {
-      try { this.data = await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json(); } catch { this.data = { entries: [] }; }
+      try { this.data = localiserData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json()); } catch { this.data = { entries: [] }; }
     }
     if (this.pendingLocal) {
       // Bilan demandé depuis la page Moteur : la partie passe en tête de liste et s'analyse.

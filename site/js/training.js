@@ -14,7 +14,11 @@ import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { PuzzleRunner } from './puzzles.js';
 import { FinaleRunner, chargerFinales } from './finales.js';
-import FINALES from '../data/finales.js';
+import FINALES_FR from '../data/finales.js';
+import { langue } from './i18n.js';
+
+// Finales dans la langue de l'interface (titre et méthode).
+const FINALES = FINALES_FR.map((f) => (langue() === 'en' && f.en ? { ...f, ...f.en } : f));
 import { THEMES_PROBLEMES, themeDe, lire as lireProblemes, ecrire as ecrireProblemes, difficultePour, noterProbleme, themesFaibles, signe } from './problemes-core.js';
 import { StockfishGameRunner } from './partie-stockfish.js';
 import { NIVEAUX_SF, lire as lireSF, departDepuis } from './partie-stockfish-core.js';

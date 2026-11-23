@@ -19,7 +19,7 @@ export function traducteur({ EXACT, MOTIFS }) {
   const t = (s) => {
     if (memo.has(s)) return memo.get(s);
     let r = EXACT[s] ?? null;
-    if (r === null) for (const [re, f] of MOTIFS) { const m = s.match(re); if (m) { r = f(m, (x) => t(x) ?? x); break; } }
+    if (r === null) for (const [re, f] of MOTIFS) { const m = s.match(re); if (m) { r = f(m, (x) => t(x) ?? x); if (r !== null && r !== undefined) break; r = null; } }
     if (r === null) {
       // Symbole ou emoji en tête (♙, ♟, 📖…), cadenas en fin.
       const m = s.match(/^([^\p{L}\p{N}«“(]{1,3}\s)(.+)$/u) || null;

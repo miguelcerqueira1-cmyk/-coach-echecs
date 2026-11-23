@@ -1,0 +1,61 @@
+// English text of the « Partie viennoise » lines (same ids as ../viennoise.js).
+// Moves in English notation (N, B, R, Q, K). Lines, evaluations and checks are NOT here:
+// they come from the French file and from Stockfish (data/verification.json).
+export default {
+  'vie-gambit': {
+    famille: 'Vienna Gambit',
+    nom: '2…Nf6 3.f4 d5',
+    plan: 'f4 attacks e5; after …d5 and …Nxe4, the e5 pawn gives space: Nf3, d4, Bd3 and castle, then attack on the kingside (the e4 knight is the target to chase away).',
+    structure: 'Advanced White e5 pawn, half-open f-file for White.',
+    cases: 'e4 (knight to chase), f-file, e5',
+    echanger: 'The d3 bishop for the e4 knight',
+    conserver: 'e5 pawn',
+  },
+  'vie-fc4-cxe4': {
+    famille: 'Bc4 Variation',
+    nom: '2…Nf6 3.Bc4 Nxe4 4.Qh5',
+    plan: 'Against the capture on e4, Qh5 threatens mate on f7: the Black knight retreats to d6. Then Bb3, Nb5 and Qf3-d5 aim at f7 and c7; White wins the a8 rook, then Black traps the a8 knight (very sharp position).',
+    structure: 'Open, wild game: White is up material, Black is ahead in development.',
+    cases: 'f7, c7, a8',
+    echanger: 'Nothing: the threats on f7 matter more than material',
+    conserver: 'b3 bishop (diagonal towards f7)',
+    punition: 'Taking the b5 knight forgets the threat on f7: the d6 knight no longer defends f7 and Qxf7 is mate.',
+  },
+  'vie-dg4': {
+    famille: 'Bc4 Variation',
+    nom: '2…Nc6 3.Bc4 Bc5 4.Qg4',
+    plan: 'Qg4 attacks g7; if …Qf6, Nd5 attacks c7 and the queen. Taking on f2 costs Black dearly: Kd1, Nh3 and Rf1 chase the queen and White has a big lead in development.',
+    structure: 'White king on d1 but very active pieces; exposed Black queen.',
+    cases: 'g7, c7, f2',
+    echanger: 'Nothing: keep the pieces for the attack',
+    conserver: 'd5 knight',
+    punition: 'Winning the f2 pawn with check looks strong, but the Black queen ends up stranded: Nh3, d3 then Rf1 chase it and the Nxc7 threat remains. White is clearly better.',
+  },
+  'vie-fc5': {
+    famille: 'Bc4 Variation',
+    nom: '2…Bc5 3.Bc4 Nf6 4.d3',
+    plan: 'Against the c5 bishop, d3 then f4: you reach a King’s Gambit Declined where White has already developed Nc3 and Bc4. Plan: Nf3, castle, then f5 or Na4 against the c5 bishop.',
+    structure: 'White pawns on d3/e4/f4; tension on e5.',
+    cases: 'f4 (break), a4 (against the c5 bishop), g1-a7',
+    echanger: 'The a4 knight for the c5 bishop',
+    conserver: 'c4 bishop',
+  },
+  'vie-cf6-cc6': {
+    famille: 'Bc4 Variation',
+    nom: '2…Nf6 3.Bc4 Nc6 4.d3',
+    plan: 'Quiet play: d3, Bg5 (pin) and Ne2 or Nf3; later f4. After the trades, a doubled-pawn structure but an active c4 bishop.',
+    structure: 'Doubled White c-pawns; closed centre.',
+    cases: 'f4, d5, f7',
+    echanger: 'The g5 bishop for the f6 knight',
+    conserver: 'c4 bishop',
+  },
+  'vie-g3': {
+    famille: 'Fianchetto Variation',
+    nom: '2…Nf6 3.g3 d5',
+    plan: 'Fianchetto of the king’s bishop: after …d5 and the trades, the g2 bishop aims at the queenside; Rb1, d3 and Nd2-c4 against e5.',
+    structure: 'Doubled White c-pawns but an open b-file and an active g2 bishop.',
+    cases: 'b7, e5, c4',
+    echanger: 'Nothing urgent',
+    conserver: 'g2 bishop',
+  },
+};

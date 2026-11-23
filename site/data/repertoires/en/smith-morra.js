@@ -1,0 +1,61 @@
+// English text of the « Gambit Smith-Morra » lines (same ids as ../smith-morra.js).
+// Moves in English notation (N, B, R, Q, K). Lines, evaluations and checks are NOT here:
+// they come from the French file and from Stockfish (data/verification.json).
+export default {
+  'sm-accepte': {
+    famille: 'Gambit Accepted',
+    nom: '3…dxc3 4.Nxc3 Nc6 5.Nf3 d6',
+    plan: 'The standard setup: Nc3, Nf3, Bc4, castle, Qe2, Rd1 (against d6) and Rc1 (c-file). Then Be3 or Bg5, and moves like Nb5 or Nd5 when the Black pieces are badly placed.',
+    structure: 'A pawn down, but a lead in development and open c/d-files.',
+    cases: 'd6 (backward pawn), d5, b5',
+    echanger: 'The c4 bishop for the Black e6 bishop if the f-file opens',
+    conserver: 'c4 bishop',
+  },
+  'sm-siberien': {
+    famille: 'Gambit Accepted',
+    nom: '5…e6 6.Bc4 Qc7 (Siberian Trap)',
+    plan: 'Against …e6 and …Qc7, develop with Qe2 and castle. If …Ng4 threatens h2, do NOT play h3 right away: Nb5 first chases the queen off the b8-h2 diagonal.',
+    structure: 'Black queen on the b8-h2 diagonal: h2 is the square to watch.',
+    cases: 'h2, b5, d4',
+    echanger: 'Nothing before chasing the c7 queen away',
+    conserver: 'f3 knight (defends h2)',
+    piege: 'The Siberian Trap: h3 to chase the knight allows …Nd4! attacking the e2 queen. If you take the knight (Nxd4), …Qh2 is mate.',
+  },
+  'sm-e6-a6': {
+    famille: 'Gambit Accepted',
+    nom: '5…e6 6.Bc4 a6 7.O-O Nge7',
+    plan: 'Against the …e6, …a6 and …Nge7 setup, Bg5 bothers the e7 knight and the queen; Qe2, Rad1 and Rfd1 aim at d7 and the d-file.',
+    structure: 'Black pawns on a6/e6; weak d6 square and open d-file.',
+    cases: 'd6, e7, d-file',
+    echanger: 'The g5 bishop for the e7 knight',
+    conserver: 'c4 bishop',
+  },
+  'sm-cf6': {
+    famille: 'Gambit Declined',
+    nom: '3…Nf6 4.e5 Nd5',
+    plan: 'Declining with …Nf6: push e5 and recapture on d4 with the queen. You get an Alapin with space (e5 pawn); Nf3, Bc4 or Bd3 and castle.',
+    structure: 'White e5 pawn: space and control of the d6 square.',
+    cases: 'e5, d6, d4',
+    echanger: 'The c3 knight for the d5 knight',
+    conserver: 'e5 pawn',
+  },
+  'sm-d5': {
+    famille: 'Gambit Declined',
+    nom: '3…d5 4.exd5 Qxd5 5.cxd4',
+    plan: 'Declining with …d5: after the trades, White has an isolated pawn on d4 but easy development (Nf3, Nc3, Be2, castle). Nc3 and d5 often threaten the Black queen.',
+    structure: 'White isolated queen’s pawn: active in the middlegame, weak in the endgame.',
+    cases: 'd5 (push), b5, d4',
+    echanger: 'Nothing urgent: the isolated pawn likes pieces',
+    conserver: 'd4 pawn',
+    punition: 'The queen on d6 stands in front of the d-pawn: d5! chases the c6 knight, then Bb5+ gains time against a Black king still in the centre.',
+  },
+  'sm-d3': {
+    famille: 'Gambit Declined',
+    nom: '3…d3 4.Bxd3',
+    plan: 'If Black gives the pawn back with …d3, recapture with the bishop: you have a nice centre (e4) and easy development. Plan: c4, Nc3, Be3, Rd1.',
+    structure: 'White e4 pawn alone in the centre, active d3 bishop.',
+    cases: 'd5, e4, c4',
+    echanger: 'Nothing',
+    conserver: 'e4 pawn',
+  },
+};
