@@ -10,6 +10,7 @@ export const FAQ = [
   ['D’où viennent les coups conseillés et les évaluations ?', 'Du moteur Stockfish, qui calcule sur ton appareil. Les lignes des fiches sont vérifiées par Stockfish ; les problèmes viennent de la base publique de Lichess. Rien n’est inventé.'],
   ['Comment changer ma routine du jour ?', 'Entraînement → Ma routine du jour → « ⚙ Modifier » : temps par jour, sites et cadences.'],
   ['Qu’apporte la version Pro ?', 'Toutes les variantes de tes ouvertures, toutes les leçons, l’entraînement en répétition espacée, les réflexes anti-trash et les positions tirées de tes parties. La version gratuite garde le moteur, Mes parties, la routine et une variante par ouverture.'],
+  ['BlitzRefute fait-il partie de Lichess ou de Chess.com ?', 'Non. BlitzRefute est une application indépendante. Elle utilise les services publics de Lichess (problèmes, statistiques, évaluations, import de tes parties) et de Chess.com (import de tes parties), toujours cités comme sources, mais n’est ni affiliée ni approuvée par eux.'],
   ['L’appli marche-t-elle sans Internet ?', 'Oui après une première visite : échiquier, moteur, fiches et leçons. Il faut Internet pour les problèmes Lichess, charger ses parties et les statistiques en ligne.'],
   ['Le moteur affiche « en panne » ou ne répond plus', 'Recharge la page (ou ferme et rouvre l’appli). Sur un téléphone très chargé, fermer d’autres applis libère de la mémoire pour Stockfish.'],
 ];

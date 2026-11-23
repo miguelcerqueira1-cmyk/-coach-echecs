@@ -49,6 +49,7 @@ export class AccueilPage {
           <a class="btn-like" href="#/moteur">Analyser une position (gratuit)</a>
         </div>
         <p class="muted small">Stockfish calcule, chess.js vérifie les règles : aucune évaluation, aucun piège ni aucune statistique n’est inventé.</p>
+        <p class="muted tiny">Fonctionne avec tes comptes Lichess et Chess.com. BlitzRefute est une application indépendante, ni affiliée ni approuvée par Lichess ou Chess.com.</p>
       </section>
 
       <section class="acc-features" aria-label="Ce que fait BlitzRefute">

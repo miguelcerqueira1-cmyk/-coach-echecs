@@ -255,6 +255,12 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   personnelle : page, version, navigateur, écran, état du moteur) envoyé par `mailto:` si
   `config.json.supportEmail` existe (par défaut blitzrefute@gmail.com, boîte dédiée créée par
   l'utilisateur le 2026-11-23 ; variable de dépôt `SUPPORT_EMAIL` pour la changer), sinon copié.
+- **Marques tierces (2026-11-23)** : Lichess / Chess.com cités seulement comme sources de données ou
+  sites où jouer (jamais dans le nom, l'icône, le logo) ; aucune image de leurs marques. Mention
+  « application indépendante, ni affiliée ni approuvée par Lichess ou Chess.com » en pied de page,
+  sur l'accueil et dans la FAQ (9 questions). La page de contact de Lichess autorise l'usage
+  commercial (« You are welcome to use Lichess for your activity, even commercial ») ; e-mail de
+  confirmation envoyé par l'utilisateur (réponse à intégrer ici).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
