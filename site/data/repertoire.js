@@ -36,6 +36,9 @@ import f_ecossaise from './repertoires/ecossaise.js';
 import f_e5_noirs from './repertoires/e5-noirs.js';
 import f_contre_londres from './repertoires/contre-londres.js';
 import f_hollandaise from './repertoires/hollandaise.js';
+import f_pirc from './repertoires/pirc.js';
+import f_alekhine from './repertoires/alekhine.js';
+import f_catalane from './repertoires/catalane.js';
 import { REPERTOIRES, GROUPES } from './repertoires/meta.js';
 
 export { REPERTOIRES, GROUPES };
@@ -64,6 +67,9 @@ const PAR_REPERTOIRE = {
   'e5-noirs': f_e5_noirs,
   'contre-londres': f_contre_londres,
   'hollandaise': f_hollandaise,
+  'pirc': f_pirc,
+  'alekhine': f_alekhine,
+  'catalane': f_catalane,
 };
 
 export const LIGNES = Object.keys(REPERTOIRES).flatMap((id) => PAR_REPERTOIRE[id] || []);

@@ -4911,6 +4911,540 @@
     ],
     "pov": "w"
    }
+  },
+  "cat-fermee": {
+   "fp": "f4e4484e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 58,
+    "best": "Bb7",
+    "pv": [
+     "Bb7",
+     "e5",
+     "Ne8",
+     "cxd5",
+     "cxd5",
+     "Qd1"
+    ],
+    "pov": "w"
+   }
+  },
+  "cat-ouverte-dc2": {
+   "fp": "4c43e92",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 19,
+    "best": "Nc6",
+    "pv": [
+     "Nc6",
+     "Be3",
+     "Rc8",
+     "Nbd2",
+     "Bd5",
+     "Rd1"
+    ],
+    "pov": "w"
+   }
+  },
+  "cat-ouverte-c5": {
+   "fp": "e9b73cd1",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 99,
+    "best": "Qc2",
+    "pv": [
+     "Qc2",
+     "Be7",
+     "Qxc4",
+     "O-O",
+     "Nc3",
+     "Nd5"
+    ],
+    "pov": "w"
+   }
+  },
+  "cat-b5": {
+   "fp": "bb171a27",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 71,
+    "best": "Bb4",
+    "pv": [
+     "Bb4",
+     "e4",
+     "Ne7",
+     "Nc3",
+     "Nd7",
+     "Nxb5"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 11,
+    "errorSan": "Bb7",
+    "final": {
+     "type": "cp",
+     "value": 477,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 496,
+     "best": "Bxb7",
+     "pv": [
+      "Bxb7",
+      "Bb4+",
+      "Kf1",
+      "c6",
+      "Bxa8",
+      "Qb6"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "cat-da4": {
+   "fp": "43baebcf",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 32,
+    "best": "Be4",
+    "pv": [
+     "Be4",
+     "Qb3",
+     "Bd5",
+     "Qd1",
+     "c5",
+     "O-O"
+    ],
+    "pov": "w"
+   }
+  },
+  "cat-fb4": {
+   "fp": "54371347",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 26,
+    "best": "c6",
+    "pv": [
+     "c6",
+     "Qc2",
+     "b6",
+     "Rc1",
+     "Ba6",
+     "cxd5"
+    ],
+    "pov": "w"
+   }
+  },
+  "cat-c5": {
+   "fp": "d67cfa5c",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 29,
+    "best": "Re8",
+    "pv": [
+     "Re8",
+     "Nd2",
+     "Nbd7",
+     "a4",
+     "a6",
+     "h3"
+    ],
+    "pov": "w"
+   }
+  },
+  "cat-c6": {
+   "fp": "50c3901a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 37,
+    "best": "Re8",
+    "pv": [
+     "Re8",
+     "Rd1",
+     "Qe7",
+     "Re1",
+     "e5",
+     "e4"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-classique": {
+   "fp": "825b341a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 51,
+    "best": "h3",
+    "pv": [
+     "h3",
+     "Bd7",
+     "Rad1",
+     "b5",
+     "a3",
+     "a6"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-autrichienne": {
+   "fp": "bb2a3217",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 46,
+    "best": "Qe1",
+    "pv": [
+     "Qe1",
+     "Bxf3",
+     "Rxf3",
+     "Nc6",
+     "Kh1",
+     "Nb4"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-150": {
+   "fp": "ccc905d9",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 35,
+    "best": "a4",
+    "pv": [
+     "a4",
+     "a6",
+     "Nd1",
+     "Qa5+",
+     "c3",
+     "e5"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-byrne": {
+   "fp": "ac7aa111",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 64,
+    "best": "Nh5",
+    "pv": [
+     "Nh5",
+     "Ne2",
+     "g5",
+     "Bg3",
+     "Nd7",
+     "O-O"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 10,
+    "errorSan": "Bxh6",
+    "final": {
+     "type": "cp",
+     "value": 512,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 340,
+     "best": "Bxh6",
+     "pv": [
+      "Bxh6",
+      "f4",
+      "e5",
+      "dxe5",
+      "dxe5",
+      "Qxd8+"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "pirc-fc4": {
+   "fp": "536cef43",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 9,
+    "best": "f4",
+    "pv": [
+     "f4",
+     "Nxc3",
+     "Bxc3",
+     "b5",
+     "Bb3",
+     "a5"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-cd2": {
+   "fp": "7d02b7b9",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 48,
+    "best": "Re1",
+    "pv": [
+     "Re1",
+     "Nd7",
+     "Nb3",
+     "a5",
+     "Be3",
+     "a4"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-e5": {
+   "fp": "43449963",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -43,
+    "best": "f4",
+    "pv": [
+     "f4",
+     "Nb4",
+     "Na3",
+     "Bf5",
+     "h3",
+     "Nh6"
+    ],
+    "pov": "w"
+   }
+  },
+  "ale-moderne": {
+   "fp": "3be36843",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 82,
+    "best": "c5",
+    "pv": [
+     "c5",
+     "Bxf3",
+     "gxf3",
+     "N6d7",
+     "f4",
+     "c6"
+    ],
+    "pov": "w"
+   }
+  },
+  "ale-larsen": {
+   "fp": "564011cd",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 55,
+    "best": "h3",
+    "pv": [
+     "h3",
+     "Bf5",
+     "Nc3",
+     "Be6",
+     "Nxd5",
+     "Bxd5"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 9,
+    "errorSan": "Nd7",
+    "final": {
+     "type": "cp",
+     "value": -159,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -113,
+     "best": "Nxf7",
+     "pv": [
+      "Nxf7",
+      "Kxf7",
+      "Qh5+",
+      "Ke6",
+      "c4",
+      "N7f6"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "ale-alburt": {
+   "fp": "aa709372",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 71,
+    "best": "dxe5",
+    "pv": [
+     "dxe5",
+     "dxe5",
+     "Nd4",
+     "Nxd4",
+     "Qxd4",
+     "Re1"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 17,
+    "errorSan": "e6",
+    "final": {
+     "type": "mate",
+     "value": 0,
+     "mated": "b"
+    },
+    "afterError": {
+     "type": "mate",
+     "value": -1,
+     "best": "Qxf7#",
+     "pv": [
+      "Qxf7#"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "ale-echange": {
+   "fp": "d306e4a4",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 39,
+    "best": "e5",
+    "pv": [
+     "e5",
+     "Nf3",
+     "Nc6",
+     "Be2",
+     "Bg4",
+     "dxe5"
+    ],
+    "pov": "w"
+   }
+  },
+  "ale-4pions": {
+   "fp": "b48f8423",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 68,
+    "best": "d5",
+    "pv": [
+     "d5",
+     "Na5",
+     "Bxb6",
+     "axb6",
+     "Bd3",
+     "Bb4"
+    ],
+    "pov": "w"
+   }
+  },
+  "ale-cc3": {
+   "fp": "caad4352",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 32,
+    "best": "Qe2",
+    "pv": [
+     "Qe2",
+     "a6",
+     "Bd3",
+     "Bg4",
+     "h3",
+     "Bxf3"
+    ],
+    "pov": "w"
+   }
+  },
+  "ale-fc4": {
+   "fp": "4fcad2ad",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 44,
+    "best": "Nc3",
+    "pv": [
+     "Nc3",
+     "e6",
+     "O-O",
+     "Be7",
+     "Be3",
+     "Qc7"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 6,
+    "errorSan": "Bxf7+",
+    "final": {
+     "type": "cp",
+     "value": 260,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 231,
+     "best": "Kxf7",
+     "pv": [
+      "Kxf7",
+      "d4",
+      "d6",
+      "Nf3",
+      "Kg8",
+      "O-O"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "ale-2cc3": {
+   "fp": "1c9c9075",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 22,
+    "best": "Ne2",
+    "pv": [
+     "Ne2",
+     "cxd4",
+     "Nexd4",
+     "Nc6",
+     "Bf4",
+     "Qb6"
+    ],
+    "pov": "w"
+   }
   }
  }
 }

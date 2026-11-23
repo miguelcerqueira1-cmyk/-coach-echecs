@@ -10,13 +10,13 @@ maîtriser tes ouvertures et détruire les pièges en Blitz. » Les clés localS
 `coach-echecs:` (données des utilisateurs conservées).
 
 Application web **en français** d'entraînement aux ouvertures, **grand public** (joueurs de club /
-blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **16 répertoires** : avec les
-Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Anglaise), contre 1.e4 (Caro-Kann,
-1…e5, Sicilienne, Française, Scandinave), contre 1.d4 (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **168 fiches** (2026-11-23) : Gambit Dame 31,
+blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **19 répertoires** : avec les
+Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Anglaise), contre 1.e4
+(Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine), contre 1.d4 (Indienne du Roi, GD refusé / Slave, Contre le
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **191 fiches** (2026-11-23) : Gambit Dame 31,
 Caro-Kann 27 (répertoire historique du créateur), Italienne 10, Espagnole 10, Londres 9, Écossaise 5,
 Anglaise 8, 1…e5 8, Sicilienne 9 (système Taimanov), Française 8, Scandinave 8, Indienne du Roi 8,
-GD refusé / Slave 10, Contre le Londres 4, Hollandaise 5, Nimzo / Indienne de la Dame 8 ; toutes
+GD refusé / Slave 10, Contre le Londres 4, Hollandaise 5, Nimzo / Indienne de la Dame 8, Pirc 7, Alekhine 8, Catalane 8 ; toutes
 vérifiées par Stockfish (profondeur 18). Objectif de l'utilisateur : le plus de répertoires et de
 variantes possible (concurrencer les grands sites d'entraînement, prix plus bas, options en plus).
 Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans rien installer.
@@ -91,7 +91,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/pwa.js                   Service worker, bandeau de mise à jour
   js/installation.js / installation-core.js  Guide d'installation, rappels de sauvegarde, stockage persistant
   js/router.js                Navigation par hash
-  data/repertoires/meta.js    Les 16 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
+  data/repertoires/meta.js    Les 19 répertoires (id, titre, couleur, groupe, racine SAN, gratuites, elite)
   data/repertoires/<id>.js    **Fiches d'un répertoire** (à éditer : `export default [ …fiches ]`)
   data/repertoire.js          Agrège (REPERTOIRES, GROUPES, BADGES, LIGNES) + conventions des fiches ;
                               repertoire.json, elite.json, joueurs.json GÉNÉRÉS
@@ -415,8 +415,12 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   ventes suivent ; iPhone seulement en cas de forte demande.
 - FAIT (2026-11-23) : 11. Guide d'installation + protection des données (voir § 5,
   « Installation et sauvegardes »). Reste : synchronisation entre appareils (plus tard, serveur).
+- FAIT (2026-11-23, branche de travail, PAS publié) : lot 1 de nouvelles ouvertures — Pirc (7 fiches),
+  Alekhine (8), Catalane (8) ; 191 fiches. Lignes tactiques : Pirc 6.Fxh6?? (Byrne), Alekhine
+  5…Cd7? Cxf7 (piège), 9…e6? Dxf7# (piège Alburt), 4.Fxf7+?? (punition), Catalane 6…Fb7? Fxb7.
+  Traductions ajoutées dans nomFr (Ouverture catalane, Attaque autrichienne, quatre pions…).
 - Ensuite (idées validées en principe) : plus de répertoires et de variantes, par lots vérifiés
-  (Pirc, Alekhine, Catalane, Grünfeld, Najdorf / Dragon, contre 1.c4 / 1.Cf3, compléter Écossaise et
+  (lot 2 : Grünfeld, Najdorf / Dragon, contre 1.c4 / 1.Cf3, compléter Écossaise et
   Contre le Londres) — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
   chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
   partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
