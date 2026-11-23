@@ -253,7 +253,8 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 - **Aide et contact (2026-11-22, `aide.js`)** : fenêtre `#dlg-aide` ouverte par ⚙ « ❓ Aide… » :
   8 questions fréquentes, contact, « 🐞 Signaler un problème » (message + diagnostic sans donnée
   personnelle : page, version, navigateur, écran, état du moteur) envoyé par `mailto:` si
-  `config.json.supportEmail` existe (variable de dépôt `SUPPORT_EMAIL`, lue au build), sinon copié.
+  `config.json.supportEmail` existe (par défaut blitzrefute@gmail.com, boîte dédiée créée par
+  l'utilisateur le 2026-11-23 ; variable de dépôt `SUPPORT_EMAIL` pour la changer), sinon copié.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

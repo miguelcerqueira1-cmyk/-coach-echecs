@@ -17,7 +17,7 @@ const config = {
   // Lien de paiement « Passer Pro » (ex. lien de paiement Stripe) ; vide = « paiement bientôt ».
   paymentUrl: process.env.PAYMENT_URL || '',
   // Adresse de support (Aide → contact, « Signaler un problème ») ; vide = message à copier.
-  supportEmail: process.env.SUPPORT_EMAIL || '',
+  supportEmail: process.env.SUPPORT_EMAIL || 'blitzrefute@gmail.com',
   build: process.env.GITHUB_SHA ? process.env.GITHUB_SHA.slice(0, 7) : 'local',
   builtAt: new Date().toISOString(),
 };
