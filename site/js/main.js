@@ -145,7 +145,7 @@ async function init() {
         repertoirePage.show();
       }
       if (page === 'entrainement') {
-        trainingPage ??= new TrainingPage({ el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel });
+        trainingPage ??= new TrainingPage({ el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel, openSan: (san, color, label) => openSanInBoard(san, color, label) });
         trainingPage.show();
       }
       if (page === 'parties') ensureGamesPage().show();

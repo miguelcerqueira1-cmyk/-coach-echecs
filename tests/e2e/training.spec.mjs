@@ -457,3 +457,64 @@ test('Finales essentielles : jouer contre Stockfish, indice, verdict, progressio
   await expect(page.locator('[data-finales]')).toContainText('1 / 8 réussie(s)');
   await expect(page.locator('[data-finale-id="dame"]')).toContainText('⭐');
 });
+
+test('Problèmes par thème : thème choisi, difficulté selon le classement, classement mis à jour', async ({ page }) => {
+  await setup(page);
+  const fx = JSON.parse(readFileSync(new URL('../fixtures/puzzle-hanging.json', import.meta.url), 'utf8'));
+  let k = 0;
+  const urls = [];
+  await page.route(/https:\/\/lichess\.org\/api\/puzzle\/next/, (r) => {
+    k++;
+    urls.push(r.request().url());
+    r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ ...fx, puzzle: { ...fx.puzzle, id: `th${k}` } }) });
+  });
+  await page.goto('./#/entrainement');
+  const card = page.locator('[data-problemes]');
+  await expect(card).toContainText('1200');
+  await card.locator('[data-pb-theme]').selectOption('fork');
+  await card.locator('[data-pb-n]').selectOption('5');
+  await card.locator('[data-pb-start]').click();
+  await expect.poll(() => urls[0] || '').toContain('angle=fork');
+  expect(urls[0]).toContain('difficulty=easier'); // 1200 → « easier »
+  const P = page.locator('#page-entrainement [data-puzzles]');
+  await expect(P).toContainText('Fourchette');
+  await expect(P).toContainText('Problème 1 / 5');
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Il a joué', { timeout: 10000 });
+  // Solution du premier coup : Tb6, Tc8+, Rh7 → réussi, classement en hausse (problème 1144).
+  await sq(page, 'a6').click();
+  await sq(page, 'b6').click();
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Continue', { timeout: 5000 });
+  await sq(page, 'g8').click();
+  await sq(page, 'h7').click();
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('Classement problèmes : 1217 (+17)');
+  await page.click('#page-entrainement [data-quit]');
+  await expect(page.locator('.hub-result')).toContainText('Fourchette : 1 / 1');
+  await expect(page.locator('[data-problemes]')).toContainText('1217');
+  const d = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:problemes-v1')));
+  expect(d.themes.fork).toEqual({ n: 1, ok: 1 });
+});
+
+test('Partie contre Stockfish : niveau 1, Stockfish répond, reprise du coup, abandon et bilan', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/entrainement');
+  await engineReady(page);
+  const card = page.locator('[data-stockfish]');
+  await card.locator('[data-sf-niveau]').selectOption('1');
+  await card.locator('[data-sf-camp]').selectOption('w');
+  await card.locator('[data-sf-start]').click();
+  const st = page.locator('#page-entrainement [data-status]');
+  await expect(st).toContainText('À toi de jouer');
+  await move(page, 'e2e4');
+  await expect(st).toContainText('Stockfish a joué', { timeout: 20000 });
+  await page.click('#page-entrainement [data-reprendre]');
+  await expect(st).toContainText('Coup repris');
+  await expect(page.locator('#page-entrainement [data-sq="e2"] .piece')).toHaveCount(1);
+  await expect(page.locator('#page-entrainement [data-sq="e4"] .piece')).toHaveCount(0);
+  page.once('dialog', (d) => d.accept());
+  await page.click('#page-entrainement [data-abandon]');
+  await expect(st).toContainText('Défaite');
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('0 victoire(s), 0 nulle(s), 1 défaite(s)');
+  // Le moteur est repassé à pleine force pour le reste de l'appli.
+  await page.click('#page-entrainement [data-quit]');
+  await expect(page.locator('[data-stockfish]')).toContainText('niv. 1 : 0-0-1');
+});

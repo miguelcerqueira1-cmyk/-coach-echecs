@@ -65,6 +65,7 @@ export class Engine {
     this.listeners = new Set();
     this.lastGameId = null;
     this.multipv = 1; // valeur de l'option UCI MultiPV actuellement envoyée au moteur
+    this.force = 'max'; // réglage de force envoyé au moteur ('max' = pleine force)
     this.name = '';
   }
 
@@ -206,10 +207,12 @@ export class Engine {
 
   // Lance un calcul. `token` identifie la partie/branche/révision demandée.
   // multipv : nombre de meilleurs coups calculés en parallèle (1 à 5) ; le temps total ne change pas.
-  analyze({ position, movetime, token, onInfo, multipv = 1 }) {
+  // force : null (pleine force, par défaut) | { skill: 0–20 } | { elo: 1320–3190 } — seulement pour
+  // la partie contre Stockfish ; chaque calcul repasse à pleine force sauf demande contraire.
+  analyze({ position, movetime, token, onInfo, multipv = 1, force = null }) {
     if (this.state !== 'ready') return Promise.reject(new Error('Moteur indisponible'));
     return new Promise((resolve, reject) => {
-      const job = { position, movetime, token, onInfo, multipv: Math.min(5, Math.max(1, multipv | 0)), lines: [], byDepth: [], resolve, reject, cancelled: false };
+      const job = { position, movetime, token, onInfo, force, multipv: Math.min(5, Math.max(1, multipv | 0)), lines: [], byDepth: [], resolve, reject, cancelled: false };
       if (this.pending) this.pending.resolve({ cancelled: true, token: this.pending.token });
       this.pending = job;
       if (this.current) {
@@ -238,6 +241,7 @@ export class Engine {
       this.lastGameId = job.token.gameId;
       this._send('ucinewgame');
     }
+    this._appliquerForce(job.force);
     if (job.multipv !== this.multipv) {
       this._send(`setoption name MultiPV value ${job.multipv}`);
       this.multipv = job.multipv;
@@ -255,12 +259,28 @@ export class Engine {
     job.watchdog = setTimeout(watch, job.movetime + 20000);
   }
 
+  // Options UCI de force (Skill Level, UCI_LimitStrength, UCI_Elo), envoyées seulement si elles changent.
+  _appliquerForce(force) {
+    const cle = force?.elo ? `elo:${force.elo}` : Number.isFinite(force?.skill) ? `skill:${force.skill}` : 'max';
+    if (cle === this.force) return;
+    this.force = cle;
+    if (force?.elo) {
+      this._send('setoption name Skill Level value 20');
+      this._send('setoption name UCI_LimitStrength value true');
+      this._send(`setoption name UCI_Elo value ${Math.min(3190, Math.max(1320, Math.round(force.elo)))}`);
+    } else {
+      this._send('setoption name UCI_LimitStrength value false');
+      this._send(`setoption name Skill Level value ${cle === 'max' ? 20 : Math.min(20, Math.max(0, Math.round(force.skill)))}`);
+    }
+  }
+
   async restart() {
     try { this.worker?.terminate(); } catch { /* rien */ }
     this.worker = null;
     this.state = 'idle';
     this.lastGameId = null;
     this.multipv = 1;
+    this.force = 'max';
     await this.load();
   }
 }

@@ -15,6 +15,9 @@ import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { PuzzleRunner } from './puzzles.js';
 import { FinaleRunner, chargerFinales } from './finales.js';
 import FINALES from '../data/finales.js';
+import { THEMES_PROBLEMES, themeDe, lire as lireProblemes, ecrire as ecrireProblemes, difficultePour, noterProbleme, themesFaibles, signe } from './problemes-core.js';
+import { StockfishGameRunner } from './partie-stockfish.js';
+import { NIVEAUX_SF, lire as lireSF, departDepuis } from './partie-stockfish-core.js';
 import { loadProgress, saveProgress, dashboard, pickFiches, planTheorie, recordLesson, vraiesErreurs, markCorrige, bilanFiches } from './progress.js';
 import { LessonView } from './cours.js';
 import { courseOrder, courseOrderFreq } from './lesson-core.js';
@@ -47,7 +50,8 @@ const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; 
 const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 export class TrainingPage {
-  constructor({ el, engine, client, getFilter, filterLabel }) {
+  constructor({ el, engine, client, getFilter, filterLabel, openSan = null }) {
+    this.openSan = openSan;
     this.el = el;
     this.engine = engine;
     this.client = client;
@@ -152,6 +156,8 @@ export class TrainingPage {
         </section>
       </div>
       ${this.finalesHtml()}
+      ${this.problemesHtml()}
+      ${this.stockfishHtml()}
       <section class="card hub-card hub-real" data-reelles>
         <h2>🎯 Positions de mes parties${lock}</h2>
         ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
@@ -210,6 +216,8 @@ export class TrainingPage {
       if (!f.gratuit && !isPro()) { openPaywall({ reason: `La finale « ${f.titre} »` }); return; }
       this.runFinale(f);
     }));
+    this.bindProblemes();
+    this.bindStockfish();
     this.el.querySelector('[data-real]')?.addEventListener('click', need('« Positions de mes parties »', () => this.runReelles()));
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
     this.el.querySelector('[data-lines]').addEventListener('click', need('L’entraînement en répétition espacée', () => {
@@ -586,6 +594,138 @@ export class TrainingPage {
       }).join('')}</ul>
       <p class="muted tiny">✔ réussie · ⭐ réussie sans indice</p>
     </section>`;
+  }
+
+  // ---------- 🧩 Problèmes par thème (classement propre à l'appli) ----------
+  problemesHtml() {
+    const d = lireProblemes();
+    const groupes = [...new Set(THEMES_PROBLEMES.map((t) => t.groupe))];
+    const choix = this.prefs.pbTheme || 'mix';
+    const faibles = themesFaibles(d).slice(0, 3);
+    const h = d.histo || [];
+    const il30 = h.filter((x) => x.d >= new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
+    const evol = il30.length > 1 ? il30.at(-1).r - il30[0].r : null;
+    return `<section class="card hub-card hub-problemes" data-problemes>
+      <h2>🧩 5. Problèmes par thème</h2>
+      <p class="hub-big-line"><span class="hub-big">${d.classement}</span> <span class="muted small">mon classement problèmes${d.n < 20 ? ' (provisoire)' : ''} · ${d.n} problème(s)${evol !== null ? ` · ${signe(evol)} sur 30 jours` : ''}</span></p>
+      <label class="row">Thème
+        <select data-pb-theme>${groupes.map((g) => `<optgroup label="${esc(g)}">${THEMES_PROBLEMES.filter((t) => t.groupe === g).map((t) => `<option value="${t.id}" ${t.id === choix ? 'selected' : ''}>${esc(t.nom)}${!t.gratuit && !isPro() ? ' 🔒' : ''}${d.themes[t.id] ? ` — ${d.themes[t.id].ok}/${d.themes[t.id].n}` : ''}</option>`).join('')}</optgroup>`).join('')}</select>
+      </label>
+      <label class="row">Nombre
+        <select data-pb-n>${[5, 10, 20].map((n) => `<option value="${n}" ${Number(this.prefs.pbN || 10) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
+      </label>
+      ${faibles.length ? `<p class="small">Mes thèmes les plus faibles : ${faibles.map((f) => `<button type="button" class="link-btn" data-pb-go="${f.id}">${esc(f.nom)} (${f.pct} %)</button>`).join(' · ')}</p>` : ''}
+      <div class="actions"><button type="button" class="primary" data-pb-start>Commencer</button></div>
+      <p class="muted tiny">Problèmes de la base Lichess (CC0), choisis selon ton classement. Ce classement est calculé dans l’appli (formule Elo, à partir de la difficulté publiée par Lichess) : il ne compte pas sur Lichess.</p>
+    </section>`;
+  }
+
+  bindProblemes() {
+    const sel = this.el.querySelector('[data-pb-theme]');
+    const nSel = this.el.querySelector('[data-pb-n]');
+    if (!sel) return;
+    const save = () => { this.prefs.pbTheme = sel.value; this.prefs.pbN = nSel.value; try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* rien */ } };
+    sel.addEventListener('change', save);
+    nSel.addEventListener('change', save);
+    const go = (id) => {
+      const t = themeDe(id);
+      if (!t.gratuit && !isPro()) { openPaywall({ reason: `Les problèmes « ${t.nom} »` }); return; }
+      this.runProblemesTheme(t, Number(nSel.value) || 10);
+    };
+    this.el.querySelector('[data-pb-start]').addEventListener('click', () => { save(); go(sel.value); });
+    this.el.querySelectorAll('[data-pb-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.pbGo)));
+  }
+
+  runProblemesTheme(theme, n) {
+    this.s = null;
+    window.scrollTo(0, 0);
+    const avant = lireProblemes().classement;
+    this.drill = new PuzzleRunner({
+      el: this.el, queue: this.client.queue, theme, n,
+      titre: `🧩 ${theme.nom}`,
+      note: 'Problèmes de la base Lichess (licence CC0). Classement calculé dans l’appli : il ne compte pas sur Lichess.',
+      vus: lireProblemes().vus,
+      difficulty: () => difficultePour(lireProblemes().classement),
+      onResultat: (p, reussi) => {
+        const r = noterProbleme(lireProblemes(), { id: p.id, theme: theme.id, difficulte: Number(p.rating), reussi });
+        ecrireProblemes(r.data);
+        return `Classement problèmes : ${r.apres} (${signe(r.delta)})`;
+      },
+      onDone: (b) => {
+        this.drill = null;
+        this.view = null;
+        this.renderSetup();
+        const apres = lireProblemes().classement;
+        const msg = b.total ? `${theme.nom} : ${b.ok} / ${b.total} réussi(s) du premier coup. Classement problèmes : ${apres} (${signe(apres - avant)}).` : 'Problèmes interrompus.';
+        this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
+      },
+    });
+  }
+
+  // ---------- 🤖 Partie contre Stockfish (niveau réglable) ----------
+  stockfishHtml() {
+    const d = lireSF();
+    const niv = Number(this.prefs.sfNiveau || d.dernier?.niveau || 3);
+    const camp = this.prefs.sfCamp || 'w';
+    const fiches = this.data.entries.filter((e) => e.san?.length);
+    const dep = this.prefs.sfDepart || '';
+    const bil = Object.entries(d.niveaux || {}).sort((a, b) => a[0] - b[0]).map(([n, b]) => `niv. ${n} : ${b.v}-${b.n}-${b.d}`).join(' · ');
+    return `<section class="card hub-card hub-stockfish" data-stockfish>
+      <h2>🤖 6. Jouer contre Stockfish</h2>
+      <p class="small">Une vraie partie contre le moteur, du niveau 1 (il fait exprès des erreurs) au niveau 10 (pleine force). Tu peux partir de la fin d’une de tes fiches pour t’entraîner à jouer la suite.</p>
+      <label class="row">Niveau
+        <select data-sf-niveau>${NIVEAUX_SF.map((x) => `<option value="${x.n}" ${x.n === niv ? 'selected' : ''}>${esc(x.nom)}</option>`).join('')}</select>
+      </label>
+      <label class="row">Ma couleur
+        <select data-sf-camp>
+          <option value="w" ${camp === 'w' ? 'selected' : ''}>Blancs</option>
+          <option value="b" ${camp === 'b' ? 'selected' : ''}>Noirs</option>
+          <option value="hasard" ${camp === 'hasard' ? 'selected' : ''}>Au hasard</option>
+        </select>
+      </label>
+      <label class="row">Départ
+        <select data-sf-depart>
+          <option value="">Position initiale</option>
+          ${fiches.map((e) => `<option value="${esc(e.id)}" ${dep === e.id ? 'selected' : ''}>Fin de la fiche : ${esc(e.nom)} (${esc(REPERTOIRES[e.rep]?.titre || e.rep)})</option>`).join('')}
+        </select>
+      </label>
+      <p class="muted small">Si tu pars d’une fiche, ta couleur est celle du répertoire.</p>
+      <div class="actions"><button type="button" class="primary" data-sf-start>Jouer</button></div>
+      ${bil ? `<p class="muted tiny">Mon bilan (victoires-nulles-défaites) : ${esc(bil)}</p>` : ''}
+    </section>`;
+  }
+
+  bindStockfish() {
+    const q = (s) => this.el.querySelector(s);
+    if (!q('[data-sf-start]')) return;
+    const save = () => {
+      this.prefs.sfNiveau = q('[data-sf-niveau]').value;
+      this.prefs.sfCamp = q('[data-sf-camp]').value;
+      this.prefs.sfDepart = q('[data-sf-depart]').value;
+      try { localStorage.setItem(PREFS, JSON.stringify(this.prefs)); } catch { /* rien */ }
+    };
+    ['[data-sf-niveau]', '[data-sf-camp]', '[data-sf-depart]'].forEach((s) => q(s).addEventListener('change', save));
+    q('[data-sf-start]').addEventListener('click', () => {
+      save();
+      const niveau = Number(this.prefs.sfNiveau) || 3;
+      // Niveaux 1 à 4 gratuits ; au-delà, formule Pro.
+      if (niveau > 4 && !isPro()) { openPaywall({ reason: `La partie contre Stockfish au niveau ${niveau}` }); return; }
+      const e = this.data.entries.find((x) => x.id === this.prefs.sfDepart);
+      if (e && !canOpenFiche(e.id)) { openPaywall({ reason: `La fiche « ${e.nom} »` }); return; }
+      let camp = this.prefs.sfCamp === 'hasard' ? (Math.random() < 0.5 ? 'w' : 'b') : this.prefs.sfCamp;
+      if (e) camp = couleurDe(e.rep) || camp;
+      this.runStockfish({ niveau, camp, depart: e ? { chess: departDepuis(e.san), titre: e.nom } : { chess: departDepuis([]), titre: '' } });
+    });
+  }
+
+  runStockfish({ niveau, camp, depart }) {
+    this.s = null;
+    window.scrollTo(0, 0);
+    this.drill = new StockfishGameRunner({
+      el: this.el, engine: this.engine, niveau, camp, depart,
+      onDone: () => { this.drill = null; this.view = null; this.renderSetup(); },
+      onAnalyse: this.openSan ? (san, color, label) => this.openSan(san, color, label) : null,
+    });
   }
 
   runFinale(f) {

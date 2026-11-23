@@ -12,7 +12,12 @@ const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] 
 
 export class PuzzleRunner {
   // theme : { id, nom, url } (routine-core THEMES) ; queue : file Lichess (une requête à la fois).
-  constructor({ el, queue, theme, n = N_PROBLEMES, difficulty = 'easiest', chrono = 0, onDone }) {
+  // difficulty : valeur ou fonction (problèmes par thème : selon le classement à jour) ;
+  // onResultat(p, reussi) → texte affiché (ex. évolution du classement) ; note : texte du panneau.
+  constructor({ el, queue, theme, n = N_PROBLEMES, difficulty = 'easiest', chrono = 0, onDone, onResultat = null, note = null, titre = null, vus = [] }) {
+    this.onResultat = onResultat;
+    this.note = note;
+    this.titre = titre;
     this.chrono = chrono; // secondes par problème (0 = sans chrono) ; temps écoulé = raté
     this.difficulty = difficulty;
     this.el = el;
@@ -20,7 +25,7 @@ export class PuzzleRunner {
     this.theme = theme;
     this.n = n;
     this.onDone = onDone;
-    this.vus = new Set();
+    this.vus = new Set(vus); // problèmes déjà vus (séance, et historique des problèmes par thème)
     this.resultats = [];
     this.alive = true;
     this.layout();
@@ -44,11 +49,11 @@ export class PuzzleRunner {
         </div>
       </section>
       <section class="card train-panel">
-        <h2>🧩 Tactique : ${esc(this.theme.nom)}</h2>
+        <h2>${esc(this.titre || `🧩 Tactique : ${this.theme.nom}`)}</h2>
         <p class="small"><strong>Son coup d’abord :</strong> regarde le coup qu’il vient de jouer (surligné). Qu’a-t-il changé ? Puis trouve le meilleur coup.</p>
         <div data-head class="small"></div>
         <div data-feedback class="small"></div>
-        <p class="muted tiny">Problèmes de la base Lichess (licence CC0). Niveau et chrono réglables dans la routine. Ils ne comptent pas pour ton classement Lichess.</p>
+        <p class="muted tiny">${esc(this.note || 'Problèmes de la base Lichess (licence CC0). Niveau et chrono réglables dans la routine. Ils ne comptent pas pour ton classement Lichess.')}</p>
       </section>
     </div>`;
     this.board = new Board(this.$('[data-board]'), { piecesUrl: './pieces/', onMove: (mv) => this.onMove(mv) });
@@ -62,7 +67,8 @@ export class PuzzleRunner {
   // Un problème Lichess pas encore vu dans la séance (3 essais en cas de doublon).
   async charger() {
     for (let essai = 0; essai < 3; essai++) {
-      const r = await this.queue.run(urlProbleme(this.theme.id, this.difficulty), { headers: { accept: 'application/json' } });
+      const diff = typeof this.difficulty === 'function' ? this.difficulty() : this.difficulty;
+      const r = await this.queue.run(urlProbleme(this.theme.id, diff), { headers: { accept: 'application/json' } });
       if (!r.res.ok) throw new Error(`Lichess : erreur ${r.res.status}`);
       const p = lireProbleme(await r.res.json());
       if (p && !this.vus.has(p.id)) { this.vus.add(p.id); return p; }
@@ -160,6 +166,7 @@ export class PuzzleRunner {
     this.arreterChrono();
     const ok = !c.erreurs && !c.vu && !c.horsTemps;
     this.resultats.push({ id: this.p.id, reussi: ok });
+    this.annoncer(ok);
     this.status(ok ? '✔ Résolu du premier coup !' : c.horsTemps && !c.erreurs ? '✔ Résolu, mais après le temps : ne compte pas comme réussi.' : '✔ Résolu (après une erreur : ne compte pas comme réussi).', ok ? 'ok' : '');
     this.board.showBubble(ok ? '✔ Résolu !' : '✔ Résolu', 'ok');
     this.finProbleme();
@@ -185,7 +192,14 @@ export class PuzzleRunner {
     this.resultats.push({ id: this.p.id, reussi: false });
     this.status('Solution affichée : ce problème compte comme raté.');
     this.$('[data-feedback]').innerHTML = `<p>Solution : <strong>${esc(sans.join(' '))}</strong></p>`;
+    this.annoncer(false);
     this.finProbleme();
+  }
+
+  // Résultat d'un problème transmis à l'appelant (classement des problèmes par thème).
+  annoncer(reussi) {
+    const t = this.onResultat?.(this.p, reussi);
+    if (t) this.$('[data-feedback]').insertAdjacentHTML('beforeend', `<p class="puz-classement">${esc(t)}</p>`);
   }
 
   finProbleme() {
