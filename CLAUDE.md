@@ -10,13 +10,15 @@ maîtriser tes ouvertures et détruire les pièges en Blitz. » Les clés localS
 `coach-echecs:` (données des utilisateurs conservées).
 
 Application web **en français** d'entraînement aux ouvertures, **grand public** (joueurs de club /
-blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **12 répertoires** : avec les
-Blancs (Gambit Dame, Italienne, Espagnole, Londres, Anglaise), contre 1.e4 (Caro-Kann, Sicilienne,
-Française, Scandinave), contre 1.d4 (Indienne du Roi, GD refusé / Slave, Nimzo / Indienne de la
-Dame). **146 fiches** en ligne depuis le 2026-10-26 : Gambit Dame 31, Caro-Kann 27 (répertoire
-historique du créateur), Italienne 10, Espagnole 10, Londres 9, Anglaise 8, Sicilienne 9 (système
-Taimanov), Française 8, Scandinave 8, Indienne du Roi 8, GD refusé / Slave 10, Nimzo / Indienne de
-la Dame 8 ; toutes vérifiées par Stockfish (profondeur 18).
+blitz ~1000–1400 Elo). Chaque visiteur choisit ses ouvertures parmi **16 répertoires** : avec les
+Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Anglaise), contre 1.e4 (Caro-Kann,
+1…e5, Sicilienne, Française, Scandinave), contre 1.d4 (Indienne du Roi, GD refusé / Slave, Contre le
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **168 fiches** (2026-11-23) : Gambit Dame 31,
+Caro-Kann 27 (répertoire historique du créateur), Italienne 10, Espagnole 10, Londres 9, Écossaise 5,
+Anglaise 8, 1…e5 8, Sicilienne 9 (système Taimanov), Française 8, Scandinave 8, Indienne du Roi 8,
+GD refusé / Slave 10, Contre le Londres 4, Hollandaise 5, Nimzo / Indienne de la Dame 8 ; toutes
+vérifiées par Stockfish (profondeur 18). Objectif de l'utilisateur : le plus de répertoires et de
+variantes possible (concurrencer les grands sites d'entraînement, prix plus bas, options en plus).
 Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans rien installer.
 
 - Site publié : https://miguelcerqueira1-cmyk.github.io/-coach-echecs/
@@ -271,6 +273,14 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   `coach-echecs:finales-v1` (✔ réussie, ⭐ sans indice). Piège : Stockfish lite répond
   « bestmove (none) » sur R+D avec le roi noir en d5 (position remplacée ; le coup est annulé si
   le moteur ne répond pas).
+- **Ma progression (2026-11-23, `#/progression`, `progression-page.js` / `progression-core.js`)** :
+  page hors onglets (liens depuis l'Entraînement et Mes parties). Lichess : historique public
+  `/api/user/{u}/rating-history` (sans jeton ; séries Blitz/Rapide/Bullet/Classique, évolution 30 et
+  90 jours, record, courbe SVG sur 6 mois / 1 an / tout). Chess.com : `/pub/player/{u}/stats`
+  (actuel, record, bilan) + courbe construite à partir des parties importées
+  (`coach-echecs:classements-v1`, 600 max, rempli à chaque import). Routine sur 4 semaines (jours
+  actifs, complets, moyennes problèmes / menaces / au temps, tendances) ; entraînement (variantes
+  apprises, finales, positions corrigées).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

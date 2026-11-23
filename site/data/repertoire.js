@@ -32,6 +32,10 @@ import f_scandinave from './repertoires/scandinave.js';
 import f_indienne_roi from './repertoires/indienne-roi.js';
 import f_gdr_noirs from './repertoires/gdr-noirs.js';
 import f_nimzo_qid from './repertoires/nimzo-qid.js';
+import f_ecossaise from './repertoires/ecossaise.js';
+import f_e5_noirs from './repertoires/e5-noirs.js';
+import f_contre_londres from './repertoires/contre-londres.js';
+import f_hollandaise from './repertoires/hollandaise.js';
 import { REPERTOIRES, GROUPES } from './repertoires/meta.js';
 
 export { REPERTOIRES, GROUPES };
@@ -56,6 +60,10 @@ const PAR_REPERTOIRE = {
   'indienne-roi': f_indienne_roi,
   'gdr-noirs': f_gdr_noirs,
   'nimzo-qid': f_nimzo_qid,
+  'ecossaise': f_ecossaise,
+  'e5-noirs': f_e5_noirs,
+  'contre-londres': f_contre_londres,
+  'hollandaise': f_hollandaise,
 };
 
 export const LIGNES = Object.keys(REPERTOIRES).flatMap((id) => PAR_REPERTOIRE[id] || []);

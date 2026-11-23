@@ -20,6 +20,7 @@ import { initRouter } from './router.js';
 import { terminerConnexion, connecter as connecterLichess } from './lichess-auth.js';
 import { aFaire as visiteAFaire, lancerVisite } from './tour.js';
 import { ouvrirAide } from './aide.js';
+import { ProgressionPage } from './progression-page.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
@@ -76,6 +77,7 @@ const optimal = new OptimalPanel({
 let repertoirePage = null;
 let trainingPage = null;
 let accueilPage = null;
+let progressionPage = null;
 let choixPage = null;
 let gamesPage = null;
 
@@ -147,6 +149,7 @@ async function init() {
       }
       if (page === 'parties') ensureGamesPage().show();
       if (page === 'accueil') { accueilPage ??= new AccueilPage({ el: $('page-accueil') }); accueilPage.show(); }
+      if (page === 'progression') { progressionPage ??= new ProgressionPage({ el: $('page-progression'), client: lichess }); progressionPage.show(); }
       if (page === 'ouvertures') {
         // Choix enregistré : rechargement, pour que toutes les pages suivent les nouvelles ouvertures.
         choixPage ??= new ChoixPage({ el: $('page-ouvertures'), onSaved: () => { location.hash = '#/repertoire'; location.reload(); } });

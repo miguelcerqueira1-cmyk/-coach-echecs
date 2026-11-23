@@ -11,6 +11,7 @@ import {
   positionARevoir, alertePgn, ficheJouee, analyseTemps, bilanTempsParties, horlogesPgn, lireCadence,
 } from './games-core.js';
 import { connecter as connecterLichess, deconnecter as deconnecterLichess } from './lichess-auth.js';
+import { chargerClassements, noterClassements, KEY as KEY_CLASSEMENTS } from './progression-core.js';
 import { jour, charger as chargerRoutine, enregistrer as enregistrerRoutine, noter as noterRoutine } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -169,6 +170,8 @@ export class GamesPage {
     if (this.games.length) { this.prefs.lastSeen = this.games[0].date; save(PREFS, this.prefs); }
     this.noteSorties(this.games);
     this.noteRoutine(this.games);
+    // Classement de chaque partie importée : courbe Chess.com de « Ma progression ».
+    save(KEY_CLASSEMENTS, noterClassements(chargerClassements(), this.games));
     this.render();
   }
 
@@ -306,6 +309,7 @@ export class GamesPage {
           <label>Analyse <select data-p="precision"><option value="300" ${Number(p.precision) === 300 ? 'selected' : ''}>Rapide (0,3 s par position)</option><option value="800" ${Number(p.precision) === 800 ? 'selected' : ''}>Précise (0,8 s par position)</option></select></label>
         </div>
         <div class="actions"><button type="button" class="primary" data-import>Charger mes parties</button></div>
+        <p class="small"><a href="#/progression">📈 Voir ma progression</a> (classements, routine, entraînement)</p>
         <ul class="games-status">${st('Lichess')}${st('Chess.com')}${this.status.general ? `<li class="error-text">${esc(this.status.general)}</li>` : ''}</ul>
         <p class="muted small">Lichess : tes parties sont chargées grâce à la connexion (ou au jeton de ⚙). Chess.com : API publique, sans compte. Rien n’est envoyé ailleurs ; l’analyse est faite par Stockfish sur votre appareil.</p>
       </div>

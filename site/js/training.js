@@ -109,6 +109,7 @@ export class TrainingPage {
           <div><span class="hub-big">${actifs.reduce((a, id) => a + board.byRep[id].due, 0)}</span><span class="muted small">position(s) à revoir</span></div>
         </div>
       </section>
+      <p class="hub-prog"><a class="btn-like" href="#/progression" data-lien-progression>📈 Ma progression</a> <span class="muted small">classements, routine et entraînement sur 4 semaines</span></p>
       <p class="hub-path muted small">Pas d’idée ? Suis la routine du jour ci-dessus. Sinon : <strong>1. Apprendre</strong> une variante, <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux.</p>
       <div class="hub-grid">
         <section class="card hub-card hub-learn">

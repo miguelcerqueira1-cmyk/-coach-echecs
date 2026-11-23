@@ -833,3 +833,15 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .finales-list { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .35rem; }
 .finale-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: .5rem; text-align: left; flex-wrap: wrap; }
 .finale-etat { color: var(--best); }
+/* Ma progression */
+.progression { display: grid; gap: .8rem; max-width: 60rem; margin: 0 auto; padding: .8rem; }
+.prog-serie { border-top: 1px solid var(--border); padding-top: .5rem; margin-top: .5rem; }
+.prog-serie h4 { display: flex; justify-content: space-between; align-items: baseline; margin: .2rem 0; }
+.prog-actuel { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+.prog-courbe { width: 100%; height: 70px; display: block; }
+.prog-courbe path { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.prog-bornes { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.prog-stats { padding-left: 1.1rem; }
+.prog-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .6rem; }
+.prog-chiffres > div { display: flex; flex-direction: column; }
+.hub-prog { margin: .2rem 0 .6rem; }

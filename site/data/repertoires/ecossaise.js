@@ -1,0 +1,67 @@
+// Fiches du répertoire « Partie écossaise » (format et conventions : en-tête de site/data/repertoire.js).
+// Toute ligne tactique (punition, piège) doit être vérifiée par Stockfish : npm run verify:repertoire.
+//
+// 1.e4 e5 2.Cf3 Cc6 3.d4 : ouvrir le centre tout de suite, sans la théorie fermée de l'Espagnole.
+
+export default [
+  {
+    id: 'eco-fc5', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Fc5 5.Fe3 Df6', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. Bc4 Ne5 8. Be2 Qg6 9. O-O',
+    plan: 'Protéger le Cavalier d4 (Fe3, c3), développer vite le Fou f1 et roquer. Ensuite f4 ou Cd2 pour chasser les pièces noires du centre.',
+    structure: 'Centre ouvert, pion e4 blanc contre pièces noires actives ; avance d’espace blanche.',
+    punition: null,
+    piege: null,
+    cases: 'd4 (Cavalier à protéger), f4, e4',
+    echanger: 'Fou e3 contre le Fou c5',
+    conserver: 'Pion e4',
+    video: { recherche: 'Scotch Game 4...Bc5 5.Be3 Qf6 6.c3 white plan', url: null },
+  },
+  {
+    id: 'eco-cf6', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Cf6 5.Cxc6 (Mieses)', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nxc6 bxc6 6. e5 Qe7 7. Qe2 Nd5 8. c4 Ba6',
+    plan: 'Échanger en c6 puis gagner de l’espace avec e5 et c4 : le Cavalier noir n’a plus de bonne case. Développer ensuite b3, Fb2 et Cd2, en gardant le pion e5.',
+    structure: 'Pions noirs doublés en c, pion e5 blanc qui gêne le Cavalier et le Fou f8.',
+    punition: null,
+    piege: null,
+    cases: 'e5 (pion d’espace), d5 (case du Cavalier noir), c4',
+    echanger: 'Cavalier d4 contre le Cavalier c6 (fait au 5e coup)',
+    conserver: 'Pion e5',
+    video: { recherche: 'Scotch Game Mieses Variation 5.Nxc6 bxc6 6.e5', url: null },
+  },
+  {
+    id: 'eco-dh4', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Dh4 (Steinitz)', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nc3 Bb4 6. Be2 Qxe4 7. Nb5 Bxc3+ 8. bxc3 Kd8 9. O-O',
+    plan: 'La Dame noire prend le pion e4 mais retarde son développement : les Blancs sacrifient le pion pour une grosse avance (Cb5, roque, Te1) et attaquent le roi resté au centre.',
+    structure: 'Roi noir bloqué en d8, Dame noire exposée au centre ; pions c blancs doublés mais colonnes ouvertes.',
+    punition: null,
+    piege: null,
+    cases: 'c7 (menace Cxc7), e4, e1 (Tour)',
+    echanger: 'Les Dames seulement si l’avance de développement est déjà gagnée',
+    conserver: 'L’avance de développement',
+    video: { recherche: 'Scotch Game Steinitz 4...Qh4 5.Nc3', url: null },
+  },
+  {
+    id: 'eco-gambit', rep: 'ecossaise', famille: 'Gambit écossais 4.Fc4', nom: 'Gambit écossais 4.Fc4 Fc5', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4 Bc5 5. c3 Nf6 6. e5 d5 7. Bb5 Ne4 8. cxd4 Bb6',
+    plan: 'Laisser le pion d4 pour développer le Fou en c4 et viser f7 ; avec c3 et e5, les Blancs gagnent l’espace et reprennent le pion plus tard.',
+    structure: 'Pion e5 blanc avancé, centre d4/e5 reconstitué après cxd4.',
+    punition: null,
+    piege: null,
+    cases: 'f7, e5, d4',
+    echanger: 'Fou c4 contre un Cavalier noir s’il défend f7',
+    conserver: 'Pion e5',
+    video: { recherche: 'Scotch Gambit 4.Bc4 Bc5 5.c3 Nf6 6.e5 d5', url: null },
+  },
+  {
+    id: 'eco-d6', rep: 'ecossaise', famille: 'Déviations', nom: '3…d6 (Philidor tardive)', badge: 'theorie',
+    ligne: '1. e4 e5 2. Nf3 Nc6 3. d4 d6 4. Bb5 Bd7 5. Nc3 exd4 6. Nxd4 Nf6 7. O-O Be7',
+    plan: 'Contre …d6, le clouage Fb5 met la pression sur e5 ; après l’échange en d4, développement simple, roque et Te1, avec plus d’espace au centre.',
+    structure: 'Centre e4 blanc contre petit centre noir d6 : avantage d’espace blanc.',
+    punition: null,
+    piege: null,
+    cases: 'e5, d5, f5',
+    echanger: 'Fou b5 contre le Cavalier c6 si utile',
+    conserver: 'Pion e4',
+    video: { recherche: 'Scotch Game 3...d6 4.Bb5', url: null },
+  },
+];
