@@ -4,37 +4,40 @@
 // remplace pas et n'influence pas le classement Lichess de l'utilisateur.
 // Données : coach-echecs:problemes-v1 { classement, n, histo: [{ d, r }], themes: { id: { n, ok } }, vus: [ids] }
 
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+
 export const KEY = 'coach-echecs:problemes-v1';
 export const DEPART = 1200;
 
 // Thèmes de la base Lichess (identifiants de l'API `angle`) et nom français.
 export const THEMES_PROBLEMES = [
-  { id: 'mix', nom: 'Mélange (tous les thèmes)', groupe: 'Général', gratuit: true },
-  { id: 'hangingPiece', nom: 'Pièce en prise', groupe: 'Bases', gratuit: true },
-  { id: 'mateIn1', nom: 'Mat en 1', groupe: 'Mats', gratuit: true },
-  { id: 'mateIn2', nom: 'Mat en 2', groupe: 'Mats' },
-  { id: 'mateIn3', nom: 'Mat en 3', groupe: 'Mats' },
-  { id: 'backRankMate', nom: 'Mat du couloir', groupe: 'Mats' },
-  { id: 'fork', nom: 'Fourchette', groupe: 'Motifs' },
-  { id: 'pin', nom: 'Clouage', groupe: 'Motifs' },
-  { id: 'skewer', nom: 'Enfilade', groupe: 'Motifs' },
-  { id: 'discoveredAttack', nom: 'Attaque à la découverte', groupe: 'Motifs' },
-  { id: 'doubleCheck', nom: 'Échec double', groupe: 'Motifs' },
-  { id: 'xRayAttack', nom: 'Attaque rayons X', groupe: 'Motifs' },
-  { id: 'trappedPiece', nom: 'Pièce piégée', groupe: 'Motifs' },
-  { id: 'deflection', nom: 'Déviation', groupe: 'Motifs' },
-  { id: 'attraction', nom: 'Attraction', groupe: 'Motifs' },
-  { id: 'capturingDefender', nom: 'Élimination du défenseur', groupe: 'Motifs' },
-  { id: 'intermezzo', nom: 'Coup intermédiaire', groupe: 'Motifs' },
-  { id: 'sacrifice', nom: 'Sacrifice', groupe: 'Motifs' },
-  { id: 'quietMove', nom: 'Coup tranquille', groupe: 'Motifs' },
-  { id: 'defensiveMove', nom: 'Coup défensif', groupe: 'Bases' },
-  { id: 'kingsideAttack', nom: 'Attaque à l’aile roi', groupe: 'Phases' },
-  { id: 'exposedKing', nom: 'Roi exposé', groupe: 'Phases' },
-  { id: 'opening', nom: 'Ouverture', groupe: 'Phases' },
-  { id: 'middlegame', nom: 'Milieu de partie', groupe: 'Phases' },
-  { id: 'endgame', nom: 'Finale', groupe: 'Phases' },
-  { id: 'promotion', nom: 'Promotion', groupe: 'Phases' },
+  { id: 'mix', nom: L('Mélange (tous les thèmes)', 'Mix (all themes)'), groupe: L('Général', 'General'), gratuit: true },
+  { id: 'hangingPiece', nom: L('Pièce en prise', 'Hanging piece'), groupe: L('Bases', 'Basics'), gratuit: true },
+  { id: 'mateIn1', nom: L('Mat en 1', 'Mate in 1'), groupe: L('Mats', 'Mates'), gratuit: true },
+  { id: 'mateIn2', nom: L('Mat en 2', 'Mate in 2'), groupe: L('Mats', 'Mates') },
+  { id: 'mateIn3', nom: L('Mat en 3', 'Mate in 3'), groupe: L('Mats', 'Mates') },
+  { id: 'backRankMate', nom: L('Mat du couloir', 'Back-rank mate'), groupe: L('Mats', 'Mates') },
+  { id: 'fork', nom: L('Fourchette', 'Fork'), groupe: L('Motifs', 'Motifs') },
+  { id: 'pin', nom: L('Clouage', 'Pin'), groupe: L('Motifs', 'Motifs') },
+  { id: 'skewer', nom: L('Enfilade', 'Skewer'), groupe: L('Motifs', 'Motifs') },
+  { id: 'discoveredAttack', nom: L('Attaque à la découverte', 'Discovered attack'), groupe: L('Motifs', 'Motifs') },
+  { id: 'doubleCheck', nom: L('Échec double', 'Double check'), groupe: L('Motifs', 'Motifs') },
+  { id: 'xRayAttack', nom: L('Attaque rayons X', 'X-ray attack'), groupe: L('Motifs', 'Motifs') },
+  { id: 'trappedPiece', nom: L('Pièce piégée', 'Trapped piece'), groupe: L('Motifs', 'Motifs') },
+  { id: 'deflection', nom: L('Déviation', 'Deflection'), groupe: L('Motifs', 'Motifs') },
+  { id: 'attraction', nom: L('Attraction', 'Attraction'), groupe: L('Motifs', 'Motifs') },
+  { id: 'capturingDefender', nom: L('Élimination du défenseur', 'Capturing the defender'), groupe: L('Motifs', 'Motifs') },
+  { id: 'intermezzo', nom: L('Coup intermédiaire', 'Intermezzo'), groupe: L('Motifs', 'Motifs') },
+  { id: 'sacrifice', nom: L('Sacrifice', 'Sacrifice'), groupe: L('Motifs', 'Motifs') },
+  { id: 'quietMove', nom: L('Coup tranquille', 'Quiet move'), groupe: L('Motifs', 'Motifs') },
+  { id: 'defensiveMove', nom: L('Coup défensif', 'Defensive move'), groupe: L('Bases', 'Basics') },
+  { id: 'kingsideAttack', nom: L('Attaque à l’aile roi', 'Kingside attack'), groupe: L('Phases', 'Phases') },
+  { id: 'exposedKing', nom: L('Roi exposé', 'Exposed king'), groupe: L('Phases', 'Phases') },
+  { id: 'opening', nom: L('Ouverture', 'Opening'), groupe: L('Phases', 'Phases') },
+  { id: 'middlegame', nom: L('Milieu de partie', 'Middlegame'), groupe: L('Phases', 'Phases') },
+  { id: 'endgame', nom: L('Finale', 'Endgame'), groupe: L('Phases', 'Phases') },
+  { id: 'promotion', nom: L('Promotion', 'Promotion'), groupe: L('Phases', 'Phases') },
 ];
 
 export const themeDe = (id) => THEMES_PROBLEMES.find((t) => t.id === id) || THEMES_PROBLEMES[0];

@@ -2,6 +2,8 @@
 // Claude ne reçoit que des données calculées par Stockfish et validées par chess.js ;
 // tout coup qu'il cite est re-vérifié ici avant affichage.
 import { sanFr, COLOR_NAMES } from './analysis.js';
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 export const LEVELS = {
   debutant: 'Débutant',
@@ -22,8 +24,8 @@ export class Coach {
   configured() { return !!(this.getApiUrl() && this.getCode()); }
 
   missing() {
-    if (!this.getApiUrl()) return 'Aucune API Claude n’est configurée pour ce site.';
-    if (!this.getCode()) return 'Code d’accès non saisi (Réglages).';
+    if (!this.getApiUrl()) return L('Aucune API Claude n’est configurée pour ce site.', 'No Claude API is configured for this site.');
+    if (!this.getCode()) return L('Code d’accès non saisi (Réglages).', 'Access code not entered (Settings).');
     return null;
   }
 
@@ -39,13 +41,13 @@ export class Coach {
       });
     } catch (e) {
       if (e.name === 'AbortError') throw e;
-      throw new CoachError('API Claude injoignable (réseau).', 'network');
+      throw new CoachError(L('API Claude injoignable (réseau).', 'Claude API unreachable (network).'), 'network');
     }
     let data = null;
     try { data = await res.json(); } catch { /* corps vide */ }
     if (res.ok) return data;
-    const msg = data?.error || `Erreur HTTP ${res.status}`;
-    if (res.status === 401) throw new CoachError('Code d’accès refusé par le serveur.', 'auth');
+    const msg = data?.error || L(`Erreur HTTP ${res.status}`, `HTTP error ${res.status}`);
+    if (res.status === 401) throw new CoachError(L('Code d’accès refusé par le serveur.', 'Access code rejected by the server.'), 'auth');
     if (res.status === 429) throw new CoachError(msg, 'limit');
     if (res.status === 503) throw new CoachError(msg, 'unconfigured');
     throw new CoachError(msg, 'server');
@@ -133,9 +135,9 @@ export function renderCoachText(text, allowed) {
     const clean = mv.trim().replace(/^\d+\.+\s*/, '').replace(/…/, '').replace(/[+#!?]+$/, '');
     if (allowed.calc.has(clean)) return `<span class="mv ok">${escapeHtml(mv)}</span>`;
     // Coup légal mais absent des variantes calculées : affiché comme non évalué par le moteur.
-    if (allowed.legal.has(clean)) return `<span class="mv legal" title="Coup légal, non évalué par le moteur">${escapeHtml(mv)}</span>`;
+    if (allowed.legal.has(clean)) return `<span class="mv legal" title="${L('Coup légal, non évalué par le moteur', 'Legal move, not evaluated by the engine')}">${escapeHtml(mv)}</span>`;
     unverified.push(mv);
-    return `<span class="mv unverified" title="Coup non présent dans les variantes calculées">${escapeHtml(mv)} ⚠</span>`;
+    return `<span class="mv unverified" title="${L('Coup non présent dans les variantes calculées', 'Move not found in the calculated lines')}">${escapeHtml(mv)} ⚠</span>`;
   }).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
   return { html, unverified };
 }
