@@ -342,14 +342,14 @@ export class RepertoirePage {
   // Fiche réservée à BlitzRefute Pro : nom, code ECO et premiers coups visibles, le reste flouté.
   lockedRow(e) {
     return `<tr data-id="${e.id}" data-locked class="locked-card">
-      <td data-label="ECO · Nom">
+      <td data-label="ECO · Nom" data-l="${L('ECO · Nom', 'ECO · Name')}">
         <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
         <button type="button" class="primary small-btn unlock-btn" data-unlock="La fiche « ${esc(e.nom)} »">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
       </td>
-      <td data-label="Séquence" class="line">${esc(sanLine(e.san.slice(0, 4)))} …</td>
-      <td data-label="Contenu Pro" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan)}</p>
+      <td data-label="Séquence" data-l="${L('Séquence', 'Moves')}" class="line">${esc(sanLine(e.san.slice(0, 4)))} …</td>
+      <td data-label="Contenu Pro" data-l="${L('Contenu Pro', 'Pro content')}" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan)}</p>
         <p class="small muted">${L('Plan, pièges, réfutation vérifiée par Stockfish, statistiques et vidéos dans BlitzRefute Pro.', 'Plan, traps, Stockfish-verified refutation, statistics and videos in BlitzRefute Pro.')}</p></td>
     </tr>`;
   }
@@ -360,7 +360,7 @@ export class RepertoirePage {
     const live = this.live.get(e.id) || {};
     const color = this.data.repertoires[e.rep].couleur;
     return `<tr data-id="${e.id}">
-      <td data-label="ECO · Nom">
+      <td data-label="ECO · Nom" data-l="${L('ECO · Nom', 'ECO · Name')}">
         <span class="badge eco">${esc(e.eco)}</span> <button type="button" class="badge badge-btn ${BADGE_CLASS[e.badge]}" data-badge-filter="${e.badge}" title="${L('Afficher toutes les fiches de ce type', 'Show all lines of this type')}">${esc(BADGE_LABEL[e.badge])}</button>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
@@ -369,14 +369,14 @@ export class RepertoirePage {
           <button type="button" class="link-btn" data-tree="${e.id}">${L('Arbre des coups joués', 'Tree of played moves')}</button>
         </div>
       </td>
-      <td data-label="Séquence" class="line">${esc(sanLine(e.san))}</td>
-      <td data-label="Évaluation">${this.evalCell(e, live)}</td>
-      <td data-label="Statistiques">${this.statsCell(live, e)}</td>
-      <td data-label="Plan & structure"><p class="small">${esc(e.plan)}</p><p class="small"><strong>${L('Structure :', 'Structure:')}</strong> ${esc(e.structure)}</p></td>
-      <td data-label="Punition tactique">${this.claimCell(e, 'punition', v?.punition, color)}</td>
-      <td data-label="Piège à éviter">${this.claimCell(e, 'piege', v?.piege, color)}</td>
-      <td data-label="Cases & pièces" class="small"><p><strong>${L('Cases clés :', 'Key squares:')}</strong> ${esc(e.cases)}</p><p><strong>${L('À échanger :', 'To trade:')}</strong> ${esc(e.echanger)}</p><p><strong>${L('À conserver :', 'To keep:')}</strong> ${esc(e.conserver)}</p></td>
-      <td data-label="Vidéo">${this.videoCell(e)}</td>
+      <td data-label="Séquence" data-l="${L('Séquence', 'Moves')}" class="line">${esc(sanLine(e.san))}</td>
+      <td data-label="Évaluation" data-l="${L('Évaluation', 'Evaluation')}">${this.evalCell(e, live)}</td>
+      <td data-label="Statistiques" data-l="${L('Statistiques', 'Statistics')}">${this.statsCell(live, e)}</td>
+      <td data-label="Plan & structure" data-l="${L('Plan & structure', 'Plan & structure')}"><p class="small">${esc(e.plan)}</p><p class="small"><strong>${L('Structure :', 'Structure:')}</strong> ${esc(e.structure)}</p></td>
+      <td data-label="Punition tactique" data-l="${L('Punition tactique', 'Tactical punishment')}">${this.claimCell(e, 'punition', v?.punition, color)}</td>
+      <td data-label="Piège à éviter" data-l="${L('Piège à éviter', 'Trap to avoid')}">${this.claimCell(e, 'piege', v?.piege, color)}</td>
+      <td data-label="Cases & pièces" data-l="${L('Cases & pièces', 'Squares & pieces')}" class="small"><p><strong>${L('Cases clés :', 'Key squares:')}</strong> ${esc(e.cases)}</p><p><strong>${L('À échanger :', 'To trade:')}</strong> ${esc(e.echanger)}</p><p><strong>${L('À conserver :', 'To keep:')}</strong> ${esc(e.conserver)}</p></td>
+      <td data-label="Vidéo" data-l="${L('Vidéo', 'Video')}">${this.videoCell(e)}</td>
     </tr>`;
   }
 
@@ -553,8 +553,8 @@ export class RepertoirePage {
     if (!tr) return;
     const live = this.live.get(e.id) || {};
     // Ligne verrouillée (formule gratuite) : pas de cellules à mettre à jour.
-    const ev = tr.querySelector('[data-label="Évaluation"]');
-    const st = tr.querySelector('[data-label="Statistiques"]');
+    const ev = tr.querySelector('[data-label=\"Évaluation\"]');
+    const st = tr.querySelector('[data-label=\"Statistiques\"]');
     if (ev) ev.innerHTML = this.evalCell(e, live);
     if (st) st.innerHTML = this.statsCell(live, e);
     if (this.sort && this.sort !== 'eval') {

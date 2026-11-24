@@ -394,7 +394,7 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
   .rep-table, .rep-table tbody, .rep-table tr, .rep-table td { display: block; width: 100%; }
   .rep-table tr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: .8rem; padding: .3rem .2rem; box-shadow: var(--shadow); }
   .rep-table td { border-top: 0; padding: .35rem .6rem; min-width: 0 !important; }
-  .rep-table td + td::before { content: attr(data-label); display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .15rem; }
+  .rep-table td + td::before { content: attr(data-l); display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .15rem; }
 }
 .wdl-bar span.w { background: var(--w-bar); }
 .wdl-bar span.d { background: var(--d-bar); }
