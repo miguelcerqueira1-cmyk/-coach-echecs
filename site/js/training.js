@@ -17,6 +17,9 @@ import { FinaleRunner, chargerFinales } from './finales.js';
 import FINALES_FR from '../data/finales.js';
 import { langue } from './i18n.js';
 
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+const LOC = langue() === 'en' ? 'en-GB' : LOC;
+
 // Finales dans la langue de l'interface (titre et méthode).
 const FINALES = FINALES_FR.map((f) => (langue() === 'en' && f.en ? { ...f, ...f.en } : f));
 import { THEMES_PROBLEMES, themeDe, lire as lireProblemes, ecrire as ecrireProblemes, difficultePour, noterProbleme, themesFaibles, signe } from './problemes-core.js';
@@ -49,9 +52,9 @@ function loadRevision() {
   return r;
 }
 // Libellé d'un répertoire avec le camp joué : « ♙ Gambit Dame (Blancs) ».
-const repLabel = (id, { camp = true } = {}) => `${couleurDe(id) === 'w' ? '♙' : '♟'} ${REPERTOIRES[id]?.titre || id}${camp ? ` <span class="muted small">(${couleurDe(id) === 'w' ? 'Blancs' : 'Noirs'})</span>` : ''}`;
+const repLabel = (id, { camp = true } = {}) => `${couleurDe(id) === 'w' ? '♙' : '♟'} ${REPERTOIRES[id]?.titre || id}${camp ? ` <span class="muted small">(${couleurDe(id) === 'w' ? L('Blancs', 'White') : L('Noirs', 'Black')})</span>` : ''}`;
 const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-const dateFr = (t) => new Date(t).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+const dateFr = (t) => new Date(t).toLocaleString(LOC, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 export class TrainingPage {
   constructor({ el, engine, client, getFilter, filterLabel, openSan = null }) {
@@ -74,7 +77,7 @@ export class TrainingPage {
         // Seulement les ouvertures choisies (Mon répertoire).
         this.data = filtrerData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json());
       } catch {
-        this.el.innerHTML = '<p class="errbox pad">Impossible de charger le répertoire.</p>';
+        this.el.innerHTML = `<p class="errbox pad">${L('Impossible de charger le répertoire.', 'Could not load the repertoire.')}</p>`;
         return;
       }
     }
@@ -100,7 +103,7 @@ export class TrainingPage {
     this.progress = loadProgress();
     const board = dashboard(this.data, this.revision, this.progress);
     const nTrash = this.data.entries.filter((e) => trashDrill(e, this.data.repertoires[e.rep].couleur)).length;
-    const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>${actifs.length > 1 ? 'Tous mes répertoires' : esc(REPERTOIRES[actifs[0]].titre)}</option>${actifs.length > 1 ? actifs.map((id) => `<option value="${id}" ${cur === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)}</option>`).join('') : ''}</select>`;
+    const repSel = (attr, cur) => `<select data-p="${attr}"><option value="" ${!cur ? 'selected' : ''}>${actifs.length > 1 ? L('Tous mes répertoires', 'All my repertoires') : esc(REPERTOIRES[actifs[0]].titre)}</option>${actifs.length > 1 ? actifs.map((id) => `<option value="${id}" ${cur === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)}</option>`).join('') : ''}</select>`;
     const opt = (attr, vals, cur, fmt = (v) => v) => `<select data-p="${attr}">${vals.map((v) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${fmt(v)}</option>`).join('')}</select>`;
     const next = (rep) => this.ordreCours(rep).list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const seen = (rep) => this.data.entries.filter((e) => e.rep === rep && this.progress.cours?.[e.id]).length;
@@ -112,50 +115,50 @@ export class TrainingPage {
       ${this.routineHtml(board, next, seen)}
       <section class="card hub-head">
         <div class="hub-stats">
-          <div><span class="hub-big">🔥 ${board.streak}</span><span class="muted small">jour(s) d’affilée</span></div>
+          <div><span class="hub-big">🔥 ${board.streak}</span><span class="muted small">${L('jour(s) d’affilée', 'day(s) in a row')}</span></div>
           ${actifs.map((id) => `<div><span class="hub-big">${board.byRep[id].pct} %</span><span class="muted small">${esc(REPERTOIRES[id].titre)}</span></div>`).join('')}
-          <div><span class="hub-big">${actifs.reduce((a, id) => a + board.byRep[id].due, 0)}</span><span class="muted small">position(s) à revoir</span></div>
+          <div><span class="hub-big">${actifs.reduce((a, id) => a + board.byRep[id].due, 0)}</span><span class="muted small">${L('position(s) à revoir', 'position(s) to review')}</span></div>
         </div>
       </section>
-      <p class="hub-prog"><a class="btn-like" href="#/progression" data-lien-progression>📈 Ma progression</a> <span class="muted small">classements, routine et entraînement sur 4 semaines</span></p>
-      <p class="hub-path muted small">Pas d’idée ? Suis la routine du jour ci-dessus. Sinon : <strong>1. Apprendre</strong> une variante, <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux.</p>
+      <p class="hub-prog"><a class="btn-like" href="#/progression" data-lien-progression>${L('📈 Ma progression', '📈 My progress')}</a> <span class="muted small">${L('classements, routine et entraînement sur 4 semaines', 'ratings, routine and training over 4 weeks')}</span></p>
+      <p class="hub-path muted small">${L('Pas d’idée ? Suis la routine du jour ci-dessus. Sinon : <strong>1. Apprendre</strong> une variante, <strong>2. S’entraîner</strong> à la rejouer de mémoire, <strong>3. Réflexes</strong> pour punir les coups douteux.', 'No idea? Follow the daily routine above. Otherwise: <strong>1. Learn</strong> a line, <strong>2. Practise</strong> replaying it from memory, <strong>3. Reflexes</strong> to punish dubious moves.')}</p>
       <div class="hub-grid">
         <section class="card hub-card hub-learn">
-          <h2>📖 1. Apprendre</h2>
-          ${isPro() ? '' : '<p class="small"><strong>Gratuit :</strong> une leçon de base par ouverture. Les autres leçons sont dans BlitzRefute Pro.</p>'}
-          <p class="small">Des leçons pas à pas : le nom de chaque variante, les coups expliqués un par un, ce qu’il faut retenir, puis vous rejouez la ligne avec des indices.</p>
+          <h2>${L('📖 1. Apprendre', '📖 1. Learn')}</h2>
+          ${isPro() ? '' : L('<p class="small"><strong>Gratuit :</strong> une leçon de base par ouverture. Les autres leçons sont dans BlitzRefute Pro.</p>', '<p class="small"><strong>Free:</strong> one basic lesson per opening. The other lessons are in BlitzRefute Pro.</p>')}
+          <p class="small">${L('Des leçons pas à pas : le nom de chaque variante, les coups expliqués un par un, ce qu’il faut retenir, puis vous rejouez la ligne avec des indices.', 'Step-by-step lessons: the name of each line, the moves explained one by one, what to remember, then you replay the line with hints.')}</p>
           <div class="hub-courses">
             ${actifs.map((rep) => {
               const n = next(rep);
               return `<button type="button" class="hub-course" data-course="${rep}">
                 <strong>${repLabel(rep, { camp: false })}</strong>
-                <span class="small muted">${seen(rep)} / ${total(rep)} leçon(s) suivie(s)</span>
-                ${n ? `<span class="small">Prochaine : ${esc(n.nom)}</span>` : '<span class="small">Toutes les leçons sont suivies ✔</span>'}
+                <span class="small muted">${seen(rep)} / ${total(rep)} ${L('leçon(s) suivie(s)', 'lesson(s) done')}</span>
+                ${n ? `<span class="small">${L(`Prochaine : ${esc(n.nom)}`, `Next: ${esc(n.nom)}`)}</span>` : `<span class="small">${L('Toutes les leçons sont suivies ✔', 'All lessons done ✔')}</span>`}
               </button>`;
             }).join('')}
-            ${bientot.map((rep) => `<div class="hub-course soon" aria-disabled="true"><strong>${repLabel(rep, { camp: false })}</strong><span class="small muted">Fiches en préparation — bientôt</span></div>`).join('')}
+            ${bientot.map((rep) => `<div class="hub-course soon" aria-disabled="true"><strong>${repLabel(rep, { camp: false })}</strong><span class="small muted">${L('Fiches en préparation — bientôt', 'Lines in preparation — coming soon')}</span></div>`).join('')}
           </div>
         </section>
         <section class="card hub-card">
-          <h2>📚 2. S’entraîner${lock}</h2>
-          <p class="small">L’application joue l’adversaire, vous jouez la théorie de mémoire. Erreur : le plan et le bon coup, et la position revient en fin de séance.</p>
-          <div class="actions"><button type="button" class="primary" data-lines>Commencer</button></div>
-          <details class="hub-reglages"><summary class="small">⚙ Réglages : ${p.lN} lignes · ${p.complet === '0' ? 'fiche seule' : 'ligne complète'} · ${Number(p.lTemps) ? `${p.lTemps} s par coup` : 'temps libre'}${Number(p.lRepet) > 1 ? ` · ${p.lRepet} fois sans faute` : ''}</summary>
-          <label class="row">Répertoire ${repSel('lRep', p.lRep)}</label>
-          <label class="row">Lignes ${opt('lN', [3, 5, 8], p.lN)}</label>
-          <label class="row">Longueur ${opt('complet', ['1', '0'], p.complet, (v) => (v === '1' ? 'Complète (jusqu’au 15e coup)' : 'Fiche seule'))}</label>
-          <label class="row">Temps par coup ${opt('lTemps', [0, 10, 5, 3], p.lTemps, (v) => (Number(v) ? `${v} s (rythme Blitz)` : 'Libre'))}</label>
-          <label class="row">Répétitions ${opt('lRepet', [1, 3], p.lRepet, (v) => (Number(v) > 1 ? `Jusqu’à ${v} fois d’affilée sans faute` : '1 fois'))}</label>
+          <h2>${L('📚 2. S’entraîner', '📚 2. Practise')}${lock}</h2>
+          <p class="small">${L('L’application joue l’adversaire, vous jouez la théorie de mémoire. Erreur : le plan et le bon coup, et la position revient en fin de séance.', 'The app plays the opponent, you play the theory from memory. Mistake: the plan and the right move, and the position comes back at the end of the session.')}</p>
+          <div class="actions"><button type="button" class="primary" data-lines>${L('Commencer', 'Start')}</button></div>
+          <details class="hub-reglages"><summary class="small">${L(`⚙ Réglages : ${p.lN} lignes`, `⚙ Settings: ${p.lN} lines`)} · ${p.complet === '0' ? L('fiche seule', 'line only') : L('ligne complète', 'full line')} · ${Number(p.lTemps) ? L(`${p.lTemps} s par coup`, `${p.lTemps} s per move`) : L('temps libre', 'no time limit')}${Number(p.lRepet) > 1 ? ` · ${L(`${p.lRepet} fois sans faute`, `${p.lRepet} times without a mistake`)}` : ''}</summary>
+          <label class="row">${L('Répertoire', 'Repertoire')} ${repSel('lRep', p.lRep)}</label>
+          <label class="row">${L('Lignes', 'Lines')} ${opt('lN', [3, 5, 8], p.lN)}</label>
+          <label class="row">${L('Longueur', 'Length')} ${opt('complet', ['1', '0'], p.complet, (v) => (v === '1' ? L('Complète (jusqu’au 15e coup)', 'Full (up to move 15)') : L('Fiche seule', 'Line only')))}</label>
+          <label class="row">${L('Temps par coup', 'Time per move')} ${opt('lTemps', [0, 10, 5, 3], p.lTemps, (v) => (Number(v) ? L(`${v} s (rythme Blitz)`, `${v} s (Blitz pace)`) : L('Libre', 'Unlimited')))}</label>
+          <label class="row">${L('Répétitions', 'Repetitions')} ${opt('lRepet', [1, 3], p.lRepet, (v) => (Number(v) > 1 ? L(`Jusqu’à ${v} fois d’affilée sans faute`, `Up to ${v} times in a row without a mistake`) : L('1 fois', 'Once')))}</label>
           </details>
         </section>
         <section class="card hub-card">
-          <h2>⏱ 3. Réflexes anti-trash${lock}</h2>
-          <p class="small">Un coup douteux de blitz est joué : enchaînez la punition avant la fin du chrono. ${nTrash} exercices.</p>
-          <div class="actions"><button type="button" class="primary" data-trash>Commencer</button></div>
-          <details class="hub-reglages"><summary class="small">⚙ Réglages : ${p.tN} exercices · ${p.tTime} s</summary>
-          <label class="row">Répertoire ${repSel('tRep', p.tRep)}</label>
-          <label class="row">Exercices ${opt('tN', [5, 10, 20], p.tN)}</label>
-          <label class="row">Temps ${opt('tTime', [10, 20, 30], p.tTime, (v) => `${v} s`)}</label>
+          <h2>${L('⏱ 3. Réflexes anti-trash', '⏱ 3. Anti-trash reflexes')}${lock}</h2>
+          <p class="small">${L(`Un coup douteux de blitz est joué : enchaînez la punition avant la fin du chrono. ${nTrash} exercices.`, `A dubious blitz move is played: find the punishment before the clock runs out. ${nTrash} exercises.`)}</p>
+          <div class="actions"><button type="button" class="primary" data-trash>${L('Commencer', 'Start')}</button></div>
+          <details class="hub-reglages"><summary class="small">${L(`⚙ Réglages : ${p.tN} exercices · ${p.tTime} s`, `⚙ Settings: ${p.tN} exercises · ${p.tTime} s`)}</summary>
+          <label class="row">${L('Répertoire', 'Repertoire')} ${repSel('tRep', p.tRep)}</label>
+          <label class="row">${L('Exercices', 'Exercises')} ${opt('tN', [5, 10, 20], p.tN)}</label>
+          <label class="row">${L('Temps', 'Time')} ${opt('tTime', [10, 20, 30], p.tTime, (v) => `${v} s`)}</label>
           </details>
         </section>
       </div>
@@ -163,41 +166,41 @@ export class TrainingPage {
       ${this.problemesHtml()}
       ${this.stockfishHtml()}
       <section class="card hub-card hub-real" data-reelles>
-        <h2>🎯 Positions de mes parties${lock}</h2>
-        ${reelles.length ? `<p class="small"><strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.</p>
-        <ul class="small real-list">${reelles.slice(0, 3).map((x) => `<li>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${x.kind === 'punition' ? 'punition manquée' : 'sortie du répertoire'}${x.ficheNom ? ` (« ${esc(x.ficheNom)} »)` : ''}</li>`).join('')}</ul>
-        <div class="actions"><button type="button" class="primary" data-real>Rejouer ces positions</button></div>`
-    : '<p class="small muted">Aucune position à corriger pour l’instant. Quand, dans tes parties Lichess / Chess.com (onglet « Mes parties »), tu sors de tes fiches ou laisses passer une punition prévue, la position arrive ici.</p>'}
+        <h2>${L('🎯 Positions de mes parties', '🎯 Positions from my games')}${lock}</h2>
+        ${reelles.length ? `<p class="small">${L(`<strong>${reelles.length}</strong> position(s) tirée(s) de vos parties Lichess / Chess.com : ${nSort} sortie(s) de répertoire, ${reelles.length - nSort} punition(s) manquée(s). Retrouvez le bon coup : une position validée sort de la liste.`, `<strong>${reelles.length}</strong> position(s) from your Lichess / Chess.com games: ${nSort} repertoire exit(s), ${reelles.length - nSort} missed punishment(s). Find the right move: a solved position leaves the list.`)}</p>
+        <ul class="small real-list">${reelles.slice(0, 3).map((x) => `<li>${esc(x.date ? new Date(x.date).toLocaleDateString(LOC) : '')}${x.opp ? ` · ${L('contre', 'vs')} ${esc(x.opp)}` : ''} · ${x.kind === 'punition' ? L('punition manquée', 'missed punishment') : L('sortie du répertoire', 'left the repertoire')}${x.ficheNom ? L(` (« ${esc(x.ficheNom)} »)`, ` (“${esc(x.ficheNom)}”)`) : ''}</li>`).join('')}</ul>
+        <div class="actions"><button type="button" class="primary" data-real>${L('Rejouer ces positions', 'Replay these positions')}</button></div>`
+    : L('<p class="small muted">Aucune position à corriger pour l’instant. Quand, dans tes parties Lichess / Chess.com (onglet « Mes parties »), tu sors de tes fiches ou laisses passer une punition prévue, la position arrive ici.</p>', '<p class="small muted">No position to fix yet. When, in your Lichess / Chess.com games (“My games” tab), you leave your lines or miss a planned punishment, the position shows up here.</p>')}
       </section>
-      <details class="card hub-dash" data-dashboard ${this.dashOpen ? 'open' : ''}><summary><strong>📊 Progression par variante</strong> <span class="muted small">(maîtrise, positions à revoir)</span></summary>${this.dashboardHtml(board)}</details>
+      <details class="card hub-dash" data-dashboard ${this.dashOpen ? 'open' : ''}><summary><strong>${L('📊 Progression par variante', '📊 Progress by line')}</strong> <span class="muted small">${L('(maîtrise, positions à revoir)', '(mastery, positions to review)')}</span></summary>${this.dashboardHtml(board)}</details>
       <details class="card hub-other" data-other-modes>
-        <summary>Autres modes : partie contre l’adversaire, positions isolées</summary>
+        <summary>${L('Autres modes : partie contre l’adversaire, positions isolées', 'Other modes: game against the opponent, single positions')}</summary>
         <div class="train-setup">
-          <p class="small">L’application joue l’adversaire ; à vous de trouver le coup de votre répertoire, sans aide. Chaque coup est vérifié (fiche ou Stockfish).</p>
-      <label class="row">Répertoire
+          <p class="small">${L('L’application joue l’adversaire ; à vous de trouver le coup de votre répertoire, sans aide. Chaque coup est vérifié (fiche ou Stockfish).', 'The app plays the opponent; you find your repertoire move, without help. Every move is checked (line or Stockfish).')}</p>
+      <label class="row">${L('Répertoire', 'Repertoire')}
         <select data-p="rep">
-          ${actifs.map((id) => `<option value="${id}" ${p.rep === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)} (vous avez les ${couleurDe(id) === 'w' ? 'Blancs' : 'Noirs'})</option>`).join('')}
+          ${actifs.map((id) => `<option value="${id}" ${p.rep === id ? 'selected' : ''}>${esc(REPERTOIRES[id].titre)} (${L('vous avez les', 'you play')} ${couleurDe(id) === 'w' ? L('Blancs', 'White') : L('Noirs', 'Black')})</option>`).join('')}
         </select>
       </label>
       <label class="row">Mode
         <select data-p="mode">
-          <option value="partie" ${p.mode !== 'revision' ? 'selected' : ''}>Partie contre l’adversaire</option>
-          <option value="revision" ${p.mode === 'revision' ? 'selected' : ''}>Révision espacée (positions à revoir)</option>
+          <option value="partie" ${p.mode !== 'revision' ? 'selected' : ''}>${L('Partie contre l’adversaire', 'Game against the opponent')}</option>
+          <option value="revision" ${p.mode === 'revision' ? 'selected' : ''}>${L('Révision espacée (positions à revoir)', 'Spaced repetition (positions to review)')}</option>
         </select>
       </label>
       <p class="small" data-rev-stats>${this.revisionLine(p.rep)}</p>
-      <label class="row">Coups de l’adversaire
+      <label class="row">${L('Coups de l’adversaire', 'Opponent’s moves')}
         <select data-p="source">
-          <option value="lichess" ${p.source === 'lichess' ? 'selected' : ''} ${hasLichess ? '' : 'disabled'}>Parties réelles Lichess (${esc(this.filterLabel())})</option>
-          <option value="fiches" ${p.source === 'fiches' || !hasLichess ? 'selected' : ''}>Lignes des fiches seulement</option>
+          <option value="lichess" ${p.source === 'lichess' ? 'selected' : ''} ${hasLichess ? '' : 'disabled'}>${L('Parties réelles Lichess', 'Real Lichess games')} (${esc(this.filterLabel())})</option>
+          <option value="fiches" ${p.source === 'fiches' || !hasLichess ? 'selected' : ''}>${L('Lignes des fiches seulement', 'Repertoire lines only')}</option>
         </select>
       </label>
-      ${hasLichess ? '' : '<p class="muted small">Pour des adversaires tirés des vraies parties de votre niveau, ajoutez votre jeton Lichess (⚙).</p>'}
-      <label class="row">Nombre de vos coups <span class="muted small">(ou de positions en révision)</span>
+      ${hasLichess ? '' : L('<p class="muted small">Pour des adversaires tirés des vraies parties de votre niveau, ajoutez votre jeton Lichess (⚙).</p>', '<p class="muted small">For opponents drawn from real games at your level, add your Lichess token (⚙).</p>')}
+      <label class="row">${L('Nombre de vos coups', 'Number of your moves')} <span class="muted small">${L('(ou de positions en révision)', '(or of positions in review)')}</span>
         <select data-p="length">${[5, 8, 12, 16].map((n) => `<option value="${n}" ${Number(p.length) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
       </label>
-      <p class="muted small">Le filtre de niveau se règle dans « Coup optimal », page Moteur.</p>
-                  <div class="actions"><button type="button" class="primary" data-start>Commencer</button></div>
+      <p class="muted small">${L('Le filtre de niveau se règle dans « Coup optimal », page Moteur.', 'The level filter is set in “Best move”, Engine page.')}</p>
+                  <div class="actions"><button type="button" class="primary" data-start>${L('Commencer', 'Start')}</button></div>
         </div>
       </details>
     </div>`;
@@ -208,32 +211,32 @@ export class TrainingPage {
     }));
     // Modules réservés à BlitzRefute Pro : fenêtre de paiement sinon.
     const need = (reason, fn) => () => (isPro() ? fn() : openPaywall({ reason }));
-    this.bindRoutine(need('L’entraînement en répétition espacée', () => {
+    this.bindRoutine(need(L('L’entraînement en répétition espacée', 'Spaced-repetition practice'), () => {
       // Seulement des variantes déjà apprises ; rythme Blitz uniquement si elles sont maîtrisées.
       const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
       this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '0', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
-    this.el.querySelector('[data-start]').addEventListener('click', need('Ce mode d’entraînement', () => this.start()));
+    this.el.querySelector('[data-start]').addEventListener('click', need(L('Ce mode d’entraînement', 'This training mode'), () => this.start()));
     this.el.querySelectorAll('[data-finale-id]').forEach((b) => b.addEventListener('click', () => {
       const f = FINALES.find((x) => x.id === b.dataset.finaleId);
       if (!f) return;
-      if (!f.gratuit && !isPro()) { openPaywall({ reason: `La finale « ${f.titre} »` }); return; }
+      if (!f.gratuit && !isPro()) { openPaywall({ reason: L(`La finale « ${f.titre} »`, `The endgame “${f.titre}”`) }); return; }
       this.runFinale(f);
     }));
     this.bindProblemes();
     this.bindStockfish();
-    this.el.querySelector('[data-real]')?.addEventListener('click', need('« Positions de mes parties »', () => this.runReelles()));
+    this.el.querySelector('[data-real]')?.addEventListener('click', need(L('« Positions de mes parties »', '“Positions from my games”'), () => this.runReelles()));
     this.el.querySelectorAll('[data-course]').forEach((b) => b.addEventListener('click', () => { this.view = 'cours'; this.courseRep = b.dataset.course; this.renderSetup(); window.scrollTo(0, 0); }));
-    this.el.querySelector('[data-lines]').addEventListener('click', need('L’entraînement en répétition espacée', () => {
+    this.el.querySelector('[data-lines]').addEventListener('click', need(L('L’entraînement en répétition espacée', 'Spaced-repetition practice'), () => {
       this.runDrill('lignes', pickFiches(board, { rep: this.prefs.lRep || null, n: Number(this.prefs.lN) || 3 }));
     }));
     const trashIds = (rep) => pickFiches(board, { rep, n: 999, needPunition: true })
       .filter((id) => { const e = this.data.entries.find((x) => x.id === id); return trashDrill(e, this.data.repertoires[e.rep].couleur); });
-    this.el.querySelector('[data-trash]').addEventListener('click', need('Le module Réflexes anti-trash', () => {
+    this.el.querySelector('[data-trash]').addEventListener('click', need(L('Le module Réflexes anti-trash', 'The anti-trash reflexes module'), () => {
       this.runDrill('trash', shuffle(trashIds(this.prefs.tRep || null)).slice(0, Number(this.prefs.tN) || 5), { timeLimit: Number(this.prefs.tTime) || 10 });
     }));
-    this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', need('La révision des lignes', () => this.runDrill('lignes', [b.dataset.dashLine]))));
-    this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', need('Le drill de punition', () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 }))));
+    this.el.querySelectorAll('[data-dash-line]').forEach((b) => b.addEventListener('click', need(L('La révision des lignes', 'Line review'), () => this.runDrill('lignes', [b.dataset.dashLine]))));
+    this.el.querySelectorAll('[data-dash-trash]').forEach((b) => b.addEventListener('click', need(L('Le drill de punition', 'The punishment drill'), () => this.runDrill('trash', [b.dataset.dashTrash], { timeLimit: Number(this.prefs.tTime) || 10 }))));
     this.el.querySelectorAll('[data-dash-lesson]').forEach((b) => b.addEventListener('click', () => this.openLesson(b.dataset.dashLesson)));
     const dash = this.el.querySelector('[data-dashboard]');
     dash?.addEventListener('toggle', () => { this.dashOpen = dash.open; });
@@ -249,10 +252,10 @@ export class TrainingPage {
   renderEmpty() {
     const b = this.bientot();
     this.el.innerHTML = `<div class="train-hub"><section class="card hub-empty" data-empty>
-      <h2>📖 Entraînement</h2>
-      <p>Les fiches de ${b.length > 1 ? 'vos ouvertures' : 'votre ouverture'} (${b.map((id) => esc(REPERTOIRES[id].titre)).join(', ')}) sont en préparation : chaque ligne y sera vérifiée par Stockfish avant publication.</p>
-      <p class="small muted">En attendant : le Moteur d’analyse et Mes parties marchent pour toutes les ouvertures, et vous pouvez ajouter une ouverture déjà prête (Gambit Dame, Caro-Kann).</p>
-      <div class="actions"><a class="btn-like primary" href="#/ouvertures">Modifier mes ouvertures</a><a class="btn-like" href="#/moteur">Ouvrir le Moteur</a></div>
+      <h2>${L('📖 Entraînement', '📖 Training')}</h2>
+      <p>${L(`Les fiches de ${b.length > 1 ? 'vos ouvertures' : 'votre ouverture'} (${b.map((id) => esc(REPERTOIRES[id].titre)).join(', ')}) sont en préparation : chaque ligne y sera vérifiée par Stockfish avant publication.`, `The lines for ${b.length > 1 ? 'your openings' : 'your opening'} (${b.map((id) => esc(REPERTOIRES[id].titre)).join(', ')}) are being prepared: each line will be checked by Stockfish before publication.`)}</p>
+      <p class="small muted">${L('En attendant : le Moteur d’analyse et Mes parties marchent pour toutes les ouvertures, et vous pouvez ajouter une ouverture déjà prête (Gambit Dame, Caro-Kann).', 'Meanwhile: the analysis Engine and My games work for every opening, and you can add an opening that is already available (Queen’s Gambit, Caro-Kann).')}</p>
+      <div class="actions"><a class="btn-like primary" href="#/ouvertures">${L('Modifier mes ouvertures', 'Change my openings')}</a><a class="btn-like" href="#/moteur">${L('Ouvrir le Moteur', 'Open the Engine')}</a></div>
     </section></div>`;
   }
 
@@ -285,11 +288,11 @@ export class TrainingPage {
     const solides = joues.filter((e) => bilan[e.id].etat === 'solide');
     const next = list.find((e) => !this.progress.cours?.[e.id] && canOpenFiche(e.id));
     const groups = [];
-    if (revoir) groups.push({ g: 'Mes points faibles d’abord (d’après mes parties)', items: list });
-    else if (parFreq) groups.push({ g: 'Les plus jouées d’abord', items: list });
+    if (revoir) groups.push({ g: L('Mes points faibles d’abord (d’après mes parties)', 'My weak spots first (from my games)'), items: list });
+    else if (parFreq) groups.push({ g: L('Les plus jouées d’abord', 'Most played first'), items: list });
     else {
       for (const e of list) {
-        const g = `${e.badge === 'theorie' ? '' : `${({ piege: 'Pièges', loufoque: 'Coups loufoques à punir' })[e.badge]} · `}${e.famille}`;
+        const g = `${e.badge === 'theorie' ? '' : `${({ piege: L('Pièges', 'Traps'), loufoque: L('Coups loufoques à punir', 'Odd moves to punish') })[e.badge]} · `}${e.famille}`;
         if (!groups.length || groups.at(-1).g !== g) groups.push({ g, items: [] });
         groups.at(-1).items.push(e);
       }
@@ -298,28 +301,28 @@ export class TrainingPage {
     let n = 0;
     this.el.innerHTML = `<div class="course">
       <div class="lesson-top">
-        <button type="button" class="small-btn" data-back>← Accueil Entraînement</button>
+        <button type="button" class="small-btn" data-back>${L('← Accueil Entraînement', '← Training home')}</button>
         <div class="chips">${this.actifs().map((r) => `<button type="button" class="chip" data-crep="${r}" aria-pressed="${r === rep}">${repLabel(r)}</button>`).join('')}</div>
       </div>
-      <h2>📖 Cours : ${esc(REPERTOIRES[rep].titre)} avec les ${couleurDe(rep) === 'w' ? 'Blancs' : 'Noirs'}</h2>
-      <div class="chips" role="group" aria-label="Ordre des leçons">${dispo ? `<button type="button" class="chip" data-cordre="freq" aria-pressed="${parFreq}">📊 Les plus jouées d’abord</button>` : ''}<button type="button" class="chip" data-cordre="revoir" aria-pressed="${!!revoir}">⚠ Mes points faibles d’abord</button><button type="button" class="chip" data-cordre="conseil" aria-pressed="${!parFreq && !revoir}">Ordre conseillé</button></div>
+      <h2>${L(`📖 Cours : ${esc(REPERTOIRES[rep].titre)} avec les`, `📖 Course: ${esc(REPERTOIRES[rep].titre)} with`)} ${couleurDe(rep) === 'w' ? L('Blancs', 'White') : L('Noirs', 'Black')}</h2>
+      <div class="chips" role="group" aria-label="${L('Ordre des leçons', 'Lesson order')}">${dispo ? `<button type="button" class="chip" data-cordre="freq" aria-pressed="${parFreq}">${L('📊 Les plus jouées d’abord', '📊 Most played first')}</button>` : ''}<button type="button" class="chip" data-cordre="revoir" aria-pressed="${!!revoir}">${L('⚠ Mes points faibles d’abord', '⚠ My weak spots first')}</button><button type="button" class="chip" data-cordre="conseil" aria-pressed="${!parFreq && !revoir}">${L('Ordre conseillé', 'Recommended order')}</button></div>
       <div class="card mes-variantes" data-mes-variantes>${joues.length
-        ? `<p class="small"><strong>🎮 D’après mes ${joues.reduce((a, e) => a + bilan[e.id].n, 0)} partie(s) dans ces variantes :</strong></p>
-          ${aRevoir.length ? `<p class="small">⚠ <strong>À revoir :</strong> ${aRevoir.map((e) => `<button type="button" class="link-btn" data-lesson="${e.id}">${esc(e.nom)}</button>`).join(', ')}</p>` : '<p class="small">Aucune variante à revoir pour l’instant 👍</p>'}
-          ${solides.length ? `<p class="small">✅ <strong>Solides :</strong> ${solides.map((e) => esc(e.nom)).join(', ')}</p>` : ''}
-          <p class="muted tiny">« À revoir » : tu es sorti de la fiche, tu as raté une punition prévue, ou tu as perdu plus de 60 % des points sur 2 parties ou plus. Une défaite ne vient pas forcément de l’ouverture.</p>`
-        : '<p class="small muted">🎮 Importe tes parties dans « Mes parties » : chaque variante affichera ici tes résultats (gagnées, perdues, sorties de fiche).</p>'}</div>
-      <p class="small muted">${parFreq ? `Classées par fréquence réelle : nombre de parties du top blitz/rapide (Lichess, Chess.com, tournois) où le coup qui définit la variante a été joué${src ? `, données du ${esc(new Date(src.date).toLocaleDateString('fr-FR'))}` : ''}. Fréquence observée, pas une évaluation ; à votre niveau, les coups loufoques sont plus fréquents qu’au top.` : (revoir ? 'Les variantes à revoir d’après mes vraies parties en tête, puis celles jouées sans souci, puis les autres.' : 'Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques.')} Chaque leçon : présentation → les coups un par un → à retenir → à vous.</p>
+        ? `<p class="small"><strong>${L(`🎮 D’après mes ${joues.reduce((a, e) => a + bilan[e.id].n, 0)} partie(s) dans ces variantes :`, `🎮 Based on my ${joues.reduce((a, e) => a + bilan[e.id].n, 0)} game(s) in these lines:`)}</strong></p>
+          ${aRevoir.length ? `<p class="small">${L('⚠ <strong>À revoir :</strong>', '⚠ <strong>To review:</strong>')} ${aRevoir.map((e) => `<button type="button" class="link-btn" data-lesson="${e.id}">${esc(e.nom)}</button>`).join(', ')}</p>` : L('<p class="small">Aucune variante à revoir pour l’instant 👍</p>', '<p class="small">No line to review for now 👍</p>')}
+          ${solides.length ? `<p class="small">${L('✅ <strong>Solides :</strong>', '✅ <strong>Solid:</strong>')} ${solides.map((e) => esc(e.nom)).join(', ')}</p>` : ''}
+          <p class="muted tiny">${L('« À revoir » : tu es sorti de la fiche, tu as raté une punition prévue, ou tu as perdu plus de 60 % des points sur 2 parties ou plus. Une défaite ne vient pas forcément de l’ouverture.', '“To review”: you left the line, missed a planned punishment, or lost more than 60% of the points over 2 or more games. A loss does not necessarily come from the opening.')}</p>`
+        : L('<p class="small muted">🎮 Importe tes parties dans « Mes parties » : chaque variante affichera ici tes résultats (gagnées, perdues, sorties de fiche).</p>', '<p class="small muted">🎮 Import your games in “My games”: each line will show your results here (won, lost, left the line).</p>')}</div>
+      <p class="small muted">${parFreq ? L(`Classées par fréquence réelle : nombre de parties du top blitz/rapide (Lichess, Chess.com, tournois) où le coup qui définit la variante a été joué${src ? `, données du ${esc(new Date(src.date).toLocaleDateString(LOC))}` : ''}. Fréquence observée, pas une évaluation ; à votre niveau, les coups loufoques sont plus fréquents qu’au top.`, `Sorted by real frequency: number of top blitz/rapid games (Lichess, Chess.com, tournaments) in which the move that defines the line was played${src ? `, data from ${esc(new Date(src.date).toLocaleDateString(LOC))}` : ''}. Observed frequency, not an evaluation; at your level, odd moves are more frequent than at the top.`) : (revoir ? L('Les variantes à revoir d’après mes vraies parties en tête, puis celles jouées sans souci, puis les autres.', 'Lines to review based on my real games first, then those played without trouble, then the others.') : L('Dans l’ordre conseillé : la théorie principale d’abord, puis les pièges et les coups loufoques.', 'In the recommended order: main theory first, then traps and odd moves.'))} ${L('Chaque leçon : présentation → les coups un par un → à retenir → à vous.', 'Each lesson: introduction → the moves one by one → key points → your turn.')}</p>
       ${groups.map(({ g, items }) => `<h3 class="course-group">${esc(g)}</h3><ol class="course-list" start="${n + 1}">${items.map((e) => {
         n++;
         const f = byId[e.id];
         const isNext = next?.id === e.id;
         return `<li class="course-item ${isNext ? 'next' : ''}">
           <div class="course-main"><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
-            ${bilan[e.id] ? (() => { const b = bilan[e.id]; return `<div class="small var-bilan ${b.etat}" data-bilan="${e.id}">${{ revoir: '⚠ À revoir', solide: '✅ Solide', neutre: '🎮' }[b.etat]} · ${b.n} partie(s) : ${b.v} V · ${b.nul} N · ${b.d} D${b.sorties ? ` · ${b.sorties} sortie(s) de fiche` : ''}${b.punitions ? ` · ${b.punitions} punition(s) ratée(s)` : ''}</div>${this.mesPartiesHtml(e)}`; })() : ''}
-            <div class="small muted">${this.progress.cours?.[e.id] ? '📖 Leçon suivie' : isNext ? '👉 Prochaine leçon conseillée' : 'Pas encore vue'} · maîtrise ${f.pct} %${e.freq ? ` · <span class="freq" title="Parties du top où ${esc(e.freq.coup)} a été joué dans cette position">📊 ${e.freq.n} partie(s) du top</span>` : (parFreq ? ' · 📊 rare au top' : '')}</div></div>
+            ${bilan[e.id] ? (() => { const b = bilan[e.id]; return `<div class="small var-bilan ${b.etat}" data-bilan="${e.id}">${{ revoir: L('⚠ À revoir', '⚠ To review'), solide: L('✅ Solide', '✅ Solid'), neutre: '🎮' }[b.etat]} · ${L(`${b.n} partie(s) : ${b.v} V · ${b.nul} N · ${b.d} D`, `${b.n} game(s): ${b.v} W · ${b.nul} D · ${b.d} L`)}${b.sorties ? L(` · ${b.sorties} sortie(s) de fiche`, ` · left the line ${b.sorties} time(s)`) : ''}${b.punitions ? L(` · ${b.punitions} punition(s) ratée(s)`, ` · ${b.punitions} missed punishment(s)`) : ''}</div>${this.mesPartiesHtml(e)}`; })() : ''}
+            <div class="small muted">${this.progress.cours?.[e.id] ? L('📖 Leçon suivie', '📖 Lesson done') : isNext ? L('👉 Prochaine leçon conseillée', '👉 Recommended next lesson') : L('Pas encore vue', 'Not seen yet')} · ${L('maîtrise', 'mastery')} ${f.pct} %${e.freq ? ` · <span class="freq" title="${L(`Parties du top où ${esc(e.freq.coup)} a été joué dans cette position`, `Top games in which ${esc(e.freq.coup)} was played in this position`)}">${L(`📊 ${e.freq.n} partie(s) du top`, `📊 ${e.freq.n} top game(s)`)}</span>` : (parFreq ? L(' · 📊 rare au top', ' · 📊 rare at the top') : '')}</div></div>
           <div class="dash-bar"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
-          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) ? '🔒 Pro' : this.progress.cours?.[e.id] ? 'Revoir' : 'Commencer'}</button>
+          <button type="button" class="${isNext ? 'primary' : ''} small-btn" data-lesson="${e.id}">${!canOpenFiche(e.id) ? '🔒 Pro' : this.progress.cours?.[e.id] ? L('Revoir', 'Review') : L('Commencer', 'Start')}</button>
         </li>`;
       }).join('')}</ol>`).join('')}
     </div>`;
@@ -338,7 +341,7 @@ export class TrainingPage {
   openLesson(id, { cmpGameId = null } = {}) {
     const entry = this.data.entries.find((e) => e.id === id);
     if (!entry) return;
-    if (!canOpenFiche(id)) { openPaywall({ reason: `La leçon « ${entry.nom} »` }); return; }
+    if (!canOpenFiche(id)) { openPaywall({ reason: L(`La leçon « ${entry.nom} »`, `The lesson “${entry.nom}”`) }); return; }
     this.s = null;
     this.view = 'cours';
     this.courseRep = entry.rep;
@@ -357,9 +360,9 @@ export class TrainingPage {
           this.renderCourse(entry.rep);
           const e2 = this.data.entries.find((e) => e.id === fid);
           const drill = trashDrill(e2, this.data.repertoires[e2.rep].couleur);
-          this.el.querySelector('.course').insertAdjacentHTML('afterbegin', `<div class="hub-result">Leçon « ${esc(e2.nom)} » terminée ✔ Elle reviendra dans vos révisions (module S’entraîner).
-            ${drill ? `<button type="button" class="small-btn" data-after-drill="${fid}">⏱ Tester la punition</button>` : ''}</div>`);
-          this.el.querySelector('[data-after-drill]')?.addEventListener('click', () => (isPro() ? this.runDrill('trash', [fid], { timeLimit: 20 }) : openPaywall({ reason: 'Le drill de punition' })));
+          this.el.querySelector('.course').insertAdjacentHTML('afterbegin', `<div class="hub-result">${L(`Leçon « ${esc(e2.nom)} » terminée ✔ Elle reviendra dans vos révisions (module S’entraîner).`, `Lesson “${esc(e2.nom)}” completed ✔ It will come back in your reviews (Practise module).`)}
+            ${drill ? `<button type="button" class="small-btn" data-after-drill="${fid}">${L('⏱ Tester la punition', '⏱ Test the punishment')}</button>` : ''}</div>`);
+          this.el.querySelector('[data-after-drill]')?.addEventListener('click', () => (isPro() ? this.runDrill('trash', [fid], { timeLimit: 20 }) : openPaywall({ reason: L('Le drill de punition', 'The punishment drill') })));
         },
       }),
     });
@@ -388,8 +391,8 @@ export class TrainingPage {
         this.view = null;
         this.renderSetup();
         const msg = r.kind === 'trash'
-          ? `Drill terminé : ${r.ok} / ${r.total} punition(s) réussie(s)${r.best ? `, meilleur temps ${(r.best / 1000).toFixed(1).replace('.', ',')} s` : ''}.`
-          : `Lignes terminées : ${r.ok} / ${r.total} sans faute.`;
+          ? L(`Drill terminé : ${r.ok} / ${r.total} punition(s) réussie(s)${r.best ? `, meilleur temps ${(r.best / 1000).toFixed(1).replace('.', ',')} s` : ''}.`, `Drill finished: ${r.ok} / ${r.total} punishment(s) found${r.best ? `, best time ${(r.best / 1000).toFixed(1)} s` : ''}.`)
+          : L(`Lignes terminées : ${r.ok} / ${r.total} sans faute.`, `Lines finished: ${r.ok} / ${r.total} without a mistake.`);
         this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
     });
@@ -399,16 +402,16 @@ export class TrainingPage {
   mesPartiesHtml(e) {
     const list = (this.progress.parties || []).filter((x) => x.ficheId === e.id).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     if (!list.length) return '';
-    const res = { victoire: '✅ gagnée', défaite: '❌ perdue', nulle: '½ nulle' };
+    const res = { victoire: L('✅ gagnée', '✅ won'), défaite: L('❌ perdue', '❌ lost'), nulle: L('½ nulle', '½ draw') };
     const ecart = (x) => {
       if (x.ecart == null) return '';
       const no = `${Math.floor(x.ecart / 2) + 1}${x.ecart % 2 ? '…' : '.'}`;
-      return x.sortie ? ` · je quitte la fiche au coup ${no}` : x.ecart >= e.uci.length ? ' · fiche suivie jusqu’au bout' : ` · l’adversaire quitte la fiche au coup ${no}`;
+      return x.sortie ? L(` · je quitte la fiche au coup ${no}`, ` · I leave the line on move ${no}`) : x.ecart >= e.uci.length ? L(' · fiche suivie jusqu’au bout', ' · line followed to the end') : L(` · l’adversaire quitte la fiche au coup ${no}`, ` · the opponent leaves the line on move ${no}`);
     };
-    return `<details class="mes-parties-var" data-mes-parties="${e.id}"><summary class="small">🎮 Mes parties dans cette variante (${list.length})</summary>
-      <ul class="small">${list.map((x) => `<li><span>${esc(x.date ? new Date(x.date).toLocaleDateString('fr-FR') : '')}${x.opp ? ` · contre ${esc(x.opp)}` : ''} · ${res[x.outcome] || ''}${ecart(x)}</span>
-        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}" data-replay-fiche="${esc(e.id)}">▶ Comparer avec la théorie</button>` : '<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la comparer)</span>'}${/^https:\/\//.test(x.url || "") ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
-      <p class="muted tiny">« Comparer » ouvre la leçon sur le coup où ta partie quitte la théorie : bascule 📖 Théorie / 🎮 Ma partie sur le même échiquier.</p>
+    return `<details class="mes-parties-var" data-mes-parties="${e.id}"><summary class="small">${L('🎮 Mes parties dans cette variante', '🎮 My games in this line')} (${list.length})</summary>
+      <ul class="small">${list.map((x) => `<li><span>${esc(x.date ? new Date(x.date).toLocaleDateString(LOC) : '')}${x.opp ? ` · ${L('contre', 'vs')} ${esc(x.opp)}` : ''} · ${res[x.outcome] || ''}${ecart(x)}</span>
+        ${x.san?.length ? `<button type="button" class="small-btn" data-replay="${esc(x.gameId)}" data-replay-fiche="${esc(e.id)}">${L('▶ Comparer avec la théorie', '▶ Compare with theory')}</button>` : L('<span class="muted tiny">(rouvre « Mes parties » pour pouvoir la comparer)</span>', '<span class="muted tiny">(reopen “My games” to be able to compare it)</span>')}${/^https:\/\//.test(x.url || "") ? ` <a class="tiny" href="${esc(x.url)}" target="_blank" rel="noopener">↗</a>` : ''}</li>`).join('')}</ul>
+      <p class="muted tiny">${L('« Comparer » ouvre la leçon sur le coup où ta partie quitte la théorie : bascule 📖 Théorie / 🎮 Ma partie sur le même échiquier.', '“Compare” opens the lesson at the move where your game leaves theory: switch 📖 Theory / 🎮 My game on the same board.')}</p>
     </details>`;
   }
 
@@ -429,12 +432,12 @@ export class TrainingPage {
     const list = this.apprises();
     if (!list.length) return '';
     const pct = (id) => board.fiches.find((f) => f.id === id)?.pct ?? 0;
-    return `<details class="routine-appris" data-appris><summary class="small"><strong>📒 Mes variantes apprises (${list.length})</strong></summary>
+    return `<details class="routine-appris" data-appris><summary class="small"><strong>${L('📒 Mes variantes apprises', '📒 My learned lines')} (${list.length})</strong></summary>
       <ol class="appris-list">${list.map((e) => `<li><div><span class="badge eco">${esc(e.eco)}</span> <strong>${esc(e.nom)}</strong>
-        <span class="muted tiny">· ${esc(REPERTOIRES[e.rep]?.titre || e.rep)} · apprise le ${esc(new Date(this.progress.cours[e.id].vue).toLocaleDateString('fr-FR'))} · maîtrise ${pct(e.id)} %</span></div>
+        <span class="muted tiny">· ${esc(REPERTOIRES[e.rep]?.titre || e.rep)} · ${L('apprise le', 'learned on')} ${esc(new Date(this.progress.cours[e.id].vue).toLocaleDateString(LOC))} · ${L('maîtrise', 'mastery')} ${pct(e.id)} %</span></div>
         <p class="small appris-coups">${esc(this.coupsTexte(e))}</p>
-        <button type="button" class="small-btn" data-appris-lecon="${esc(e.id)}">Revoir la leçon</button></li>`).join('')}</ol>
-      <div class="actions"><button type="button" class="small-btn" data-appris-copier>📋 Copier la liste (pour mes notes)</button> <span class="small muted" data-appris-msg></span></div>
+        <button type="button" class="small-btn" data-appris-lecon="${esc(e.id)}">${L('Revoir la leçon', 'Review the lesson')}</button></li>`).join('')}</ol>
+      <div class="actions"><button type="button" class="small-btn" data-appris-copier>${L('📋 Copier la liste (pour mes notes)', '📋 Copy the list (for my notes)')}</button> <span class="small muted" data-appris-msg></span></div>
     </details>`;
   }
 
@@ -445,7 +448,7 @@ export class TrainingPage {
   }
 
   profilTexte(p) {
-    return `${p.temps} min par jour · ${p.sites.map((x) => SITES[x]).join(' + ')} · ${p.cadences.map((x) => CADENCES[x]).join(', ')}`;
+    return `${L(`${p.temps} min par jour`, `${p.temps} min a day`)} · ${p.sites.map((x) => SITES[x]).join(' + ')} · ${p.cadences.map((x) => CADENCES[x]).join(', ')}`;
   }
 
   // Trois questions pour construire la routine (premier lancement, ou « Modifier »).
@@ -453,13 +456,13 @@ export class TrainingPage {
     const p = profil || { temps: 45, sites: [], cadences: [] };
     const chk = (name, val, label, on) => `<label class="chip-check"><input type="${name === 'temps' ? 'radio' : 'checkbox'}" name="rp-${name}" value="${val}" ${on ? 'checked' : ''}> ${esc(label)}</label>`;
     return `<section class="card routine routine-setup" data-routine data-routine-profil>
-      <h2>📅 Construisons ta routine</h2>
-      <p class="small">Trois questions, et l’appli te prépare chaque jour un programme adapté. Tu pourras les changer quand tu veux.</p>
-      <fieldset><legend>⏱ Combien de temps par jour ?</legend>${TEMPS.map((t) => chk('temps', t, `${t} min`, Number(p.temps) === t)).join('')}</fieldset>
-      <fieldset><legend>🌐 Où joues-tu ?</legend>${Object.entries(SITES).map(([k, l]) => chk('sites', k, l, p.sites.includes(k))).join('')}</fieldset>
-      <fieldset><legend>⚡ Quelles cadences joues-tu ?</legend>${Object.entries(CADENCES).map(([k, l]) => chk('cadences', k, l, p.cadences.includes(k))).join('')}</fieldset>
+      <h2>${L('📅 Construisons ta routine', '📅 Let’s build your routine')}</h2>
+      <p class="small">${L('Trois questions, et l’appli te prépare chaque jour un programme adapté. Tu pourras les changer quand tu veux.', 'Three questions, and the app prepares a tailored programme for you every day. You can change them whenever you like.')}</p>
+      <fieldset><legend>${L('⏱ Combien de temps par jour ?', '⏱ How much time per day?')}</legend>${TEMPS.map((t) => chk('temps', t, `${t} min`, Number(p.temps) === t)).join('')}</fieldset>
+      <fieldset><legend>${L('🌐 Où joues-tu ?', '🌐 Where do you play?')}</legend>${Object.entries(SITES).map(([k, l]) => chk('sites', k, l, p.sites.includes(k))).join('')}</fieldset>
+      <fieldset><legend>${L('⚡ Quelles cadences joues-tu ?', '⚡ Which time controls do you play?')}</legend>${Object.entries(CADENCES).map(([k, l]) => chk('cadences', k, l, p.cadences.includes(k))).join('')}</fieldset>
       <p class="error-text small" data-profil-err></p>
-      <div class="actions"><button type="button" class="primary" data-profil-ok>Créer ma routine</button>${profil ? '<button type="button" data-profil-annuler>Annuler</button>' : ''}</div>
+      <div class="actions"><button type="button" class="primary" data-profil-ok>${L('Créer ma routine', 'Create my routine')}</button>${profil ? `<button type="button" data-profil-annuler>${L('Annuler', 'Cancel')}</button>` : ''}</div>
     </section>`;
   }
 
@@ -469,7 +472,7 @@ export class TrainingPage {
     const val = (name) => [...el.querySelectorAll(`input[name="rp-${name}"]:checked`)].map((i) => i.value);
     el.querySelector('[data-profil-ok]').addEventListener('click', () => {
       if (!val('sites').length || !val('cadences').length) {
-        el.querySelector('[data-profil-err]').textContent = 'Choisis au moins un site et une cadence.';
+        el.querySelector('[data-profil-err]').textContent = L('Choisis au moins un site et une cadence.', 'Choose at least one site and one time control.');
         return;
       }
       const d = charger();
@@ -486,9 +489,9 @@ export class TrainingPage {
     const date = jour();
     const lecon = this.prochaineLecon(next, seen);
     const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
-    const theorie = `${lecon ? `<button type="button" class="small-btn primary" data-routine-lecon="${esc(lecon.id)}">📖 Apprendre : ${esc(lecon.nom)}</button>` : ''}${plan.ids.length
-      ? `<button type="button" class="small-btn${lecon ? '' : ' primary'}" data-routine-theorie>${plan.rapide ? '⚡ Réviser en rythme Blitz (5 s par coup)' : `🔁 Réviser ${plan.ids.length} variante(s) apprise(s) : relire puis jouer`}</button>`
-      : '<span class="muted tiny">La révision s’ouvre après ta première leçon.</span>'}`;
+    const theorie = `${lecon ? `<button type="button" class="small-btn primary" data-routine-lecon="${esc(lecon.id)}">${L(`📖 Apprendre : ${esc(lecon.nom)}`, `📖 Learn: ${esc(lecon.nom)}`)}</button>` : ''}${plan.ids.length
+      ? `<button type="button" class="small-btn${lecon ? '' : ' primary'}" data-routine-theorie>${plan.rapide ? L('⚡ Réviser en rythme Blitz (5 s par coup)', '⚡ Review at Blitz pace (5 s per move)') : L(`🔁 Réviser ${plan.ids.length} variante(s) apprise(s) : relire puis jouer`, `🔁 Review ${plan.ids.length} learned line(s): read through, then play`)}</button>`
+      : L('<span class="muted tiny">La révision s’ouvre après ta première leçon.</span>', '<span class="muted tiny">Review opens after your first lesson.</span>')}`;
     const data = charger();
     const profil = profilDe(data);
     if (!profil || this.editRoutine) return this.profilHtml(profil);
@@ -500,25 +503,25 @@ export class TrainingPage {
     const hist = historique(data, date, 7);
     const v = (x) => (x == null ? '—' : x);
     return `<details class="card routine" data-routine ${this.routineFermee ? '' : 'open'}>
-      <summary><h2>📅 Ma routine du jour</h2> <span class="routine-prog">${faits} / ${blocs.length}</span>${s ? ` <span class="badge ok">🔥 ${s} jour(s) complet(s)</span>` : ''}</summary>
-      <p class="routine-rule"><strong>Son coup d’abord :</strong> avant chaque coup, un coup d’œil à la pièce qu’il vient de bouger (que menace-t-elle ?), puis mon coup est-il sûr ?</p>
-      <p class="small muted routine-profil">Ma routine : ${esc(this.profilTexte(profil))} · <button type="button" class="link-btn" data-routine-edit>⚙ Modifier</button></p>
-      ${dimanche ? '<p class="small muted">Dimanche : jour off. Seulement la théorie, le reste se repose.</p>' : ''}
+      <summary><h2>${L('📅 Ma routine du jour', '📅 My daily routine')}</h2> <span class="routine-prog">${faits} / ${blocs.length}</span>${s ? ` <span class="badge ok">🔥 ${L(`${s} jour(s) complet(s)`, `${s} full day(s)`)}</span>` : ''}</summary>
+      <p class="routine-rule">${L('<strong>Son coup d’abord :</strong> avant chaque coup, un coup d’œil à la pièce qu’il vient de bouger (que menace-t-elle ?), puis mon coup est-il sûr ?', '<strong>Their move first:</strong> before every move, glance at the piece they just moved (what does it threaten?), then: is my move safe?')}</p>
+      <p class="small muted routine-profil">${L('Ma routine :', 'My routine:')} ${esc(this.profilTexte(profil))} · <button type="button" class="link-btn" data-routine-edit>${L('⚙ Modifier', '⚙ Edit')}</button></p>
+      ${dimanche ? L('<p class="small muted">Dimanche : jour off. Seulement la théorie, le reste se repose.</p>', '<p class="small muted">Sunday: day off. Theory only, everything else rests.</p>') : ''}
       <ol class="routine-list">${blocs.map((b, i) => {
         const ok = j.faits.includes(b.id);
         const bloque = b.id === 'blitz' && !blocs.filter((x) => x.id !== 'blitz').every((x) => j.faits.includes(x.id));
         return `<li class="routine-item ${ok ? 'done' : ''}">
           <label class="routine-check"><input type="checkbox" data-bloc="${b.id}" ${ok ? 'checked' : ''}> <span><strong>${i + 1}. ${esc(b.titre)}</strong> <span class="muted small">· ${b.min} min</span></span></label>
-          <p class="small">${esc(b.texte)}${bloque ? ' <span class="muted">(après les blocs 1 à 5)</span>' : ''}</p>
-          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>🧩 Faire les ${b.n || 10} problèmes ici</button><label class="small routine-niveau">Niveau <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label><label class="small routine-niveau">Chrono <select data-routine-chrono>${CHRONOS.map((t) => `<option value="${t}" ${t === chronoProblemes(data) ? 'selected' : ''}>${t ? `${t} s par problème` : 'Sans chrono'}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
+          <p class="small">${esc(b.texte)}${bloque ? L(' <span class="muted">(après les blocs 1 à 5)</span>', ' <span class="muted">(after blocks 1 to 5)</span>') : ''}</p>
+          <div class="routine-actions">${b.action === 'problemes' ? `<button type="button" class="small-btn primary" data-routine-problemes>${L(`🧩 Faire les ${b.n || 10} problèmes ici`, `🧩 Do the ${b.n || 10} puzzles here`)}</button><label class="small routine-niveau">${L('Niveau', 'Level')} <select data-routine-niveau>${NIVEAUX.map((n) => `<option value="${n.id}" ${n.id === niveauProblemes(data) ? 'selected' : ''}>${esc(n.nom)}</option>`).join('')}</select></label><label class="small routine-niveau">${L('Chrono', 'Timer')} <select data-routine-chrono>${CHRONOS.map((t) => `<option value="${t}" ${t === chronoProblemes(data) ? 'selected' : ''}>${t ? L(`${t} s par problème`, `${t} s per puzzle`) : L('Sans chrono', 'No timer')}</option>`).join('')}</select></label>` : ''}${b.action === 'theorie' ? theorie : ''}${b.lien ? lien(b.lien) : ''}</div>${b.action === 'theorie' ? this.apprisesHtml(board) : ''}
         </li>`;
       }).join('')}</ol>
-      <h3>Le soir : mes 3 chiffres</h3>
+      <h3>${L('Le soir : mes 3 chiffres', 'In the evening: my 3 numbers')}</h3>
       <div class="routine-suivi">${Object.entries(SUIVI).map(([k, d]) => `<label>${esc(d.label)} <input type="number" inputmode="numeric" min="${d.min}" max="${d.max}" data-suivi="${k}" value="${j[k] ?? ''}"></label>`).join('')}</div>
-      <details class="routine-hist"><summary class="small">Mes 7 derniers jours</summary>
-        <table class="routine-table"><thead><tr><th>Jour</th><th>Blocs</th><th>Menaces ratées</th><th>Blitz</th><th>Au temps</th><th>Problèmes</th></tr></thead>
-        <tbody>${hist.map((h) => `<tr><td>${esc(new Date(`${h.date}T12:00:00`).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }))}</td><td>${h.faits}/${h.total}</td><td>${v(h.menaces)}</td><td>${v(h.blitz)}</td><td>${v(h.temps)}</td><td>${h.problemes == null ? '—' : `${h.problemes}/10`}</td></tr>`).join('')}</tbody></table>
-        <p class="muted tiny">Les chiffres qui comptent : les menaces ratées et les Blitz perdus au temps. S’ils baissent sur 2 à 3 semaines, tu progresses.</p>
+      <details class="routine-hist"><summary class="small">${L('Mes 7 derniers jours', 'My last 7 days')}</summary>
+        <table class="routine-table"><thead><tr><th>${L('Jour', 'Day')}</th><th>${L('Blocs', 'Blocks')}</th><th>${L('Menaces ratées', 'Missed threats')}</th><th>Blitz</th><th>${L('Au temps', 'On time')}</th><th>${L('Problèmes', 'Puzzles')}</th></tr></thead>
+        <tbody>${hist.map((h) => `<tr><td>${esc(new Date(`${h.date}T12:00:00`).toLocaleDateString(LOC, { weekday: 'short', day: 'numeric' }))}</td><td>${h.faits}/${h.total}</td><td>${v(h.menaces)}</td><td>${v(h.blitz)}</td><td>${v(h.temps)}</td><td>${h.problemes == null ? '—' : `${h.problemes}/10`}</td></tr>`).join('')}</tbody></table>
+        <p class="muted tiny">${L('Les chiffres qui comptent : les menaces ratées et les Blitz perdus au temps. S’ils baissent sur 2 à 3 semaines, tu progresses.', 'The numbers that matter: missed threats and Blitz games lost on time. If they go down over 2 to 3 weeks, you are improving.')}</p>
       </details>
     </details>`;
   }
@@ -549,7 +552,7 @@ export class TrainingPage {
     el.querySelector('[data-appris-copier]')?.addEventListener('click', async () => {
       const txt = this.apprises().map((e) => `${e.eco} ${e.nom} (${REPERTOIRES[e.rep]?.titre || e.rep})\n${this.coupsTexte(e)}`).join('\n\n');
       const msg = el.querySelector('[data-appris-msg]');
-      try { await navigator.clipboard.writeText(txt); msg.textContent = '✔ Copié : colle-le dans tes notes.'; } catch { msg.textContent = 'Copie impossible ici : appuie longuement sur le texte pour le sélectionner.'; }
+      try { await navigator.clipboard.writeText(txt); msg.textContent = L('✔ Copié : colle-le dans tes notes.', '✔ Copied: paste it into your notes.'); } catch { msg.textContent = L('Copie impossible ici : appuie longuement sur le texte pour le sélectionner.', 'Copying is not possible here: long-press the text to select it.'); }
     });
     el.querySelector('[data-routine-niveau]')?.addEventListener('change', (ev) => { const d = charger(); d.niveau = ev.target.value; enregistrer(d); });
     el.querySelector('[data-routine-chrono]')?.addEventListener('change', (ev) => { const d = charger(); d.chrono = Number(ev.target.value); enregistrer(d); });
@@ -576,7 +579,7 @@ export class TrainingPage {
           enregistrer(d);
         }
         this.renderSetup();
-        const msg = r.total ? `Problèmes : ${r.ok} / ${r.total} réussi(s) du premier coup${r.total >= n && n === 10 ? ' (noté dans ton suivi du soir)' : ''}.` : 'Problèmes interrompus.';
+        const msg = r.total ? L(`Problèmes : ${r.ok} / ${r.total} réussi(s) du premier coup${r.total >= n && n === 10 ? ' (noté dans ton suivi du soir)' : ''}.`, `Puzzles: ${r.ok} / ${r.total} solved on the first try${r.total >= n && n === 10 ? ' (recorded in your evening log)' : ''}.`) : L('Problèmes interrompus.', 'Puzzles interrupted.');
         this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
     });
@@ -586,17 +589,17 @@ export class TrainingPage {
   finalesHtml() {
     const p = chargerFinales();
     const ok = FINALES.filter((f) => p[f.id]?.ok).length;
-    const but = { mat: 'mater', promotion: 'aller à dame', nulle: 'tenir la nulle' };
+    const but = { mat: L('mater', 'checkmate'), promotion: L('aller à dame', 'promote to a queen'), nulle: L('tenir la nulle', 'hold the draw') };
     return `<section class="card hub-card hub-finales" data-finales>
-      <h2>♚ 4. Finales essentielles</h2>
-      <p class="small">Les finales à connaître, jouées contre Stockfish : il vérifie après chaque coup que tu gardes le bon résultat. ${ok} / ${FINALES.length} réussie(s).</p>
+      <h2>${L('♚ 4. Finales essentielles', '♚ 4. Essential endgames')}</h2>
+      <p class="small">${L(`Les finales à connaître, jouées contre Stockfish : il vérifie après chaque coup que tu gardes le bon résultat. ${ok} / ${FINALES.length} réussie(s).`, `The endgames you must know, played against Stockfish: after every move it checks that you keep the right result. ${ok} / ${FINALES.length} solved.`)}</p>
       <ul class="finales-list">${FINALES.map((f) => {
         const r = p[f.id];
         const etat = r?.sansIndice ? '⭐' : r?.ok ? '✔' : '';
         const lock = !f.gratuit && !isPro() ? ' <span class="lock-badge">🔒 Pro</span>' : '';
-        return `<li><button type="button" class="finale-btn" data-finale-id="${f.id}"><span>${etat ? `<span class="finale-etat">${etat}</span> ` : ''}<strong>${esc(f.titre)}</strong>${lock}</span><span class="muted tiny">but : ${but[f.but]}</span></button></li>`;
+        return `<li><button type="button" class="finale-btn" data-finale-id="${f.id}"><span>${etat ? `<span class="finale-etat">${etat}</span> ` : ''}<strong>${esc(f.titre)}</strong>${lock}</span><span class="muted tiny">${L('but :', 'goal:')} ${but[f.but]}</span></button></li>`;
       }).join('')}</ul>
-      <p class="muted tiny">✔ réussie · ⭐ réussie sans indice</p>
+      <p class="muted tiny">${L('✔ réussie · ⭐ réussie sans indice', '✔ solved · ⭐ solved without a hint')}</p>
     </section>`;
   }
 
@@ -610,17 +613,17 @@ export class TrainingPage {
     const il30 = h.filter((x) => x.d >= new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
     const evol = il30.length > 1 ? il30.at(-1).r - il30[0].r : null;
     return `<section class="card hub-card hub-problemes" data-problemes>
-      <h2>🧩 5. Problèmes par thème</h2>
-      <p class="hub-big-line"><span class="hub-big">${d.classement}</span> <span class="muted small">mon classement problèmes${d.n < 20 ? ' (provisoire)' : ''} · ${d.n} problème(s)${evol !== null ? ` · ${signe(evol)} sur 30 jours` : ''}</span></p>
-      <label class="row">Thème
+      <h2>${L('🧩 5. Problèmes par thème', '🧩 5. Puzzles by theme')}</h2>
+      <p class="hub-big-line"><span class="hub-big">${d.classement}</span> <span class="muted small">${L('mon classement problèmes', 'my puzzle rating')}${d.n < 20 ? L(' (provisoire)', ' (provisional)') : ''} · ${L(`${d.n} problème(s)`, `${d.n} puzzle(s)`)}${evol !== null ? L(` · ${signe(evol)} sur 30 jours`, ` · ${signe(evol)} over 30 days`) : ''}</span></p>
+      <label class="row">${L('Thème', 'Theme')}
         <select data-pb-theme>${groupes.map((g) => `<optgroup label="${esc(g)}">${THEMES_PROBLEMES.filter((t) => t.groupe === g).map((t) => `<option value="${t.id}" ${t.id === choix ? 'selected' : ''}>${esc(t.nom)}${!t.gratuit && !isPro() ? ' 🔒' : ''}${d.themes[t.id] ? ` — ${d.themes[t.id].ok}/${d.themes[t.id].n}` : ''}</option>`).join('')}</optgroup>`).join('')}</select>
       </label>
-      <label class="row">Nombre
+      <label class="row">${L('Nombre', 'Number')}
         <select data-pb-n>${[5, 10, 20].map((n) => `<option value="${n}" ${Number(this.prefs.pbN || 10) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
       </label>
-      ${faibles.length ? `<p class="small">Mes thèmes les plus faibles : ${faibles.map((f) => `<button type="button" class="link-btn" data-pb-go="${f.id}">${esc(f.nom)} (${f.pct} %)</button>`).join(' · ')}</p>` : ''}
-      <div class="actions"><button type="button" class="primary" data-pb-start>Commencer</button></div>
-      <p class="muted tiny">Problèmes de la base Lichess (CC0), choisis selon ton classement. Ce classement est calculé dans l’appli (formule Elo, à partir de la difficulté publiée par Lichess) : il ne compte pas sur Lichess.</p>
+      ${faibles.length ? `<p class="small">${L('Mes thèmes les plus faibles :', 'My weakest themes:')} ${faibles.map((f) => `<button type="button" class="link-btn" data-pb-go="${f.id}">${esc(f.nom)} (${f.pct} %)</button>`).join(' · ')}</p>` : ''}
+      <div class="actions"><button type="button" class="primary" data-pb-start>${L('Commencer', 'Start')}</button></div>
+      <p class="muted tiny">${L('Problèmes de la base Lichess (CC0), choisis selon ton classement. Ce classement est calculé dans l’appli (formule Elo, à partir de la difficulté publiée par Lichess) : il ne compte pas sur Lichess.', 'Puzzles from the Lichess database (CC0), chosen according to your rating. This rating is computed in the app (Elo formula, from the difficulty published by Lichess): it does not count on Lichess.')}</p>
     </section>`;
   }
 
@@ -633,7 +636,7 @@ export class TrainingPage {
     nSel.addEventListener('change', save);
     const go = (id) => {
       const t = themeDe(id);
-      if (!t.gratuit && !isPro()) { openPaywall({ reason: `Les problèmes « ${t.nom} »` }); return; }
+      if (!t.gratuit && !isPro()) { openPaywall({ reason: L(`Les problèmes « ${t.nom} »`, `The “${t.nom}” puzzles`) }); return; }
       this.runProblemesTheme(t, Number(nSel.value) || 10);
     };
     this.el.querySelector('[data-pb-start]').addEventListener('click', () => { save(); go(sel.value); });
@@ -647,20 +650,20 @@ export class TrainingPage {
     this.drill = new PuzzleRunner({
       el: this.el, queue: this.client.queue, theme, n,
       titre: `🧩 ${theme.nom}`,
-      note: 'Problèmes de la base Lichess (licence CC0). Classement calculé dans l’appli : il ne compte pas sur Lichess.',
+      note: L('Problèmes de la base Lichess (licence CC0). Classement calculé dans l’appli : il ne compte pas sur Lichess.', 'Puzzles from the Lichess database (CC0 licence). Rating computed in the app: it does not count on Lichess.'),
       vus: lireProblemes().vus,
       difficulty: () => difficultePour(lireProblemes().classement),
       onResultat: (p, reussi) => {
         const r = noterProbleme(lireProblemes(), { id: p.id, theme: theme.id, difficulte: Number(p.rating), reussi });
         ecrireProblemes(r.data);
-        return `Classement problèmes : ${r.apres} (${signe(r.delta)})`;
+        return L(`Classement problèmes : ${r.apres} (${signe(r.delta)})`, `Puzzle rating: ${r.apres} (${signe(r.delta)})`);
       },
       onDone: (b) => {
         this.drill = null;
         this.view = null;
         this.renderSetup();
         const apres = lireProblemes().classement;
-        const msg = b.total ? `${theme.nom} : ${b.ok} / ${b.total} réussi(s) du premier coup. Classement problèmes : ${apres} (${signe(apres - avant)}).` : 'Problèmes interrompus.';
+        const msg = b.total ? L(`${theme.nom} : ${b.ok} / ${b.total} réussi(s) du premier coup. Classement problèmes : ${apres} (${signe(apres - avant)}).`, `${theme.nom}: ${b.ok} / ${b.total} solved on the first try. Puzzle rating: ${apres} (${signe(apres - avant)}).`) : L('Problèmes interrompus.', 'Puzzles interrupted.');
         this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg)}</p>`);
       },
     });
@@ -673,29 +676,29 @@ export class TrainingPage {
     const camp = this.prefs.sfCamp || 'w';
     const fiches = this.data.entries.filter((e) => e.san?.length);
     const dep = this.prefs.sfDepart || '';
-    const bil = Object.entries(d.niveaux || {}).sort((a, b) => a[0] - b[0]).map(([n, b]) => `niv. ${n} : ${b.v}-${b.n}-${b.d}`).join(' · ');
+    const bil = Object.entries(d.niveaux || {}).sort((a, b) => a[0] - b[0]).map(([n, b]) => L(`niv. ${n} : ${b.v}-${b.n}-${b.d}`, `lvl ${n}: ${b.v}-${b.n}-${b.d}`)).join(' · ');
     return `<section class="card hub-card hub-stockfish" data-stockfish>
-      <h2>🤖 6. Jouer contre Stockfish</h2>
-      <p class="small">Une vraie partie contre le moteur, du niveau 1 (il fait exprès des erreurs) au niveau 10 (pleine force). Tu peux partir de la fin d’une de tes fiches pour t’entraîner à jouer la suite.</p>
-      <label class="row">Niveau
+      <h2>${L('🤖 6. Jouer contre Stockfish', '🤖 6. Play against Stockfish')}</h2>
+      <p class="small">${L('Une vraie partie contre le moteur, du niveau 1 (il fait exprès des erreurs) au niveau 10 (pleine force). Tu peux partir de la fin d’une de tes fiches pour t’entraîner à jouer la suite.', 'A real game against the engine, from level 1 (it makes mistakes on purpose) to level 10 (full strength). You can start from the end of one of your lines to practise playing on.')}</p>
+      <label class="row">${L('Niveau', 'Level')}
         <select data-sf-niveau>${NIVEAUX_SF.map((x) => `<option value="${x.n}" ${x.n === niv ? 'selected' : ''}>${esc(x.nom)}</option>`).join('')}</select>
       </label>
-      <label class="row">Ma couleur
+      <label class="row">${L('Ma couleur', 'My colour')}
         <select data-sf-camp>
-          <option value="w" ${camp === 'w' ? 'selected' : ''}>Blancs</option>
-          <option value="b" ${camp === 'b' ? 'selected' : ''}>Noirs</option>
-          <option value="hasard" ${camp === 'hasard' ? 'selected' : ''}>Au hasard</option>
+          <option value="w" ${camp === 'w' ? 'selected' : ''}>${L('Blancs', 'White')}</option>
+          <option value="b" ${camp === 'b' ? 'selected' : ''}>${L('Noirs', 'Black')}</option>
+          <option value="hasard" ${camp === 'hasard' ? 'selected' : ''}>${L('Au hasard', 'Random')}</option>
         </select>
       </label>
-      <label class="row">Départ
+      <label class="row">${L('Départ', 'Start position')}
         <select data-sf-depart>
-          <option value="">Position initiale</option>
-          ${fiches.map((e) => `<option value="${esc(e.id)}" ${dep === e.id ? 'selected' : ''}>Fin de la fiche : ${esc(e.nom)} (${esc(REPERTOIRES[e.rep]?.titre || e.rep)})</option>`).join('')}
+          <option value="">${L('Position initiale', 'Initial position')}</option>
+          ${fiches.map((e) => `<option value="${esc(e.id)}" ${dep === e.id ? 'selected' : ''}>${L(`Fin de la fiche : ${esc(e.nom)}`, `End of the line: ${esc(e.nom)}`)} (${esc(REPERTOIRES[e.rep]?.titre || e.rep)})</option>`).join('')}
         </select>
       </label>
-      <p class="muted small">Si tu pars d’une fiche, ta couleur est celle du répertoire.</p>
-      <div class="actions"><button type="button" class="primary" data-sf-start>Jouer</button></div>
-      ${bil ? `<p class="muted tiny">Mon bilan (victoires-nulles-défaites) : ${esc(bil)}</p>` : ''}
+      <p class="muted small">${L('Si tu pars d’une fiche, ta couleur est celle du répertoire.', 'If you start from a line, your colour is the repertoire’s.')}</p>
+      <div class="actions"><button type="button" class="primary" data-sf-start>${L('Jouer', 'Play')}</button></div>
+      ${bil ? `<p class="muted tiny">${L('Mon bilan (victoires-nulles-défaites) :', 'My record (wins-draws-losses):')} ${esc(bil)}</p>` : ''}
     </section>`;
   }
 
@@ -713,9 +716,9 @@ export class TrainingPage {
       save();
       const niveau = Number(this.prefs.sfNiveau) || 3;
       // Niveaux 1 à 4 gratuits ; au-delà, formule Pro.
-      if (niveau > 4 && !isPro()) { openPaywall({ reason: `La partie contre Stockfish au niveau ${niveau}` }); return; }
+      if (niveau > 4 && !isPro()) { openPaywall({ reason: L(`La partie contre Stockfish au niveau ${niveau}`, `The game against Stockfish at level ${niveau}`) }); return; }
       const e = this.data.entries.find((x) => x.id === this.prefs.sfDepart);
-      if (e && !canOpenFiche(e.id)) { openPaywall({ reason: `La fiche « ${e.nom} »` }); return; }
+      if (e && !canOpenFiche(e.id)) { openPaywall({ reason: L(`La fiche « ${e.nom} »`, `The line “${e.nom}”`) }); return; }
       let camp = this.prefs.sfCamp === 'hasard' ? (Math.random() < 0.5 ? 'w' : 'b') : this.prefs.sfCamp;
       if (e) camp = couleurDe(e.rep) || camp;
       this.runStockfish({ niveau, camp, depart: e ? { chess: departDepuis(e.san), titre: e.nom } : { chess: departDepuis([]), titre: '' } });
@@ -756,7 +759,7 @@ export class TrainingPage {
         this.drill = null;
         this.view = null;
         this.renderSetup();
-        this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(`Positions de mes parties : ${r.ok} corrigée(s).`)}</p>`);
+        this.el.querySelector('.hub-head').insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(L(`Positions de mes parties : ${r.ok} corrigée(s).`, `Positions from my games: ${r.ok} fixed.`))}</p>`);
       },
     });
   }
@@ -775,19 +778,19 @@ export class TrainingPage {
     const tab = (k) => `<button type="button" class="chip" data-dash-rep="${k}" aria-pressed="${rep === k}">${repLabel(k, { camp: false })}</button>`;
     return `
       <div class="chips">${actifs.map(tab).join('')}</div>
-      <p class="small">Maîtrise moyenne <strong>${r.pct} %</strong> · ${r.maitrisees} / ${r.total} variante(s) maîtrisée(s) (≥ 80 %) · ${r.due} position(s) à revoir.
-        ${board.bestDrill ? ` · Record anti-trash : ${(board.bestDrill / 1000).toFixed(1).replace('.', ',')} s` : ''}</p>
-      <p class="muted tiny">Maîtrise = positions révisées avec succès (70 %) + réussite aux exercices de la fiche (30 %). Les variantes les plus faibles sont en haut ; ⚠ = vous en êtes sorti dans une vraie partie (Mes parties).</p>
+      <p class="small">${L(`Maîtrise moyenne <strong>${r.pct} %</strong> · ${r.maitrisees} / ${r.total} variante(s) maîtrisée(s) (≥ 80 %) · ${r.due} position(s) à revoir.`, `Average mastery <strong>${r.pct}%</strong> · ${r.maitrisees} / ${r.total} line(s) mastered (≥ 80%) · ${r.due} position(s) to review.`)}
+        ${board.bestDrill ? L(` · Record anti-trash : ${(board.bestDrill / 1000).toFixed(1).replace('.', ',')} s`, ` · Anti-trash record: ${(board.bestDrill / 1000).toFixed(1)} s`) : ''}</p>
+      <p class="muted tiny">${L('Maîtrise = positions révisées avec succès (70 %) + réussite aux exercices de la fiche (30 %). Les variantes les plus faibles sont en haut ; ⚠ = vous en êtes sorti dans une vraie partie (Mes parties).', 'Mastery = positions reviewed successfully (70%) + success in the line’s exercises (30%). The weakest lines are at the top; ⚠ = you left it in a real game (My games).')}</p>
       ${(() => {
     const row = (f) => `<li class="dash-row">
-        <div class="dash-name"><span class="badge eco">${esc(f.eco)}</span> ${esc(f.nom)}${f.cours ? ' <span title="Leçon suivie">📖</span>' : ''}${f.sorties ? ` <span class="badge err" title="Sortie de répertoire dans vos parties">⚠ ${f.sorties}</span>` : ''}${f.due ? ` <span class="badge">${f.due} à revoir</span>` : ''}</div>
-        <div class="dash-bar" role="img" aria-label="Maîtrise ${f.pct} %"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
+        <div class="dash-name"><span class="badge eco">${esc(f.eco)}</span> ${esc(f.nom)}${f.cours ? ` <span title="${L('Leçon suivie', 'Lesson done')}">📖</span>` : ''}${f.sorties ? ` <span class="badge err" title="${L('Sortie de répertoire dans vos parties', 'Repertoire exit in your games')}">⚠ ${f.sorties}</span>` : ''}${f.due ? ` <span class="badge">${L(`${f.due} à revoir`, `${f.due} to review`)}</span>` : ''}</div>
+        <div class="dash-bar" role="img" aria-label="${L('Maîtrise', 'Mastery')} ${f.pct} %"><span style="width:${f.pct}%" class="${f.pct >= 80 ? 'hi' : f.pct >= 40 ? 'mid' : 'lo'}"></span></div>
         <div class="dash-pct">${f.pct} %</div>
-        <div class="dash-actions"><button type="button" class="small-btn" data-dash-lesson="${f.id}" title="Leçon">📖</button><button type="button" class="small-btn" data-dash-line="${f.id}">Réviser</button>${f.punition && trashDrill(this.data.entries.find((e) => e.id === f.id), this.data.repertoires[f.rep].couleur) ? `<button type="button" class="small-btn" data-dash-trash="${f.id}">⏱ Drill</button>` : ''}</div>
+        <div class="dash-actions"><button type="button" class="small-btn" data-dash-lesson="${f.id}" title="${L('Leçon', 'Lesson')}">📖</button><button type="button" class="small-btn" data-dash-line="${f.id}">${L('Réviser', 'Review')}</button>${f.punition && trashDrill(this.data.entries.find((e) => e.id === f.id), this.data.repertoires[f.rep].couleur) ? `<button type="button" class="small-btn" data-dash-trash="${f.id}">⏱ Drill</button>` : ''}</div>
       </li>`;
     const head = fiches.slice(0, 12).map(row).join('');
     const rest = fiches.slice(12);
-    return `<ul class="dash-list">${head}</ul>${rest.length ? `<details class="dash-more"><summary>Voir les ${rest.length} autres variantes</summary><ul class="dash-list">${rest.map(row).join('')}</ul></details>` : ''}`;
+    return `<ul class="dash-list">${head}</ul>${rest.length ? `<details class="dash-more"><summary>${L(`Voir les ${rest.length} autres variantes`, `Show the ${rest.length} other lines`)}</summary><ul class="dash-list">${rest.map(row).join('')}</ul></details>` : ''}`;
   })()}`;
   }
 
@@ -796,7 +799,7 @@ export class TrainingPage {
   revisionLine(rep) {
     const cards = cardsFor(buildTree(this.data.entries, rep));
     const st = revisionStats(cards, this.revision[rep]);
-    return `📅 Révision : <strong>${st.due}</strong> position(s) à revoir maintenant · ${st.fresh} jamais vue(s) · ${st.learned} / ${st.total} apprise(s). <span class="muted">Chaque position ratée revient plus souvent ; réussie, elle s’espace (1 j, 3 j, 8 j…).</span>`;
+    return L(`📅 Révision : <strong>${st.due}</strong> position(s) à revoir maintenant · ${st.fresh} jamais vue(s) · ${st.learned} / ${st.total} apprise(s). <span class="muted">Chaque position ratée revient plus souvent ; réussie, elle s’espace (1 j, 3 j, 8 j…).</span>`, `📅 Review: <strong>${st.due}</strong> position(s) to review now · ${st.fresh} never seen · ${st.learned} / ${st.total} learned. <span class="muted">Each missed position comes back more often; once solved, it is spaced out (1 d, 3 d, 8 d…).</span>`);
   }
 
   // Note une position du répertoire (première tentative de la session seulement).
@@ -811,14 +814,14 @@ export class TrainingPage {
   nextCard() {
     const s = this.s;
     if (!this.alive(s)) return;
-    if (s.cardIndex >= s.cards.length) { this.finish('Révision terminée.'); return; }
+    if (s.cardIndex >= s.cards.length) { this.finish(L('Révision terminée.', 'Review finished.')); return; }
     const card = s.cards[s.cardIndex++];
     s.chess = new Chess();
     s.path = [];
     for (const u of card.path) this.play(u);
     const fiche = s.tree.ours.get(card.k)?.values().next().value?.[0];
     const st = this.revision[s.rep][card.k];
-    this.msg(`Position ${s.cardIndex} / ${s.cards.length}${fiche ? ` — fiche « ${esc(fiche.nom)} »` : ''}${st ? (st.lapses ? ` <span class="muted">(ratée ${st.lapses} fois)</span>` : '') : ' <span class="muted">(nouvelle)</span>'} : trouvez votre coup.`, 'muted');
+    this.msg(L(`Position ${s.cardIndex} / ${s.cards.length}${fiche ? ` — fiche « ${esc(fiche.nom)} »` : ''}${st ? (st.lapses ? ` <span class="muted">(ratée ${st.lapses} fois)</span>` : '') : ' <span class="muted">(nouvelle)</span>'} : trouvez votre coup.`, `Position ${s.cardIndex} / ${s.cards.length}${fiche ? ` — line “${esc(fiche.nom)}”` : ''}${st ? (st.lapses ? ` <span class="muted">(missed ${st.lapses} time(s))</span>` : '') : ' <span class="muted">(new)</span>'}: find your move.`), 'muted');
     this.render();
   }
 
@@ -847,18 +850,18 @@ export class TrainingPage {
     }
     this.el.innerHTML = `<div class="train-layout">
       <section><div class="train-status" data-status></div><div class="board-wrap" data-board></div>
-        <div class="actions"><button type="button" data-stop>Arrêter</button><button type="button" data-restart>Recommencer</button></div></section>
+        <div class="actions"><button type="button" data-stop>${L('Arrêter', 'Stop')}</button><button type="button" data-restart>${L('Recommencer', 'Restart')}</button></div></section>
       <section class="card train-panel"><div data-score></div><ol class="train-log" data-log></ol></section>
     </div>`;
     this.board = new Board(this.el.querySelector('[data-board]'), { piecesUrl: './pieces/', onMove: (mv) => this.onUserMove(mv) });
     this.board.setOrientation(color);
-    this.el.querySelector('[data-stop]').addEventListener('click', () => this.finish('Session arrêtée.'));
+    this.el.querySelector('[data-stop]').addEventListener('click', () => this.finish(L('Session arrêtée.', 'Session stopped.')));
     this.el.querySelector('[data-restart]').addEventListener('click', () => this.start());
     this.render();
     if (this.s.mode === 'revision') {
       if (!this.s.cards.length) {
         const next = Math.min(...Object.values(this.revision[p.rep]).map((x) => x.due));
-        this.finish(`Rien à réviser : tout est à jour ✔ Prochaine révision : ${dateFr(next)}.`);
+        this.finish(L(`Rien à réviser : tout est à jour ✔ Prochaine révision : ${dateFr(next)}.`, `Nothing to review: everything is up to date ✔ Next review: ${dateFr(next)}.`));
       } else this.nextCard();
     } else if (color === 'b') this.opponentMove();
   }
@@ -877,16 +880,16 @@ export class TrainingPage {
     this.board.setArrows(s.pending?.arrow ? [s.pending.arrow] : []);
     const st = this.el.querySelector('[data-status]');
     st.className = 'train-status ' + (s.done ? 'over' : myTurn ? 'player' : 'opponent');
-    st.innerHTML = s.done ? 'Session terminée'
+    st.innerHTML = s.done ? L('Session terminée', 'Session finished')
       : s.busy ? '<span class="spinner"></span> ' + esc(s.busy)
-      : s.pending ? 'Choisissez : réessayer ou continuer'
-      : myTurn ? `À vous (${s.color === 'w' ? 'Blancs' : 'Noirs'}) : trouvez le coup de votre répertoire` : s.mode === 'revision' ? 'Position suivante…' : 'L’adversaire réfléchit…';
+      : s.pending ? L('Choisissez : réessayer ou continuer', 'Choose: retry or continue')
+      : myTurn ? L(`À vous (${s.color === 'w' ? 'Blancs' : 'Noirs'}) : trouvez le coup de votre répertoire`, `Your move (${s.color === 'w' ? 'White' : 'Black'}): find your repertoire move`) : s.mode === 'revision' ? L('Position suivante…', 'Next position…') : L('L’adversaire réfléchit…', 'The opponent is thinking…');
     const ok = s.results.filter((r) => r.ok).length;
     const book = s.results.filter((r) => r.level === 'repertoire').length;
-    this.el.querySelector('[data-score]').innerHTML = `<h2>Score : ${ok} / ${s.results.length}</h2>
-      <p class="small muted">${s.mode === 'revision' ? `Révision espacée · position ${s.ours} / ${s.length} réussie(s) ou passée(s)` : `${book} coup(s) du répertoire · coup ${s.ours} / ${s.length} · adversaire : ${s.source === 'lichess' ? 'parties Lichess (' + esc(this.filterLabel()) + ')' : 'lignes des fiches'}`}</p>
-      ${s.pending ? `<div class="actions"><button type="button" data-retry>↺ Réessayer</button><button type="button" class="primary" data-fix>${s.mode === 'revision' ? 'Voir le bon coup et passer à la suite' : 'Continuer avec'} ${esc(sanFr(s.pending.bestSan))}</button></div>` : ''}
-      ${s.done ? '<div class="actions"><button type="button" class="primary" data-again>Nouvelle session</button><button type="button" data-setup>Changer de réglages</button></div>' : ''}`;
+    this.el.querySelector('[data-score]').innerHTML = `<h2>${L('Score :', 'Score:')} ${ok} / ${s.results.length}</h2>
+      <p class="small muted">${s.mode === 'revision' ? L(`Révision espacée · position ${s.ours} / ${s.length} réussie(s) ou passée(s)`, `Spaced repetition · position ${s.ours} / ${s.length} solved or skipped`) : L(`${book} coup(s) du répertoire · coup ${s.ours} / ${s.length} · adversaire : ${s.source === 'lichess' ? 'parties Lichess (' + esc(this.filterLabel()) + ')' : 'lignes des fiches'}`, `${book} repertoire move(s) · move ${s.ours} / ${s.length} · opponent: ${s.source === 'lichess' ? 'Lichess games (' + esc(this.filterLabel()) + ')' : 'repertoire lines'}`)}</p>
+      ${s.pending ? `<div class="actions"><button type="button" data-retry>${L('↺ Réessayer', '↺ Retry')}</button><button type="button" class="primary" data-fix>${s.mode === 'revision' ? L('Voir le bon coup et passer à la suite', 'Show the right move and go on') : L('Continuer avec', 'Continue with')} ${esc(sanFr(s.pending.bestSan))}</button></div>` : ''}
+      ${s.done ? `<div class="actions"><button type="button" class="primary" data-again>${L('Nouvelle session', 'New session')}</button><button type="button" data-setup>${L('Changer de réglages', 'Change settings')}</button></div>` : ''}`;
     this.el.querySelector('[data-log]').innerHTML = s.log.map((l) => `<li class="${l.cls}">${l.html}</li>`).join('');
     this.el.querySelector('[data-retry]')?.addEventListener('click', () => this.retry());
     this.el.querySelector('[data-fix]')?.addEventListener('click', () => this.continueWithBest());
@@ -905,16 +908,16 @@ export class TrainingPage {
   async opponentMove() {
     const s = this.s;
     if (!this.alive(s)) return;
-    if (s.ours >= s.length) { this.finish('Objectif atteint.'); return; }
-    if (s.chess.isGameOver()) { this.finish('Fin de partie sur l’échiquier.'); return; }
-    s.busy = 'L’adversaire choisit son coup…';
+    if (s.ours >= s.length) { this.finish(L('Objectif atteint.', 'Goal reached.')); return; }
+    if (s.chess.isGameOver()) { this.finish(L('Fin de partie sur l’échiquier.', 'Game over on the board.')); return; }
+    s.busy = L('L’adversaire choisit son coup…', 'The opponent is choosing a move…');
     this.render();
     let pick = null;
     let info = '';
     if (s.color === 'b' && s.path.length === 0) {
       // Avec les Noirs : le 1er coup blanc est celui qui mène au répertoire (1.e4, 1.d4…).
       pick = { uci: new Chess().move(REPERTOIRES[s.rep].racine[0]).lan };
-      info = `ouverture imposée pour ${REPERTOIRES[s.rep].titre}`;
+      info = L(`ouverture imposée pour ${REPERTOIRES[s.rep].titre}`, `opening set for ${REPERTOIRES[s.rep].titre}`);
     } else if (s.source === 'lichess') {
       try {
         const f = this.getFilter();
@@ -924,26 +927,26 @@ export class TrainingPage {
         const moves = (r.moves || []).filter((m) => legal(m.uci)).map((m) => ({ uci: m.uci, weight: m.white + m.draws + m.black }));
         const total = moves.reduce((a, m) => a + m.weight, 0);
         pick = weightedPick(moves);
-        if (pick) info = `joué dans ${pct((100 * pick.weight) / total)} des ${total.toLocaleString('fr-FR')} parties de ce niveau`;
+        if (pick) info = L(`joué dans ${pct((100 * pick.weight) / total)} des ${total.toLocaleString(LOC)} parties de ce niveau`, `played in ${pct((100 * pick.weight) / total)} of the ${total.toLocaleString(LOC)} games at this level`);
       } catch (e) {
-        this.msg(`Lichess indisponible (${esc(e.message)}) : coups tirés des fiches.`, 'muted');
+        this.msg(L(`Lichess indisponible (${esc(e.message)}) : coups tirés des fiches.`, `Lichess unavailable (${esc(e.message)}): moves taken from the repertoire lines.`), 'muted');
       }
     }
     if (!pick) {
       const opts = s.tree.theirs.get(key(s.path));
       if (opts) {
         pick = weightedPick([...opts.entries()].map(([uci, infos]) => ({ uci, weight: infos.length })));
-        if (pick) info = info || 'ligne des fiches';
+        if (pick) info = info || L('ligne des fiches', 'repertoire line');
       }
     }
     if (!this.alive(s)) return;
     s.busy = false;
-    if (!pick) { this.finish(s.source === 'lichess' ? 'Plus aucune partie connue dans cette position avec ce filtre.' : 'Fin des lignes des fiches.'); return; }
+    if (!pick) { this.finish(s.source === 'lichess' ? L('Plus aucune partie connue dans cette position avec ce filtre.', 'No more known games in this position with this filter.') : L('Fin des lignes des fiches.', 'End of the repertoire lines.')); return; }
     const mv = this.play(pick.uci);
-    this.msg(`Adversaire : <strong>${esc(sanFr(mv.san))}</strong> <span class="muted">(${esc(info)})</span>`);
+    this.msg(`${L('Adversaire :', 'Opponent:')} <strong>${esc(sanFr(mv.san))}</strong> <span class="muted">(${esc(info)})</span>`);
     const err = s.tree.errors.get(key(s.path));
-    if (err) this.msg(`⚠ Erreur adverse connue (fiche « ${esc(err.nom)} ») : trouvez la punition !`, 'warn');
-    if (s.chess.isGameOver()) { this.finish('Fin de partie sur l’échiquier.'); return; }
+    if (err) this.msg(L(`⚠ Erreur adverse connue (fiche « ${esc(err.nom)} ») : trouvez la punition !`, `⚠ Known opponent mistake (line “${esc(err.nom)}”): find the punishment!`), 'warn');
+    if (s.chess.isGameOver()) { this.finish(L('Fin de partie sur l’échiquier.', 'Game over on the board.')); return; }
     this.render();
   }
 
@@ -964,7 +967,7 @@ export class TrainingPage {
     let best = null;
     let loss = null;
     if (!isBookMove) {
-      s.busy = 'Stockfish vérifie votre coup…';
+      s.busy = L('Stockfish vérifie votre coup…', 'Stockfish is checking your move…');
       this.play(uci);
       this.render();
       try {
@@ -983,7 +986,7 @@ export class TrainingPage {
         }
         if (cpBest != null && cpAfter != null) loss = Math.max(0, cpBest - cpAfter);
       } catch (e) {
-        this.msg(`Moteur indisponible (${esc(e.message)}) : coup non vérifié.`, 'muted');
+        this.msg(L(`Moteur indisponible (${esc(e.message)}) : coup non vérifié.`, `Engine unavailable (${esc(e.message)}): move not checked.`), 'muted');
       }
       s.chess.undo();
       s.path.pop();
@@ -994,18 +997,18 @@ export class TrainingPage {
     const v = s.mode === 'revision' && book && !isBookMove && v0.ok ? { level: 'bon-hors-fiche', ok: false } : v0;
     s.results.push({ ...v, san: mv.san });
     if (book) this.grade(k, v.level === 'repertoire'); // révision espacée : seul le coup du répertoire compte
-    let html = `Vous : <strong>${esc(sanFr(mv.san))}</strong> — ${esc(VERDICT_TEXT[v.level])}`;
-    if (loss != null && v.level !== 'repertoire') html += ` <span class="muted">(perte ≈ ${(loss / 100).toFixed(1).replace('.', ',')})</span>`;
+    let html = `${L('Vous :', 'You:')} <strong>${esc(sanFr(mv.san))}</strong> — ${esc(VERDICT_TEXT[v.level])}`;
+    if (loss != null && v.level !== 'repertoire') html += L(` <span class="muted">(perte ≈ ${(loss / 100).toFixed(1).replace('.', ',')})</span>`, ` <span class="muted">(loss ≈ ${(loss / 100).toFixed(1)})</span>`);
     const bookMoves = book ? [...book.keys()] : [];
     const bookSan = bookMoves.map((u) => new Chess(before).move(toObj(u)).san);
     if (book && !isBookMove) {
       const fiche = book.get(bookMoves[0])[0];
-      html += `<br><span class="small">Votre répertoire joue ${bookSan.map((x) => `<strong>${esc(sanFr(x))}</strong>`).join(' ou ')} (fiche « ${esc(fiche.nom)} »).</span>`;
+      html += L(`<br><span class="small">Votre répertoire joue ${bookSan.map((x) => `<strong>${esc(sanFr(x))}</strong>`).join(' ou ')} (fiche « ${esc(fiche.nom)} »).</span>`, `<br><span class="small">Your repertoire plays ${bookSan.map((x) => `<strong>${esc(sanFr(x))}</strong>`).join(' or ')} (line “${esc(fiche.nom)}”).</span>`);
     }
     if (isTrap) html += `<br><span class="small">${esc(trap.texte)}</span>`;
     const bestUci = bookMoves[0] || best;
     const bestSan = bestUci ? new Chess(before).move(toObj(bestUci)).san : null;
-    if (!v.ok && best && !book) html += `<br><span class="small">Meilleur coup selon Stockfish : <strong>${esc(sanFr(new Chess(before).move(toObj(best)).san))}</strong>.</span>`;
+    if (!v.ok && best && !book) html += `<br><span class="small">${L('Meilleur coup selon Stockfish :', 'Best move according to Stockfish:')} <strong>${esc(sanFr(new Chess(before).move(toObj(best)).san))}</strong>.</span>`;
     this.msg(html, v.ok ? 'ok' : 'ko');
     if (!v.ok && bestUci) {
       // On montre le coup joué, puis on laisse choisir : réessayer ou continuer avec le bon coup.
@@ -1026,7 +1029,7 @@ export class TrainingPage {
     s.path.pop();
     s.results.pop();
     s.pending = null;
-    this.msg('↺ Nouvel essai.', 'muted');
+    this.msg(L('↺ Nouvel essai.', '↺ New try.'), 'muted');
     this.render();
   }
 
@@ -1037,7 +1040,7 @@ export class TrainingPage {
     const mv = this.play(s.pending.bestUci);
     s.pending = null;
     s.ours++;
-    this.msg(`${s.mode === 'revision' ? 'Bon coup' : 'On continue avec'} <strong>${esc(sanFr(mv.san))}</strong>.`, 'muted');
+    this.msg(`${s.mode === 'revision' ? L('Bon coup', 'Right move:') : L('On continue avec', 'Continuing with')} <strong>${esc(sanFr(mv.san))}</strong>.`, 'muted');
     this.render();
     this.next();
   }
@@ -1050,7 +1053,7 @@ export class TrainingPage {
     const ok = s.results.filter((r) => r.ok).length;
     const n = s.results.length;
     const fautes = s.results.filter((r) => !r.ok).map((r) => sanFr(r.san));
-    this.msg(`<strong>${esc(reason)}</strong> Score : ${ok}/${n}${n ? ` (${Math.round((100 * ok) / n)} %)` : ''}.${fautes.length ? ` À revoir : ${fautes.map(esc).join(', ')}.` : ''}<br><span class="small">${this.revisionLine(s.rep)}</span>`, 'end');
+    this.msg(`<strong>${esc(reason)}</strong> ${L('Score :', 'Score:')} ${ok}/${n}${n ? ` (${Math.round((100 * ok) / n)} %)` : ''}.${fautes.length ? L(` À revoir : ${fautes.map(esc).join(', ')}.`, ` To review: ${fautes.map(esc).join(', ')}.`) : ''}<br><span class="small">${this.revisionLine(s.rep)}</span>`, 'end');
     this.render();
   }
 }
