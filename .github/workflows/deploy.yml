@@ -160,9 +160,9 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment1.outputs.page_url || steps.deployment2.outputs.page_url }}
     outputs:
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment1.outputs.page_url || steps.deployment2.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -200,7 +200,15 @@ jobs:
         with:
           path: dist
           include-hidden-files: true
-      - id: deployment
+      # GitHub met parfois quelques secondes à « voir » le paquet tout juste envoyé
+      # (« No artifacts named github-pages », 2026-11-24) : second essai après une pause.
+      - id: deployment1
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - if: steps.deployment1.outcome == 'failure'
+        run: sleep 30
+      - id: deployment2
+        if: steps.deployment1.outcome == 'failure'
         uses: actions/deploy-pages@v5
 
   online:
