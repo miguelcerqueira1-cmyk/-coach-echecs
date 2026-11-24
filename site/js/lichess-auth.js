@@ -4,6 +4,9 @@
 // gardé sur l'appareil comme le jeton saisi à la main (jamais exporté par « Mes données »).
 // Le mot de passe Lichess n'est jamais vu par l'appli.
 
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+
 export const LICHESS = 'https://lichess.org';
 export const CLIENT_ID = 'blitzrefute';
 const PENDING = 'coach-echecs:lichess-oauth'; // connexion en cours (vérificateur PKCE, état, retour)
@@ -50,9 +53,9 @@ export async function terminerConnexion({ loc = location, fetchImpl = (...a) => 
   try { p = JSON.parse(storage.getItem(PENDING) || 'null'); } catch { p = null; }
   try { storage.removeItem(PENDING); } catch { /* rien */ }
   const retour = p?.retour || '#/parties';
-  if (q.has('error')) return { ok: false, retour, message: q.get('error') === 'access_denied' ? 'Connexion à Lichess annulée.' : 'Lichess a refusé la connexion.' };
+  if (q.has('error')) return { ok: false, retour, message: q.get('error') === 'access_denied' ? L('Connexion à Lichess annulée.', 'Lichess login cancelled.') : L('Lichess a refusé la connexion.', 'Lichess refused the login.') };
   if (!p || p.state !== q.get('state') || Date.now() - (p.at || 0) > MAX_AGE) {
-    return { ok: false, retour, message: 'Connexion à Lichess expirée ou incomplète : réessaie.' };
+    return { ok: false, retour, message: L('Connexion à Lichess expirée ou incomplète : réessaie.', 'Lichess login expired or incomplete: try again.') };
   }
   try {
     const r = await fetchImpl(`${LICHESS}/api/token`, {
@@ -62,12 +65,12 @@ export async function terminerConnexion({ loc = location, fetchImpl = (...a) => 
     });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const token = (await r.json()).access_token;
-    if (!token) throw new Error('aucun jeton');
+    if (!token) throw new Error(L('aucun jeton', 'no token'));
     const a = await fetchImpl(`${LICHESS}/api/account`, { headers: { authorization: `Bearer ${token}` } });
     const username = a.ok ? (await a.json()).username || '' : '';
     return { ok: true, token, username, retour };
   } catch (e) {
-    return { ok: false, retour, message: `Connexion à Lichess impossible (${e.message}). Réessaie plus tard.` };
+    return { ok: false, retour, message: L(`Connexion à Lichess impossible (${e.message}). Réessaie plus tard.`, `Could not log in with Lichess (${e.message}). Try again later.`) };
   }
 }
 
