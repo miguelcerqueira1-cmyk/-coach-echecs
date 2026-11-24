@@ -18,7 +18,10 @@ async function setup(page, installation, extra = {}) {
   }, [installation, extra]);
 }
 
-test('1re visite : pas de bandeau ; visite suivante : bandeau puis guide Android @mobile', async ({ page }) => {
+test('1re visite : pas de bandeau ; visite suivante : bandeau puis guide Android @mobile', async ({ browser }) => {
+  // Téléphone Android explicite : sur le projet iPhone, le guide montrerait (à juste titre) les étapes iPhone.
+  const ctx = await browser.newContext({ ...devices['Pixel 7'], baseURL: test.info().project.use.baseURL });
+  const page = await ctx.newPage();
   await setup(page, null);
   await page.goto('./#/repertoire');
   await page.waitForTimeout(4500);
@@ -43,6 +46,7 @@ test('1re visite : pas de bandeau ; visite suivante : bandeau puis guide Android
   expect((await dl).suggestedFilename()).toMatch(/^blitzrefute-donnees-\d{4}-\d{2}-\d{2}\.json$/);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:installation-v1')).derniereSauvegarde)).toBeTruthy();
   await dlg.getByRole('button', { name: 'Fermer' }).click();
+  await ctx.close();
 });
 
 test('iPhone Safari : étapes Partager → « Sur l’écran d’accueil » ; « Plus tard » refusé 14 jours @mobile', async ({ browser }) => {
