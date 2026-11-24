@@ -9,6 +9,8 @@
 //   historique : la Caro-Kann en garde deux) ;
 // - elite : données Élite collectées (scripts/elite.mjs) pour ce répertoire.
 
+import { langue } from '../../js/i18n.js';
+
 export const GROUPES = {
   blancs: { id: 'blancs', titre: 'Avec les Blancs', question: 'Avec les Blancs, je joue…' },
   'contre-e4': { id: 'contre-e4', titre: 'Contre 1.e4', question: 'Avec les Noirs, contre 1.e4, je joue…' },
@@ -47,6 +49,133 @@ export const REPERTOIRES = {
   'contre-anglaise': { id: 'contre-anglaise', titre: 'Contre l’Anglaise (1.c4 e5)', couleur: 'b', groupe: 'autres', racine: ['c4', 'e5'], sousTitre: 'Jouée avec les Noirs : 1.c4 e5, une Sicilienne inversée', gratuites: ['ca-dragon-inverse'], elite: false },
   'contre-reti': { id: 'contre-reti', titre: 'Contre 1.Cf3 (Réti)', couleur: 'b', groupe: 'autres', racine: ['Nf3', 'd5'], sousTitre: 'Jouée avec les Noirs : 1.Cf3 d5, avec …Cf6, …c6 et le Fou c8 dehors', gratuites: ['cr-kia'], elite: false },
 };
+
+
+// Version anglaise : titres et descriptions (appliqués au chargement si la langue est l'anglais ;
+// les scripts Node restent en français).
+const EN = {
+ "gd": {
+  "titre": "Queen’s Gambit",
+  "sousTitre": "Played with White: 1.d4 d5 2.c4 and the opponent’s deviations"
+ },
+ "italienne": {
+  "titre": "Italian Game",
+  "sousTitre": "Played with White: 1.e4 e5 2.Nf3 Nc6 3.Bc4"
+ },
+ "espagnole": {
+  "titre": "Ruy Lopez",
+  "sousTitre": "Played with White: 1.e4 e5 2.Nf3 Nc6 3.Bb5"
+ },
+ "londres": {
+  "titre": "London System",
+  "sousTitre": "Played with White: 1.d4 then Bf4, e3, c3 against almost everything"
+ },
+ "ecossaise": {
+  "titre": "Scotch Game",
+  "sousTitre": "Played with White: 1.e4 e5 2.Nf3 Nc6 3.d4"
+ },
+ "catalane": {
+  "titre": "Catalan Opening",
+  "sousTitre": "Played with White: 1.d4 Nf6 2.c4 e6 3.g3 (bishop on g2)"
+ },
+ "viennoise": {
+  "titre": "Vienna Game",
+  "sousTitre": "Played with White: 1.e4 e5 2.Nc3"
+ },
+ "smith-morra": {
+  "titre": "Smith-Morra Gambit",
+  "sousTitre": "Played with White against the Sicilian: 1.e4 c5 2.d4 cxd4 3.c3"
+ },
+ "anglaise": {
+  "titre": "English Opening",
+  "sousTitre": "Played with White: 1.c4"
+ },
+ "ck": {
+  "titre": "Caro-Kann Defence",
+  "sousTitre": "Played with Black: 1.e4 c6 and the opponent’s tries"
+ },
+ "e5-noirs": {
+  "titre": "1…e5 (open game)",
+  "sousTitre": "Played with Black: 1.e4 e5, against the Italian, the Ruy Lopez, the Scotch, the Vienna…"
+ },
+ "sicilienne": {
+  "titre": "Sicilian Defence",
+  "sousTitre": "Played with Black: 1.e4 c5"
+ },
+ "francaise": {
+  "titre": "French Defence",
+  "sousTitre": "Played with Black: 1.e4 e6"
+ },
+ "scandinave": {
+  "titre": "Scandinavian Defence",
+  "sousTitre": "Played with Black: 1.e4 d5"
+ },
+ "pirc": {
+  "titre": "Pirc Defence",
+  "sousTitre": "Played with Black: 1.e4 d6 2.d4 Nf6 3.Nc3 g6"
+ },
+ "alekhine": {
+  "titre": "Alekhine Defence",
+  "sousTitre": "Played with Black: 1.e4 Nf6, provoke then attack White’s pawns"
+ },
+ "philidor": {
+  "titre": "Philidor Defence",
+  "sousTitre": "Played with Black: 1.e4 e5 2.Nf3 d6"
+ },
+ "najdorf": {
+  "titre": "Sicilian Najdorf",
+  "sousTitre": "Played with Black: 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6"
+ },
+ "dragon": {
+  "titre": "Sicilian Dragon",
+  "sousTitre": "Played with Black: 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6"
+ },
+ "indienne-roi": {
+  "titre": "King’s Indian Defence",
+  "sousTitre": "Played with Black: 1.d4 Nf6 2.c4 g6, then …Bg7, …d6, …O-O"
+ },
+ "gdr-noirs": {
+  "titre": "Queen’s Gambit Declined / Slav (Black)",
+  "sousTitre": "Played with Black: 1.d4 d5 2.c4 e6 or 2…c6"
+ },
+ "contre-londres": {
+  "titre": "Against the London System",
+  "sousTitre": "Played with Black: 1.d4 d5 2.Bf4, plans with …c5 and …Qb6"
+ },
+ "grunfeld": {
+  "titre": "Grünfeld Defence",
+  "sousTitre": "Played with Black: 1.d4 Nf6 2.c4 g6 3.Nc3 d5"
+ },
+ "benoni": {
+  "titre": "Benoni / Benko Gambit",
+  "sousTitre": "Played with Black: 1.d4 Nf6 2.c4 c5 3.d5 e6 or 3…b5"
+ },
+ "bogo": {
+  "titre": "Bogo-Indian Defence",
+  "sousTitre": "Played with Black: 1.d4 Nf6 2.c4 e6 3.Nf3 Bb4+"
+ },
+ "hollandaise": {
+  "titre": "Dutch Defence",
+  "sousTitre": "Played with Black: 1.d4 f5, Leningrad and Stonewall systems"
+ },
+ "nimzo-qid": {
+  "titre": "Nimzo-Indian / Queen’s Indian",
+  "sousTitre": "Played with Black: 1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 or 3.Nf3 b6"
+ },
+ "contre-anglaise": {
+  "titre": "Against the English (1.c4 e5)",
+  "sousTitre": "Played with Black: 1.c4 e5, a reversed Sicilian"
+ },
+ "contre-reti": {
+  "titre": "Against 1.Nf3 (Réti)",
+  "sousTitre": "Played with Black: 1.Nf3 d5, with …Nf6, …c6 and the c8 bishop out"
+ }
+};
+const EN_GROUPES = {"blancs": {"titre": "With White", "question": "With White, I play…"}, "contre-e4": {"titre": "Against 1.e4", "question": "With Black, against 1.e4, I play…"}, "contre-d4": {"titre": "Against 1.d4", "question": "With Black, against 1.d4, I play…"}, "autres": {"titre": "Against 1.c4 / 1.Nf3", "question": "With Black, against 1.c4 or 1.Nf3, I play…"}};
+if (langue() === 'en') {
+  for (const [id, t] of Object.entries(EN)) Object.assign(REPERTOIRES[id], t);
+  for (const [id, t] of Object.entries(EN_GROUPES)) Object.assign(GROUPES[id], t);
+}
 
 // Choix par défaut d'un utilisateur existant (avant le passage grand public) : rien ne change.
 export const CHOIX_HISTORIQUE = ['gd', 'ck'];

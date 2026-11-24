@@ -3,6 +3,7 @@
 // repertoire.json (site/data/repertoires/en/<id>.js) ; les coups, vérifications et statistiques
 // ne changent pas. Texte manquant → le français reste affiché.
 import { langue } from './i18n.js';
+import { REPERTOIRES } from '../data/repertoires/meta.js';
 
 const CHAMPS = ['famille', 'nom', 'plan', 'structure', 'cases', 'echanger', 'conserver'];
 
@@ -18,5 +19,7 @@ export function localiserFiche(e, l = langue()) {
 
 export function localiserData(data, l = langue()) {
   if (l !== 'en' || !data?.entries) return data;
-  return { ...data, entries: data.entries.map((e) => localiserFiche(e, l)) };
+  // Titres des répertoires : ceux de meta.js (déjà en anglais), pas ceux figés dans repertoire.json.
+  const repertoires = data.repertoires && Object.fromEntries(Object.entries(data.repertoires).map(([id, r]) => [id, { ...r, ...(REPERTOIRES[id] ? { titre: REPERTOIRES[id].titre, sousTitre: REPERTOIRES[id].sousTitre } : {}) }]));
+  return { ...data, repertoires, entries: data.entries.map((e) => localiserFiche(e, l)) };
 }
