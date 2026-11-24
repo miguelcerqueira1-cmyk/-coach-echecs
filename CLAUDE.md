@@ -423,9 +423,9 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
 - **NE PLUS PUBLIER SANS ACCORD (décision du 2026-11-23)** : un push sur `main` met le site en
   ligne (deploy.yml). L'utilisateur veut que l'appli reste privée tant qu'elle n'est pas finie :
   travailler et pousser sur une branche de travail, ne fusionner sur `main` que sur demande
-  explicite. Le site publié reste figé à la version du 2026-11-23 (commit 9709e12) ; le guide
-  d'installation (c6bdaaf) est sur `main` mais sa publication a été annulée — le prochain
-  déploiement le publiera. Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
+  explicite. **Publié le 2026-11-24 sur demande de l'utilisateur** (commit f4bad37 : 29
+  répertoires, 269 fiches, bilingue, problèmes par thème, partie contre Stockfish ; synchro inactive
+  sans Worker). Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
   officiel (création de la micro-entreprise).
 - Messages de commit en français, terminés par les deux lignes d'attribution demandées par la
   session ; ne jamais écrire de nom ou d'identifiant de modèle ailleurs dans le dépôt.
