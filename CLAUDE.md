@@ -402,7 +402,11 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   colonnes [cw,cd,cb,kw,kd,kb]) ; `lookupElite(..., { camp, side })` avec la couleur du répertoire
   (fiche / arbre) ou de la partie (Moteur) ; fichiers v2 encore lus (un seul camp). maxBytes 3 Mo.
   Tests unitaires anciens restreints à gd + ck (`configurerRepertoires`). Après publication :
-  collecte complète (`elite.yml`, mode complet) pour remplir les nouvelles ouvertures.
+  collecte complète (`elite.yml`, mode complet) pour remplir les nouvelles ouvertures. Résultat de
+  la 1re collecte complète (2026-11-24) : 13 153 parties (Lichess 5 863, Chess.com 5 947, tournois
+  1 343), 2,7 Mo, `minPositionGames` relevé à 7 pour tenir sous 3 Mo ; peu de parties pour Grünfeld
+  (6), Smith-Morra (51), Hollandaise (72), Dragon et Benoni (80) ; beaucoup pour Sicilienne (1 570),
+  Londres (1 197), GD (1 181), Nimzo (947), Caro-Kann (865), Najdorf (843).
 - **Ajouter des fiches à un répertoire** : écrire dans `site/data/repertoires/<id>.js` (même format
   que gd.js : id unique préfixé, `rep: '<id>'`, famille, nom, badge, ligne SAN anglaise, plan,
   structure, punition/piège `{ ligne avec « ? » sur le coup fautif, texte }`, cases, echanger,
@@ -559,7 +563,7 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   `chaine: null, verifie: false`, lancer le workflow sur la branche, reporter, puis publier.
   La vidéothèque Lichess est derrière une protection anti-robots (inaccessible d'ici).
   Restent sans vidéo ≈ 50 fiches (déviations, coups loufoques, Slave/systèmes sans c4 des Noirs,
-  Indienne de la Dame, anti-siciliennes rares, Deux Cavaliers, Steinitz…). Données Élite : seulement gd et ck (`elite: true`).
+  Indienne de la Dame, anti-siciliennes rares, Deux Cavaliers, Steinitz…).
 - Branche `licences-pro` (vrai verrou) écrite AVANT le grand public : à adapter aux 16 répertoires
   (fiches gratuites de meta.js) au moment de la vente.
 - Analyse : variantes d'analyse (`analysisBranches`)
