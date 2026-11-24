@@ -14,7 +14,11 @@ export default [
     cases: 'b2 (pion faible), d4, c4',
     echanger: 'Fou f5 contre le Fou d3 blanc',
     conserver: 'Pression sur b2',
-    video: { recherche: 'how to beat the London System c5 Qb6', url: null },
+    video: { recherche: 'how to beat the London System c5 Qb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-classique', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '2…Cf6 3.e3 e6 4.Cf3 c5', badge: 'theorie',
@@ -26,7 +30,11 @@ export default [
     cases: 'e4 (case du Cavalier), d6 (échange des Fous), a6',
     echanger: 'Fou d6 contre le Fou du Londres ; Fou a6 contre le Fou d3',
     conserver: 'Pion d5',
-    video: { recherche: 'London System black setup Bd6 b6', url: null },
+    video: { recherche: 'London System black setup Bd6 b6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-ff5', rep: 'contre-londres', famille: 'Londres 2.Ff4 Ff5', nom: '2…Ff5 (symétrique) 3.e3 e6 4.c4', badge: 'theorie',
@@ -38,7 +46,11 @@ export default [
     cases: 'b7 (pion visé par Db3), c4, e4',
     echanger: 'Fou b4 contre le Cavalier c3 si les pions blancs se doublent',
     conserver: 'Fou f5',
-    video: { recherche: 'London System symmetrical Bf5 black', url: null },
+    video: { recherche: 'London System symmetrical Bf5 black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-db6-piege', rep: 'contre-londres', famille: 'Londres 2.Ff4 c5', nom: '3…Db6 4.Cc3 (b2 empoisonné)', badge: 'piege',
@@ -53,7 +65,11 @@ export default [
     cases: 'c7 (fourchette Cc7+), b2 (empoisonné), b5',
     echanger: 'Dames en b3 si les Blancs proposent l’échange : …c4 garde l’initiative',
     conserver: 'La Dame près du roi',
-    video: { recherche: 'London System Qb6 Nc3 Qxb2 trap', url: null },
+    video: { recherche: 'London System Qb6 Nc3 Qxb2 trap', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-dxc5', rep: 'contre-londres', famille: 'Londres 2.Ff4 c5', nom: '2…c5 3.dxc5 Cc6', badge: 'theorie',
@@ -65,7 +81,11 @@ export default [
     cases: 'c5, d5, e4',
     echanger: 'Rien de forcé',
     conserver: 'Pion d5',
-    video: { recherche: 'London System 2...c5 3.dxc5 Nc6', url: null },
+    video: { recherche: 'London System 2...c5 3.dxc5 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-fg4', rep: 'contre-londres', famille: 'Londres 2.Ff4 c5', nom: '2…c5 3.e3 Cc6 4.Cf3 Fg4', badge: 'theorie',
@@ -77,7 +97,11 @@ export default [
     cases: 'b2, colonne a, b4',
     echanger: 'Les Dames en b6 (colonne a ouverte)',
     conserver: 'Pion c4',
-    video: { recherche: 'London System 2...c5 3.e3 Nc6 4.Nf3 Bg4 Qb6', url: null },
+    video: { recherche: 'London System 2...c5 3.e3 Nc6 4.Nf3 Bg4 Qb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-cd2', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '2…Cf6 3.e3 c5 4.c3 Cc6 5.Cd2', badge: 'theorie',
@@ -89,7 +113,11 @@ export default [
     cases: 'e4, b7, d6',
     echanger: 'Fou d6 contre le Fou g3',
     conserver: 'Cavalier f6 (contrôle e4)',
-    video: { recherche: 'London System Nd2 Bd6 b6 plan for black', url: null },
+    video: { recherche: 'London System Nd2 Bd6 b6 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-g6', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '2…Cf6 3.e3 g6 (fianchetto)', badge: 'theorie',
@@ -101,6 +129,10 @@ export default [
     cases: 'd4, h5, e5',
     echanger: 'Cavalier h5 contre le Fou f4 (…Ch5)',
     conserver: 'Fou g7',
-    video: { recherche: 'London System vs g6 fianchetto c5 plan', url: null },
+    video: { recherche: 'London System vs g6 fianchetto c5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

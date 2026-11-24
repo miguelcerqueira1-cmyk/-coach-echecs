@@ -15,7 +15,11 @@ export default [
     cases: 'e5 (rupture), f5, d4',
     echanger: 'Fou g4 contre le Cavalier f3 s’il défend d4',
     conserver: 'Fou g7',
-    video: { recherche: 'Pirc Defense classical 6...Bg4 plans', url: null },
+    video: { recherche: 'Pirc Defense classical 6...Bg4 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'pirc-autrichienne', rep: 'pirc', famille: 'Attaque autrichienne', nom: '4.f4 Fg7 5.Cf3 c5', badge: 'theorie',
@@ -27,7 +31,11 @@ export default [
     cases: 'e5, d4, la diagonale a7-g1 (roi blanc)',
     echanger: 'Fou g4 contre le Cavalier f3 (défenseur de e5)',
     conserver: 'Fou g7',
-    video: { recherche: 'Pirc Austrian Attack 5...c5 explained', url: null },
+    video: { recherche: 'Pirc Austrian Attack 5...c5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'pirc-150', rep: 'pirc', famille: 'Attaque 150', nom: '4.Fe3 Fg7 5.Dd2 c6', badge: 'theorie',
@@ -39,7 +47,11 @@ export default [
     cases: 'h6, b5, c4',
     echanger: 'Fou g7 contre le Fou e3 (quand il arrive en h6)',
     conserver: 'Le roi au centre tant que h4-h5 menace',
-    video: { recherche: 'Pirc Defense 150 Attack Be3 Qd2 c6 b5', url: null },
+    video: { recherche: 'Pirc Defense 150 Attack Be3 Qd2 c6 b5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'pirc-byrne', rep: 'pirc', famille: 'Variante Byrne', nom: '4.Fg5 Fg7 5.Dd2 h6', badge: 'piege',
@@ -54,7 +66,11 @@ export default [
     cases: 'h6, g5, b5',
     echanger: 'Fou g7 seulement contre le Fou de cases noires blanc',
     conserver: 'Tour h8 sur la colonne h',
-    video: { recherche: 'Pirc Defense Byrne 4.Bg5 h6', url: null },
+    video: { recherche: 'Pirc Defense Byrne 4.Bg5 h6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'pirc-fc4', rep: 'pirc', famille: 'Déviations', nom: '4.Fc4 Fg7 5.De2 c6', badge: 'theorie',
@@ -66,7 +82,11 @@ export default [
     cases: 'd5 (Cavalier), f7, e5',
     echanger: 'Cavalier d5 contre le Cavalier c3',
     conserver: 'Pion c6 qui soutient d5',
-    video: { recherche: 'Pirc Defense 4.Bc4 Bg7 5.Qe2 c6', url: null },
+    video: { recherche: 'Pirc Defense 4.Bc4 Bg7 5.Qe2 c6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'pirc-cd2', rep: 'pirc', famille: 'Déviations', nom: '3.Cd2 g6 (système calme)', badge: 'theorie',
@@ -78,7 +98,11 @@ export default [
     cases: 'd4 (cible), b4, c5',
     echanger: 'Fou g4 contre le Cavalier f3 qui défend d4',
     conserver: 'Fou g7',
-    video: { recherche: 'Pirc Defense 3.Nd2 quiet system c5', url: null },
+    video: { recherche: 'Pirc Defense 3.Nd2 quiet system c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'pirc-e5', rep: 'pirc', famille: 'Déviations', nom: '3.e5?! dxe5 4.dxe5 Dxd1+', badge: 'loufoque',
@@ -90,6 +114,10 @@ export default [
     cases: 'e5 (cible), g4, c6',
     echanger: 'Les Dames (dès 4…Dxd1+)',
     conserver: 'Les deux Cavaliers qui visent e5',
-    video: { recherche: 'Pirc Defense 3.e5 dxe5 queen trade', url: null },
+    video: { recherche: 'Pirc Defense 3.e5 dxe5 queen trade', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

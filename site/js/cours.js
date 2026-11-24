@@ -198,7 +198,7 @@ export class LessonView {
         <dt>${L('À conserver', 'To keep')}</dt><dd>${esc(e.conserver)}</dd>
       </dl>
       ${claim(e.piege, 'piege')}${claim(e.punition, 'punition')}
-      ${liens.length ? `<h3>${L('🎬 Pour aller plus loin', '🎬 Going further')}</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())})</span>
+      ${liens.length ? `<h3>${L('🎬 Pour aller plus loin', '🎬 Going further')}</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${l.chaine ? `${esc(l.chaine)}, ` : ''}${esc(String(l.langue).toUpperCase())})</span>
         ${l.chapitre ? `<br><span class="badge tiny video-chap">${L(`▶ s’ouvre à ${esc(l.chapitre)}`, `▶ opens at ${esc(l.chapitre)}`)}</span>` : L('<br><span class="muted tiny">Début de la vidéo (l’auteur n’a pas publié de chapitres)</span>', '<br><span class="muted tiny">Start of the video (the author has not published chapters)</span>')}</li>`).join('')}</ul>` : ''}
       <div class="actions"><button type="button" class="primary" data-next>${L('À vous de jouer la ligne →', 'Your turn to play the line →')}</button></div>`;
     panel.querySelector('[data-next]').addEventListener('click', () => this.go(3));

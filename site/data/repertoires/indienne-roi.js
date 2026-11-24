@@ -15,7 +15,11 @@ export default [
     cases: 'f5 et f4 (poussées d’attaque), e5 (point d’appui), d4',
     echanger: 'Fou c8, souvent gêné par ses pions : l’activer après …f5 (…Fd7 ou …Fxf5)',
     conserver: 'Fou g7 (défenseur du Roque et clé des cases noires)',
-    video: { recherche: 'King\'s Indian Defense Mar del Plata plans for Black explained', url: null },
+    video: { recherche: 'King\'s Indian Defense Mar del Plata plans for Black explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-echange', rep: 'indienne-roi', famille: 'Variante classique', nom: 'Variante d’échange (7.dxe5 dxe5 8.Dxd8)', badge: 'theorie',
@@ -30,7 +34,11 @@ export default [
     cases: 'd4 et d5, e5 (à défendre par …Te8), c6',
     echanger: 'Cavalier f6 contre le Cavalier d5',
     conserver: 'Fou g7',
-    video: { recherche: 'King\'s Indian Exchange Variation 7.dxe5 how Black equalizes', url: null },
+    video: { recherche: 'King\'s Indian Exchange Variation 7.dxe5 how Black equalizes', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-gligoric', rep: 'indienne-roi', famille: 'Variante classique', nom: 'Classique avec 8.Fe3 Cg4 (variante Gligoric)', badge: 'theorie',
@@ -42,7 +50,11 @@ export default [
     cases: 'g4 (case du Cavalier), f4, h6-f7 (manœuvre)',
     echanger: 'Cavalier g4 contre le Fou e3 si les Blancs le permettent',
     conserver: 'Fou g7',
-    video: { recherche: 'King\'s Indian 8.Be3 Ng4 Gligoric variation explained', url: null },
+    video: { recherche: 'King\'s Indian 8.Be3 Ng4 Gligoric variation explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-samisch', rep: 'indienne-roi', famille: 'Variante Sämisch', nom: 'Sämisch (5.f3 O-O 6.Fe3 e5)', badge: 'theorie',
@@ -54,7 +66,11 @@ export default [
     cases: 'g4 (case d’appui blanche), d5, b5',
     echanger: 'Pion e5 contre d4 pour ouvrir le centre',
     conserver: 'Fou g7 (diagonale a1-h8 vers le grand Roque)',
-    video: { recherche: 'King\'s Indian Samisch 6.Be3 e5 plan for Black', url: null },
+    video: { recherche: 'King\'s Indian Samisch 6.Be3 e5 plan for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-quatre-pions', rep: 'indienne-roi', famille: 'Attaque des quatre pions', nom: 'Quatre pions (5.f4) : …c5 et Benoni', badge: 'theorie',
@@ -66,7 +82,11 @@ export default [
     cases: 'e4 (cible), e5 (à bloquer), b5',
     echanger: 'Pion e6 contre le pion d5',
     conserver: 'Fou g7 (diagonale longue)',
-    video: { recherche: 'King\'s Indian Four Pawns Attack 6...c5 7.d5 e6 explained', url: null },
+    video: { recherche: 'King\'s Indian Four Pawns Attack 6...c5 7.d5 e6 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-averbakh', rep: 'indienne-roi', famille: 'Variante Averbakh', nom: 'Averbakh (5.Fe2 O-O 6.Fg5)', badge: 'theorie',
@@ -78,7 +98,11 @@ export default [
     cases: 'e5 (empêchée par Fg5), c5, d5',
     echanger: 'Pion e6 contre d5',
     conserver: 'Fou g7',
-    video: { recherche: 'King\'s Indian Averbakh variation 6.Bg5 c5 plan', url: null },
+    video: { recherche: 'King\'s Indian Averbakh variation 6.Bg5 c5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-fianchetto', rep: 'indienne-roi', famille: 'Variante du fianchetto', nom: 'Fianchetto (3.Cf3, 4.g3)', badge: 'theorie',
@@ -90,7 +114,11 @@ export default [
     cases: 'd4 et b2 (pression de la Dame b6), e5',
     echanger: 'Pion e5 contre d4 au bon moment (…exd4) pour activer le Fou g7',
     conserver: 'Fou g7',
-    video: { recherche: 'King\'s Indian Fianchetto variation Nbd7 e5 c6 Qb6', url: null },
+    video: { recherche: 'King\'s Indian Fianchetto variation Nbd7 e5 c6 Qb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-cxe4', rep: 'indienne-roi', famille: 'Pièges', nom: 'Le faux tour 4…Cxe4 ?', badge: 'piege',
@@ -105,6 +133,10 @@ export default [
     cases: 'e4 (défendu par Cc3), d5',
     echanger: 'Rien de forcé',
     conserver: 'Toutes les pièces : finir le développement',
-    video: { recherche: 'King\'s Indian Defense opening traps for Black to avoid', url: null },
+    video: { recherche: 'King\'s Indian Defense opening traps for Black to avoid', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

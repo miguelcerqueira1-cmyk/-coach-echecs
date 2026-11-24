@@ -19,7 +19,11 @@ export default [
     cases: 'b5 et d5 (cases des Cavaliers blancs), e4, colonne c',
     echanger: 'Cavalier c6 contre le Cavalier d4 quand il gêne',
     conserver: 'Pion e6 (contrôle de d5) et Dame en c7',
-    video: { recherche: 'Sicilian Taimanov 5.Nc3 Qc7 6.Be2 a6 plans', url: null },
+    video: { recherche: 'Sicilian Taimanov 5.Nc3 Qc7 6.Be2 a6 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-taimanov-anglaise', rep: 'sicilienne', famille: 'Sicilienne ouverte (Taimanov)', nom: 'Attaque anglaise 6.Fe3 a6 7.Dd2', badge: 'theorie',
@@ -34,7 +38,11 @@ export default [
     cases: 'b5 (à interdire par …a6), c4 (case du Cavalier noir), g5',
     echanger: 'Fou b4 contre le Cavalier c3 si cela affaiblit e4',
     conserver: 'Pion b5 (levier …b4)',
-    video: { recherche: 'Sicilian Taimanov English Attack 6.Be3 a6 7.Qd2', url: null },
+    video: { recherche: 'Sicilian Taimanov English Attack 6.Be3 a6 7.Qd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-taimanov-cb5', rep: 'sicilienne', famille: 'Sicilienne ouverte (Taimanov)', nom: 'Taimanov 5.Cb5 d6 6.c4', badge: 'theorie',
@@ -46,7 +54,11 @@ export default [
     cases: 'd6 (à protéger), d5, b5',
     echanger: 'Peu d’échanges : la position compacte gagne de la valeur en fin de partie',
     conserver: 'Pions d6 et e6',
-    video: { recherche: 'Sicilian Taimanov 5.Nb5 d6 6.c4 hedgehog', url: null },
+    video: { recherche: 'Sicilian Taimanov 5.Nb5 d6 6.c4 hedgehog', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-alapin', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Alapin 2.c3 Cf6', badge: 'theorie',
@@ -58,7 +70,10 @@ export default [
     cases: 'd5 (blocage), e5, d4',
     echanger: 'Fou c8 contre le Fou b3 si possible',
     conserver: 'Cavalier d5/b6 actif',
-    video: { recherche: 'Alapin Sicilian 2.c3 Nf6 for Black', url: null },
+    video: { recherche: 'Alapin Sicilian 2.c3 Nf6 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-morra', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Gambit Smith-Morra accepté', badge: 'piege',
@@ -73,7 +88,11 @@ export default [
     cases: 'd4, h2 (mat), b5 et d5 (cases des Cavaliers blancs)',
     echanger: 'Pièces : avec un pion de plus, chaque échange aide les Noirs',
     conserver: 'Le pion de plus et la Dame en c7',
-    video: { recherche: 'Smith-Morra gambit Siberian trap Nd4 Qh2', url: null },
+    video: { recherche: 'Smith-Morra gambit Siberian trap Nd4 Qh2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-grand-prix', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Attaque Grand Prix (2.Cc3 et f4)', badge: 'theorie',
@@ -85,7 +104,10 @@ export default [
     cases: 'd5, e4, diagonale g1-a7',
     echanger: 'Pion d5 contre le pion e4',
     conserver: 'Paire de Fous si les Blancs prennent en c6',
-    video: { recherche: 'Grand Prix Attack 2.Nc3 Nc6 3.f4 e6 d5 for Black', url: null },
+    video: { recherche: 'Grand Prix Attack 2.Nc3 Nc6 3.f4 e6 d5 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=y_nTGCFsrUc', titre: 'The Grand Prix Attack against the Sicilian', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-wing', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Gambit de l’aile (2.b4)', badge: 'loufoque',

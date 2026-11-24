@@ -18,7 +18,11 @@ export default [
     cases: 'd4 (base de la chaîne), b5 (échec du Fou), f5 (case du Cavalier)',
     echanger: 'Fou c8 (le « mauvais » Fou) via …Fd7-b5',
     conserver: 'Pression sur d4',
-    video: { recherche: 'French Advance 3.e5 c5 4.c3 Nc6 5.Nf3 Qb6 plans', url: null },
+    video: { recherche: 'French Advance 3.e5 c5 4.c3 Nc6 5.Nf3 Qb6 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=RC_L_EhQMU8', titre: 'Défense Française variante d\'avance 1. e4 e6 2. d4 d5 3. e5 - Leçon d\'échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-echange', rep: 'francaise', famille: 'Variante d’échange', nom: 'Échange 3.exd5 exd5', badge: 'theorie',
@@ -30,7 +34,10 @@ export default [
     cases: 'e4 et e5 (cases centrales), colonne e',
     echanger: 'Fou g4 contre le Cavalier f3 s’il défend d4',
     conserver: 'Tours sur la colonne e',
-    video: { recherche: 'French Exchange variation 3.exd5 exd5 plans for Black', url: null },
+    video: { recherche: 'French Exchange variation 3.exd5 exd5 plans for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-tarrasch', rep: 'francaise', famille: 'Variante Tarrasch', nom: 'Tarrasch 3.Cd2 c5 4.exd5 Dxd5', badge: 'theorie',
@@ -42,7 +49,11 @@ export default [
     cases: 'd5, c5, d4',
     echanger: 'Cavaliers sur d4',
     conserver: 'Fou c8, à sortir en d7 ou b7',
-    video: { recherche: 'French Tarrasch 3.Nd2 c5 4.exd5 Qxd5', url: null },
+    video: { recherche: 'French Tarrasch 3.Nd2 c5 4.exd5 Qxd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=wV-6gYnR5Lk', titre: 'Expliquez moi cette ouverture - La Tarrasch', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-steinitz', rep: 'francaise', famille: 'Variante classique', nom: 'Classique 3.Cc3 Cf6 4.e5 (Steinitz)', badge: 'theorie',
@@ -54,7 +65,10 @@ export default [
     cases: 'd4, c5, f6 (rupture)',
     echanger: 'Fou c5 contre le Fou e3',
     conserver: 'Cavalier c6 (pression sur d4)',
-    video: { recherche: 'French Classical Steinitz 4.e5 Nfd7 5.f4 c5', url: null },
+    video: { recherche: 'French Classical Steinitz 4.e5 Nfd7 5.f4 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-fg5', rep: 'francaise', famille: 'Variante classique', nom: 'Classique 4.Fg5 Fe7', badge: 'theorie',
@@ -66,7 +80,10 @@ export default [
     cases: 'c5, d4, b5',
     echanger: 'Fous de cases noires (déjà fait dans la ligne)',
     conserver: 'Dame e7 (défend f7 et g7)',
-    video: { recherche: 'French Classical 4.Bg5 Be7 5.e5 Nfd7', url: null },
+    video: { recherche: 'French Classical 4.Bg5 Be7 5.e5 Nfd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-fd3', rep: 'francaise', famille: 'Déviations', nom: 'Gambit 3.Fd3 ?! dxe4', badge: 'piege',
@@ -81,7 +98,10 @@ export default [
     cases: 'd4 (pion cible), e4',
     echanger: 'Cavalier f6 contre le Fou e4 si possible',
     conserver: 'Pression …c5 / …Cc6 sur d4',
-    video: { recherche: 'French Defense 3.Bd3 dxe4 response', url: null },
+    video: { recherche: 'French Defense 3.Bd3 dxe4 response', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-est-indienne', rep: 'francaise', famille: 'Déviations', nom: 'Attaque est-indienne (2.d3)', badge: 'theorie',
@@ -93,7 +113,10 @@ export default [
     cases: 'b4, c4, d4',
     echanger: 'Pion d5 contre e4 si les Blancs tardent à pousser e5',
     conserver: 'Fou e7 pour défendre le roque',
-    video: { recherche: 'French vs King\'s Indian Attack 2.d3 plan for Black', url: null },
+    video: { recherche: 'French vs King\'s Indian Attack 2.d3 plan for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-dame-e2', rep: 'francaise', famille: 'Déviations', nom: 'Sortie 2.De2', badge: 'loufoque',
@@ -105,6 +128,9 @@ export default [
     cases: 'd5, d4',
     echanger: 'Rien de particulier',
     conserver: 'Pions c5/d5 au centre',
-    video: { recherche: 'French Defense 2.Qe2 Chigorin variation how to play', url: null },
+    video: { recherche: 'French Defense 2.Qe2 Chigorin variation how to play', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

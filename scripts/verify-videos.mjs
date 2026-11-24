@@ -90,5 +90,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { LIGNES } = await import('../site/data/repertoire.js');
   const results = await checkAll(collectLinks(LIGNES));
   console.log(report(results, { github: !!process.env.GITHUB_ACTIONS }));
+  // --json : résultat complet (vrai titre, vraie chaîne) pour reporter les données dans les fiches.
+  if (process.argv.includes('--json')) console.log('JSON-VIDEOS ' + JSON.stringify(results.map(({ id, etat, titreReel, chaineReelle }) => ({ id, etat, titreReel, chaineReelle }))));
   if (process.argv.includes('--strict') && results.some((r) => r.etat === 'mort')) process.exitCode = 1;
 }

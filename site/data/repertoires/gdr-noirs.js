@@ -12,7 +12,11 @@ export default [
     cases: 'd5 (pion à tenir), e4 (case du Cavalier pour se libérer), c5 (poussée libératrice)',
     echanger: 'Fou e7 contre le Fou g5 ; Cavaliers par …Ce4',
     conserver: 'Pion d5 tant que le développement n’est pas fini',
-    video: { recherche: 'Queen\'s Gambit Declined Tartakower variation for Black explained', url: null },
+    video: { recherche: 'Queen\'s Gambit Declined Tartakower variation for Black explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-cambridge', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Variante Cambridge Springs (…Cbd7, …c6, …Da5)', badge: 'piege',
@@ -27,7 +31,11 @@ export default [
     cases: 'a5-e1 (diagonale du clouage), e4 (case du Cavalier), c3',
     echanger: 'Cavalier f6 contre le Fou g5 par …Ce4',
     conserver: 'Dame a5 tant que le Cavalier c3 est cloué',
-    video: { recherche: 'Cambridge Springs Defense trap Bd3 Ne4 explained', url: null },
+    video: { recherche: 'Cambridge Springs Defense trap Bd3 Ne4 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-elephant', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Piège de l’Éléphant (5.cxd5 exd5 6.Cxd5 ?)', badge: 'piege',
@@ -42,7 +50,11 @@ export default [
     cases: 'd5, b4 (échec du Fou), d8',
     echanger: 'Dames (après Fb4+), au bon moment',
     conserver: 'Cavalier d7 (il défend f6 et rend la combinaison possible)',
-    video: { recherche: 'Elephant trap Queen\'s Gambit Declined Nxd5', url: null },
+    video: { recherche: 'Elephant trap Queen\'s Gambit Declined Nxd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-echange', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Variante d’échange (4.cxd5 exd5)', badge: 'theorie',
@@ -54,7 +66,11 @@ export default [
     cases: 'e4 (avant-poste du Cavalier), e8 (Tour), c6 (cible de l’attaque de minorité)',
     echanger: 'Fou c8 contre le Fou d3 blanc (…Fg4-h5-g6 ou …Ff5)',
     conserver: 'Pion c6 bien défendu',
-    video: { recherche: 'Queen\'s Gambit Declined Exchange Variation Carlsbad structure plans for Black', url: null },
+    video: { recherche: 'Queen\'s Gambit Declined Exchange Variation Carlsbad structure plans for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-dc2-c5', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Classique avec 7.Dc2 c5 : libération du centre', badge: 'theorie',
@@ -69,7 +85,11 @@ export default [
     cases: 'c5 (poussée libératrice), d5, colonne c',
     echanger: 'Fous de cases noires et Cavaliers',
     conserver: 'Fou c8 pour la finale (activé par …b6, …Fb7 ou …Fe6)',
-    video: { recherche: 'Queen\'s Gambit Declined Qc2 c5 equalizing for Black', url: null },
+    video: { recherche: 'Queen\'s Gambit Declined Qc2 c5 equalizing for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-slave', rep: 'gdr-noirs', famille: 'Défense slave', nom: 'Slave principale (4…dxc4 5.a4 Ff5)', badge: 'theorie',
@@ -108,7 +128,11 @@ export default [
     cases: 'b2 (cible), c4, f5',
     echanger: 'Fou c8 contre le Fou d3 blanc',
     conserver: 'Pression sur b2 sans prendre trop tôt',
-    video: { recherche: 'London System as Black c5 Qb6 b2 pawn', url: null },
+    video: { recherche: 'London System as Black c5 Qb6 b2 pawn', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-colle', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: 'Contre le Colle (2.Cf3, 3.e3, 4.Fd3) : …Ff5', badge: 'theorie',

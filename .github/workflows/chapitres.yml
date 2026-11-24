@@ -3,6 +3,7 @@ name: Chapitres des vidéos (à la demande)
 # Lit les horodatages publiés dans la description YouTube de chaque vidéo du répertoire
 # (scripts/video-chapters.mjs) pour choisir des liens &t= vérifiables. youtube.com est joignable
 # depuis GitHub Actions, pas depuis l'environnement de développement. Ne modifie rien.
+# Peut être lancé sur une branche de travail (ref) avant publication.
 on:
   workflow_dispatch:
 
@@ -18,3 +19,7 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/video-chapters.mjs
+      # Contrôle oEmbed de toutes les vidéos (vraie chaîne et vrai titre), pour confirmer les
+      # vidéos ajoutées depuis une recherche web avant de les marquer vérifiées.
+      - run: node scripts/verify-videos.mjs --json
+        continue-on-error: true

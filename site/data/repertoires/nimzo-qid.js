@@ -15,7 +15,10 @@ export default [
     cases: 'e4 (contrôlée par …Fb4 et …Cf6), c3 (cible), d5',
     echanger: 'Fou b4 contre le Cavalier c3 quand les Blancs jouent a3',
     conserver: 'Cavalier f6 (contrôle de e4)',
-    video: { recherche: 'Nimzo-Indian Rubinstein 4.e3 O-O 5.Bd3 d5 explained', url: null },
+    video: { recherche: 'Nimzo-Indian Rubinstein 4.e3 O-O 5.Bd3 d5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-classique', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Nimzo, variante classique (4.Dc2)', badge: 'theorie',
@@ -30,7 +33,11 @@ export default [
     cases: 'e4 (case du Cavalier, à soutenir par …f5 ou …d5), b7-h1 (diagonale du Fou)',
     echanger: 'Fou b4 contre le Cavalier c3 (après a3)',
     conserver: 'Fou b7 sur la grande diagonale',
-    video: { recherche: 'Nimzo-Indian Classical 4.Qc2 O-O 5.a3 Bxc3 6.Qxc3 b6 plans', url: null },
+    video: { recherche: 'Nimzo-Indian Classical 4.Qc2 O-O 5.a3 Bxc3 6.Qxc3 b6 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3SzZnyyWpIA', titre: 'The Nimzo-Indian Defence, Classical Variation - Chess Openings Explained', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-samisch', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Nimzo, Sämisch (4.a3 Fxc3+ 5.bxc3)', badge: 'theorie',
@@ -42,7 +49,10 @@ export default [
     cases: 'c4 (cible), a6 (case du Fou), e5',
     echanger: 'Fou c8 contre le Fou d3 par …Fa6',
     conserver: 'Pression sur c4',
-    video: { recherche: 'Nimzo-Indian Samisch 4.a3 Bxc3 5.bxc3 c5 Ba6 plan', url: null },
+    video: { recherche: 'Nimzo-Indian Samisch 4.a3 Bxc3 5.bxc3 c5 Ba6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-leningrad', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Nimzo, variante Leningrad (4.Fg5)', badge: 'theorie',
@@ -54,7 +64,10 @@ export default [
     cases: 'e5 (case du Cavalier), c3, d5',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Pion c5 (contrôle de d4)',
-    video: { recherche: 'Nimzo-Indian Leningrad variation 4.Bg5 h6 c5 for Black', url: null },
+    video: { recherche: 'Nimzo-Indian Leningrad variation 4.Bg5 h6 c5 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-cf3', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Nimzo avec 4.Cf3 : …b6 et …Fb7', badge: 'theorie',
@@ -66,7 +79,10 @@ export default [
     cases: 'e4 (avant-poste), g5, c3',
     echanger: 'Cavalier e4 contre le Fou g3 ou le Cavalier c3',
     conserver: 'Fou b7',
-    video: { recherche: 'Nimzo-Indian 4.Nf3 b6 5.Bg5 Bb7 h6 g5 Ne4 explained', url: null },
+    video: { recherche: 'Nimzo-Indian 4.Nf3 b6 5.Bg5 Bb7 h6 g5 Ne4 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'qid-principale', rep: 'nimzo-qid', famille: 'Défense indienne de la Dame', nom: 'Indienne de la Dame, 4.g3 Fa6', badge: 'theorie',
@@ -105,6 +121,9 @@ export default [
     cases: 'c4 (pion du gambit), a8-h1 (grande diagonale), b5',
     echanger: 'Fou b7 contre le Fou g2',
     conserver: 'Tour a8 à l’abri de la grande diagonale',
-    video: { recherche: 'Catalan Opening Open 6...dxc4 7.Qc2 a6 for Black', url: null },
+    video: { recherche: 'Catalan Opening Open 6...dxc4 7.Qc2 a6 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

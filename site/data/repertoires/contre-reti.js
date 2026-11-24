@@ -14,7 +14,11 @@ export default [
     cases: 'e5, d4, g4',
     echanger: 'Fou g4 contre le Cavalier f3 si utile',
     conserver: 'Pion e5',
-    video: { recherche: 'Kings Indian Attack vs c6 d5 Bg4 setup', url: null },
+    video: { recherche: 'Kings Indian Attack vs c6 d5 Bg4 setup', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-reti-b3', rep: 'contre-reti', famille: 'Réti 2.c4', nom: '2.c4 c6 3.b3 Cf6 4.g3 Ff5', badge: 'theorie',
@@ -26,7 +30,11 @@ export default [
     cases: 'd5, e4, c5',
     echanger: 'Rien de forcé',
     conserver: 'Pion d5',
-    video: { recherche: 'Reti opening 2.c4 c6 3.b3 Bf5 setup', url: null },
+    video: { recherche: 'Reti opening 2.c4 c6 3.b3 Bf5 setup', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-echange', rep: 'contre-reti', famille: 'Réti 2.c4', nom: '2.c4 c6 3.cxd5 cxd5', badge: 'theorie',
@@ -38,7 +46,11 @@ export default [
     cases: 'colonne c, e4, b4',
     echanger: 'Les Tours sur la colonne c',
     conserver: 'Pion d5',
-    video: { recherche: 'Slav exchange variation plans for black', url: null },
+    video: { recherche: 'Slav exchange variation plans for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-e3', rep: 'contre-reti', famille: 'Réti 2.c4', nom: '2.c4 c6 3.e3 Cf6 4.Cc3 e6', badge: 'theorie',
@@ -50,7 +62,11 @@ export default [
     cases: 'e5 (rupture), e4, c4',
     echanger: 'Pion d5 contre c4 (…dxc4) quand le Fou blanc a déjà bougé',
     conserver: 'Fou d6',
-    video: { recherche: 'Reti 2.c4 c6 3.e3 Nf6 semi-slav setup', url: null },
+    video: { recherche: 'Reti 2.c4 c6 3.e3 Nf6 semi-slav setup', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-d4', rep: 'contre-reti', famille: 'Déviations', nom: '2.d4 Cf6 3.e3 Ff5', badge: 'theorie',
@@ -62,7 +78,11 @@ export default [
     cases: 'e4, f5, d5',
     echanger: 'Fou f5 contre le Fou d3',
     conserver: 'Pion d5',
-    video: { recherche: 'Colle system Bf5 early for black', url: null },
+    video: { recherche: 'Colle system Bf5 early for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-b3', rep: 'contre-reti', famille: 'Déviations', nom: '2.b3 Fg4 (Nimzo-Larsen)', badge: 'theorie',
@@ -74,6 +94,10 @@ export default [
     cases: 'e5, e4, h5',
     echanger: 'Fou h5 contre le Cavalier f3 si utile',
     conserver: 'Pion d5',
-    video: { recherche: 'Nimzo-Larsen 1.Nf3 d5 2.b3 Bg4', url: null },
+    video: { recherche: 'Nimzo-Larsen 1.Nf3 d5 2.b3 Bg4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

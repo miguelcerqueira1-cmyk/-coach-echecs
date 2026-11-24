@@ -18,7 +18,11 @@ export default [
     cases: 'e5, d4, la diagonale h1-a8',
     echanger: 'Fou e6 contre un Cavalier en d5',
     conserver: 'Pion e5',
-    video: { recherche: 'English opening reversed Dragon 1.c4 e5 2.Nc3 Nf6 3.g3 d5', url: null },
+    video: { recherche: 'English opening reversed Dragon 1.c4 e5 2.Nc3 Nf6 3.g3 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-fermee', rep: 'contre-anglaise', famille: 'Anglaise fermée', nom: '2.Cc3 Cc6 3.g3 g6', badge: 'theorie',
@@ -30,7 +34,11 @@ export default [
     cases: 'd4, f4, e4',
     echanger: 'Fou g7 seulement contre une pièce importante',
     conserver: 'Pion e5',
-    video: { recherche: 'Closed English 1.c4 e5 2.Nc3 Nc6 3.g3 g6 f5', url: null },
+    video: { recherche: 'Closed English 1.c4 e5 2.Nc3 Nc6 3.g3 g6 f5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-4cav', rep: 'contre-anglaise', famille: 'Quatre Cavaliers', nom: '2.Cc3 Cf6 3.Cf3 Cc6 4.g3 Fb4', badge: 'theorie',
@@ -42,7 +50,11 @@ export default [
     cases: 'e4, d3, e3',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Pion e4',
-    video: { recherche: 'English four knights 4.g3 Bb4 e4', url: null },
+    video: { recherche: 'English four knights 4.g3 Bb4 e4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-g3', rep: 'contre-anglaise', famille: 'Dragon inversé', nom: '2.g3 Cf6 3.Fg2 d5', badge: 'theorie',
@@ -54,7 +66,11 @@ export default [
     cases: 'e5, d4, b6',
     echanger: 'Rien de forcé',
     conserver: 'Pion e5',
-    video: { recherche: 'English 1.c4 e5 2.g3 Nf6 3.Bg2 d5', url: null },
+    video: { recherche: 'English 1.c4 e5 2.g3 Nf6 3.Bg2 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-cf3', rep: 'contre-anglaise', famille: 'Déviations', nom: '2.Cf3 e4 3.Cd4 Cc6', badge: 'theorie',
@@ -66,6 +82,10 @@ export default [
     cases: 'e4, d3, colonne d',
     echanger: 'Cavalier c6 contre le Cavalier d4',
     conserver: 'Pion e4',
-    video: { recherche: 'English 1.c4 e5 2.Nf3 e4 3.Nd4', url: null },
+    video: { recherche: 'English 1.c4 e5 2.Nf3 e4 3.Nd4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

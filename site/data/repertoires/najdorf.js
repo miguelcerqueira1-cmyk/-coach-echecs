@@ -18,7 +18,12 @@ export default [
     cases: 'd5 (case clé), b4, c4',
     echanger: 'Fou e6 contre un Cavalier qui arrive en d5',
     conserver: 'Le contrôle de d5',
-    video: { recherche: 'Najdorf English Attack 6.Be3 e5 7.Nb3 Be6', url: null },
+    video: { recherche: 'Najdorf English Attack 6.Be3 e5 7.Nb3 Be6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=wgGPke_l1H0', titre: 'Sicilienne Najdorf "Attaque Anglaise"', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-fg5', rep: 'najdorf', famille: 'Variante principale 6.Fg5', nom: '6.Fg5 e6 7.f4 Fe7', badge: 'theorie',
@@ -33,7 +38,11 @@ export default [
     cases: 'e5, d5, b5',
     echanger: 'Rien de pressé : la structure noire est solide',
     conserver: 'Pion e6 (protège d5 et f5)',
-    video: { recherche: 'Najdorf 6.Bg5 e6 7.f4 Be7 8.Qf3 Qc7', url: null },
+    video: { recherche: 'Najdorf 6.Bg5 e6 7.f4 Be7 8.Qf3 Qc7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-fe2', rep: 'najdorf', famille: 'Variante classique 6.Fe2', nom: '6.Fe2 e5 7.Cb3 Fe7', badge: 'theorie',
@@ -45,7 +54,11 @@ export default [
     cases: 'd5, c4, b5',
     echanger: 'Fou e6 contre un Cavalier en d5',
     conserver: 'Le contrôle de d5',
-    video: { recherche: 'Najdorf 6.Be2 e5 7.Nb3 Be7', url: null },
+    video: { recherche: 'Najdorf 6.Be2 e5 7.Nb3 Be7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-sozin', rep: 'najdorf', famille: 'Attaque Fischer-Sozin', nom: '6.Fc4 e6 7.Fb3 b5', badge: 'piege',
@@ -60,7 +73,11 @@ export default [
     cases: 'e6, f7, b4',
     echanger: 'Cavalier contre le Fou b3 si l’occasion se présente (…Cc5 ou …Ca5)',
     conserver: 'Pion e6',
-    video: { recherche: 'Najdorf Fischer Sozin 6.Bc4 e6 7.Bb3 b5', url: null },
+    video: { recherche: 'Najdorf Fischer Sozin 6.Bc4 e6 7.Bb3 b5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-h3', rep: 'najdorf', famille: 'Déviations', nom: '6.h3 e5 7.Cde2 h5', badge: 'theorie',
@@ -72,7 +89,11 @@ export default [
     cases: 'g4, d5, e6',
     echanger: 'Fou e6 contre le Fou g2 éventuel',
     conserver: 'Pion h5',
-    video: { recherche: 'Najdorf 6.h3 e5 7.Nde2 h5', url: null },
+    video: { recherche: 'Najdorf 6.h3 e5 7.Nde2 h5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-f4', rep: 'najdorf', famille: 'Déviations', nom: '6.f4 e5 7.Cf3 Cbd7', badge: 'theorie',
@@ -84,7 +105,11 @@ export default [
     cases: 'e5, c5, f4',
     echanger: 'Pion e5 contre f4 au bon moment',
     conserver: 'Cavalier d7 (vers c5 ou e5)',
-    video: { recherche: 'Najdorf 6.f4 e5 7.Nf3 Nbd7', url: null },
+    video: { recherche: 'Najdorf 6.f4 e5 7.Nf3 Nbd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-moscou', rep: 'najdorf', famille: 'Anti-sicilienne', nom: '3.Fb5+ Fd7 (Moscou)', badge: 'theorie',

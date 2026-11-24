@@ -17,7 +17,12 @@ export default [
     cases: 'c7 (à surveiller), d5, f5',
     echanger: 'Fou f5 contre le Fou d3 blanc',
     conserver: 'Pion c6 (protège d5 et b5)',
-    video: { recherche: 'Scandinavian Defense 3...Qa5 main line c6 Bf5', url: null },
+    video: { recherche: 'Scandinavian Defense 3...Qa5 main line c6 Bf5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-da5-fc4', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '3…Da5 4.Fc4 Cf6 5.d3', badge: 'theorie',
@@ -32,7 +37,12 @@ export default [
     cases: 'b7 et f7 (pions cibles), c6',
     echanger: 'Fou c8 contre un Cavalier blanc si utile',
     conserver: 'Pion c6',
-    video: { recherche: 'Scandinavian Qa5 4.Bc4 Nf6 5.Qf3 trap', url: null },
+    video: { recherche: 'Scandinavian Qa5 4.Bc4 Nf6 5.Qf3 trap', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-dd6', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '3.Cc3 Dd6 (moderne)', badge: 'theorie',
@@ -47,7 +57,12 @@ export default [
     cases: 'b5 (interdit par …a6), d4, e5',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Dame en d6, à l’abri des attaques',
-    video: { recherche: 'Scandinavian Defense 3...Qd6 a6 plans', url: null },
+    video: { recherche: 'Scandinavian Defense 3...Qd6 a6 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cf3', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '3.Cf3 Fg4', badge: 'theorie',
@@ -59,7 +74,12 @@ export default [
     cases: 'd4 (cible), e4',
     echanger: 'Fou g4 contre le Cavalier f3 (défenseur de d4)',
     conserver: 'Dame centrale',
-    video: { recherche: 'Scandinavian 2...Qxd5 3.Nf3 Bg4 long castle', url: null },
+    video: { recherche: 'Scandinavian 2...Qxd5 3.Nf3 Bg4 long castle', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cf6', rep: 'scandinave', famille: 'Scandinave 2…Cf6', nom: '2…Cf6 3.d4 Cxd5', badge: 'theorie',
@@ -71,7 +91,12 @@ export default [
     cases: 'd4 (cible), c4',
     echanger: 'Fou c8 contre un Cavalier blanc',
     conserver: 'Fou g7',
-    video: { recherche: 'Scandinavian 2...Nf6 3.d4 Nxd5 fianchetto', url: null },
+    video: { recherche: 'Scandinavian 2...Nf6 3.d4 Nxd5 fianchetto', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cf6-c4', rep: 'scandinave', famille: 'Scandinave 2…Cf6', nom: '2…Cf6 3.c4 c6', badge: 'theorie',
@@ -83,7 +108,12 @@ export default [
     cases: 'd5 (blocage), d4',
     echanger: 'Pièces mineures (affaiblit le pion isolé)',
     conserver: 'Cavalier en d5',
-    video: { recherche: 'Scandinavian 2...Nf6 3.c4 c6 gambit', url: null },
+    video: { recherche: 'Scandinavian 2...Nf6 3.c4 c6 gambit', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-e5', rep: 'scandinave', famille: 'Déviations', nom: 'Avance 2.e5 Ff5', badge: 'theorie',
@@ -95,7 +125,12 @@ export default [
     cases: 'd4 (base de la chaîne), f5',
     echanger: 'Fou f5 contre le Fou d3 blanc',
     conserver: 'Pression sur d4',
-    video: { recherche: 'Scandinavian 2.e5 Bf5 advance', url: null },
+    video: { recherche: 'Scandinavian 2.e5 Bf5 advance', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cc3', rep: 'scandinave', famille: 'Déviations', nom: '2.Cc3 d4', badge: 'loufoque',
@@ -107,6 +142,11 @@ export default [
     cases: 'd4, e5, f4',
     echanger: 'Fou e6 contre un Fou blanc actif',
     conserver: 'Pion d4 (espace)',
-    video: { recherche: 'Scandinavian 2.Nc3 d4 how to play', url: null },
+    video: { recherche: 'Scandinavian 2.Nc3 d4 how to play', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

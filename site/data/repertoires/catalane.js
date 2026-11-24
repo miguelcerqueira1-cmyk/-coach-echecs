@@ -15,7 +15,11 @@ export default [
     cases: 'e4 (rupture), e5, c6',
     echanger: 'Le Fou de cases noires blanc contre le Fou e7 si le Fou c8 reste enfermé',
     conserver: 'Fou g2',
-    video: { recherche: 'Catalan closed variation Nbd7 c6 e4 plan', url: null },
+    video: { recherche: 'Catalan closed variation Nbd7 c6 e4 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-ouverte-dc2', rep: 'catalane', famille: 'Catalane ouverte', nom: '6…dxc4 7.Dc2 a6', badge: 'theorie',
@@ -27,7 +31,11 @@ export default [
     cases: 'c4, c5, c6',
     echanger: 'Fou d2 contre le Fou e7 (Fb4 ou Fa5)',
     conserver: 'Fou g2',
-    video: { recherche: 'Open Catalan 7.Qc2 a6 8.Qxc4 b5 Bd2', url: null },
+    video: { recherche: 'Open Catalan 7.Qc2 a6 8.Qxc4 b5 Bd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-ouverte-c5', rep: 'catalane', famille: 'Catalane ouverte', nom: '4…dxc4 5.Cf3 c5 6.O-O Cc6 7.Da4', badge: 'theorie',
@@ -39,7 +47,11 @@ export default [
     cases: 'c4, c6 (clouage), d-colonne',
     echanger: 'Rien de forcé : garder la Dame active contre les pièces noires',
     conserver: 'Dame blanche',
-    video: { recherche: 'Open Catalan 5...c5 6.O-O Nc6 7.Qa4', url: null },
+    video: { recherche: 'Open Catalan 5...c5 6.O-O Nc6 7.Qa4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-b5', rep: 'catalane', famille: 'Catalane ouverte', nom: '4…dxc4 5.Cf3 b5?! 6.Ce5', badge: 'loufoque',
@@ -54,7 +66,11 @@ export default [
     cases: 'a8, c6 (grande diagonale), b5',
     echanger: 'Cavalier e5 contre le Cavalier c6 pour gagner la Tour a8',
     conserver: 'Fou g2',
-    video: { recherche: 'Catalan 4...dxc4 5...b5 6.Ne5 a4', url: null },
+    video: { recherche: 'Catalan 4...dxc4 5...b5 6.Ne5 a4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-da4', rep: 'catalane', famille: 'Catalane ouverte', nom: '4…dxc4 5.Da4+ Fd7', badge: 'theorie',
@@ -66,7 +82,11 @@ export default [
     cases: 'c4, d5, la diagonale h1-a8',
     echanger: 'Le Fou d5 noir contre le Fou g2 seulement si le roi blanc reste bien protégé',
     conserver: 'Pion d4',
-    video: { recherche: 'Catalan 5.Qa4+ Bd7 6.Qxc4 Bc6', url: null },
+    video: { recherche: 'Catalan 5.Qa4+ Bd7 6.Qxc4 Bc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-fb4', rep: 'catalane', famille: 'Déviations', nom: '3…Fb4+ 4.Fd2 Fe7', badge: 'theorie',
@@ -78,7 +98,11 @@ export default [
     cases: 'c4, e4, la diagonale h1-a8',
     echanger: 'Fou d2 contre le Fou b4 si les Noirs le proposent (…Fxd2+)',
     conserver: 'Fou g2',
-    video: { recherche: 'Catalan 3...Bb4+ 4.Bd2 Be7', url: null },
+    video: { recherche: 'Catalan 3...Bb4+ 4.Bd2 Be7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-c5', rep: 'catalane', famille: 'Déviations', nom: '3…c5 4.d5 (Benoni)', badge: 'theorie',
@@ -90,7 +114,11 @@ export default [
     cases: 'd5, c4 (Cavalier), e5 (rupture)',
     echanger: 'Rien : garder les pièces pour la poussée e4-e5',
     conserver: 'Pion d5',
-    video: { recherche: 'Catalan 3...c5 4.d5 Benoni fianchetto', url: null },
+    video: { recherche: 'Catalan 3...c5 4.d5 Benoni fianchetto', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-c6', rep: 'catalane', famille: 'Déviations', nom: '3…d5 4.Fg2 c6 (Slave)', badge: 'theorie',
@@ -102,6 +130,10 @@ export default [
     cases: 'e4, e5, c4',
     echanger: 'Cavalier d2 contre le Fou d6 (Cc4 ou Ce4)',
     conserver: 'Fou g2',
-    video: { recherche: 'Catalan against Semi-Slav c6 Nbd7 Qc2', url: null },
+    video: { recherche: 'Catalan against Semi-Slav c6 Nbd7 Qc2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

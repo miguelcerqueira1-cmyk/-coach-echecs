@@ -14,7 +14,11 @@ export default [
     cases: 'd4 (Cavalier à protéger), f4, e4',
     echanger: 'Fou e3 contre le Fou c5',
     conserver: 'Pion e4',
-    video: { recherche: 'Scotch Game 4...Bc5 5.Be3 Qf6 6.c3 white plan', url: null },
+    video: { recherche: 'Scotch Game 4...Bc5 5.Be3 Qf6 6.c3 white plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-cf6', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Cf6 5.Cxc6 (Mieses)', badge: 'theorie',
@@ -26,7 +30,11 @@ export default [
     cases: 'e5 (pion d’espace), d5 (case du Cavalier noir), c4',
     echanger: 'Cavalier d4 contre le Cavalier c6 (fait au 5e coup)',
     conserver: 'Pion e5',
-    video: { recherche: 'Scotch Game Mieses Variation 5.Nxc6 bxc6 6.e5', url: null },
+    video: { recherche: 'Scotch Game Mieses Variation 5.Nxc6 bxc6 6.e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-dh4', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Dh4 (Steinitz)', badge: 'theorie',
@@ -38,7 +46,11 @@ export default [
     cases: 'c7 (menace Cxc7), e4, e1 (Tour)',
     echanger: 'Les Dames seulement si l’avance de développement est déjà gagnée',
     conserver: 'L’avance de développement',
-    video: { recherche: 'Scotch Game Steinitz 4...Qh4 5.Nc3', url: null },
+    video: { recherche: 'Scotch Game Steinitz 4...Qh4 5.Nc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-gambit', rep: 'ecossaise', famille: 'Gambit écossais 4.Fc4', nom: 'Gambit écossais 4.Fc4 Fc5', badge: 'theorie',
@@ -50,7 +62,12 @@ export default [
     cases: 'f7, e5, d4',
     echanger: 'Fou c4 contre un Cavalier noir s’il défend f7',
     conserver: 'Pion e5',
-    video: { recherche: 'Scotch Gambit 4.Bc4 Bc5 5.c3 Nf6 6.e5 d5', url: null },
+    video: { recherche: 'Scotch Gambit 4.Bc4 Bc5 5.c3 Nf6 6.e5 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xjMYoxjqgms', titre: 'Gambit écossais (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-d6', rep: 'ecossaise', famille: 'Déviations', nom: '3…d6 (Philidor tardive)', badge: 'theorie',
@@ -62,7 +79,11 @@ export default [
     cases: 'e5, d5, f5',
     echanger: 'Fou b5 contre le Cavalier c6 si utile',
     conserver: 'Pion e4',
-    video: { recherche: 'Scotch Game 3...d6 4.Bb5', url: null },
+    video: { recherche: 'Scotch Game 3...d6 4.Bb5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-cb3', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Fc5 5.Cb3 Fb6 6.a4', badge: 'theorie',
@@ -74,7 +95,11 @@ export default [
     cases: 'd5, a5, b6',
     echanger: 'Fou e3 contre le Fou a7 noir',
     conserver: 'Cavalier d5',
-    video: { recherche: 'Scotch 4...Bc5 5.Nb3 Bb6 6.a4', url: null },
+    video: { recherche: 'Scotch 4...Bc5 5.Nb3 Bb6 6.a4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-cxc6-fc5', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Fc5 5.Cxc6 Df6 6.Dd2', badge: 'theorie',
@@ -86,7 +111,11 @@ export default [
     cases: 'f2 (défendue par Dd2), a4, e5',
     echanger: 'Les Dames : la finale favorise la structure blanche',
     conserver: 'Pion e4',
-    video: { recherche: 'Scotch 4...Bc5 5.Nxc6 Qf6 6.Qd2', url: null },
+    video: { recherche: 'Scotch 4...Bc5 5.Nxc6 Qf6 6.Qd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-4cav', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Cf6 5.Cc3 Fb4 (quatre Cavaliers)', badge: 'theorie',
@@ -98,7 +127,11 @@ export default [
     cases: 'd5, f6 (clouage), c5',
     echanger: 'Fou g5 contre le Cavalier f6',
     conserver: 'Fou d3',
-    video: { recherche: 'Scotch Four Knights 5...Bb4 6.Nxc6 bxc6 7.Bd3', url: null },
+    video: { recherche: 'Scotch Four Knights 5...Bb4 6.Nxc6 bxc6 7.Bd3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-cxd4', rep: 'ecossaise', famille: 'Déviations', nom: '3…Cxd4 4.Cxd4 exd4 5.Dxd4', badge: 'loufoque',
@@ -110,7 +143,11 @@ export default [
     cases: 'f7, d5, e5',
     echanger: 'Dame d4 contre la Dame noire seulement si les Blancs gardent l’avance',
     conserver: 'Fou c4',
-    video: { recherche: 'Scotch 3...Nxd4 4.Nxd4 exd4 5.Qxd4', url: null },
+    video: { recherche: 'Scotch 3...Nxd4 4.Nxd4 exd4 5.Qxd4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-f6', rep: 'ecossaise', famille: 'Déviations', nom: '3…f6? (défense « solide » qui ne l’est pas)', badge: 'loufoque',
@@ -125,6 +162,10 @@ export default [
     cases: 'h5 (échec), e5, h8',
     echanger: 'Cavalier f3 contre le pion e5 (Cxe5)',
     conserver: 'La Dame active',
-    video: { recherche: 'Scotch 3...f6 refutation Nxe5 Qh5+', url: null },
+    video: { recherche: 'Scotch 3...f6 refutation Nxe5 Qh5+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

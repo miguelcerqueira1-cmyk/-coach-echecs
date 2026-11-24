@@ -108,7 +108,10 @@ export default [
     cases: 'd4 (rupture), e5 (chasser le Cf6)',
     echanger: 'Rien de forcé',
     conserver: 'Initiative au centre',
-    video: { recherche: 'Ruy Lopez Classical Defense 3...Bc5', url: null },
+    video: { recherche: 'Ruy Lopez Classical Defense 3...Bc5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=BXWdBp8qvpc', titre: 'Ruy Lopez - Classical Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-bird', rep: 'espagnole', famille: 'Défense Bird', nom: 'Défense Bird (3…Cd4)', badge: 'theorie',
@@ -120,7 +123,10 @@ export default [
     cases: 'd4 (pion à attaquer), c3 (levier), colonne e',
     echanger: 'Cavalier f3 contre le Cavalier d4',
     conserver: 'Fou a4/b3 sur la diagonale',
-    video: { recherche: 'Bird Defense Ruy Lopez 3...Nd4', url: null },
+    video: { recherche: 'Bird Defense Ruy Lopez 3...Nd4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cACtJz6PM28', titre: 'Bird\'s Defense: Ruy Lopez Chess Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-schliemann', rep: 'espagnole', famille: 'Gambit Schliemann', nom: 'Gambit Schliemann (3…f5) : la réponse sûre 4.d3', badge: 'theorie',
@@ -178,7 +184,10 @@ export default [
     cases: 'h2, f3, e4',
     echanger: 'Les pièces d’attaque noires (Fou d6, Dame h3)',
     conserver: 'Pion de plus',
-    video: { recherche: 'Marshall Attack main line for white Re4', url: null },
+    video: { recherche: 'Marshall Attack main line for white Re4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-anti-marshall', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: 'Anti-Marshall (8.a4)', badge: 'theorie',
@@ -190,6 +199,9 @@ export default [
     cases: 'b5, d5, a4',
     echanger: 'Pions a4xb5 au bon moment (colonne a)',
     conserver: 'Fou b3',
-    video: { recherche: 'Anti-Marshall 8.a4 Ruy Lopez', url: null },
+    video: { recherche: 'Anti-Marshall 8.a4 Ruy Lopez', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

@@ -14,7 +14,11 @@ export default [
     cases: 'e5 (rupture), e4, h5',
     echanger: 'Cavalier f6 contre un Cavalier blanc qui arrive en d5',
     conserver: 'Fou g7',
-    video: { recherche: 'Leningrad Dutch plans Qe8 e5', url: null },
+    video: { recherche: 'Leningrad Dutch plans Qe8 e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-stonewall', rep: 'hollandaise', famille: 'Stonewall', nom: 'Stonewall …e6, …d5, …c6', badge: 'theorie',
@@ -26,7 +30,11 @@ export default [
     cases: 'e4 (avant-poste), e5 (trou), h2',
     echanger: 'Fou d6 contre le Fou de cases noires blanc',
     conserver: 'Cavalier e4',
-    video: { recherche: 'Stonewall Dutch plans for black', url: null },
+    video: { recherche: 'Stonewall Dutch plans for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7DVRqdwnleQ', titre: 'How to Play the Stonewall Dutch Defence', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-staunton', rep: 'hollandaise', famille: 'Gambit Staunton', nom: 'Gambit Staunton 2.e4 fxe4', badge: 'theorie',
@@ -38,7 +46,10 @@ export default [
     cases: 'e4 (pion de plus), f7, h7',
     echanger: 'Le Fou g5 contre le Cavalier f6 si utile',
     conserver: 'Pion e4',
-    video: { recherche: 'Staunton Gambit Dutch 2.e4 fxe4 black', url: null },
+    video: { recherche: 'Staunton Gambit Dutch 2.e4 fxe4 black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-fg5', rep: 'hollandaise', famille: 'Déviations', nom: '2.Fg5 h6 3.Fh4 g5', badge: 'piege',
@@ -53,7 +64,10 @@ export default [
     cases: 'e8-h5 (diagonale du roi), g6, h5',
     echanger: 'Cavalier f6 contre le Fou g3 si les Blancs l’enferment',
     conserver: 'La sécurité du roi',
-    video: { recherche: 'Dutch Defense 2.Bg5 h6 3.Bh4 g5 trap Bg6 mate', url: null },
+    video: { recherche: 'Dutch Defense 2.Bg5 h6 3.Bh4 g5 trap Bg6 mate', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-cc3', rep: 'hollandaise', famille: 'Déviations', nom: '2.Cc3 d5 3.Ff4', badge: 'theorie',
@@ -65,6 +79,9 @@ export default [
     cases: 'e4, e5, d6',
     echanger: 'Fou d6 contre le Fou f4',
     conserver: 'Pion d5',
-    video: { recherche: 'Dutch Defense 2.Nc3 d5 Stonewall', url: null },
+    video: { recherche: 'Dutch Defense 2.Nc3 d5 Stonewall', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

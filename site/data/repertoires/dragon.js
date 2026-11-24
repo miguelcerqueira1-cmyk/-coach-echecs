@@ -15,7 +15,11 @@ export default [
     cases: 'c4, c3 (sacrifice de qualité), h5',
     echanger: 'Cavalier e5-c4 contre le Fou e3 ou le Fou b3',
     conserver: 'Fou g7',
-    video: { recherche: 'Dragon Yugoslav Attack 9.Bc4 Bd7 Soltis h5', url: null },
+    video: { recherche: 'Dragon Yugoslav Attack 9.Bc4 Bd7 Soltis h5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'dragon-9ooo', rep: 'dragon', famille: 'Attaque yougoslave', nom: '9.O-O-O d5', badge: 'theorie',
@@ -27,7 +31,11 @@ export default [
     cases: 'd5, colonne b, e5',
     echanger: 'Cavalier d5 contre le Cavalier c3 si utile',
     conserver: 'Fou g7',
-    video: { recherche: 'Dragon Yugoslav 9.O-O-O d5', url: null },
+    video: { recherche: 'Dragon Yugoslav 9.O-O-O d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'dragon-9g4', rep: 'dragon', famille: 'Attaque yougoslave', nom: '9.g4 Fe6 10.O-O-O Cxd4', badge: 'theorie',
@@ -39,7 +47,11 @@ export default [
     cases: 'c3, a2, colonne c',
     echanger: 'Cavalier c6 contre le Cavalier d4',
     conserver: 'Fou g7',
-    video: { recherche: 'Dragon Yugoslav 9.g4 Be6', url: null },
+    video: { recherche: 'Dragon Yugoslav 9.g4 Be6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'dragon-classique', rep: 'dragon', famille: 'Variante classique', nom: '6.Fe2 Fg7 7.O-O O-O', badge: 'piege',
@@ -54,7 +66,10 @@ export default [
     cases: 'd5, c4, g4',
     echanger: 'Fou e6 contre un Cavalier blanc qui gêne',
     conserver: 'Fou g7',
-    video: { recherche: 'Dragon classical 6.Be2 Bg7 7.O-O O-O', url: null },
+    video: { recherche: 'Dragon classical 6.Be2 Bg7 7.O-O O-O', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'dragon-fc4', rep: 'dragon', famille: 'Déviations', nom: '6.Fc4 Fg7 7.O-O O-O', badge: 'theorie',
@@ -69,7 +84,10 @@ export default [
     cases: 'g4, d4, la diagonale h8-a1',
     echanger: 'Cavalier g4 contre le Fou e3',
     conserver: 'Fou g7',
-    video: { recherche: 'Dragon 6.Bc4 Ng4 trap Be3', url: null },
+    video: { recherche: 'Dragon 6.Bc4 Ng4 trap Be3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'dragon-levenfish', rep: 'dragon', famille: 'Déviations', nom: '6.f4 Cbd7 (Levenfish)', badge: 'piege',
@@ -84,7 +102,10 @@ export default [
     cases: 'e5, d7, f4',
     echanger: 'Rien avant d’avoir stoppé e5',
     conserver: 'Cavalier d7 (garde e5)',
-    video: { recherche: 'Dragon Levenfish 6.f4 Nbd7', url: null },
+    video: { recherche: 'Dragon Levenfish 6.f4 Nbd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'dragon-g3', rep: 'dragon', famille: 'Déviations', nom: '6.g3 Cc6 (fianchetto)', badge: 'theorie',
@@ -96,6 +117,9 @@ export default [
     cases: 'b4, e4, d4',
     echanger: 'Pion b contre le Cavalier c3 (…b4)',
     conserver: 'Fou g7',
-    video: { recherche: 'Dragon fianchetto 6.g3 Nc6', url: null },
+    video: { recherche: 'Dragon fianchetto 6.g3 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

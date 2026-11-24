@@ -14,7 +14,11 @@ export default [
     cases: 'e5, c5, a5',
     echanger: 'Fou b4 contre le Fou d2',
     conserver: 'Pion e5',
-    video: { recherche: 'Bogo-Indian 4.Bd2 Qe7 5.g3 Nc6', url: null },
+    video: { recherche: 'Bogo-Indian 4.Bd2 Qe7 5.g3 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-fxd2', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 Fxd2+ 5.Dxd2', badge: 'piege',
@@ -29,7 +33,11 @@ export default [
     cases: 'e4, d5, c4',
     echanger: 'Fou b4 contre le Fou d2',
     conserver: 'Pion d5',
-    video: { recherche: 'Bogo-Indian 4.Bd2 Bxd2+ 5.Qxd2', url: null },
+    video: { recherche: 'Bogo-Indian 4.Bd2 Bxd2+ 5.Qxd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-a5', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 a5 5.g3 d5', badge: 'theorie',
@@ -41,7 +49,11 @@ export default [
     cases: 'b4, e4, c4',
     echanger: 'Fou b4 seulement si les Blancs prennent (…axb4)',
     conserver: 'Pion d5',
-    video: { recherche: 'Bogo-Indian 4.Bd2 a5', url: null },
+    video: { recherche: 'Bogo-Indian 4.Bd2 a5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-cbd2', rep: 'bogo', famille: '4.Cbd2', nom: '4.Cbd2 b6 5.a3 Fxd2+', badge: 'theorie',
@@ -53,7 +65,11 @@ export default [
     cases: 'e4, e5, d6',
     echanger: 'Fou b4 contre le Cavalier d2',
     conserver: 'Fou b7',
-    video: { recherche: 'Bogo-Indian 4.Nbd2 b6', url: null },
+    video: { recherche: 'Bogo-Indian 4.Nbd2 b6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-fe7', rep: 'bogo', famille: '4.Fd2', nom: '4.Fd2 Fe7 (repli)', badge: 'theorie',
@@ -65,6 +81,10 @@ export default [
     cases: 'd5, c5, e4',
     echanger: 'Pion d5 contre c4 au bon moment (…dxc4)',
     conserver: 'Pion d5',
-    video: { recherche: 'Bogo-Indian 4.Bd2 Be7 retreat', url: null },
+    video: { recherche: 'Bogo-Indian 4.Bd2 Be7 retreat', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

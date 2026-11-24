@@ -15,7 +15,11 @@ export default [
     cases: 'd6 (pion arriéré), d5, b5',
     echanger: 'Fou c4 contre le Fou e6 noir si la colonne f s’ouvre',
     conserver: 'Fou c4',
-    video: { recherche: 'Smith-Morra Gambit accepted main line plans', url: null },
+    video: { recherche: 'Smith-Morra Gambit accepted main line plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-siberien', rep: 'smith-morra', famille: 'Gambit accepté', nom: '5…e6 6.Fc4 Dc7 (piège sibérien)', badge: 'piege',
@@ -30,7 +34,11 @@ export default [
     cases: 'h2, b5, d4',
     echanger: 'Rien avant d’avoir chassé la Dame c7',
     conserver: 'Cavalier f3 (défend h2)',
-    video: { recherche: 'Siberian trap Smith-Morra Qh2 mate', url: null },
+    video: { recherche: 'Siberian trap Smith-Morra Qh2 mate', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-e6-a6', rep: 'smith-morra', famille: 'Gambit accepté', nom: '5…e6 6.Fc4 a6 7.O-O Cge7', badge: 'theorie',
@@ -42,7 +50,11 @@ export default [
     cases: 'd6, e7, colonne d',
     echanger: 'Fou g5 contre le Cavalier e7',
     conserver: 'Fou c4',
-    video: { recherche: 'Smith-Morra 5...e6 6.Bc4 a6 Nge7', url: null },
+    video: { recherche: 'Smith-Morra 5...e6 6.Bc4 a6 Nge7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-cf6', rep: 'smith-morra', famille: 'Gambit refusé', nom: '3…Cf6 4.e5 Cd5', badge: 'theorie',
@@ -54,7 +66,11 @@ export default [
     cases: 'e5, d6, d4',
     echanger: 'Cavalier c3 contre le Cavalier d5',
     conserver: 'Pion e5',
-    video: { recherche: 'Smith-Morra declined 3...Nf6 4.e5', url: null },
+    video: { recherche: 'Smith-Morra declined 3...Nf6 4.e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-d5', rep: 'smith-morra', famille: 'Gambit refusé', nom: '3…d5 4.exd5 Dxd5 5.cxd4', badge: 'theorie',
@@ -69,7 +85,11 @@ export default [
     cases: 'd5 (poussée), b5, d4',
     echanger: 'Rien de pressé : le pion isolé aime les pièces',
     conserver: 'Pion d4',
-    video: { recherche: 'Smith-Morra declined 3...d5', url: null },
+    video: { recherche: 'Smith-Morra declined 3...d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-d3', rep: 'smith-morra', famille: 'Gambit refusé', nom: '3…d3 4.Fxd3', badge: 'theorie',
@@ -81,6 +101,10 @@ export default [
     cases: 'd5, e4, c4',
     echanger: 'Rien',
     conserver: 'Pion e4',
-    video: { recherche: 'Smith-Morra 3...d3 declined', url: null },
+    video: { recherche: 'Smith-Morra 3...d3 declined', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];
