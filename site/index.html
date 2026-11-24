@@ -7,6 +7,18 @@
   <meta name="description" content="BlitzRefute — L’encyclopédie interactive et l’arme fatale pour maîtriser tes ouvertures et détruire les pièges en Blitz.">
   <meta name="theme-color" content="#0b0d1e">
   <script>
+    // Version anglaise : la page reste masquée jusqu'à la traduction (pas de flash en français) ;
+    // i18n.js retire la classe, et par sécurité elle tombe après 2,5 s.
+    try {
+      if (localStorage.getItem('coach-echecs:langue') === 'en') {
+        document.documentElement.classList.add('i18n-attente');
+        document.documentElement.lang = 'en';
+        setTimeout(function () { document.documentElement.classList.remove('i18n-attente'); }, 2500);
+      }
+    } catch (e) { /* stockage bloqué : français */ }
+  </script>
+  <style>html.i18n-attente body { visibility: hidden; }</style>
+  <script>
     // Apparence enregistrée appliquée avant l'affichage (même logique que js/theme.js).
     (function () {
       var s = {};

@@ -61,8 +61,13 @@ function traduireArbre(root, t) {
 export async function initLangue() {
   document.documentElement.lang = langue();
   if (langue() !== 'en') return null;
-  const t = traducteur(await import('./i18n-en.js'));
-  traduireArbre(document.body, t);
+  let t;
+  try {
+    t = traducteur(await import('./i18n-en.js'));
+    traduireArbre(document.body, t);
+  } finally {
+    document.documentElement.classList.remove('i18n-attente');
+  }
   new MutationObserver((muts) => {
     for (const m of muts) {
       if (m.type === 'characterData') traduireArbre(m.target, t);
