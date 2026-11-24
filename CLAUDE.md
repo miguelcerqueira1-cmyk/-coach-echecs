@@ -428,12 +428,13 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
 ## 8. Règles de travail (pour Claude)
 
 - Toujours lancer `npm test` et les tests Playwright avant de pousser.
-- **NE PLUS PUBLIER SANS ACCORD (décision du 2026-11-23)** : un push sur `main` met le site en
-  ligne (deploy.yml). L'utilisateur veut que l'appli reste privée tant qu'elle n'est pas finie :
-  travailler et pousser sur une branche de travail, ne fusionner sur `main` que sur demande
-  explicite. **Publié le 2026-11-24 sur demande de l'utilisateur** (commit f4bad37 : 29
-  répertoires, 269 fiches, bilingue, problèmes par thème, partie contre Stockfish ; synchro inactive
-  sans Worker). Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
+- **PUBLICATION (décision du 2026-11-24, remplace celle du 2026-11-23)** : un push sur `main` met le
+  site en ligne (deploy.yml). L'utilisateur autorise désormais à **publier dès qu'un chantier est
+  terminé**, à condition que `npm test` et tous les tests Playwright soient au vert : travailler sur
+  la branche de travail, puis pousser sur `main` (avance rapide), vérifier une fois le résultat de
+  deploy.yml et le dire à l'utilisateur. Rien de non testé ou d'à moitié fini sur `main`.
+  Publications : 2026-11-24 f4bad37 (29 répertoires, 269 fiches, bilingue, problèmes par thème,
+  partie contre Stockfish ; synchro inactive sans Worker), puis d31bf4c (brouillon d'analyse). Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
   officiel (création de la micro-entreprise).
 - Messages de commit en français, terminés par les deux lignes d'attribution demandées par la
   session ; ne jamais écrire de nom ou d'identifiant de modèle ailleurs dans le dépôt.
