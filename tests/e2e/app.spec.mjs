@@ -481,6 +481,35 @@ test('apparence : Nuit néon par défaut, choix du thème et de l’échiquier, 
   expect(await sq()).toBe('rgb(236, 233, 228)');
 });
 
+test('mes données : copier dans le navigateur puis coller dans l’appli installée (iPhone)', async ({ page, browser }) => {
+  await page.goto('./');
+  await page.evaluate(() => {
+    localStorage.setItem('coach-echecs:progression-v1', JSON.stringify({ lignes: { 'gd-orthodoxe': { ok: 3, ko: 0 } }, drills: {}, jours: ['2026-11-20'], sorties: [], cours: {} }));
+    localStorage.setItem('coach-echecs:jeton-lichess', 'lip_secret');
+  });
+  await page.click('#btn-settings');
+  // Presse-papiers refusé : le texte s'affiche pour une copie à la main.
+  await page.evaluate(() => { Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('refus')), readText: () => Promise.reject(new Error('refus')) } }); });
+  await page.click('#data-copy');
+  await expect(page.locator('#data-paste-box')).toBeVisible();
+  const texte = await page.inputValue('#data-paste-text');
+  expect(texte).toContain('gd-orthodoxe');
+  expect(texte).not.toContain('lip_secret');
+  // « Appli installée » : mémoire vierge, collage à la main.
+  const other = await (await browser.newContext()).newPage();
+  await other.goto(page.url());
+  await other.click('#btn-settings');
+  await other.click('#data-paste');
+  await other.fill('#data-paste-text', 'pas une sauvegarde');
+  await other.click('#data-paste-ok');
+  await expect(other.locator('#data-msg')).toContainText('illisibles');
+  await other.fill('#data-paste-text', texte);
+  other.once('dialog', (d) => d.accept());
+  await other.click('#data-paste-ok');
+  await expect.poll(() => other.evaluate(() => localStorage.getItem('coach-echecs:progression-v1'))).toContain('gd-orthodoxe');
+  await other.context().close();
+});
+
 test('mes données : export (sans secrets) puis import sur un autre appareil', async ({ page, browser }) => {
   await page.goto('./');
   await page.evaluate(() => {

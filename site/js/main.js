@@ -31,7 +31,7 @@ import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
 import { YouTubeClient } from './youtube.js';
 import { THEMES, BOARDS, applyAppearance } from './theme.js';
-import { importData, describe } from './transfer.js';
+import { importData, exportData, describe } from './transfer.js';
 import { TrainingPage } from './training.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
@@ -1315,21 +1315,47 @@ function bindUi() {
     const dump = sauvegarder();
     $('data-msg').textContent = L(`Fichier créé : ${describe(dump)}. Range-le en lieu sûr (Fichiers, Drive, e-mail) ; sur l’autre appareil : ⚙ Réglages → Importer.`, `File created: ${describe(dump)}. Keep it somewhere safe (Files, Drive, e-mail); on the other device: ⚙ Settings → Import.`);
   };
+  // Copier / coller : contourne la fenêtre de fichiers de l'iPhone (navigateur → appli installée,
+  // qui n'ont pas la même mémoire).
+  $('data-copy').onclick = async () => {
+    const texte = JSON.stringify(exportData());
+    try {
+      await navigator.clipboard.writeText(texte);
+      $('data-msg').textContent = L('Données copiées. Ouvre l’appli installée → ⚙ Réglages → Mes données → « Coller des données ».', 'Data copied. Open the installed app → ⚙ Settings → My data → “Paste data”.');
+    } catch {
+      $('data-paste-box').classList.remove('hidden');
+      $('data-paste-text').value = texte;
+      $('data-paste-text').select();
+      $('data-msg').textContent = L('Copie automatique impossible : sélectionne le texte ci-dessus et copie-le (appui long → Copier).', 'Automatic copy failed: select the text above and copy it (long press → Copy).');
+    }
+  };
+  $('data-paste').onclick = async () => {
+    $('data-paste-box').classList.remove('hidden');
+    try {
+      const t = await navigator.clipboard.readText();
+      if (t && t.trim().startsWith('{')) $('data-paste-text').value = t;
+    } catch { /* lecture refusée : collage à la main dans la case */ }
+    $('data-paste-text').focus();
+  };
+  $('data-paste-ok').onclick = () => importerTexte($('data-paste-text').value);
   $('data-import').onchange = async (ev) => {
     const f = ev.target.files?.[0];
     ev.target.value = '';
     if (!f) return;
+    importerTexte(await f.text());
+  };
+  async function importerTexte(texte) {
     try {
-      const dump = JSON.parse(await f.text());
+      const dump = JSON.parse(String(texte || '').trim());
       if (!window.confirm(L(`Importer ${describe(dump)} (export du ${new Date(dump.exportedAt).toLocaleString('fr-FR')}) ? Les données actuelles de cet appareil seront remplacées.`, `Import ${describe(dump)} (exported on ${new Date(dump.exportedAt).toLocaleString('en-GB')})? The current data on this device will be replaced.`))) return;
       store.backupGame();
       const n = importData(dump);
       $('data-msg').textContent = L(`${n} élément(s) importé(s). Rechargement…`, `${n} item(s) imported. Reloading…`);
       setTimeout(() => location.reload(), 600);
     } catch (e) {
-      $('data-msg').textContent = e instanceof SyntaxError ? L('Fichier illisible (JSON attendu).', 'Unreadable file (JSON expected).') : e.message;
+      $('data-msg').textContent = e instanceof SyntaxError ? L('Données illisibles : ce n’est pas une sauvegarde BlitzRefute complète.', 'Unreadable data: this is not a complete BlitzRefute backup.') : e.message;
     }
-  };
+  }
   $('form-settings').addEventListener('submit', (e) => {
     if (e.submitter?.value !== 'ok') return;
     saveSettingsFromForm();

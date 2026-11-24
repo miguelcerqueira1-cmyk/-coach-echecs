@@ -265,6 +265,17 @@
         <button type="button" id="data-export">⤓ Exporter mes données</button>
         <label class="file-btn"><input type="file" id="data-import" hidden>⤒ Importer un fichier</label>
       </div>
+      <p class="muted small">Sur iPhone, si le fichier reste introuvable : « Copier mes données » ici (dans le navigateur), puis « Coller des données » dans l’appli installée.</p>
+      <div class="dlg-actions left">
+        <button type="button" id="data-copy">📋 Copier mes données</button>
+        <button type="button" id="data-paste">📥 Coller des données</button>
+      </div>
+      <div id="data-paste-box" class="hidden">
+        <label>Colle ici le texte copié (appui long → Coller)
+          <textarea id="data-paste-text" rows="4" spellcheck="false" autocomplete="off"></textarea>
+        </label>
+        <div class="dlg-actions left"><button type="button" id="data-paste-ok">Importer ce texte</button></div>
+      </div>
       <p id="data-last" class="muted small"></p>
       <p id="data-msg" class="muted small" role="status"></p>
       <details>
