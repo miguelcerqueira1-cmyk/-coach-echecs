@@ -9,14 +9,20 @@ import { choisis, REPERTOIRES } from './mon-repertoire.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
-  positionARevoir, alertePgn, ficheJouee, analyseTemps, bilanTempsParties, horlogesPgn, lireCadence,
+  positionARevoir, alertePgn, ficheJouee, analyseTemps, bilanTempsParties, horlogesPgn, lireCadence, phaseTxt, outcomeTxt,
 } from './games-core.js';
+import { langue } from './i18n.js';
 import { connecter as connecterLichess, deconnecter as deconnecterLichess } from './lichess-auth.js';
 import { chargerClassements, noterClassements, KEY as KEY_CLASSEMENTS } from './progression-core.js';
 import { jour, charger as chargerRoutine, enregistrer as enregistrerRoutine, noter as noterRoutine } from './routine-core.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fr = (san) => esc(sanFr(san));
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+// Nombre décimal produit par le code : virgule en français, point en anglais.
+const dec = (x) => (langue() === 'en' ? x : x.replace('.', ','));
+// Nom affiché du site d'origine (les valeurs françaises restent les valeurs internes).
+const siteTxt = (site) => L(site, { 'PGN collé': 'Pasted PGN', 'Échiquier': 'Board' }[site] || site);
 const PREFS = 'coach-echecs:mes-parties';
 const CACHE = 'coach-echecs:analyses-v1';
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
@@ -113,8 +119,8 @@ export class GamesPage {
     if (tok) headers.authorization = 'Bearer ' + tok;
     const r = await this.client.queue.run(url, { headers });
     const res = r.res;
-    if (res.status === 404) throw new Error(tok ? 'compte introuvable ou export refusé par Lichess' : 'Lichess demande une connexion : appuie sur « Se connecter avec Lichess » ci-dessus');
-    if (res.status === 401) throw new Error('jeton Lichess refusé');
+    if (res.status === 404) throw new Error(tok ? L('compte introuvable ou export refusé par Lichess', 'account not found or export refused by Lichess') : L('Lichess demande une connexion : appuie sur « Se connecter avec Lichess » ci-dessus', 'Lichess requires a login: tap “Log in with Lichess” above'));
+    if (res.status === 401) throw new Error(L('jeton Lichess refusé', 'Lichess token rejected'));
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     return text.split('\n').filter(Boolean).map((l) => { try { return parseLichessGame(JSON.parse(l), user); } catch { return null; } }).filter(Boolean);
@@ -123,8 +129,8 @@ export class GamesPage {
   async fetchChessCom(user, max) {
     const base = `https://api.chess.com/pub/player/${encodeURIComponent(user.toLowerCase())}/games`;
     let r;
-    try { r = await fetch(`${base}/archives`); } catch { throw new Error('Chess.com injoignable (réseau)'); }
-    if (r.status === 404) throw new Error('compte Chess.com introuvable');
+    try { r = await fetch(`${base}/archives`); } catch { throw new Error(L('Chess.com injoignable (réseau)', 'Chess.com unreachable (network)')); }
+    if (r.status === 404) throw new Error(L('compte Chess.com introuvable', 'Chess.com account not found'));
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const archives = ((await r.json()).archives || []).slice().reverse();
     const out = [];
@@ -150,7 +156,7 @@ export class GamesPage {
     const tasks = [];
     if (p.lichess) tasks.push(['Lichess', () => this.fetchLichess(p.lichess.trim(), max)]);
     if (p.chesscom) tasks.push(['Chess.com', () => this.fetchChessCom(p.chesscom.trim(), max)]);
-    if (!tasks.length) { this.status.general = 'Indiquez au moins un pseudo.'; this.render(); return; }
+    if (!tasks.length) { this.status.general = L('Indiquez au moins un pseudo.', 'Enter at least one username.'); this.render(); return; }
     for (const [site] of tasks) this.status[site] = { state: 'loading' };
     this.render();
     await Promise.all(tasks.map(async ([site, fn]) => {
@@ -228,7 +234,7 @@ export class GamesPage {
             token: { gameId: `analyse-${game.id}`, branchId: 'analyse', revision: i, ply: i },
           });
         } catch (e) {
-          game.error = `Moteur indisponible : ${e.message}`;
+          game.error = L(`Moteur indisponible : ${e.message}`, `Engine unavailable: ${e.message}`);
           this.render();
           return;
         }
@@ -294,25 +300,25 @@ export class GamesPage {
     const st = (site) => {
       const s = this.status[site];
       if (!s) return '';
-      if (s.state === 'loading') return `<li><span class="spinner"></span> ${site} : chargement…</li>`;
-      if (s.state === 'error') return `<li class="error-text">${site} : ${esc(s.error)}</li>`;
-      return `<li>${site} : ${s.n} partie(s) importée(s)</li>`;
+      if (s.state === 'loading') return `<li><span class="spinner"></span> ${site}${L(' : chargement…', ': loading…')}</li>`;
+      if (s.state === 'error') return `<li class="error-text">${site}${L(' : ', ': ')}${esc(s.error)}</li>`;
+      return `<li>${L(`${site} : ${s.n} partie(s) importée(s)`, `${site}: ${s.n} game(s) imported`)}</li>`;
     };
     this.el.innerHTML = `
       <div class="card games-form">
-        <h2>Mes parties</h2>
+        <h2>${L('Mes parties', 'My games')}</h2>
         ${this.lichessHtml()}
         <div class="games-inputs">
-          <label>Pseudo Lichess <input type="text" data-p="lichess" value="${esc(p.lichess)}" autocapitalize="off" spellcheck="false" placeholder="ex. MonPseudo"></label>
-          <label>Pseudo Chess.com <input type="text" data-p="chesscom" value="${esc(p.chesscom)}" autocapitalize="off" spellcheck="false" placeholder="ex. MonPseudo"></label>
-          <label>Parties par site <select data-p="max">${[10, 20, 40].map((n) => `<option ${Number(p.max) === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-          <label>Cadence <select data-p="speed">${[['blitz', 'Blitz'], ['rapide', 'Rapide'], ['bullet', 'Bullet'], ['toutes', 'Toutes']].map(([v, l]) => `<option value="${v}" ${p.speed === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
-          <label>Analyse <select data-p="precision"><option value="300" ${Number(p.precision) === 300 ? 'selected' : ''}>Rapide (0,3 s par position)</option><option value="800" ${Number(p.precision) === 800 ? 'selected' : ''}>Précise (0,8 s par position)</option></select></label>
+          <label>${L('Pseudo Lichess', 'Lichess username')} <input type="text" data-p="lichess" value="${esc(p.lichess)}" autocapitalize="off" spellcheck="false" placeholder="${L('ex. MonPseudo', 'e.g. MyUsername')}"></label>
+          <label>${L('Pseudo Chess.com', 'Chess.com username')} <input type="text" data-p="chesscom" value="${esc(p.chesscom)}" autocapitalize="off" spellcheck="false" placeholder="${L('ex. MonPseudo', 'e.g. MyUsername')}"></label>
+          <label>${L('Parties par site', 'Games per site')} <select data-p="max">${[10, 20, 40].map((n) => `<option ${Number(p.max) === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+          <label>${L('Cadence', 'Time control')} <select data-p="speed">${[['blitz', 'Blitz'], ['rapide', L('Rapide', 'Rapid')], ['bullet', 'Bullet'], ['toutes', L('Toutes', 'All')]].map(([v, l]) => `<option value="${v}" ${p.speed === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+          <label>${L('Analyse', 'Analysis')} <select data-p="precision"><option value="300" ${Number(p.precision) === 300 ? 'selected' : ''}>${L('Rapide (0,3 s par position)', 'Fast (0.3 s per position)')}</option><option value="800" ${Number(p.precision) === 800 ? 'selected' : ''}>${L('Précise (0,8 s par position)', 'Accurate (0.8 s per position)')}</option></select></label>
         </div>
-        <div class="actions"><button type="button" class="primary" data-import>Charger mes parties</button></div>
-        <p class="small"><a href="#/progression">📈 Voir ma progression</a> (classements, routine, entraînement)</p>
+        <div class="actions"><button type="button" class="primary" data-import>${L('Charger mes parties', 'Load my games')}</button></div>
+        <p class="small"><a href="#/progression">${L('📈 Voir ma progression', '📈 See my progress')}</a> ${L('(classements, routine, entraînement)', '(ratings, routine, training)')}</p>
         <ul class="games-status">${st('Lichess')}${st('Chess.com')}${this.status.general ? `<li class="error-text">${esc(this.status.general)}</li>` : ''}</ul>
-        <p class="muted small">Lichess : tes parties sont chargées grâce à la connexion (ou au jeton de ⚙). Chess.com : API publique, sans compte. Rien n’est envoyé ailleurs ; l’analyse est faite par Stockfish sur votre appareil.</p>
+        <p class="muted small">${L('Lichess : tes parties sont chargées grâce à la connexion (ou au jeton de ⚙). Chess.com : API publique, sans compte. Rien n’est envoyé ailleurs ; l’analyse est faite par Stockfish sur votre appareil.', 'Lichess: your games are loaded through the login (or the ⚙ token). Chess.com: public API, no account needed. Nothing is sent anywhere else; the analysis is done by Stockfish on your device.')}</p>
       </div>
       ${this.pgnHtml()}
       ${this.summaryHtml()}
@@ -329,14 +335,14 @@ export class GamesPage {
     const alert = a ? `<div class="card pgn-alert ${a.niveau}" data-pgn-alert role="status">
         <p>${a.niveau === 'warn' ? '⚠ ' : a.niveau === 'ok' ? '✔ ' : 'ℹ '}${esc(a.texte)}</p>
         <div class="actions">${a.ligne ? `<button type="button" class="primary" data-pgn-line>${esc(a.bouton)}</button>` : ''}
-          <button type="button" data-open="${esc(a.id)}">Ouvrir la partie sur l’échiquier</button>
-          <button type="button" data-analyse="${esc(a.id)}">Analyser avec Stockfish</button></div>
+          <button type="button" data-open="${esc(a.id)}">${L('Ouvrir la partie sur l’échiquier', 'Open the game on the board')}</button>
+          <button type="button" data-analyse="${esc(a.id)}">${L('Analyser avec Stockfish', 'Analyse with Stockfish')}</button></div>
       </div>` : '';
     return `<details class="card pgn-paste" ${this.pgnOpen ? 'open' : ''}>
-        <summary><strong>📋 Coller une partie PGN</strong> <span class="muted small">(Lichess, Chess.com…)</span></summary>
-        <textarea data-pgn rows="5" spellcheck="false" placeholder="[White &quot;…&quot;] [Black &quot;…&quot;]&#10;1. d4 d5 2. c4 …" aria-label="Partie au format PGN"></textarea>
-        <label class="row">Je jouais <select data-pgn-color><option value="auto">Détecter (mes pseudos)</option><option value="w">les Blancs</option><option value="b">les Noirs</option></select></label>
-        <div class="actions"><button type="button" class="primary" data-pgn-go>Comparer avec mon répertoire</button></div>
+        <summary><strong>${L('📋 Coller une partie PGN', '📋 Paste a PGN game')}</strong> <span class="muted small">(Lichess, Chess.com…)</span></summary>
+        <textarea data-pgn rows="5" spellcheck="false" placeholder="[White &quot;…&quot;] [Black &quot;…&quot;]&#10;1. d4 d5 2. c4 …" aria-label="${L('Partie au format PGN', 'Game in PGN format')}"></textarea>
+        <label class="row">${L('Je jouais', 'I was playing')} <select data-pgn-color><option value="auto">${L('Détecter (mes pseudos)', 'Detect (my usernames)')}</option><option value="w">${L('les Blancs', 'White')}</option><option value="b">${L('les Noirs', 'Black')}</option></select></label>
+        <div class="actions"><button type="button" class="primary" data-pgn-go>${L('Comparer avec mon répertoire', 'Compare with my repertoire')}</button></div>
         <p class="error-text small" data-pgn-err></p>
       </details>${alert}`;
   }
@@ -345,9 +351,9 @@ export class GamesPage {
     const errEl = this.el.querySelector('[data-pgn-err]');
     const raw = this.el.querySelector('[data-pgn]').value;
     let c;
-    try { c = loadPgnTolerant(raw); } catch (e) { errEl.textContent = `PGN illisible : ${e.message}`; return; }
+    try { c = loadPgnTolerant(raw); } catch (e) { errEl.textContent = L(`PGN illisible : ${e.message}`, `Unreadable PGN: ${e.message}`); return; }
     const san = c.history();
-    if (!san.length) { errEl.textContent = 'Aucun coup trouvé dans ce PGN.'; return; }
+    if (!san.length) { errEl.textContent = L('Aucun coup trouvé dans ce PGN.', 'No moves found in this PGN.'); return; }
     const h = (c.getHeaders?.() || c.header?.() || {});
     const low = (x) => String(x || '').trim().toLowerCase();
     const mine = [this.prefs.lichess, this.prefs.chesscom].map(low).filter(Boolean);
@@ -379,7 +385,7 @@ export class GamesPage {
     const list = this.filtered().filter((g) => !g.local);
     if (!list.length) return '';
     const by = (fn) => { const g = list.filter(fn); const w = g.filter((x) => x.outcome === 'victoire').length; const d = g.filter((x) => x.outcome === 'nulle').length; return { n: g.length, w, d, l: g.length - w - d }; };
-    const fmt = (s) => (s.n ? `${s.n} partie(s) : ${s.w} V · ${s.d} N · ${s.l} D` : 'aucune');
+    const fmt = (s) => (s.n ? L(`${s.n} partie(s) : ${s.w} V · ${s.d} N · ${s.l} D`, `${s.n} game(s): ${s.w} W · ${s.d} D · ${s.l} L`) : L('aucune', 'none'));
     const all = by(() => true);
     // Par répertoire choisi ; une réponse des Noirs hors répertoire dès le 1er coup compte à part.
     const dansRep = (g, id) => g.deviation?.rep === id && !(g.color === 'b' && g.deviation.who === 'moi' && g.deviation.ply === 1);
@@ -387,12 +393,12 @@ export class GamesPage {
     const parRep = ids.map((id) => ({ id, s: by((g) => dansRep(g, id)) }));
     const horsBlancs = by((g) => g.color === 'w' && !ids.some((id) => dansRep(g, id)));
     const horsNoirs = by((g) => g.color === 'b' && !ids.some((id) => dansRep(g, id)));
-    const camp = (id) => (REPERTOIRES[id]?.couleur === 'w' ? 'Blancs' : 'Noirs');
+    const camp = (id) => (REPERTOIRES[id]?.couleur === 'w' ? L('Blancs', 'White') : L('Noirs', 'Black'));
     const devs = {};
     for (const g of list) {
       const d = g.deviation;
       if (d?.who === 'moi' && d.expected) {
-        const k = `${moveNo(d.ply)} ${sanFr(d.played)} au lieu de ${d.expected.map(sanFr).join(' ou ')}`;
+        const k = L(`${moveNo(d.ply)} ${sanFr(d.played)} au lieu de ${d.expected.map(sanFr).join(' ou ')}`, `${moveNo(d.ply)} ${sanFr(d.played)} instead of ${d.expected.map(sanFr).join(' or ')}`);
         devs[k] = (devs[k] || 0) + 1;
       }
     }
@@ -410,78 +416,78 @@ export class GamesPage {
         for (const e of plies.filter((x) => x.mover === g.color && x.cls)) phases[e.phase] = (phases[e.phase] || 0) + 1;
       }
       const ph = Object.entries(phases).sort((a, b) => b[1] - a[1])[0];
-      agg = `<p><strong>Sur ${analysed.length} partie(s) analysée(s)</strong> : ${gaffes} gaffe(s), ${erreurs} erreur(s)${n ? `, perte moyenne ${(tot / n / 100).toFixed(2).replace('.', ',')} pion/coup` : ''}${ph ? ` ; phase la plus fragile : ${ph[0]}` : ''}.</p>`;
+      agg = L(`<p><strong>Sur ${analysed.length} partie(s) analysée(s)</strong> : ${gaffes} gaffe(s), ${erreurs} erreur(s)${n ? `, perte moyenne ${(tot / n / 100).toFixed(2).replace('.', ',')} pion/coup` : ''}${ph ? ` ; phase la plus fragile : ${ph[0]}` : ''}.</p>`, `<p><strong>Over ${analysed.length} analysed game(s)</strong>: ${gaffes} blunder(s), ${erreurs} mistake(s)${n ? `, average loss ${(tot / n / 100).toFixed(2)} pawn/move` : ''}${ph ? `; weakest phase: ${phaseTxt(ph[0])}` : ''}.</p>`);
     }
     return `<div class="card games-summary">
-      <h2>Vue d’ensemble (${esc(this.prefs.speed === 'toutes' ? 'toutes cadences' : this.prefs.speed)})</h2>
-      <p>Total : ${fmt(all)}</p>
+      <h2>${L('Vue d’ensemble', 'Overview')} (${esc(this.prefs.speed === 'toutes' ? L('toutes cadences', 'all time controls') : L(this.prefs.speed, { blitz: 'blitz', rapide: 'rapid', bullet: 'bullet' }[this.prefs.speed] || this.prefs.speed))})</h2>
+      <p>${L('Total : ', 'Total: ')}${fmt(all)}</p>
       <ul>
-        ${parRep.map(({ id, s: st }) => `<li>${camp(id)}, ${esc(REPERTOIRES[id].titre)} : ${fmt(st)}</li>`).join('')}
-        ${horsBlancs.n ? `<li>Blancs, hors de vos répertoires : ${fmt(horsBlancs)}</li>` : ''}
-        ${horsNoirs.n ? `<li>Noirs, hors de vos répertoires : ${fmt(horsNoirs)}</li>` : ''}
+        ${parRep.map(({ id, s: st }) => `<li>${camp(id)}, ${esc(REPERTOIRES[id].titre)}${L(' : ', ': ')}${fmt(st)}</li>`).join('')}
+        ${horsBlancs.n ? `<li>${L('Blancs, hors de vos répertoires : ', 'White, outside your repertoires: ')}${fmt(horsBlancs)}</li>` : ''}
+        ${horsNoirs.n ? `<li>${L('Noirs, hors de vos répertoires : ', 'Black, outside your repertoires: ')}${fmt(horsNoirs)}</li>` : ''}
       </ul>
-      ${topDev.length ? `<p><strong>Vos sorties de répertoire les plus fréquentes :</strong></p><ul>${topDev.map(([k, n]) => `<li>${esc(k)} (${n} fois)</li>`).join('')}</ul>` : ''}
+      ${topDev.length ? `<p><strong>${L('Vos sorties de répertoire les plus fréquentes :', 'Your most frequent repertoire deviations:')}</strong></p><ul>${topDev.map(([k, n]) => `<li>${esc(k)} ${L(`(${n} fois)`, `(${n} time${n > 1 ? 's' : ''})`)}</li>`).join('')}</ul>` : ''}
       ${agg}
     </div>`;
   }
 
   deviationText(g) {
     const d = g.deviation;
-    if (!d || !d.rep) return '<span class="muted">Hors répertoire</span>';
-    if (d.who === 'moi') return `<span class="ko">Sortie du répertoire : ${moveNo(d.ply)} ${fr(d.played)} (fiche : ${d.expected.map(fr).join(' ou ')})</span>`;
-    if (d.who === 'adversaire-erreur') return d.punished ? `<span class="ok">Erreur adverse ${moveNo(d.ply)} ${fr(d.played)} punie ✔</span>` : `<span class="ko">Erreur adverse ${moveNo(d.ply)} ${fr(d.played)} non punie (${fr(d.expected[0])})</span>`;
-    if (d.who === 'adversaire') return `<span class="muted">L’adversaire sort des fiches : ${moveNo(d.ply)} ${fr(d.played)}</span>`;
-    return '<span class="ok">Répertoire suivi jusqu’au bout des fiches ✔</span>';
+    if (!d || !d.rep) return `<span class="muted">${L('Hors répertoire', 'Outside repertoire')}</span>`;
+    if (d.who === 'moi') return `<span class="ko">${L(`Sortie du répertoire : ${moveNo(d.ply)} ${fr(d.played)} (fiche : ${d.expected.map(fr).join(' ou ')})`, `Left the repertoire: ${moveNo(d.ply)} ${fr(d.played)} (line: ${d.expected.map(fr).join(' or ')})`)}</span>`;
+    if (d.who === 'adversaire-erreur') return d.punished ? `<span class="ok">${L(`Erreur adverse ${moveNo(d.ply)} ${fr(d.played)} punie ✔`, `Opponent’s mistake ${moveNo(d.ply)} ${fr(d.played)} punished ✔`)}</span>` : `<span class="ko">${L(`Erreur adverse ${moveNo(d.ply)} ${fr(d.played)} non punie (${fr(d.expected[0])})`, `Opponent’s mistake ${moveNo(d.ply)} ${fr(d.played)} not punished (${fr(d.expected[0])})`)}</span>`;
+    if (d.who === 'adversaire') return `<span class="muted">${L(`L’adversaire sort des fiches : ${moveNo(d.ply)} ${fr(d.played)}`, `Your opponent leaves your lines: ${moveNo(d.ply)} ${fr(d.played)}`)}</span>`;
+    return `<span class="ok">${L('Répertoire suivi jusqu’au bout des fiches ✔', 'Repertoire followed to the end of your lines ✔')}</span>`;
   }
 
   // Résumé du temps sur les parties affichées : défaites au temps, temps moyen par coup et par phase.
   tempsResumeHtml(list) {
     const b = bilanTempsParties(list.filter((g) => !g.local));
     if (!b.avecPendule && !b.perduesTemps) return '';
-    const sec = (x) => `${x.toFixed(1).replace('.', ',')} s`;
-    return `<div class="card temps-resume" data-temps-resume><h3>⏱ Mon temps sur ces ${b.parties} parties</h3>
-      <p><strong>${b.perduesTemps}</strong> perdue(s) au temps${b.gagneesTemps ? ` · ${b.gagneesTemps} gagnée(s) au temps` : ''}.</p>
-      ${b.phases.length ? `<p class="small">Temps moyen par coup : ${b.phases.map((p) => `${esc(p.phase)} <strong>${sec(p.moy)}</strong>`).join(' · ')}</p>` : ''}
-      <p class="muted tiny">Calculé avec les pendules enregistrées par ${esc([...new Set(list.filter((g) => g.clocks).map((g) => g.site))].join(' et ') || 'Lichess / Chess.com')}. Ouvre une partie pour voir où ton temps est parti.</p></div>`;
+    const sec = (x) => `${dec(x.toFixed(1))} s`;
+    return `<div class="card temps-resume" data-temps-resume><h3>${L(`⏱ Mon temps sur ces ${b.parties} parties`, `⏱ My time over these ${b.parties} games`)}</h3>
+      <p><strong>${b.perduesTemps}</strong> ${L('perdue(s) au temps', 'lost on time')}${b.gagneesTemps ? L(` · ${b.gagneesTemps} gagnée(s) au temps`, ` · ${b.gagneesTemps} won on time`) : ''}.</p>
+      ${b.phases.length ? `<p class="small">${L('Temps moyen par coup : ', 'Average time per move: ')}${b.phases.map((p) => `${esc(phaseTxt(p.phase))} <strong>${sec(p.moy)}</strong>`).join(' · ')}</p>` : ''}
+      <p class="muted tiny">${L('Calculé avec les pendules enregistrées par ', 'Calculated from the clocks recorded by ')}${esc([...new Set(list.filter((g) => g.clocks).map((g) => g.site))].join(L(' et ', ' and ')) || 'Lichess / Chess.com')}${L('. Ouvre une partie pour voir où ton temps est parti.', '. Open a game to see where your time went.')}</p></div>`;
   }
 
   // Analyse du temps d'une partie (section du bilan).
   tempsHtml(g, plies) {
     const a = analyseTemps(g, plies);
-    if (!a) return g.finTemps === 'moi' ? '<section class="card temps"><h3>⏱ Mon temps</h3><p>⌛ Partie perdue au temps (pendules non disponibles pour le détail).</p></section>' : '';
-    const sec = (x) => `${x.toFixed(1).replace('.', ',')} s`;
+    if (!a) return g.finTemps === 'moi' ? `<section class="card temps"><h3>${L('⏱ Mon temps', '⏱ My time')}</h3><p>${L('⌛ Partie perdue au temps (pendules non disponibles pour le détail).', '⌛ Game lost on time (clocks not available for details).')}</p></section>` : '';
+    const sec = (x) => `${dec(x.toFixed(1))} s`;
     const max = Math.max(...a.phases.map((p) => p.moy), 1);
     const verdict = a.perduAvecAvantage
-      ? `⌛ <strong>Perdue au temps alors que tu étais mieux</strong> (${esc(formatScore({ type: 'cp', value: a.avantage }))} selon Stockfish à la fin). Le problème n'était pas l'échiquier mais la pendule.`
-      : a.finTemps === 'moi' ? '⌛ <strong>Partie perdue au temps.</strong>' : a.finTemps === 'adversaire' ? 'Ton adversaire a perdu au temps.' : '';
-    return `<section class="card temps" data-temps><h3>⏱ Mon temps</h3>
+      ? L(`⌛ <strong>Perdue au temps alors que tu étais mieux</strong> (${esc(formatScore({ type: 'cp', value: a.avantage }))} selon Stockfish à la fin). Le problème n'était pas l'échiquier mais la pendule.`, `⌛ <strong>Lost on time while you were better</strong> (${esc(formatScore({ type: 'cp', value: a.avantage }))} according to Stockfish at the end). The problem wasn’t the board but the clock.`)
+      : a.finTemps === 'moi' ? L('⌛ <strong>Partie perdue au temps.</strong>', '⌛ <strong>Game lost on time.</strong>') : a.finTemps === 'adversaire' ? L('Ton adversaire a perdu au temps.', 'Your opponent lost on time.') : '';
+    return `<section class="card temps" data-temps><h3>${L('⏱ Mon temps', '⏱ My time')}</h3>
       ${verdict ? `<p>${verdict}</p>` : ''}
-      <p class="small">Cadence ${g.tc.initial >= 60 ? `${Math.round(g.tc.initial / 60)}` : `${g.tc.initial} s `}+${g.tc.increment} · temps moyen par coup <strong>${sec(a.moy)}</strong> · il te restait <strong>${sec(a.resteFin)}</strong> après ton dernier coup.</p>
-      <div class="temps-phases">${a.phases.map((p) => `<div class="temps-ph"><span class="small">${esc(p.phase)}</span><span class="temps-bar"><span style="width:${Math.round((100 * p.moy) / max)}%"></span></span><span class="small"><strong>${sec(p.moy)}</strong> / coup (${p.n})</span></div>`).join('')}</div>
-      <h4>Mes plus longues réflexions</h4>
-      ${a.longs.length ? `<ul>${a.longs.map((m) => `<li><button type="button" class="small-btn" data-temps-ply="${m.i}" data-temps-s="${m.s}" data-temps-reste="${m.reste}">♟ Voir ${moveNo(m.i)} ${fr(m.san)}</button> <strong>${sec(m.s)}</strong>${m.facile ? ' — <span class="warn-text">coup simple</span> : la position n’a presque pas changé (perte &lt; 0,5 pion). Ce temps aurait servi plus tard.' : m.loss != null && m.loss >= 120 ? ' — et le coup était une erreur malgré la réflexion.' : ''}</li>`).join('')}</ul>` : `<p class="small">Aucune réflexion de plus de ${sec(a.seuil)} : bon rythme.</p>`}
-      <p class="muted tiny">Temps tiré des pendules de la partie ; « coup simple » d'après l'analyse Stockfish de la partie.</p>
+      <p class="small">${L('Cadence', 'Time control')} ${g.tc.initial >= 60 ? `${Math.round(g.tc.initial / 60)}` : `${g.tc.initial} s `}+${g.tc.increment} · ${L('temps moyen par coup', 'average time per move')} <strong>${sec(a.moy)}</strong> · ${L('il te restait', 'you had')} <strong>${sec(a.resteFin)}</strong> ${L('après ton dernier coup.', 'left after your last move.')}</p>
+      <div class="temps-phases">${a.phases.map((p) => `<div class="temps-ph"><span class="small">${esc(phaseTxt(p.phase))}</span><span class="temps-bar"><span style="width:${Math.round((100 * p.moy) / max)}%"></span></span><span class="small"><strong>${sec(p.moy)}</strong> ${L('/ coup', '/ move')} (${p.n})</span></div>`).join('')}</div>
+      <h4>${L('Mes plus longues réflexions', 'My longest thinks')}</h4>
+      ${a.longs.length ? `<ul>${a.longs.map((m) => `<li><button type="button" class="small-btn" data-temps-ply="${m.i}" data-temps-s="${m.s}" data-temps-reste="${m.reste}">${L('♟ Voir', '♟ See')} ${moveNo(m.i)} ${fr(m.san)}</button> <strong>${sec(m.s)}</strong>${m.facile ? L(' — <span class="warn-text">coup simple</span> : la position n’a presque pas changé (perte &lt; 0,5 pion). Ce temps aurait servi plus tard.', ' — <span class="warn-text">simple move</span>: the position barely changed (loss &lt; 0.5 pawn). That time would have been useful later.') : m.loss != null && m.loss >= 120 ? L(' — et le coup était une erreur malgré la réflexion.', ' — and the move was a mistake despite the thinking.') : ''}</li>`).join('')}</ul>` : `<p class="small">${L(`Aucune réflexion de plus de ${sec(a.seuil)} : bon rythme.`, `No think longer than ${sec(a.seuil)}: good pace.`)}</p>`}
+      <p class="muted tiny">${L('Temps tiré des pendules de la partie ; « coup simple » d\'après l\'analyse Stockfish de la partie.', 'Times taken from the game’s clocks; “simple move” according to the Stockfish analysis of the game.')}</p>
     </section>`;
   }
 
   listHtml() {
     const list = this.filtered();
     if (!this.games.length) return '';
-    if (!list.length) return '<p class="muted pad">Aucune partie pour cette cadence.</p>';
+    if (!list.length) return `<p class="muted pad">${L('Aucune partie pour cette cadence.', 'No games for this time control.')}</p>`;
     return `${this.tempsResumeHtml(list)}<div class="games-list">${list.map((g) => {
       const opp = g.color === 'w' ? `${g.black} (${g.blackElo ?? '?'})` : `${g.white} (${g.whiteElo ?? '?'})`;
       const done = this.cache[g.id];
       return `<article class="card game-card ${g.id === this.selected ? 'selected' : ''}">
-        <div class="game-top">${g.isNew ? '<span class="badge ok">Nouveau</span> ' : ''}<span class="badge">${esc(g.site)}</span> <span class="badge">${esc(g.speed)}</span>
-          <span class="res ${g.outcome === 'victoire' ? 'ok' : g.outcome === 'défaite' ? 'ko' : ''}">${esc(g.outcome)}</span>${g.finTemps === 'moi' ? ' <span class="badge err" title="Partie perdue au temps">⌛ au temps</span>' : g.finTemps === 'adversaire' ? ' <span class="badge" title="L’adversaire a perdu au temps">⌛ gagnée au temps</span>' : ''}
-          <span class="muted small">${new Date(g.date).toLocaleDateString('fr-FR')}</span></div>
-        <p><span class="dot ${g.color}"></span> ${g.color === 'w' ? 'Blancs' : 'Noirs'} contre <strong>${esc(opp)}</strong> · ${Math.ceil(g.san.length / 2)} coups</p>
+        <div class="game-top">${g.isNew ? `<span class="badge ok">${L('Nouveau', 'New')}</span> ` : ''}<span class="badge">${esc(siteTxt(g.site))}</span> <span class="badge">${esc(L(g.speed, { Rapide: 'Rapid', Classique: 'Classical', Correspondance: 'Correspondence' }[g.speed] || g.speed))}</span>
+          <span class="res ${g.outcome === 'victoire' ? 'ok' : g.outcome === 'défaite' ? 'ko' : ''}">${esc(outcomeTxt(g.outcome))}</span>${g.finTemps === 'moi' ? L(' <span class="badge err" title="Partie perdue au temps">⌛ au temps</span>', ' <span class="badge err" title="Game lost on time">⌛ on time</span>') : g.finTemps === 'adversaire' ? L(' <span class="badge" title="L’adversaire a perdu au temps">⌛ gagnée au temps</span>', ' <span class="badge" title="The opponent lost on time">⌛ won on time</span>') : ''}
+          <span class="muted small">${new Date(g.date).toLocaleDateString(L('fr-FR', 'en-GB'))}</span></div>
+        <p><span class="dot ${g.color}"></span> ${L(`${g.color === 'w' ? 'Blancs' : 'Noirs'} contre <strong>${esc(opp)}</strong> · ${Math.ceil(g.san.length / 2)} coups`, `${g.color === 'w' ? 'White' : 'Black'} against <strong>${esc(opp)}</strong> · ${Math.ceil(g.san.length / 2)} moves`)}</p>
         <p class="small muted">${esc(g.opening)}</p>
         <p class="small">${this.deviationText(g)}</p>
         <div class="actions">
-          <button type="button" class="${done ? '' : 'primary'}" data-analyse="${esc(g.id)}">${done ? 'Voir l’analyse' : 'Analyser'}</button>
-          <button type="button" data-open="${esc(g.id)}">Ouvrir sur l’échiquier</button>
-          ${/^https:\/\//.test(g.url || "") ? `<a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">Sur ${esc(g.site)}</a>` : ''}
+          <button type="button" class="${done ? '' : 'primary'}" data-analyse="${esc(g.id)}">${done ? L('Voir l’analyse', 'See the analysis') : L('Analyser', 'Analyse')}</button>
+          <button type="button" data-open="${esc(g.id)}">${L('Ouvrir sur l’échiquier', 'Open on the board')}</button>
+          ${/^https:\/\//.test(g.url || "") ? `<a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">${L('Sur', 'On')} ${esc(g.site)}</a>` : ''}
         </div>
       </article>`;
     }).join('')}</div>`;
@@ -493,13 +499,13 @@ export class GamesPage {
     const g = this.games.find((x) => x.id === this.selected);
     if (!g) { box.innerHTML = ''; return; }
     const cached = this.cache[g.id];
-    const head = `<h2>Analyse : ${g.color === 'w' ? 'Blancs' : 'Noirs'} contre ${esc(g.color === 'w' ? g.black : g.white)} <span class="muted small">(${esc(g.site)}, ${esc(g.outcome)})</span></h2>`;
+    const head = `<h2>${L(`Analyse : ${g.color === 'w' ? 'Blancs' : 'Noirs'} contre ${esc(g.color === 'w' ? g.black : g.white)}`, `Analysis: ${g.color === 'w' ? 'White' : 'Black'} against ${esc(g.color === 'w' ? g.black : g.white)}`)} <span class="muted small">(${esc(siteTxt(g.site))}, ${esc(outcomeTxt(g.outcome))})</span></h2>`;
     if (!cached) {
       const pc = Math.round((g.progress || 0) * 100);
       box.innerHTML = `<div class="card">${head}
         ${g.error ? `<p class="errbox">${esc(g.error)}</p>` : g.paused
-          ? `<p>Analyse interrompue (le moteur a servi ailleurs). <button type="button" data-resume>Reprendre</button></p>`
-          : `<p class="state"><span class="spinner"></span> Stockfish analyse la partie : ${pc} %</p><div class="progress"><span style="width:${pc}%"></span></div>`}
+          ? `<p>${L('Analyse interrompue (le moteur a servi ailleurs).', 'Analysis paused (the engine was used elsewhere).')} <button type="button" data-resume>${L('Reprendre', 'Resume')}</button></p>`
+          : `<p class="state"><span class="spinner"></span> ${L(`Stockfish analyse la partie : ${pc} %`, `Stockfish is analysing the game: ${pc}%`)}</p><div class="progress"><span style="width:${pc}%"></span></div>`}
         <p class="small">${this.deviationText(g)}</p></div>`;
       box.querySelector('[data-resume]')?.addEventListener('click', () => this.analyse(g));
       return;
@@ -511,22 +517,22 @@ export class GamesPage {
       <p class="small">${this.deviationText(g)}</p>
       ${this.graphHtml(cached.evals, g.color)}
       <div class="analysis-grid">
-        <div><div class="board-wrap" data-review-board></div><p class="small muted" data-review-caption>Touchez un coup pour voir la position (flèche verte : meilleur coup, rouge : coup joué).</p></div>
+        <div><div class="board-wrap" data-review-board></div><p class="small muted" data-review-caption>${L('Touchez un coup pour voir la position (flèche verte : meilleur coup, rouge : coup joué).', 'Tap a move to see the position (green arrow: best move, red: move played).')}</p></div>
         <div>
-          <h3>Bilan</h3>
-          <p class="small">${b.counts.gaffe} gaffe(s) · ${b.counts.erreur} erreur(s) · ${b.counts.imprecision} imprécision(s)${b.avg != null ? ` · perte moyenne ${(b.avg / 100).toFixed(2).replace('.', ',')} pion/coup` : ''}</p>
-          <h3>Moments décisifs</h3>
-          ${b.decisive.length ? `<ul>${b.decisive.map((p) => `<li><button type="button" class="link-btn" data-ply="${p.i}">${line(p)}</button> (${p.mover === g.color ? 'vous' : 'adversaire'}) : ${esc(formatScore({ type: 'cp', value: p.cpBefore }))} → ${esc(formatScore({ type: 'cp', value: p.cpAfter }))}</li>`).join('')}</ul>` : '<p class="small muted">Aucun basculement majeur.</p>'}
-          <h3>Vos erreurs principales</h3>
-          ${b.errors.length ? `<ul>${b.errors.map((p) => `<li><button type="button" class="link-btn" data-ply="${p.i}">${line(p)}</button> — ${esc(p.cls.label)} ; le moteur préférait <strong>${fr(p.bestSan)}</strong> (perte ≈ ${(Math.min(p.loss, 1000) / 100).toFixed(1).replace('.', ',')})</li>`).join('')}</ul>` : '<p class="small muted">Aucune erreur détectée à ce niveau d’analyse.</p>'}
-          <h3>Trois pistes de travail</h3>
+          <h3>${L('Bilan', 'Summary')}</h3>
+          <p class="small">${L(`${b.counts.gaffe} gaffe(s) · ${b.counts.erreur} erreur(s) · ${b.counts.imprecision} imprécision(s)${b.avg != null ? ` · perte moyenne ${(b.avg / 100).toFixed(2).replace('.', ',')} pion/coup` : ''}`, `${b.counts.gaffe} blunder(s) · ${b.counts.erreur} mistake(s) · ${b.counts.imprecision} inaccurac(y/ies)${b.avg != null ? ` · average loss ${(b.avg / 100).toFixed(2)} pawn/move` : ''}`)}</p>
+          <h3>${L('Moments décisifs', 'Decisive moments')}</h3>
+          ${b.decisive.length ? `<ul>${b.decisive.map((p) => `<li><button type="button" class="link-btn" data-ply="${p.i}">${line(p)}</button> (${p.mover === g.color ? L('vous', 'you') : L('adversaire', 'opponent')})${L(' : ', ': ')}${esc(formatScore({ type: 'cp', value: p.cpBefore }))} → ${esc(formatScore({ type: 'cp', value: p.cpAfter }))}</li>`).join('')}</ul>` : `<p class="small muted">${L('Aucun basculement majeur.', 'No major swing.')}</p>`}
+          <h3>${L('Vos erreurs principales', 'Your main mistakes')}</h3>
+          ${b.errors.length ? `<ul>${b.errors.map((p) => `<li><button type="button" class="link-btn" data-ply="${p.i}">${line(p)}</button> — ${esc(p.cls.label)}${L(' ; le moteur préférait ', '; the engine preferred ')}<strong>${fr(p.bestSan)}</strong> (${L('perte', 'loss')} ≈ ${dec((Math.min(p.loss, 1000) / 100).toFixed(1))})</li>`).join('')}</ul>` : `<p class="small muted">${L('Aucune erreur détectée à ce niveau d’analyse.', 'No mistake detected at this analysis depth.')}</p>`}
+          <h3>${L('Trois pistes de travail', 'Three things to work on')}</h3>
           <ol>${b.pistes.map((x) => `<li>${esc(x.text)}</li>`).join('')}</ol>
-          <p class="muted tiny">Pistes déduites des calculs de Stockfish (${this.prefs.precision} ms par position) et des règles, sans IA.</p>
+          <p class="muted tiny">${L(`Pistes déduites des calculs de Stockfish (${this.prefs.precision} ms par position) et des règles, sans IA.`, `Suggestions derived from Stockfish calculations (${this.prefs.precision} ms per position) and the rules, without AI.`)}</p>
         </div>
       </div>
       ${this.tempsHtml(g, plies)}
       ${this.reportHtml(g, plies, b, cached)}
-      <h3>Coups</h3>
+      <h3>${L('Coups', 'Moves')}</h3>
       <p class="moves-annot">${plies.map((p) => `<button type="button" class="m ${p.mover === g.color ? 'mine' : ''} ${p.cls ? 'c-' + p.cls.id : ''}" data-ply="${p.i}">${p.i % 2 === 0 ? `${p.i / 2 + 1}.` : ''}${fr(p.san)}${p.cls && p.mover === g.color ? p.cls.mark : ''}</button>`).join(' ')}</p>
     </div>`;
     const bel = box.querySelector('[data-review-board]');
@@ -549,27 +555,27 @@ export class GamesPage {
   reportHtml(g, plies, b, cached) {
     const r = rapport(g, plies, b, g.deviation, cached.deep || {});
     const at = (i, label) => `<button type="button" class="link-btn" data-ply="${i}">${label}</button>`;
-    const pending = !cached.deep ? '<p class="state small"><span class="spinner"></span> Stockfish approfondit vos erreurs (variantes « ce qui aurait pu se passer »)…</p>' : '';
+    const pending = !cached.deep ? `<p class="state small"><span class="spinner"></span> ${L('Stockfish approfondit vos erreurs (variantes « ce qui aurait pu se passer »)…', 'Stockfish is looking deeper into your mistakes (“what could have happened” lines)…')}</p>` : '';
     return `<section class="card report" data-report>
-      <h3>📝 Rapport détaillé</h3>
+      <h3>${L('📝 Rapport détaillé', '📝 Detailed report')}</h3>
       <p class="report-note ${r.note.ton ? 'note-' + r.note.ton : ''}"><strong>${esc(r.note.titre)}.</strong> ${esc(r.synthese)}</p>
-      <h4>Déroulement</h4>
-      <ul>${r.phases.map((x) => `<li><strong>${esc(x.phase[0].toUpperCase() + x.phase.slice(1))}</strong> : ${esc(x.avis)}${x.coups ? ` <span class="muted">(${x.coups} coups${x.loss != null ? `, perte moyenne ${(x.loss / 100).toFixed(2).replace('.', ',')}` : ''})</span>` : ''}</li>`).join('')}</ul>
-      <h4>✔ Vos bons coups</h4>
-      ${r.bons.length ? `<ul>${r.bons.map((x) => `<li>${at(x.i, '▸')} ${esc(x.text)}</li>`).join('')}</ul>` : '<p class="small muted">Pas de coup marquant détecté (aucune erreur adverse à sanctionner, ou pas de longue série sans faute).</p>'}
-      <h4>✘ Vos erreurs, expliquées</h4>
+      <h4>${L('Déroulement', 'How the game went')}</h4>
+      <ul>${r.phases.map((x) => `<li><strong>${esc(phaseTxt(x.phase)[0].toUpperCase() + phaseTxt(x.phase).slice(1))}</strong>${L(' : ', ': ')}${esc(x.avis)}${x.coups ? ` <span class="muted">(${L(`${x.coups} coups${x.loss != null ? `, perte moyenne ${(x.loss / 100).toFixed(2).replace('.', ',')}` : ''}`, `${x.coups} moves${x.loss != null ? `, average loss ${(x.loss / 100).toFixed(2)}` : ''}`)})</span>` : ''}</li>`).join('')}</ul>
+      <h4>${L('✔ Vos bons coups', '✔ Your good moves')}</h4>
+      ${r.bons.length ? `<ul>${r.bons.map((x) => `<li>${at(x.i, '▸')} ${esc(x.text)}</li>`).join('')}</ul>` : `<p class="small muted">${L('Pas de coup marquant détecté (aucune erreur adverse à sanctionner, ou pas de longue série sans faute).', 'No standout move detected (no opponent mistake to punish, or no long streak without errors).')}</p>`}
+      <h4>${L('✘ Vos erreurs, expliquées', '✘ Your mistakes, explained')}</h4>
       ${pending}
       ${r.erreurs.length ? r.erreurs.map((e) => `<div class="report-err">
-        <p><strong>${at(e.i, esc(e.coup))}</strong> — ${esc(e.cls.label)} (${esc(e.phase)}). Évaluation pour vous : ${esc(e.avant)} → <strong>${esc(e.apres)}</strong> (perte ≈ ${esc(e.perte)} pion${e.perte === '1,0' ? '' : 's'}).</p>
-        ${e.pourquoi.length ? `<p><strong>Pourquoi :</strong> ${esc(e.pourquoi.join(' ; '))}.</p>` : ''}
-        ${e.refutation ? `<p><strong>Ce qui pouvait suivre :</strong> <span class="line">${esc(e.refutation)}</span>${e.refutationEval ? ` → ${esc(e.refutationEval)} pour vous` : ''}.</p>` : ''}
-        <p><strong>Le meilleur coup :</strong> ${esc(e.meilleurCoup)}${e.meilleureLigne ? `, par exemple <span class="line">${esc(e.meilleureLigne)}</span>` : ''} → ${esc(e.meilleureEval)} pour vous${e.gains.length ? ` (${esc(e.gains.join(', '))})` : ''}.</p>
-      </div>`).join('') : '<p class="small muted">Aucune erreur détectée à ce niveau d’analyse. 👏</p>'}
-      ${r.occasions.length ? `<h4>💡 Occasions manquées</h4><ul>${r.occasions.map((x) => `<li>${at(x.i, '▸')} ${esc(x.text)}</li>`).join('')}</ul>` : ''}
-      <h4>🧠 À retenir pour la prochaine partie</h4>
+        <p><strong>${at(e.i, esc(e.coup))}</strong> — ${esc(e.cls.label)} (${esc(phaseTxt(e.phase))}). ${L('Évaluation pour vous : ', 'Evaluation for you: ')}${esc(e.avant)} → <strong>${esc(e.apres)}</strong> (${L(`perte ≈ ${esc(e.perte)} pion${e.perte === '1,0' ? '' : 's'}`, `loss ≈ ${esc(e.perte)} pawn${e.perte === '1.0' ? '' : 's'}`)}).</p>
+        ${e.pourquoi.length ? `<p><strong>${L('Pourquoi :', 'Why:')}</strong> ${esc(e.pourquoi.join(L(' ; ', '; ')))}.</p>` : ''}
+        ${e.refutation ? `<p><strong>${L('Ce qui pouvait suivre :', 'What could follow:')}</strong> <span class="line">${esc(e.refutation)}</span>${e.refutationEval ? ` → ${esc(e.refutationEval)}${L(' pour vous', ' for you')}` : ''}.</p>` : ''}
+        <p><strong>${L('Le meilleur coup :', 'The best move:')}</strong> ${esc(e.meilleurCoup)}${e.meilleureLigne ? `${L(', par exemple ', ', for example ')}<span class="line">${esc(e.meilleureLigne)}</span>` : ''} → ${esc(e.meilleureEval)}${L(' pour vous', ' for you')}${e.gains.length ? ` (${esc(e.gains.join(', '))})` : ''}.</p>
+      </div>`).join('') : `<p class="small muted">${L('Aucune erreur détectée à ce niveau d’analyse. 👏', 'No mistake detected at this analysis depth. 👏')}</p>`}
+      ${r.occasions.length ? `<h4>${L('💡 Occasions manquées', '💡 Missed opportunities')}</h4><ul>${r.occasions.map((x) => `<li>${at(x.i, '▸')} ${esc(x.text)}</li>`).join('')}</ul>` : ''}
+      <h4>${L('🧠 À retenir pour la prochaine partie', '🧠 Remember for your next game')}</h4>
       <ul>${r.aRetenir.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      ${r.exercices.length ? `<h4>🎯 Exercices sur vos positions</h4><ul>${r.exercices.map((x) => `<li><button type="button" class="link-btn" data-exo="${x.i}">${esc(x.text)}</button></li>`).join('')}</ul>` : ''}
-      <p class="muted tiny">Rapport rédigé automatiquement à partir des calculs de Stockfish (évaluations et variantes) et des règles du jeu (chess.js), sans IA. Les variantes sont des calculs du moteur, pas des certitudes sur ce qu’aurait joué votre adversaire.</p>
+      ${r.exercices.length ? `<h4>${L('🎯 Exercices sur vos positions', '🎯 Exercises from your positions')}</h4><ul>${r.exercices.map((x) => `<li><button type="button" class="link-btn" data-exo="${x.i}">${esc(x.text)}</button></li>`).join('')}</ul>` : ''}
+      <p class="muted tiny">${L('Rapport rédigé automatiquement à partir des calculs de Stockfish (évaluations et variantes) et des règles du jeu (chess.js), sans IA. Les variantes sont des calculs du moteur, pas des certitudes sur ce qu’aurait joué votre adversaire.', 'Report written automatically from Stockfish calculations (evaluations and lines) and the rules of the game (chess.js), without AI. The lines are engine calculations, not certainties about what your opponent would have played.')}</p>
     </section>`;
   }
 
@@ -581,7 +587,7 @@ export class GamesPage {
       this.reviewBoard.setPosition(new Chess(p.fenBefore), { lastMove: null });
       this.reviewBoard.setArrows([]);
       const cap = this.el.querySelector('[data-review-caption]');
-      if (cap) cap.innerHTML = `🎯 Exercice : ${p.mover === 'w' ? 'les Blancs' : 'les Noirs'} jouent. Trouvez le meilleur coup, puis touchez <button type="button" class="link-btn" data-sol="${i}">voir la solution</button>.`;
+      if (cap) cap.innerHTML = L(`🎯 Exercice : ${p.mover === 'w' ? 'les Blancs' : 'les Noirs'} jouent. Trouvez le meilleur coup, puis touchez <button type="button" class="link-btn" data-sol="${i}">voir la solution</button>.`, `🎯 Exercise: ${p.mover === 'w' ? 'White' : 'Black'} to play. Find the best move, then tap <button type="button" class="link-btn" data-sol="${i}">show the solution</button>.`);
       cap?.querySelector('[data-sol]')?.addEventListener('click', () => this.showPly(g, plies, i));
       return;
     }
@@ -591,16 +597,16 @@ export class GamesPage {
     this.reviewBoard.setArrows(arrows);
     const cap = this.el.querySelector('[data-review-caption]');
     if (cap) {
-      cap.innerHTML = `Avant ${moveNo(i)} ${fr(p.san)} (${p.mover === g.color ? 'vous' : 'adversaire'}) : évaluation ${esc(formatScore({ type: 'cp', value: p.cpBefore }))}`
-        + (p.bestSan ? ` · meilleur coup : <strong>${fr(p.bestSan)}</strong>` : ' · coup joué = meilleur coup du moteur')
+      cap.innerHTML = L(`Avant ${moveNo(i)} ${fr(p.san)} (${p.mover === g.color ? 'vous' : 'adversaire'}) : évaluation ${esc(formatScore({ type: 'cp', value: p.cpBefore }))}`, `Before ${moveNo(i)} ${fr(p.san)} (${p.mover === g.color ? 'you' : 'opponent'}): evaluation ${esc(formatScore({ type: 'cp', value: p.cpBefore }))}`)
+        + (p.bestSan ? L(` · meilleur coup : <strong>${fr(p.bestSan)}</strong>`, ` · best move: <strong>${fr(p.bestSan)}</strong>`) : L(' · coup joué = meilleur coup du moteur', ' · move played = engine’s best move'))
         + (p.cls ? ` · <strong>${esc(p.cls.label)}</strong>` : '');
       if (temps) {
-        const sec = (x) => `${x.toFixed(1).replace('.', ',')} s`;
+        const sec = (x) => `${dec(x.toFixed(1))} s`;
         // Pendule avant le coup = pendule après le coup + temps passé − incrément.
         const avant = temps.reste + temps.s - (g.tc?.increment || 0);
-        cap.innerHTML = `<span class="temps-cap">⏱ <strong>Tu as réfléchi ${sec(temps.s)} ici</strong> (il te restait ${sec(Math.max(0, avant))} avant ce coup). Flèche rouge : ton coup ; verte : celui du moteur.</span><br>${cap.innerHTML}`
-          + (this.openLine ? `<br><button type="button" class="small-btn" data-temps-moteur>▶ Analyser cette position sur l’échiquier</button>` : '');
-        cap.querySelector('[data-temps-moteur]')?.addEventListener('click', () => this.openLine(g.san.slice(0, i), g.color, `ta partie contre ${g.color === 'w' ? g.black : g.white}, avant ${moveNo(i)} ${sanFr(p.san)}`));
+        cap.innerHTML = `<span class="temps-cap">${L(`⏱ <strong>Tu as réfléchi ${sec(temps.s)} ici</strong> (il te restait ${sec(Math.max(0, avant))} avant ce coup). Flèche rouge : ton coup ; verte : celui du moteur.`, `⏱ <strong>You thought for ${sec(temps.s)} here</strong> (you had ${sec(Math.max(0, avant))} left before this move). Red arrow: your move; green: the engine’s.`)}</span><br>${cap.innerHTML}`
+          + (this.openLine ? `<br><button type="button" class="small-btn" data-temps-moteur>${L('▶ Analyser cette position sur l’échiquier', '▶ Analyse this position on the board')}</button>` : '');
+        cap.querySelector('[data-temps-moteur]')?.addEventListener('click', () => this.openLine(g.san.slice(0, i), g.color, L(`ta partie contre ${g.color === 'w' ? g.black : g.white}, avant ${moveNo(i)} ${sanFr(p.san)}`, `your game against ${g.color === 'w' ? g.black : g.white}, before ${moveNo(i)} ${sanFr(p.san)}`)));
       }
     }
     this.el.querySelectorAll('.moves-annot .m').forEach((b) => b.classList.toggle('current', Number(b.dataset.ply) === i));
@@ -612,10 +618,10 @@ export class GamesPage {
       const v = Math.max(-500, Math.min(500, e?.cp ?? 0));
       return `${((i / Math.max(1, evals.length - 1)) * w).toFixed(1)},${(h / 2 - (v / 500) * (h / 2 - 4)).toFixed(1)}`;
     }).join(' ');
-    return `<svg class="eval-graph" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="Courbe d’évaluation (au-dessus : avantage Blancs)">
+    return `<svg class="eval-graph" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="${L('Courbe d’évaluation (au-dessus : avantage Blancs)', 'Evaluation graph (above: White advantage)')}">
       <rect x="0" y="0" width="${w}" height="${h / 2}" class="g-white"/><rect x="0" y="${h / 2}" width="${w}" height="${h / 2}" class="g-black"/>
       <polyline points="${pts}" class="g-line"/></svg>
-      <p class="muted tiny">Courbe d’évaluation Stockfish (haut : avantage Blancs, bas : avantage Noirs) — vous avez les ${color === 'w' ? 'Blancs' : 'Noirs'}.</p>`;
+      <p class="muted tiny">${L(`Courbe d’évaluation Stockfish (haut : avantage Blancs, bas : avantage Noirs) — vous avez les ${color === 'w' ? 'Blancs' : 'Noirs'}.`, `Stockfish evaluation graph (top: White advantage, bottom: Black advantage) — you have ${color === 'w' ? 'White' : 'Black'}.`)}</p>`;
   }
 
   // Bandeau Lichess : connecté (pseudo, se déconnecter) ou bouton de connexion.
@@ -624,10 +630,10 @@ export class GamesPage {
     const msg = this.authMsg ? `<p class="small ${this.authMsg.startsWith('✔') ? 'ok-text' : 'error-text'}" data-lichess-msg>${esc(this.authMsg)}</p>` : '';
     if (tok) {
       const qui = this.prefs.lichessConnecte || this.prefs.lichess;
-      return `<div class="lichess-auth ok" data-lichess-auth>✔ Lichess connecté${qui ? ` : <strong>${esc(qui)}</strong>` : ''} <button type="button" class="link-btn" data-lichess-logout>Se déconnecter</button>${msg}</div>`;
+      return `<div class="lichess-auth ok" data-lichess-auth>${L('✔ Lichess connecté', '✔ Lichess connected')}${qui ? `${L(' : ', ': ')}<strong>${esc(qui)}</strong>` : ''} <button type="button" class="link-btn" data-lichess-logout>${L('Se déconnecter', 'Log out')}</button>${msg}</div>`;
     }
-    return `<div class="lichess-auth" data-lichess-auth><button type="button" class="primary" data-lichess-login>♞ Se connecter avec Lichess</button>
-      <p class="muted small">Nécessaire pour charger tes parties Lichess. Connexion officielle sur lichess.org : ton mot de passe n’est jamais vu par l’appli.</p>${msg}</div>`;
+    return `<div class="lichess-auth" data-lichess-auth><button type="button" class="primary" data-lichess-login>${L('♞ Se connecter avec Lichess', '♞ Log in with Lichess')}</button>
+      <p class="muted small">${L('Nécessaire pour charger tes parties Lichess. Connexion officielle sur lichess.org : ton mot de passe n’est jamais vu par l’appli.', 'Required to load your Lichess games. Official login on lichess.org: your password is never seen by the app.')}</p>${msg}</div>`;
   }
 
   bind() {
@@ -637,7 +643,7 @@ export class GamesPage {
       this.setToken('');
       delete this.prefs.lichessConnecte;
       save(PREFS, this.prefs);
-      this.authMsg = 'Déconnecté de Lichess sur cet appareil.';
+      this.authMsg = L('Déconnecté de Lichess sur cet appareil.', 'Logged out of Lichess on this device.');
       this.render();
     });
     this.el.querySelectorAll('[data-p]').forEach((inp) => inp.addEventListener('change', () => {
@@ -659,7 +665,7 @@ export class GamesPage {
     this.el.querySelector('[data-pgn-go]')?.addEventListener('click', () => this.pastePgn());
     this.el.querySelector('[data-pgn-line]')?.addEventListener('click', () => {
       const a = this.pgnAlert;
-      if (a?.ligne) this.openLine?.(a.ligne, a.color, a.bouton === 'Voir la réfutation' ? 'la réfutation de la fiche' : 'le coup de la fiche');
+      if (a?.ligne) this.openLine?.(a.ligne, a.color, a.bouton === L('Voir la réfutation', 'Show the refutation') ? L('la réfutation de la fiche', 'the line’s refutation') : L('le coup de la fiche', 'the line’s move'));
     });
     this.el.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => {
       const g = this.games.find((x) => x.id === b.dataset.open);

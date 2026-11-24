@@ -6,7 +6,17 @@ import { START_FEN } from './lines.js';
 import { buildTree, key } from './training-core.js';
 import { piecesEnDanger } from './explain-free.js';
 import { sanFr } from './analysis.js';
+import { langue } from './i18n.js';
 import { REPERTOIRES, couleurDe } from '../data/repertoires/meta.js';
+
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+// Nombre décimal produit par le code : virgule en français, point en anglais.
+const dec = (x) => (langue() === 'en' ? x : x.replace('.', ','));
+// Noms affichés des phases et des résultats (les valeurs françaises restent les clés internes).
+const PHASES_EN = { ouverture: 'opening', 'milieu de partie': 'middlegame', finale: 'endgame', 'répertoire': 'repertoire' };
+export const phaseTxt = (ph) => L(ph, PHASES_EN[ph] || ph);
+const OUTCOMES_EN = { victoire: 'win', 'défaite': 'loss', nulle: 'draw', 'en cours': 'in progress', inconnu: 'unknown' };
+export const outcomeTxt = (o) => L(o, OUTCOMES_EN[o] || o);
 
 const SPEED_FR = { ultraBullet: 'UltraBullet', bullet: 'Bullet', blitz: 'Blitz', rapid: 'Rapide', classical: 'Classique', correspondence: 'Correspondance', daily: 'Correspondance' };
 
@@ -182,8 +192,8 @@ export function localGame({ san, color, result = '*', white, black, opening = ''
   for (const ch of san.join(' ')) h = (Math.imul(h, 31) + ch.charCodeAt(0)) | 0;
   return {
     site: 'Échiquier', id: `moteur-${san.length}-${(h >>> 0).toString(36)}`, url: null, local: true,
-    date: new Date().toISOString(), speed: 'Partie de l’échiquier', rated: false, color,
-    white: white || (color === 'w' ? 'Moi' : 'Adversaire'), black: black || (color === 'b' ? 'Moi' : 'Adversaire'),
+    date: new Date().toISOString(), speed: L('Partie de l’échiquier', 'Board game'), rated: false, color,
+    white: white || (color === 'w' ? L('Moi', 'Me') : L('Adversaire', 'Opponent')), black: black || (color === 'b' ? L('Moi', 'Me') : L('Adversaire', 'Opponent')),
     whiteElo: null, blackElo: null, result, outcome: result === '*' ? 'en cours' : resultFor(result, color), opening, san: san.slice(),
   };
 }
@@ -220,7 +230,7 @@ export function repertoireDeviation(game, entries, reps = null) {
     if (best.rep === null || d.ply > best.ply) best = d;
   }
   if (best.who === 'moi' && best.ply === 1 && game.color === 'b') {
-    best.note = `Votre répertoire (${REPERTOIRES[best.rep]?.titre || best.rep}) prévoit ${best.expected.map(sanFr).join(' ou ')} ici.`;
+    best.note = L(`Votre répertoire (${REPERTOIRES[best.rep]?.titre || best.rep}) prévoit ${best.expected.map(sanFr).join(' ou ')} ici.`, `Your repertoire (${REPERTOIRES[best.rep]?.titre || best.rep}) expects ${best.expected.map(sanFr).join(' or ')} here.`);
   }
   return best;
 }
@@ -234,7 +244,7 @@ function deviationDans(game, tree, rep) {
     const mv = c.move(game.san[i]);
     if (mover === game.color) {
       const book = tree.ours.get(k);
-      if (!book) return { rep, who: 'fin', ply: i, note: 'Fin de la théorie des fiches.' };
+      if (!book) return { rep, who: 'fin', ply: i, note: L('Fin de la théorie des fiches.', 'End of the theory in your lines.') };
       const trap = tree.traps.get(k);
       if (trap && trap.uci === mv.lan) return { rep, who: 'moi', ply: i, played: mv.san, expected: [...book.keys()].map((u) => sanOf(path, u)), trap };
       if (!book.has(mv.lan)) {
@@ -276,25 +286,25 @@ export function alertePgn(game, d) {
     return out;
   };
   const coup = (ply, san) => `${moveNo(ply)} ${sanFr(san)}`;
-  if (!d?.rep) return { niveau: 'info', texte: 'Partie hors de votre répertoire (Gambit Dame avec les Blancs, Caro-Kann avec les Noirs) : rien à comparer.', ligne: null };
+  if (!d?.rep) return { niveau: 'info', texte: L('Partie hors de votre répertoire (Gambit Dame avec les Blancs, Caro-Kann avec les Noirs) : rien à comparer.', 'Game outside your repertoire (Queen’s Gambit with White, Caro-Kann with Black): nothing to compare.'), ligne: null };
   const err = d.err;
   if ((d.who === 'adversaire-erreur' || (d.who === 'adversaire' && err)) && err) {
     const ligne = toSan(game.san.slice(0, d.ply + 1), err.suite || []);
     const puni = d.who === 'adversaire-erreur' && d.punished;
     return {
       niveau: puni ? 'ok' : 'warn',
-      texte: `Au coup ${coup(d.ply, d.played)}, l’adversaire a joué une déviation connue (fiche « ${err.nom} ») ! ${puni ? 'Vous l’avez punie ✔' : `Elle se punit : ${err.texte}`}`,
-      ligne, bouton: 'Voir la réfutation',
+      texte: L(`Au coup ${coup(d.ply, d.played)}, l’adversaire a joué une déviation connue (fiche « ${err.nom} ») ! ${puni ? 'Vous l’avez punie ✔' : `Elle se punit : ${err.texte}`}`, `On move ${coup(d.ply, d.played)}, your opponent played a known deviation (line “${err.nom}”)! ${puni ? 'You punished it ✔' : `It can be punished: ${err.texte}`}`),
+      ligne, bouton: L('Voir la réfutation', 'Show the refutation'),
     };
   }
-  if (d.who === 'adversaire') return { niveau: 'info', texte: `Au coup ${coup(d.ply, d.played)}, l’adversaire quitte vos fiches avec un coup qu’elles ne couvrent pas : à partir d’ici, c’est le moteur qui juge.`, ligne: null };
+  if (d.who === 'adversaire') return { niveau: 'info', texte: L(`Au coup ${coup(d.ply, d.played)}, l’adversaire quitte vos fiches avec un coup qu’elles ne couvrent pas : à partir d’ici, c’est le moteur qui juge.`, `On move ${coup(d.ply, d.played)}, your opponent leaves your lines with a move they don’t cover: from here on, the engine is the judge.`), ligne: null };
   if (d.who === 'moi') {
-    const attendu = (d.expected || []).map(sanFr).join(' ou ');
+    const attendu = (d.expected || []).map(sanFr).join(L(' ou ', ' or '));
     const ligne = d.expected?.length ? (() => { const c = new Chess(); try { const l = game.san.slice(0, d.ply).map((s) => c.move(s).san); l.push(c.move(d.expected[0]).san); return l; } catch { return null; } })() : null;
-    if (d.trap) return { niveau: 'warn', texte: `Au coup ${coup(d.ply, d.played)}, vous êtes tombé dans le piège de la fiche « ${d.trap.nom} » : ${d.trap.texte}`, ligne, bouton: 'Voir le bon coup' };
-    return { niveau: 'warn', texte: `Au coup ${coup(d.ply, d.played)}, vous sortez de la théorie de vos fiches : le coup prévu était ${attendu}.${d.note ? ` ${d.note}` : ''}`, ligne, bouton: 'Voir le coup de la fiche' };
+    if (d.trap) return { niveau: 'warn', texte: L(`Au coup ${coup(d.ply, d.played)}, vous êtes tombé dans le piège de la fiche « ${d.trap.nom} » : ${d.trap.texte}`, `On move ${coup(d.ply, d.played)}, you fell into the trap of the line “${d.trap.nom}”: ${d.trap.texte}`), ligne, bouton: L('Voir le bon coup', 'Show the right move') };
+    return { niveau: 'warn', texte: L(`Au coup ${coup(d.ply, d.played)}, vous sortez de la théorie de vos fiches : le coup prévu était ${attendu}.${d.note ? ` ${d.note}` : ''}`, `On move ${coup(d.ply, d.played)}, you leave the theory of your lines: the planned move was ${attendu}.${d.note ? ` ${d.note}` : ''}`), ligne, bouton: L('Voir le coup de la fiche', 'Show the line’s move') };
   }
-  return { niveau: 'ok', texte: 'Vous avez suivi vos fiches jusqu’au bout ✔', ligne: null };
+  return { niveau: 'ok', texte: L('Vous avez suivi vos fiches jusqu’au bout ✔', 'You followed your lines to the end ✔'), ligne: null };
 }
 
 // Variante (fiche) jouée dans une vraie partie : la fiche de mes répertoires choisis, de ma couleur,
@@ -363,9 +373,9 @@ export function whiteCp(score, turn) {
 }
 
 export const CLASSES = [
-  { min: 300, id: 'gaffe', label: 'Gaffe', mark: '??' },
-  { min: 120, id: 'erreur', label: 'Erreur', mark: '?' },
-  { min: 50, id: 'imprecision', label: 'Imprécision', mark: '?!' },
+  { min: 300, id: 'gaffe', label: L('Gaffe', 'Blunder'), mark: '??' },
+  { min: 120, id: 'erreur', label: L('Erreur', 'Mistake'), mark: '?' },
+  { min: 50, id: 'imprecision', label: L('Imprécision', 'Inaccuracy'), mark: '?!' },
 ];
 export const classify = (loss) => CLASSES.find((c) => loss >= c.min) || null;
 
@@ -414,26 +424,26 @@ export function bilan(game, plies, deviation) {
   const count = (id) => mine.filter((p) => p.cls?.id === id).length;
   const pistes = [];
   if (deviation?.who === 'moi' && deviation.expected?.length) {
-    pistes.push({ id: 'repertoire', text: `Revoir l’ouverture : au coup ${moveNo(deviation.ply)} vous avez joué ${sanFr(deviation.played)}, votre répertoire prévoit ${deviation.expected.map(sanFr).join(' ou ')}${deviation.fiche ? ` (par exemple fiche « ${deviation.fiche.nom} »)` : ''}. Le mode Entraînement permet de le répéter.` });
+    pistes.push({ id: 'repertoire', text: L(`Revoir l’ouverture : au coup ${moveNo(deviation.ply)} vous avez joué ${sanFr(deviation.played)}, votre répertoire prévoit ${deviation.expected.map(sanFr).join(' ou ')}${deviation.fiche ? ` (par exemple fiche « ${deviation.fiche.nom} »)` : ''}. Le mode Entraînement permet de le répéter.`, `Review the opening: on move ${moveNo(deviation.ply)} you played ${sanFr(deviation.played)}, your repertoire expects ${deviation.expected.map(sanFr).join(' or ')}${deviation.fiche ? ` (for example line “${deviation.fiche.nom}”)` : ''}. Training mode lets you drill it.`) });
   } else if (deviation?.who === 'adversaire-erreur' && !deviation.punished) {
-    pistes.push({ id: 'punition', text: `L’adversaire a commis une erreur connue au coup ${moveNo(deviation.ply)} (${sanFr(deviation.played)}) : la punition était ${sanFr(deviation.expected[0])} (fiche « ${deviation.err.nom} »).` });
+    pistes.push({ id: 'punition', text: L(`L’adversaire a commis une erreur connue au coup ${moveNo(deviation.ply)} (${sanFr(deviation.played)}) : la punition était ${sanFr(deviation.expected[0])} (fiche « ${deviation.err.nom} »).`, `Your opponent made a known mistake on move ${moveNo(deviation.ply)} (${sanFr(deviation.played)}): the punishment was ${sanFr(deviation.expected[0])} (line “${deviation.err.nom}”).`) });
   }
   const hangingBlunder = errors.find((p) => p.cls.id === 'gaffe' && p.hanging?.length);
   if (hangingBlunder) {
-    pistes.push({ id: 'pieces', text: `Vérifier les pièces en prise avant chaque coup : après ${moveNo(hangingBlunder.i)} ${sanFr(hangingBlunder.san)}, la ou les pièces en ${hangingBlunder.hanging.map((h) => h.square).join(', ')} étaient mal protégées (le moteur préférait ${sanFr(hangingBlunder.bestSan)}).` });
+    pistes.push({ id: 'pieces', text: L(`Vérifier les pièces en prise avant chaque coup : après ${moveNo(hangingBlunder.i)} ${sanFr(hangingBlunder.san)}, la ou les pièces en ${hangingBlunder.hanging.map((h) => h.square).join(', ')} étaient mal protégées (le moteur préférait ${sanFr(hangingBlunder.bestSan)}).`, `Check for hanging pieces before every move: after ${moveNo(hangingBlunder.i)} ${sanFr(hangingBlunder.san)}, the piece(s) on ${hangingBlunder.hanging.map((h) => h.square).join(', ')} were poorly protected (the engine preferred ${sanFr(hangingBlunder.bestSan)}).`) });
   }
   const missed = theirs.filter((p) => p.cls?.id === 'gaffe').map((p) => plies[p.i + 1]).find((n) => n && n.mover === game.color && n.loss >= 150);
   if (missed) {
-    pistes.push({ id: 'occasion', text: `Saisir les cadeaux : au coup ${moveNo(missed.i)}, après une gaffe adverse, ${sanFr(missed.bestSan)} gardait un net avantage ; vous avez joué ${sanFr(missed.san)} (perte ≈ ${(Math.min(missed.loss, 1000) / 100).toFixed(1).replace('.', ',')}).` });
+    pistes.push({ id: 'occasion', text: L(`Saisir les cadeaux : au coup ${moveNo(missed.i)}, après une gaffe adverse, ${sanFr(missed.bestSan)} gardait un net avantage ; vous avez joué ${sanFr(missed.san)} (perte ≈ ${(Math.min(missed.loss, 1000) / 100).toFixed(1).replace('.', ',')}).`, `Take the gifts: on move ${moveNo(missed.i)}, after an opponent’s blunder, ${sanFr(missed.bestSan)} kept a clear advantage; you played ${sanFr(missed.san)} (loss ≈ ${(Math.min(missed.loss, 1000) / 100).toFixed(1)}).`) });
   }
   const byPhase = {};
   for (const p of errors) byPhase[p.phase] = (byPhase[p.phase] || 0) + p.loss;
   const worst = Object.entries(byPhase).sort((a, b) => b[1] - a[1])[0];
   if (worst && pistes.length < 3) {
-    pistes.push({ id: 'phase', text: `Phase la plus coûteuse : ${worst[0]} (${errors.filter((p) => p.phase === worst[0]).length} faute(s)).` });
+    pistes.push({ id: 'phase', text: L(`Phase la plus coûteuse : ${worst[0]} (${errors.filter((p) => p.phase === worst[0]).length} faute(s)).`, `Costliest phase: ${phaseTxt(worst[0])} (${errors.filter((p) => p.phase === worst[0]).length} error(s)).`) });
   }
   if (pistes.length < 3 && avg != null) {
-    pistes.push({ id: 'precision', text: `Précision : perte moyenne de ${(avg / 100).toFixed(2).replace('.', ',')} pion par coup ; ${count('gaffe')} gaffe(s), ${count('erreur')} erreur(s), ${count('imprecision')} imprécision(s).` });
+    pistes.push({ id: 'precision', text: L(`Précision : perte moyenne de ${(avg / 100).toFixed(2).replace('.', ',')} pion par coup ; ${count('gaffe')} gaffe(s), ${count('erreur')} erreur(s), ${count('imprecision')} imprécision(s).`, `Accuracy: average loss of ${(avg / 100).toFixed(2)} pawn per move; ${count('gaffe')} blunder(s), ${count('erreur')} mistake(s), ${count('imprecision')} inaccurac(y/ies).`) });
   }
   return { errors: errors.slice(0, 3), decisive, avg, counts: { gaffe: count('gaffe'), erreur: count('erreur'), imprecision: count('imprecision') }, pistes: pistes.slice(0, 3) };
 }
@@ -443,16 +453,16 @@ export function bilan(game, plies, deviation) {
 // vérifications de chess.js (matériel, pièces en prise, fourchettes, échecs). Sans IA.
 
 const VAL = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-const NOM = { p: 'pion', n: 'Cavalier', b: 'Fou', r: 'Tour', q: 'Dame', k: 'Roi' };
-const LE = { p: 'le pion', n: 'le Cavalier', b: 'le Fou', r: 'la Tour', q: 'la Dame', k: 'le Roi' };
+const NOM = L({ p: 'pion', n: 'Cavalier', b: 'Fou', r: 'Tour', q: 'Dame', k: 'Roi' }, { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' });
+const LE = L({ p: 'le pion', n: 'le Cavalier', b: 'le Fou', r: 'la Tour', q: 'la Dame', k: 'le Roi' }, { p: 'the pawn', n: 'the knight', b: 'the bishop', r: 'the rook', q: 'the queen', k: 'the king' });
 const toMv = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
 
 // Évaluation (centipions côté Blancs) → texte du point de vue de `color`.
 export function pourVous(cpWhite, color) {
   if (cpWhite == null) return '?';
   const v = color === 'w' ? cpWhite : -cpWhite;
-  if (Math.abs(v) >= 1000) return v > 0 ? 'gagnant (mat en vue)' : 'perdant (mat en vue)';
-  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${(Math.abs(v) / 100).toFixed(1).replace('.', ',')}`;
+  if (Math.abs(v) >= 1000) return v > 0 ? L('gagnant (mat en vue)', 'winning (mate in sight)') : L('perdant (mat en vue)', 'losing (mate in sight)');
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${dec((Math.abs(v) / 100).toFixed(1))}`;
 }
 
 // Variante UCI rejouée et convertie en SAN (tronquée au premier coup illégal).
@@ -504,14 +514,14 @@ export function motifs(fen, sans, color) {
 }
 
 const RAPPELS = {
-  'en-prise': 'Avant de jouer, vérifiez chaque pièce : est-elle attaquée ? est-elle défendue ? (une pièce non défendue est une cible)',
-  fourchette: 'Repérez les cases de fourchette des Cavaliers et de la Dame adverses avant de placer deux pièces sur des cases attaquables ensemble.',
-  mat: 'Quand le Roi est exposé, cherchez d’abord les échecs adverses (échecs, prises, menaces : dans cet ordre).',
-  'materiel-perdu': 'Calculez la réponse forcée de l’adversaire (prises et échecs) avant de jouer un coup qui semble actif.',
-  occasion: 'Après chaque coup adverse, demandez-vous : « qu’est-ce qui a changé ? une pièce ne se défend plus ? un échec est possible ? »',
-  repertoire: 'Révisez la ligne de votre répertoire (Entraînement → Révision espacée) jusqu’au coup où vous en êtes sorti.',
-  finale: 'En finale, activez le Roi et comptez les tempos des pions passés avant de vous lancer.',
-  ouverture: 'Dans l’ouverture : développez, roquez, ne bougez pas deux fois la même pièce sans raison.',
+  'en-prise': L('Avant de jouer, vérifiez chaque pièce : est-elle attaquée ? est-elle défendue ? (une pièce non défendue est une cible)', 'Before moving, check every piece: is it attacked? is it defended? (an undefended piece is a target)'),
+  fourchette: L('Repérez les cases de fourchette des Cavaliers et de la Dame adverses avant de placer deux pièces sur des cases attaquables ensemble.', 'Spot the fork squares of the opponent’s knights and queen before putting two pieces on squares that can be attacked together.'),
+  mat: L('Quand le Roi est exposé, cherchez d’abord les échecs adverses (échecs, prises, menaces : dans cet ordre).', 'When the king is exposed, look for the opponent’s checks first (checks, captures, threats: in that order).'),
+  'materiel-perdu': L('Calculez la réponse forcée de l’adversaire (prises et échecs) avant de jouer un coup qui semble actif.', 'Calculate the opponent’s forcing replies (captures and checks) before playing a move that looks active.'),
+  occasion: L('Après chaque coup adverse, demandez-vous : « qu’est-ce qui a changé ? une pièce ne se défend plus ? un échec est possible ? »', 'After each opponent’s move, ask yourself: “what has changed? is a piece no longer defended? is a check possible?”'),
+  repertoire: L('Révisez la ligne de votre répertoire (Entraînement → Révision espacée) jusqu’au coup où vous en êtes sorti.', 'Review the line of your repertoire (Training → Spaced repetition) up to the move where you left it.'),
+  finale: L('En finale, activez le Roi et comptez les tempos des pions passés avant de vous lancer.', 'In the endgame, activate the king and count the tempi of passed pawns before committing.'),
+  ouverture: L('Dans l’ouverture : développez, roquez, ne bougez pas deux fois la même pièce sans raison.', 'In the opening: develop, castle, don’t move the same piece twice without a reason.'),
 };
 
 // `deep[i]` (facultatif) : { best: { pv, cp }, played: { pv, cp } } — variantes de Stockfish
@@ -524,13 +534,13 @@ export function rapport(game, plies, b, deviation, deep = {}) {
   const precision = nMine ? Math.round((100 * exact) / nMine) : null;
   const avg = b.avg;
   let note;
-  if (avg == null) note = { titre: 'Analyse incomplète', ton: '' };
-  else if (avg <= 25 && !b.counts.gaffe) note = { titre: 'Très bonne partie', ton: 'ok' };
-  else if (avg <= 50 && b.counts.gaffe <= 1) note = { titre: 'Bonne partie', ton: 'ok' };
-  else if (avg <= 100) note = { titre: 'Partie correcte, avec des moments à revoir', ton: '' };
-  else note = { titre: 'Partie difficile', ton: 'ko' };
-  const resultat = { victoire: 'Vous avez gagné', défaite: 'Vous avez perdu', nulle: 'Partie nulle', 'en cours': 'Partie non terminée' }[game.outcome] || 'Résultat inconnu';
-  const synthese = `${resultat}. ${nMine} coups analysés : ${exact} sans faute (${precision ?? '?'} %), ${b.counts.imprecision} imprécision(s), ${b.counts.erreur} erreur(s), ${b.counts.gaffe} gaffe(s)${avg != null ? ` ; perte moyenne ${(avg / 100).toFixed(2).replace('.', ',')} pion par coup` : ''}.`;
+  if (avg == null) note = { titre: L('Analyse incomplète', 'Incomplete analysis'), ton: '' };
+  else if (avg <= 25 && !b.counts.gaffe) note = { titre: L('Très bonne partie', 'Very good game'), ton: 'ok' };
+  else if (avg <= 50 && b.counts.gaffe <= 1) note = { titre: L('Bonne partie', 'Good game'), ton: 'ok' };
+  else if (avg <= 100) note = { titre: L('Partie correcte, avec des moments à revoir', 'Decent game, with moments to review'), ton: '' };
+  else note = { titre: L('Partie difficile', 'Tough game'), ton: 'ko' };
+  const resultat = L({ victoire: 'Vous avez gagné', défaite: 'Vous avez perdu', nulle: 'Partie nulle', 'en cours': 'Partie non terminée' }, { victoire: 'You won', défaite: 'You lost', nulle: 'Draw', 'en cours': 'Game not finished' })[game.outcome] || L('Résultat inconnu', 'Unknown result');
+  const synthese = L(`${resultat}. ${nMine} coups analysés : ${exact} sans faute (${precision ?? '?'} %), ${b.counts.imprecision} imprécision(s), ${b.counts.erreur} erreur(s), ${b.counts.gaffe} gaffe(s)${avg != null ? ` ; perte moyenne ${(avg / 100).toFixed(2).replace('.', ',')} pion par coup` : ''}.`, `${resultat}. ${nMine} moves analysed: ${exact} without error (${precision ?? '?'}%), ${b.counts.imprecision} inaccurac(y/ies), ${b.counts.erreur} mistake(s), ${b.counts.gaffe} blunder(s)${avg != null ? `; average loss ${(avg / 100).toFixed(2)} pawn per move` : ''}.`);
 
   // Phases : où la partie s'est jouée.
   const phases = ['ouverture', 'milieu de partie', 'finale'].map((ph) => {
@@ -538,24 +548,24 @@ export function rapport(game, plies, b, deviation, deep = {}) {
     if (!ps.length) return null;
     const err = ps.filter((p) => p.cls && p.cls.id !== 'imprecision').length;
     const loss = Math.round(ps.reduce((a, p) => a + Math.min(p.loss, 1000), 0) / ps.length);
-    const avis = err === 0 && loss <= 40 ? 'solide' : err === 0 ? 'quelques imprécisions' : err === 1 ? 'une faute qui a coûté' : `${err} fautes`;
+    const avis = err === 0 && loss <= 40 ? L('solide', 'solid') : err === 0 ? L('quelques imprécisions', 'a few inaccuracies') : err === 1 ? L('une faute qui a coûté', 'one costly error') : L(`${err} fautes`, `${err} errors`);
     return { phase: ph, coups: ps.length, avis, loss };
   }).filter(Boolean);
-  if (deviation?.who === 'moi' && deviation.expected) phases.unshift({ phase: 'répertoire', avis: `sorti au coup ${moveNo(deviation.ply)} (${sanFr(deviation.played)} au lieu de ${deviation.expected.map(sanFr).join(' ou ')})` });
-  else if (deviation?.who === 'aucun' || deviation?.who === 'fin' || deviation?.who === 'adversaire') phases.unshift({ phase: 'répertoire', avis: 'suivi jusqu’à la sortie des fiches ✔' });
+  if (deviation?.who === 'moi' && deviation.expected) phases.unshift({ phase: 'répertoire', avis: L(`sorti au coup ${moveNo(deviation.ply)} (${sanFr(deviation.played)} au lieu de ${deviation.expected.map(sanFr).join(' ou ')})`, `left on move ${moveNo(deviation.ply)} (${sanFr(deviation.played)} instead of ${deviation.expected.map(sanFr).join(' or ')})`) });
+  else if (deviation?.who === 'aucun' || deviation?.who === 'fin' || deviation?.who === 'adversaire') phases.unshift({ phase: 'répertoire', avis: L('suivi jusqu’à la sortie des fiches ✔', 'followed to the end of your lines ✔') });
 
   // Bons coups : erreurs adverses sanctionnées, plus longue série de coups exacts.
   const bons = [];
   for (const p of plies) {
     if (p.mover === color || !p.cls || p.cls.id === 'imprecision') continue;
     const r = plies[p.i + 1];
-    if (r && r.mover === color && r.cpBefore != null && !r.cls) bons.push({ i: r.i, text: `${moveNo(r.i)} ${sanFr(r.san)} : bonne réponse à l’${p.cls.label.toLowerCase()} adverse ${moveNo(p.i)} ${sanFr(p.san)} (évaluation ${pourVous(r.cpAfter, color)} pour vous).` });
+    if (r && r.mover === color && r.cpBefore != null && !r.cls) bons.push({ i: r.i, text: L(`${moveNo(r.i)} ${sanFr(r.san)} : bonne réponse à l’${p.cls.label.toLowerCase()} adverse ${moveNo(p.i)} ${sanFr(p.san)} (évaluation ${pourVous(r.cpAfter, color)} pour vous).`, `${moveNo(r.i)} ${sanFr(r.san)}: good answer to the opponent’s ${p.cls.label.toLowerCase()} ${moveNo(p.i)} ${sanFr(p.san)} (evaluation ${pourVous(r.cpAfter, color)} for you).`) });
   }
   let run = 0; let best = { len: 0, end: -1 };
   for (const p of mine) { run = p.cls ? 0 : run + 1; if (run > best.len) best = { len: run, end: p.i }; }
   if (best.len >= 6) {
     const start = mine[mine.findIndex((p) => p.i === best.end) - best.len + 1];
-    bons.push({ i: start.i, text: `Série de ${best.len} coups sans faute, de ${moveNo(start.i)} à ${moveNo(best.end)}.` });
+    bons.push({ i: start.i, text: L(`Série de ${best.len} coups sans faute, de ${moveNo(start.i)} à ${moveNo(best.end)}.`, `Streak of ${best.len} moves without error, from ${moveNo(start.i)} to ${moveNo(best.end)}.`) });
   }
 
   // Erreurs détaillées : ce qui a été joué, pourquoi c'était faux, ce que donnait le meilleur coup.
@@ -568,27 +578,27 @@ export function rapport(game, plies, b, deviation, deep = {}) {
     const pourquoi = [];
     if (p.hanging?.length) {
       const h = p.hanging[0];
-      pourquoi.push(`${LE[h.type]} en ${h.square} reste ${h.defended ? 'insuffisamment protégé' : 'sans défense'}`);
+      pourquoi.push(L(`${LE[h.type]} en ${h.square} reste ${h.defended ? 'insuffisamment protégé' : 'sans défense'}`, `${LE[h.type]} on ${h.square} is left ${h.defended ? 'insufficiently protected' : 'undefended'}`));
       themes.add('en-prise');
     }
     for (const m of motifs(p.fenAfter, refut, color)) {
-      if (m.id === 'fourchette' && m.qui === 'adv') { pourquoi.push(`l’adversaire dispose d’une fourchette (${sanFr(m.san)} attaque ${m.cibles.map((x) => `${NOM[x.type]} ${x.square}`).join(' et ')})`); themes.add('fourchette'); }
-      if (m.id === 'mat' && m.qui === 'adv') { pourquoi.push('le Roi peut être maté'); themes.add('mat'); }
-      if (m.id === 'materiel-perdu') { pourquoi.push(`la suite fait perdre environ ${m.n} point(s) de matériel`); themes.add('materiel-perdu'); }
+      if (m.id === 'fourchette' && m.qui === 'adv') { pourquoi.push(L(`l’adversaire dispose d’une fourchette (${sanFr(m.san)} attaque ${m.cibles.map((x) => `${NOM[x.type]} ${x.square}`).join(' et ')})`, `the opponent has a fork (${sanFr(m.san)} attacks ${m.cibles.map((x) => `${NOM[x.type]} ${x.square}`).join(' and ')})`)); themes.add('fourchette'); }
+      if (m.id === 'mat' && m.qui === 'adv') { pourquoi.push(L('le Roi peut être maté', 'the king can be mated')); themes.add('mat'); }
+      if (m.id === 'materiel-perdu') { pourquoi.push(L(`la suite fait perdre environ ${m.n} point(s) de matériel`, `the continuation loses about ${m.n} point(s) of material`)); themes.add('materiel-perdu'); }
     }
     // Un mat possible prime sur le reste : c'est la vraie raison de l'erreur.
-    if (pourquoi.some((x) => x.includes('maté'))) pourquoi.splice(0, pourquoi.length, 'le Roi peut être maté');
+    if (pourquoi.some((x) => x.includes(L('maté', 'mated')))) pourquoi.splice(0, pourquoi.length, L('le Roi peut être maté', 'the king can be mated'));
     const gains = meilleur.length ? motifs(fenBefore, meilleur, color).filter((m) => m.qui === 'moi' || m.id === 'materiel-gagne') : [];
     return {
       i: p.i, cls: p.cls, coup: `${moveNo(p.i)} ${sanFr(p.san)}`, phase: p.phase,
-      avant: pourVous(p.cpBefore, color), apres: pourVous(p.cpAfter, color), perte: (Math.min(p.loss, 1000) / 100).toFixed(1).replace('.', ','),
+      avant: pourVous(p.cpBefore, color), apres: pourVous(p.cpAfter, color), perte: dec((Math.min(p.loss, 1000) / 100).toFixed(1)),
       pourquoi,
       refutation: refut.length ? lineText(p.fenAfter, refut) : null,
       refutationEval: d.played?.cp != null ? pourVous(d.played.cp, color) : null,
       meilleurCoup: sanFr(p.bestSan),
       meilleureLigne: meilleur.length ? lineText(fenBefore, meilleur) : null,
       meilleureEval: d.best?.cp != null ? pourVous(d.best.cp, color) : pourVous(p.cpBefore, color),
-      gains: gains.map((m) => (m.id === 'fourchette' ? `fourchette ${sanFr(m.san)}` : m.id === 'mat' ? `mat (${sanFr(m.san)})` : `gain d’environ ${m.n} point(s) de matériel`)),
+      gains: gains.map((m) => (m.id === 'fourchette' ? L(`fourchette ${sanFr(m.san)}`, `fork ${sanFr(m.san)}`) : m.id === 'mat' ? L(`mat (${sanFr(m.san)})`, `mate (${sanFr(m.san)})`) : L(`gain d’environ ${m.n} point(s) de matériel`, `gain of about ${m.n} point(s) of material`))),
     };
   });
 
@@ -598,7 +608,7 @@ export function rapport(game, plies, b, deviation, deep = {}) {
     if (p.mover === color || p.cls?.id !== 'gaffe') continue;
     const r = plies[p.i + 1];
     if (r && r.mover === color && r.cls && r.loss >= 150 && !b.errors.includes(r)) {
-      occasions.push({ i: r.i, text: `Après ${moveNo(p.i)} ${sanFr(p.san)}?? de l’adversaire, ${sanFr(r.bestSan)} gardait l’avantage (${pourVous(r.cpBefore, color)}) ; ${sanFr(r.san)} l’a laissé passer (${pourVous(r.cpAfter, color)}).` });
+      occasions.push({ i: r.i, text: L(`Après ${moveNo(p.i)} ${sanFr(p.san)}?? de l’adversaire, ${sanFr(r.bestSan)} gardait l’avantage (${pourVous(r.cpBefore, color)}) ; ${sanFr(r.san)} l’a laissé passer (${pourVous(r.cpAfter, color)}).`, `After the opponent’s ${moveNo(p.i)} ${sanFr(p.san)}??, ${sanFr(r.bestSan)} kept the advantage (${pourVous(r.cpBefore, color)}); ${sanFr(r.san)} let it slip (${pourVous(r.cpAfter, color)}).`) });
       themes.add('occasion');
     }
   }
@@ -608,8 +618,8 @@ export function rapport(game, plies, b, deviation, deep = {}) {
   if (pire && pire.loss > 60 && (pire.phase === 'finale' || pire.phase === 'ouverture')) themes.add(pire.phase);
 
   const aRetenir = [...themes].map((t) => RAPPELS[t]).filter(Boolean).slice(0, 5);
-  if (!aRetenir.length) aRetenir.push('Rien de grave : continuez à vérifier les menaces adverses à chaque coup, c’est ce qui a fonctionné ici.');
-  const exercices = erreurs.map((e) => ({ i: e.i, text: `Position avant ${e.coup} : retrouvez ${e.meilleurCoup} (sans regarder la solution).` }));
+  if (!aRetenir.length) aRetenir.push(L('Rien de grave : continuez à vérifier les menaces adverses à chaque coup, c’est ce qui a fonctionné ici.', 'Nothing serious: keep checking the opponent’s threats on every move, that’s what worked here.'));
+  const exercices = erreurs.map((e) => ({ i: e.i, text: L(`Position avant ${e.coup} : retrouvez ${e.meilleurCoup} (sans regarder la solution).`, `Position before ${e.coup}: find ${e.meilleurCoup} (without looking at the solution).`) }));
   return { note, synthese, precision, phases, bons: bons.slice(0, 5), erreurs, occasions: occasions.slice(0, 2), aRetenir, exercices };
 }
 
