@@ -35,11 +35,24 @@ const PGN_BODY = (pgn) => String(pgn).replace(/^\s*(\[[^\]]*\]\s*)+/, '');
 
 export const TRANSPO_PLIES = 16;
 
-// Seuls les répertoires marqués `elite` (repertoires/meta.js) sont collectés.
-export function buildRepertoireIndex(lines = LIGNES.filter((e) => REPERTOIRES[e.rep]?.elite)) {
+// Seuls les répertoires marqués `elite` (repertoires/meta.js) sont collectés ; `ids` restreint la
+// liste (tests unitaires écrits pour deux ouvertures : configurerRepertoires(['gd', 'ck'])).
+let REPS = null;
+export function configurerRepertoires(ids = null) {
+  REPS = ids;
+  defaultIndex = null;
+  prefixCache.clear();
+}
+const repActif = (rep) => !!REPERTOIRES[rep]?.elite && (!REPS || REPS.includes(rep));
+export function buildRepertoireIndex(lines = LIGNES.filter((e) => repActif(e.rep))) {
   const index = new Map();
-  const add = (fen, rep) => { const k = fenKey(fen); if (!index.has(k)) index.set(k, rep); };
-  for (const [rep, root] of Object.entries(ROOTS)) {
+  // Une position peut appartenir à plusieurs ouvertures (1.d4 : Londres et Gambit Dame…).
+  const add = (fen, rep) => {
+    const k = fenKey(fen);
+    const a = index.get(k);
+    if (!a) index.set(k, [rep]); else if (!a.includes(rep)) a.push(rep);
+  };
+  for (const [rep, root] of Object.entries(ROOTS).filter(([r]) => repActif(r))) {
     const c = new Chess();
     root.forEach((m) => c.move(m));
     add(c.fen(), rep);
@@ -58,6 +71,8 @@ let defaultIndex = null;
 export const repertoireIndex = () => (defaultIndex ??= buildRepertoireIndex());
 
 // Première position de l'arbre atteinte : { rep, ply } (ply = demi-coups joués avant elle), ou null.
+// L'ouverture retenue est la plus précise rencontrée dans les TRANSPO_PLIES premiers demi-coups :
+// racine la plus longue (1.d4 d5 2.c4 → Gambit Dame plutôt que Londres 1.d4), puis la première vue.
 // Les coups illisibles ou illégaux arrêtent la recherche. Les débuts de partie se répètent
 // énormément : la clé FEN de chaque préfixe de coups est mise en cache (la génération de FEN par
 // chess.js coûte ≈ 0,05 ms par coup, × 16 demi-coups × des dizaines de milliers de parties).
@@ -66,6 +81,13 @@ const CACHE_MAX = 300000;
 export function repertoireEntry(san, { index = repertoireIndex(), maxPlies = TRANSPO_PLIES } = {}) {
   const moves = [];
   let c = null;
+  let first = null;
+  const vus = [];
+  const choisir = () => {
+    if (first === null) return null;
+    const best = vus.reduce((a, r) => ((ROOTS[r]?.length ?? 0) > (ROOTS[a]?.length ?? 0) ? r : a), vus[0]);
+    return { rep: best, ply: first };
+  };
   for (let ply = 0; ply <= maxPlies; ply++) {
     const prefix = moves.join(' ');
     let key = prefixCache.get(prefix);
@@ -78,18 +100,21 @@ export function repertoireEntry(san, { index = repertoireIndex(), maxPlies = TRA
       if (prefixCache.size >= CACHE_MAX) prefixCache.clear();
       prefixCache.set(prefix, key);
     }
-    if (key === null) return null;
-    const rep = index.get(key);
-    if (rep) return { rep, ply };
+    if (key === null) return choisir();
+    const reps = index.get(key);
+    if (reps) {
+      if (first === null) first = ply;
+      for (const r of reps) if (!vus.includes(r)) vus.push(r);
+    }
     const m = san[ply];
-    if (!m) return null;
+    if (!m) return choisir();
     const mv = String(m).replace(/[!?]+$/, '');
     if (c) {
-      try { c.move(mv); } catch { return null; }
+      try { c.move(mv); } catch { return choisir(); }
     }
     moves.push(mv);
   }
-  return null;
+  return choisir();
 }
 
 // Entrée d'une partie normalisée (champs rp/e posés à la collecte ; recalculés pour un état ancien).
@@ -101,13 +126,23 @@ export function entryOf(g, opts) {
 // Règle de couleur : le camp de notre répertoire (Blancs pour le Gambit Dame, Noirs pour la
 // Caro-Kann) est-il tenu par un joueur du top ou suivi ? Plateformes : un propriétaire de la partie
 // (clé « li:pseudo:cadence ») joue ce camp ; tournois : joueur suivi (nom usuel) ou Elo ≥ minElo.
-export function campDuTop(g, { minElo = 2600 } = {}) {
-  const ent = entryOf(g);
-  if (!ent) return false;
-  const side = couleurDe(ent.rep) || 'w';
+export function campTenu(g, side, { minElo = 2600 } = {}) {
   if (g.p === 'bc') return !!g[`${side}n`] || (Number.isFinite(g[`${side}r`]) && g[`${side}r`] >= minElo);
   const name = String(g[side] ?? '').toLowerCase();
   return (g.o || []).some((k) => k.split(':')[1] === name);
+}
+
+export function campDuTop(g, opts = {}) {
+  const ent = entryOf(g);
+  if (!ent) return false;
+  return campTenu(g, couleurDe(ent.rep) || 'w', opts);
+}
+
+// Plusieurs répertoires partagent des positions avec des camps opposés (Gambit Dame avec les
+// Blancs, GD refusé avec les Noirs) : on note les DEUX camps. Bits : 1 = Blancs tenus par un joueur
+// du top (ou suivi, ou 2600+ en tournoi), 2 = Noirs. 0 = aucun.
+export function campsDuTop(g, opts = {}) {
+  return (campTenu(g, 'w', opts) ? 1 : 0) | (campTenu(g, 'b', opts) ? 2 : 0);
 }
 
 // Le début de partie atteint-il le répertoire ? (filtre avant l'analyse complète de la partie)
@@ -194,10 +229,12 @@ export function aggregate(games, { plies = 24, minPositionGames = 2, samples = 3
       let pos = positions.get(key);
       if (!pos) { pos = { moves: new Map(), samples: [] }; positions.set(key, pos); }
       let m = pos.moves.get(mv.san);
-      if (!m) { m = { w: 0, d: 0, b: 0, eloSum: 0, eloN: 0, li: 0, cc: 0, bc: 0, cw: 0, cd: 0, cb: 0 }; pos.moves.set(mv.san, m); }
+      if (!m) { m = { w: 0, d: 0, b: 0, eloSum: 0, eloN: 0, li: 0, cc: 0, bc: 0, cw: 0, cd: 0, cb: 0, kw: 0, kd: 0, kb: 0 }; pos.moves.set(mv.san, m); }
       const r = g.r === '1-0' ? 'w' : g.r === '0-1' ? 'b' : 'd';
       m[r]++;
-      if (g.c) m[`c${r}`]++;
+      // c : bits des camps tenus par le top (1 = Blancs → colonnes c*, 2 = Noirs → colonnes k*).
+      if (g.c & 1) m[`c${r}`]++;
+      if (g.c & 2) m[`k${r}`]++;
       const elo = mv.color === 'w' ? g.wr : g.br;
       if (Number.isFinite(elo)) { m.eloSum += elo; m.eloN++; }
       m[g.p]++;
@@ -224,9 +261,10 @@ export function compact(agg, minPositionGames = agg.minPositionGames) {
   };
   let dropped = 0;
   for (const [key, pos] of agg.positions) {
-    // Colonnes de la règle de couleur seulement si non nulles (format plus court).
+    // Colonnes de la règle de couleur seulement si non nulles (format plus court) : camp Blancs
+    // (top avec les Blancs) puis camp Noirs.
     const moves = [...pos.moves].map(([san, m]) => [san, m.w, m.d, m.b, m.eloN ? Math.round(m.eloSum / m.eloN) : null, m.li, m.cc, m.bc,
-      ...(m.cw + m.cd + m.cb ? [m.cw, m.cd, m.cb] : [])]);
+      ...(m.cw + m.cd + m.cb + m.kw + m.kd + m.kb ? [m.cw, m.cd, m.cb, m.kw, m.kd, m.kb] : [])]);
     const total = moves.reduce((a, m) => a + m[1] + m[2] + m[3], 0);
     if (total < minPositionGames) { dropped++; continue; }
     moves.sort((a, b) => (b[1] + b[2] + b[3]) - (a[1] + a[2] + a[3]) || (a[0] < b[0] ? -1 : 1));
@@ -242,7 +280,7 @@ export function compact(agg, minPositionGames = agg.minPositionGames) {
 
 // Ensemble des parties gardées, comptées par plateforme et par répertoire.
 export function countGames(games) {
-  const out = { li: 0, cc: 0, bc: 0, ...Object.fromEntries(Object.keys(ROOTS).map((id) => [id, 0])) };
+  const out = { li: 0, cc: 0, bc: 0, ...Object.fromEntries(Object.keys(ROOTS).filter(repActif).map((id) => [id, 0])) };
   for (const g of games) {
     out[g.p]++;
     const ent = entryOf(g);

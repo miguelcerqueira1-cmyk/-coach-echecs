@@ -96,7 +96,7 @@ export class OptimalPanel {
     // Élite : fichier statique publié avec le site (aucun jeton, aucune requête Lichess).
     this.loadEliteData().then((r) => {
       if (isStale()) return;
-      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen, { camp: !!loadSettings().eliteCamp }), meta: r.data.meta, source: r.source } : r;
+      this.elite = r.status === 'ok' ? { ...lookupElite(r.data, fen, { camp: !!loadSettings().eliteCamp, side: game.playerColor || 'w' }), meta: r.data.meta, source: r.source } : r;
       this.render();
     });
 

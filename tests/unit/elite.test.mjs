@@ -12,6 +12,12 @@ import {
 import { parseArgs, fixtureName, Http, run, buildDataset, DEFAULTS, LICHESS_OVERLAP_MS } from '../../scripts/elite.mjs';
 import { fenKey, lookupElite, repertoireOfSan, gameInfo, eliteSummary, absentText, splitText, hasCamp } from '../../site/js/elite.js';
 
+import { configurerRepertoires, campsDuTop } from '../../scripts/elite-core.mjs';
+
+// Ces tests ont été écrits pour les deux premières ouvertures collectées : on restreint l'arbre
+// à Gambit Dame + Caro-Kann (la collecte réelle couvre toutes les ouvertures, voir plus bas).
+configurerRepertoires(['gd', 'ck']);
+
 const FIXTURE = new URL('../fixtures/elite/', import.meta.url).pathname;
 const fenAfter = (san) => { const c = new Chess(); san.forEach((m) => c.move(m)); return c.fen(); };
 const li = (id, moves, extra = {}) => ({
@@ -24,9 +30,11 @@ test('clé de position sans compteurs, racines du répertoire', () => {
   assert.equal(fenKey('rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1'), 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq -');
   assert.equal(repertoireOfSan(['d4', 'd5', 'c4', 'e6']), 'gd');
   assert.equal(repertoireOfSan(['e4', 'c6']), 'ck');
-  assert.equal(repertoireOfSan(['d4', 'Nf6', 'c4']), null);
-  assert.equal(repertoireOfSan(['c4', 'd5', 'd4']), null, 'ordre de coups littéral (1.d4 d5 2.c4)');
-  assert.equal(repertoireOfSan(['e4', 'e5']), null);
+  // Toutes les ouvertures sont collectées : la racine la plus longue l'emporte.
+  assert.equal(repertoireOfSan(['d4', 'Nf6', 'c4']), 'londres', '1.d4 seul : Londres');
+  assert.equal(repertoireOfSan(['d4', 'Nf6', 'c4', 'e6', 'g3']), 'catalane');
+  assert.equal(repertoireOfSan(['c4', 'd5', 'd4']), 'anglaise', 'ordre de coups littéral (1.d4 d5 2.c4)');
+  assert.equal(repertoireOfSan(['b3', 'e5']), null);
 });
 
 test('premiers coups d’un PGN Chess.com (horloges, numéros 1...)', () => {
@@ -155,7 +163,7 @@ test('règle de couleur : joueur du top dans notre camp (Blancs au GD, Noirs en 
   ];
   const c = compact(aggregate(games, { plies: 10, minPositionGames: 1, samples: 3 }));
   const qg = fenAfter(['d4', 'd5', 'c4']);
-  assert.deepEqual(c.positions[fenKey(qg)].m, [['e6', 1, 1, 1, 2800, 1, 2, 0, 1, 0, 1], ['c6', 0, 0, 1, 2800, 1, 0, 0]]);
+  assert.deepEqual(c.positions[fenKey(qg)].m, [['e6', 1, 1, 1, 2800, 1, 2, 0, 1, 0, 1, 0, 0, 0], ['c6', 0, 0, 1, 2800, 1, 0, 0]]);
   assert.deepEqual(c.games.filter((g) => g.c).map((g) => g.id).sort(), ['g1', 'g2']);
   // Lecture côté site.
   const data = { meta: { filters: { plies: 10, minPositionGames: 1, camp: 'oui' } }, positions: c.positions, games: c.games };
@@ -637,4 +645,28 @@ test('transpositions : collecte et agrégation à partir de l’entrée dans le 
   // État ancien sans rp/e : entrée recalculée.
   const old = { ...game('li', 'x', 'c4 e6 Nc3 d5 d4 Nf6 Bg5', '1-0') };
   assert.equal(aggregate([old], { plies: 10, minPositionGames: 1 }).games.length, 1);
+});
+
+test('règle de couleur, toutes les ouvertures : deux camps notés séparément (GD Blancs, GD refusé Noirs)', () => {
+  // Même position, camps opposés : top avec les Blancs (bit 1), top avec les Noirs (bit 2), les deux (3).
+  const blanc = { ...game('li', 'h1', 'd4 d5 c4 e6 Nc3', '1-0'), w: 'TopA', b: 'Adv', o: ['li:topa:blitz'] };
+  const noir = { ...game('li', 'h2', 'd4 d5 c4 e6 Nf3', '0-1'), w: 'Adv', b: 'TopB', o: ['li:topb:blitz'] };
+  const deux = { ...game('bc', 'h3', 'd4 d5 c4 e6 Nf3', '1/2-1/2', 2700, 2650) };
+  assert.equal(campsDuTop(blanc), 1);
+  assert.equal(campsDuTop(noir), 2);
+  assert.equal(campsDuTop(deux), 3);
+  const games = [blanc, noir, deux].map((g) => ({ ...g, c: campsDuTop(g) }));
+  const c = compact(aggregate(games, { plies: 10, minPositionGames: 1, samples: 3 }));
+  const qg = fenAfter(['d4', 'd5', 'c4']);
+  assert.deepEqual(c.positions[fenKey(qg)].m, [['e6', 1, 1, 1, 2750, 2, 0, 1, 1, 1, 0, 0, 1, 1]]);
+  const data = { meta: { version: 3, filters: { plies: 10, minPositionGames: 1, camp: 'oui' } }, positions: c.positions, games: c.games };
+  const nf3 = fenAfter(['d4', 'd5', 'c4', 'e6']);
+  const w = lookupElite(data, nf3, { camp: true, side: 'w' });
+  const b = lookupElite(data, nf3, { camp: true, side: 'b' });
+  assert.equal(w.total, 2, 'camp Blancs : h1 (1-0) et h3 (nulle)');
+  assert.equal(b.total, 2, 'camp Noirs : h2 (0-1) et h3 (nulle)');
+  assert.deepEqual([w.stats.white, w.stats.draws, w.stats.black], [50, 50, 0], 'pourcentages');
+  assert.deepEqual([b.stats.white, b.stats.draws, b.stats.black], [0, 50, 50], 'pourcentages');
+  assert.ok(w.games.every((g) => ['h1', 'h3'].includes(g.id)));
+  assert.ok(b.games.every((g) => ['h2', 'h3'].includes(g.id)));
 });

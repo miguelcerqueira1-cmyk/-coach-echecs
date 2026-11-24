@@ -121,7 +121,7 @@ test('Élite : colonne Statistiques et arbre du Répertoire (présente, absente,
   await tree.locator(`[data-child="${r.top.uci}"]`).click();
   await expect.poll(() => page.evaluate(() => window.__coach.repertoire.tree.path.length)).toBe(4);
   await tree.locator('[data-crumb="0"]').click();
-  await expect(tree.locator('.elite-absent')).toContainText('il ne couvre que les positions du répertoire');
+  await expect(tree.locator('.elite-absent')).toContainText('il ne couvre que les positions des ouvertures du répertoire');
 
   // Partie exemple : la partie en cours est vide → ouverte sans confirmation sur le Moteur.
   await page.evaluate(() => window.__coach.repertoire.openTree(['d2d4', 'd7d5', 'c2c4']));
@@ -194,7 +194,9 @@ test('Élite : « Nouvelles parties » du Répertoire ouvrables sur l’échiqui
   await setup(page, { live: dataset });
   await page.goto('./#/repertoire');
   const data = JSON.parse(dataset);
-  const recent = recentInfo(data);
+  // Seules les parties des ouvertures choisies (ici Gambit Dame et Caro-Kann) sont listées.
+  const recent = recentInfo(data).filter((g) => ['gd', 'ck'].includes(g.rep));
+  expect(recent.length).toBeGreaterThan(1);
   const live = page.locator('#rep-live');
   await expect(live.locator('.live-list li')).toHaveCount(recent.length);
   const first = live.locator('.live-list li').first();

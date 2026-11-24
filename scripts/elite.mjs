@@ -39,13 +39,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import {
   normalizeLichess, normalizeChessCom, parseNdjson, aggregate, compact, countGames,
-  emptyState, ownerKey, campDuTop, recordDownload, pruneState, stateGames, recentGames, publicGame, MONTH_MS,
+  emptyState, ownerKey, campsDuTop, recordDownload, pruneState, stateGames, recentGames, publicGame, MONTH_MS,
   splitPgn, pgnHeaders, normalizeBroadcast, keepBroadcast, keepTour, FIDE_TC,
 } from './elite-core.mjs';
 import { SUIVIS, verifyAccount, lichessProfile, chessComProfile, suiviByName } from './elite-suivis.mjs';
 import { nameMatches, displayFideName, normalizeName } from '../site/js/joueurs.js';
 import { buildEcoIndex, classify } from '../site/js/lines.js';
 import { Chess } from '../site/vendor/chess.js';
+import { ROOTS } from '../site/js/elite.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_URL = process.env.GITHUB_REPOSITORY
@@ -58,7 +59,7 @@ export const LICHESS_OVERLAP_MS = 3600000;
 
 export const DEFAULTS = {
   top: 50, perfs: ['blitz', 'rapid'], maxGames: 100, months: 3, plies: 24, minPosition: 2, samples: 3, recent: 10,
-  maxBytes: 1500000, sources: ['li', 'cc', 'bc'], maxGamesSuivis: 200, bcMonths: 6, bcMinElo: 2600, bcTier: 5, bcPages: 9, joueurs: null, maxIndexBytes: 2000000, out: 'site/data/elite.json', state: null, incremental: null, fixture: null, record: null, now: null,
+  maxBytes: 3000000, sources: ['li', 'cc', 'bc'], maxGamesSuivis: 200, bcMonths: 6, bcMinElo: 2600, bcTier: 5, bcPages: 9, joueurs: null, maxIndexBytes: 2000000, out: 'site/data/elite.json', state: null, incremental: null, fixture: null, record: null, now: null,
 };
 
 export function parseArgs(argv) {
@@ -530,7 +531,7 @@ export function buildPlayersIndex(games, state, { now = Date.now(), opening = ()
 
 export function buildDataset({ state, sources, o, run = {}, now = Date.now() }) {
   const games = withCanonicalNames(stateGames(state), state)
-    .map((g) => (campDuTop(g, { minElo: o.bcMinElo }) ? { ...g, c: 1 } : g));
+    .map((g) => { const c = campsDuTop(g, { minElo: o.bcMinElo }); return c ? { ...g, c } : g; });
   const agg = aggregate(games, { plies: o.plies, minPositionGames: o.minPosition, samples: o.samples });
   const counts = countGames(agg.games);
   for (const [k, s] of Object.entries(sources)) if (k in counts) s.gamesKept = counts[k];
@@ -539,19 +540,19 @@ export function buildDataset({ state, sources, o, run = {}, now = Date.now() }) 
     const c = compact(agg, min);
     return {
       meta: {
-        version: 2,
+        version: 3, // 3 : colonnes de la règle de couleur pour les deux camps, toutes les ouvertures
         generatedAt: new Date(now).toISOString(),
         description: 'Fréquences observées dans les parties récentes des meilleurs joueurs en ligne (blitz/rapide), de grands maîtres suivis et des tournois retransmis ; pas une évaluation moteur.',
         filters: {
-          gd: '1.d4 d5 2.c4 (Gambit Dame, Blancs)', ck: '1.e4 c6 (Caro-Kann, Noirs)', rated: true, speeds: o.perfs,
+          repertoires: Object.keys(ROOTS), rated: true, speeds: o.perfs,
           top: o.top, maxGamesPerPlayerPerSpeed: o.maxGames, maxGamesFollowed: o.maxGamesSuivis, months: o.months, plies: o.plies,
           minPositionGames: min, samplesPerPosition: o.samples,
           broadcasts: { months: o.bcMonths, minElo: o.bcMinElo, tier: o.bcTier },
-          camp: 'Blancs (Gambit Dame) ou Noirs (Caro-Kann) tenus par un joueur du top, un joueur suivi ou, en tournoi, un joueur à minElo+',
+          camp: 'Camp (Blancs ou Noirs) tenu par un joueur du top, un joueur suivi ou, en tournoi, un joueur à minElo+ ; colonnes séparées pour chaque camp',
         },
         run,
         sources,
-        games: { total: agg.games.length, li: counts.li, cc: counts.cc, bc: counts.bc, gd: counts.gd, ck: counts.ck, camp: agg.games.filter((g) => g.c).length },
+        games: { ...counts, total: agg.games.length, camp: agg.games.filter((g) => g.c).length },
         positions: Object.keys(c.positions).length,
         positionsDropped: c.dropped,
         players: playersOf(state),

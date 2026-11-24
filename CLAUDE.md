@@ -395,8 +395,14 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 - Sorties de répertoire (`repertoireDeviation(game, entries, reps)`) : candidats = répertoires
   choisis de la couleur jouée (Blancs : 1er coup du répertoire ; Noirs : réponse prévue au 1er coup
   adverse) ; le répertoire suivi le plus loin l'emporte (ex. Gambit Dame et Londres après 1.d4).
-- Élite : collecte limitée aux répertoires `elite: true` (gd, ck) ; ailleurs « données Élite pas
-  encore collectées pour cette ouverture ».
+- Élite : **toutes les ouvertures depuis le 2026-11-24** (`elite: true` partout dans meta.js).
+  Format 3 de elite.json : une position peut appartenir à plusieurs ouvertures (index FEN → liste) ;
+  ouverture d'une partie = la plus précise atteinte dans les 16 premiers demi-coups (racine la plus
+  longue) ; règle de couleur pour les DEUX camps (`c` = bits 1 Blancs / 2 Noirs tenus par le top,
+  colonnes [cw,cd,cb,kw,kd,kb]) ; `lookupElite(..., { camp, side })` avec la couleur du répertoire
+  (fiche / arbre) ou de la partie (Moteur) ; fichiers v2 encore lus (un seul camp). maxBytes 3 Mo.
+  Tests unitaires anciens restreints à gd + ck (`configurerRepertoires`). Après publication :
+  collecte complète (`elite.yml`, mode complet) pour remplir les nouvelles ouvertures.
 - **Ajouter des fiches à un répertoire** : écrire dans `site/data/repertoires/<id>.js` (même format
   que gd.js : id unique préfixé, `rep: '<id>'`, famille, nom, badge, ligne SAN anglaise, plan,
   structure, punition/piège `{ ligne avec « ? » sur le coup fautif, texte }`, cases, echanger,

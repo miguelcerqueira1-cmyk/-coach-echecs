@@ -30,11 +30,13 @@ export function fenKey(fen) {
 }
 
 // Répertoire atteint par une suite de coups SAN (null si hors répertoire).
+// Racine la plus longue (1.d4 Cf6 2.c4 e6 3.g3 → Catalane plutôt que Londres 1.d4).
 export function repertoireOfSan(san) {
+  let best = null;
   for (const [rep, root] of Object.entries(ROOTS)) {
-    if (root.every((m, i) => san[i] === m)) return rep;
+    if (root.every((m, i) => san[i] === m) && (!best || root.length > ROOTS[best].length)) best = rep;
   }
-  return null;
+  return best;
 }
 
 export function gameUrl(g) {
@@ -64,9 +66,13 @@ export function gameInfo(g) {
 export const hasCamp = (data) => !!data?.meta?.filters?.camp;
 
 // Statistiques Élite d'une position. Chaque coup est revalidé par chess.js.
-// camp : règle de couleur, seules les parties où le joueur du top tient notre camp (Blancs pour le
-// Gambit Dame, Noirs pour la Caro-Kann) ; la répartition par plateforme n'est alors pas connue.
-export function lookupElite(data, fen, { camp = false } = {}) {
+// camp : règle de couleur, seules les parties où le joueur du top tient notre camp (`side` : 'w' ou
+// 'b', couleur du répertoire ou de la partie) ; la répartition par plateforme n'est alors pas connue.
+// Format 3 : colonnes séparées camp Blancs / camp Noirs et bits `c` (1 Blancs, 2 Noirs) ; avant, un
+// seul camp (celui du répertoire Gambit Dame / Caro-Kann).
+export function lookupElite(data, fen, { camp = false, side = 'w' } = {}) {
+  const v3 = (data?.meta?.version || 0) >= 3;
+  const bit = side === 'b' ? 2 : 1;
   if (camp && !hasCamp(data)) return { status: 'nocamp' };
   const pos = data?.positions?.[fenKey(fen)];
   if (!pos) return { status: 'absent', camp };
@@ -74,8 +80,8 @@ export function lookupElite(data, fen, { camp = false } = {}) {
   const turn = c.turn();
   const raw = [];
   for (const row of pos.m) {
-    const [san, , , , elo, li, cc, bc = 0, cw = 0, cd = 0, cb = 0] = row;
-    const [w, d, b] = camp ? [cw, cd, cb] : row.slice(1, 4);
+    const [san, , , , elo, li, cc, bc = 0, cw = 0, cd = 0, cb = 0, kw = 0, kd = 0, kb = 0] = row;
+    const [w, d, b] = !camp ? row.slice(1, 4) : v3 && side === 'b' ? [kw, kd, kb] : [cw, cd, cb];
     if (w + d + b === 0) continue;
     let uci = null;
     try {
@@ -97,7 +103,7 @@ export function lookupElite(data, fen, { camp = false } = {}) {
     stats,
     split: camp ? null : { li: sum('li'), cc: sum('cc'), bc: sum('bc') },
     top: moves[0] || null,
-    games: (pos.g || []).map((i) => data.games[i]).filter((g) => g && (!camp || g.c)).map(gameInfo),
+    games: (pos.g || []).map((i) => data.games[i]).filter((g) => g && (!camp || (v3 ? g.c & bit : g.c))).map(gameInfo),
   };
 }
 
@@ -153,8 +159,8 @@ const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, ''
 // Position absente : explication honnête du périmètre (aucun chiffre extrapolé).
 export function absentText(meta, camp = false) {
   const f = meta?.filters || {};
-  return L(`Position absente du jeu Élite${camp ? ' avec la règle de couleur (joueur du top dans notre camp)' : ''} : il ne couvre que les positions du répertoire (Gambit Dame, Caro-Kann, transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`,
-    `Position not in the Elite dataset${camp ? ' with the colour rule (top player on our side)' : ''}: it only covers repertoire positions (Queen’s Gambit, Caro-Kann, transpositions included) and their continuations, up to ply ${f.plies ?? '?'}, reached by at least ${f.minPositionGames ?? '?'} kept games. Nothing is extrapolated.`);
+  return L(`Position absente du jeu Élite${camp ? ' avec la règle de couleur (joueur du top dans notre camp)' : ''} : il ne couvre que les positions des ouvertures du répertoire (transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`,
+    `Position not in the Elite dataset${camp ? ' with the colour rule (top player on our side)' : ''}: it only covers the positions of the repertoire openings (transpositions included) and their continuations, up to ply ${f.plies ?? '?'}, reached by at least ${f.minPositionGames ?? '?'} kept games. Nothing is extrapolated.`);
 }
 
 // Règle de couleur demandée mais absente du fichier publié (collecte antérieure à l'option).

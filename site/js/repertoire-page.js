@@ -415,7 +415,7 @@ export class RepertoirePage {
     if (rep && !REPERTOIRES[rep]?.elite) return `<div class="muted tiny elite-absent">${label}${sep} ${L('données Élite pas encore collectées pour cette ouverture', 'Elite data not yet collected for this opening')}</div>`;
     if (el.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
     if (el.status !== 'ok') return `<div class="muted tiny">${label}${sep} ${L('jeu de données non publié', 'dataset not published')}</div>`;
-    const x = lookupElite(el.data, fen, { camp });
+    const x = lookupElite(el.data, fen, { camp, side: REPERTOIRES[rep]?.couleur || 'w' });
     if (x.status === 'nocamp') return `<div class="muted tiny elite-absent">${label}${sep} ${esc(NOCAMP_TEXT)}</div>`;
     if (x.status !== 'ok') return `<div class="muted tiny elite-absent">${label}${sep} ${L('position absente (aucune partie du top retenue)', 'position missing (no top game kept)')}</div>`;
     const s = x.stats;
@@ -636,10 +636,10 @@ export class RepertoirePage {
     return out;
   }
 
-  openTree(path) {
+  openTree(path, rep = this.tree?.rep) {
     const gen = this.generation;
     const src = this.treeSource;
-    this.tree = { path, source: src, node: { status: 'loading' } };
+    this.tree = { path, rep, source: src, node: { status: 'loading' } };
     this.renderTree();
     if (src === 'elite') {
       // Lecture locale du fichier Élite (rechargé à la fin du chargement s'il est en cours).
@@ -649,7 +649,7 @@ export class RepertoirePage {
       else {
         const c = new Chess();
         path.forEach((u) => c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }));
-        const x = lookupElite(el.data, c.fen(), { camp: !!loadSettings().eliteCamp });
+        const x = lookupElite(el.data, c.fen(), { camp: !!loadSettings().eliteCamp, side: REPERTOIRES[this.tree.rep]?.couleur || 'w' });
         this.tree.node = { ...x, meta: el.data.meta };
       }
       this.renderTree();
@@ -691,6 +691,7 @@ export class RepertoirePage {
     const suivis = this.data.choisis.filter((id) => REPERTOIRES[id]?.elite);
     if (!suivis.length) return `${head}<p class="muted small">${L(`Données Élite pas encore collectées pour vos ouvertures (${esc(this.data.choisis.map((id) => REPERTOIRES[id].titre).join(', '))}).`, `Elite data not yet collected for your openings (${esc(this.data.choisis.map((id) => REPERTOIRES[id].titre).join(', '))}).`)}</p>`;
     const list = recentInfo(el.data).filter((g) => suivis.includes(g.rep));
+    this.liveList = list; // le numéro des boutons renvoie à CETTE liste filtrée
     const rows = list.map((g, i) => `<li>
         <span class="tiny live-when" title="${esc(new Date(g.t).toLocaleString(LOC()))}">${esc(ago(g.t))}</span>
         <button type="button" class="link-btn" data-live-game="${i}">${esc(g.label)}</button>
@@ -711,7 +712,7 @@ export class RepertoirePage {
 
   bindLive(el) {
     el.querySelectorAll('[data-live-game]').forEach((b) => b.addEventListener('click', () => {
-      const g = recentInfo(this.elite.data)[Number(b.dataset.liveGame)];
+      const g = (this.liveList || [])[Number(b.dataset.liveGame)];
       if (g) this.openGame?.(g.san, g.color, L(`la partie ${g.label}`, `the game ${g.label}`), eliteHeaders(g));
     }));
   }
@@ -863,7 +864,7 @@ export class RepertoirePage {
         this.render();
       }
       if (b.dataset.tree) {
-        this.openTree(entry(b.dataset.tree).uci);
+        this.openTree(entry(b.dataset.tree).uci, entry(b.dataset.tree).rep);
         this.el.querySelector('#rep-tree').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       if (b.dataset.videos) this.openVideos(b.dataset.videos);
