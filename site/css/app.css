@@ -251,9 +251,12 @@ textarea { resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospa
 @media (min-width: 900px) { .advice-mini { display: none; } }
 
 .view-banner { display: flex; gap: .5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: .5rem; padding: .45rem .7rem; background: var(--warn-bg); color: var(--warn); border-radius: var(--radius); font-size: .9rem; }
-.toolbar { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; margin-top: .6rem; }
+.view-banner .link-btn { color: inherit; margin: 0 .1rem; }
+.view-banner .link-btn.current { font-weight: 700; text-decoration-thickness: 2px; }
+#view-text { flex: 1 1 14rem; min-width: 0; overflow-wrap: anywhere; }
+.toolbar { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-top: .6rem; }
 .toolbar button { font-size: .85rem; padding: .4rem .3rem; }
-@media (min-width: 560px) { .toolbar { grid-template-columns: repeat(7, auto); justify-content: start; } }
+@media (min-width: 560px) { .toolbar { display: flex; flex-wrap: wrap; } }
 .notation { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .5rem; margin-top: .6rem; }
 .notation label { font-size: .85rem; color: var(--muted); }
 .notation-msg { min-height: 1.2em; margin: .3rem 0 0; font-size: .88rem; }

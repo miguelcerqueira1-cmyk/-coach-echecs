@@ -9,6 +9,7 @@ import { demarrer as demarrerInstallation, sauvegarder } from './installation.js
 import { demarrerSync } from './sync.js';
 import { initLangue, langue, choisirLangue } from './i18n.js';
 import { Game, parseMoveText } from './game.js';
+import { Variante } from './variante-core.js';
 import { Chess, DEFAULT_POSITION } from '../vendor/chess.js';
 import { Engine } from './engine.js';
 import { Board } from './board.js';
@@ -43,6 +44,9 @@ const state = {
   settings: store.loadSettings(),
   config: { apiUrl: '' },
   viewPly: null, // null = position actuelle ; sinon consultation de l'historique
+  // Brouillon d'analyse (Variante) ouvert depuis la position consultée : coups essayés à part,
+  // jamais ajoutés à la partie. Quand il existe, viewPly = sa position de départ.
+  variante: null,
   analysis: { status: 'waiting-engine', token: null, live: null, advice: null, error: null, deeper: false },
   // Meilleure réponse adverse calculée pour la position où l'adversaire a le trait.
   expectation: null,
@@ -214,6 +218,7 @@ function onPositionChanged(reason) {
   const g = state.game;
   store.saveGame(g.toJSON());
   state.viewPly = null;
+  state.variante = null;
   state.view = null;
   viewJob++;
   // Toute explication en cours devient obsolète.
@@ -320,7 +325,10 @@ function revealBoard() {
 
 function playMove(input, source) {
   const g = state.game;
-  if (state.viewPly !== null) return;
+  if (state.variante || state.viewPly !== null) {
+    if (source === 'board') return playVariante(input);
+    return;
+  }
   const before = { revision: g.revision, ply: g.ply, gameId: g.id, wasPlayer: g.isPlayerTurn() };
   const advice = state.analysis.status === 'ready' && g.isCurrent(state.analysis.token) ? state.analysis.advice : null;
   let mv;
@@ -469,12 +477,15 @@ function renderTurn() {
 
 function renderBoard() {
   const g = state.game;
+  if (state.variante) { renderBoardVariante(); return; }
   const ply = state.viewPly ?? g.ply;
   const live = state.viewPly === null;
   const st = g.status();
-  board.setPosition(g.chessAt(ply), {
+  const pos = g.chessAt(ply);
+  board.setPosition(pos, {
     lastMove: ply > 0 ? g.verboseMove(ply - 1) : null,
-    interactive: live && !st.over,
+    // Position passée : un coup joué ouvre un brouillon (la partie ne change pas).
+    interactive: live ? !st.over : !pos.isGameOver(),
   });
   const arrows = [];
   const a = state.analysis;
@@ -501,7 +512,9 @@ function renderBoard() {
   }
   board.setArrows(arrows);
   $('view-banner').classList.toggle('hidden', live);
-  if (!live) $('view-text').textContent = ply === 0 ? L('Vous consultez la position de départ.', 'You are viewing the starting position.') : L(`Vous consultez la position après ${moveLabel(ply - 1)}.`, `You are viewing the position after ${moveLabel(ply - 1)}.`);
+  if (!live) $('view-text').textContent = (ply === 0 ? L('Vous consultez la position de départ.', 'You are viewing the starting position.') : L(`Vous consultez la position après ${moveLabel(ply - 1)}.`, `You are viewing the position after ${moveLabel(ply - 1)}.`))
+    + ' ' + L('Jouez un coup sur l’échiquier pour essayer une autre idée : la partie ne change pas.', 'Play a move on the board to try another idea: the game does not change.');
+  $('btn-quitter-brouillon').classList.add('hidden');
 }
 
 // Candidats 2 et 3 : flèches discrètes, dessinées sous la flèche du meilleur coup.
@@ -522,6 +535,14 @@ function moveLabel(i) {
 // Barre ⏮ ◀ ▶ ⏭ sous l'échiquier : indique la position affichée.
 function renderNav() {
   const g = state.game;
+  const v = state.variante;
+  if (v) {
+    $('nav-label').textContent = v.cur === 0 ? L('🧪 Brouillon · départ', '🧪 Draft · start') : L(`🧪 Brouillon · après ${labelVariante(v.cur - 1)}`, `🧪 Draft · after ${labelVariante(v.cur - 1)}`);
+    $('nav-label').classList.add('viewing');
+    document.querySelectorAll('[data-nav]').forEach((b) => { b.disabled = false; });
+    document.querySelectorAll('[data-nav=next]').forEach((b) => { b.disabled = v.cur >= v.coups.length; });
+    return;
+  }
   const cur = state.viewPly ?? g.ply;
   const live = state.viewPly === null;
   $('nav-label').textContent = cur === 0 ? (g.ply ? L('Position de départ', 'Starting position') : L('Aucun coup joué', 'No moves played'))
@@ -572,7 +593,9 @@ function renderButtons() {
   const g = state.game;
   const live = state.viewPly === null;
   const over = g.status().over;
-  $('btn-undo').disabled = !g.ply;
+  $('btn-undo').disabled = state.variante ? false : !g.ply;
+  $('btn-undo').textContent = state.variante ? L('Annuler (brouillon)', 'Undo (draft)') : L('Annuler', 'Undo');
+  $('btn-brouillon').disabled = !!state.variante || g.chessAt(state.viewPly ?? g.ply).isGameOver();
   $('btn-deeper').disabled = !live || over || engine.state !== 'ready';
   $('btn-deeper').textContent = state.analysis.status === 'computing' && state.analysis.deeper ? L('Arrêter l’analyse', 'Stop analysis') : L('Analyser davantage', 'Analyse deeper');
   $('btn-explain').disabled = !live || over || state.analysis.status !== 'ready';
@@ -634,7 +657,12 @@ function renderMini() {
   const adv = a.advice && state.game.isCurrent(a.advice.token) ? a.advice : null;
   if (a.status === 'over') el.textContent = '';
   else if (a.status === 'engine-error') el.innerHTML = `<span class="error-text">${L('Moteur indisponible : aucun conseil.', 'Engine unavailable: no advice.')}</span>`;
-  else if (!adv) el.innerHTML = `<span class="muted">${L('Stockfish calcule…', 'Stockfish is calculating…')}</span>`;
+  else if (state.variante) {
+    const v = state.vueVariante;
+    el.innerHTML = v?.status === 'ready' && v.id === state.variante.id
+      ? `${L('Brouillon — meilleur coup : ', 'Draft — best move: ')}<strong class="best">${esc(sanFr(v.advice.best.san))}</strong> <span class="muted">(${esc(v.advice.scoreText)})</span>`
+      : `<span class="muted">${L('Brouillon — Stockfish analyse…', 'Draft — Stockfish is analysing…')}</span>`;
+  } else if (!adv) el.innerHTML = `<span class="muted">${L('Stockfish calcule…', 'Stockfish is calculating…')}</span>`;
   else if (state.viewPly !== null) {
     const v = state.view;
     el.innerHTML = v?.status === 'ready'
@@ -648,6 +676,11 @@ function renderMini() {
 function renderAdvice() {
   renderMini();
   const el = $('advice');
+  if (state.variante) {
+    renderButtons();
+    renderVarianteAdvice(el);
+    return;
+  }
   if (state.viewPly !== null) {
     renderButtons();
     renderViewAdvice(el);
@@ -905,6 +938,7 @@ function viewAt(ply) {
   const g = state.game;
   ply = Math.max(0, Math.min(g.ply, ply));
   const wasViewing = state.viewPly !== null;
+  if (state.variante) fermerVariante();
   state.viewPly = ply === g.ply ? null : ply;
   if (state.viewPly !== null) {
     analyzeView(ply);
@@ -1000,6 +1034,173 @@ function renderViewAdvice(el) {
   $('btn-back-live').onclick = () => viewAt(g.ply);
 }
 
+// ---------- Brouillon d'analyse ----------
+// Coups essayés depuis une position de la partie, analysés par Stockfish comme la partie
+// réelle, mais gardés à part : la partie (Game) n'est jamais modifiée.
+
+function ouvrirVariante(input) {
+  const g = state.game;
+  const base = state.viewPly ?? g.ply;
+  stopAutoplay(L('Suite automatique en pause (brouillon).', 'Automatic continuation paused (draft).'));
+  state.variante = new Variante(g.startFen, g.moves.map((m) => m.uci), base);
+  state.viewPly = base;
+  state.view = null;
+  viewJob++;
+  if (input) {
+    try { state.variante.play(input); } catch (e) { notationMsg(e.message, true); }
+  }
+  apresVariante();
+  return true;
+}
+
+function playVariante(input) {
+  if (!state.variante) return ouvrirVariante(input);
+  try {
+    state.variante.play(input);
+  } catch (e) {
+    notationMsg(e.message, true);
+    renderBoard();
+    return false;
+  }
+  notationMsg('');
+  apresVariante();
+  return true;
+}
+
+function retirerVariante() {
+  const v = state.variante;
+  if (!v.retirer()) { viewAt(v.base); return; }
+  apresVariante();
+}
+
+function navVariante(kind) {
+  const v = state.variante;
+  if (kind === 'start' && v.cur === 0) { viewAt(v.base); return; }
+  if (kind === 'prev' && v.cur === 0) { viewAt(v.base - 1); return; }
+  v.aller({ start: 0, prev: v.cur - 1, next: v.cur + 1, end: v.coups.length }[kind]);
+  apresVariante();
+}
+
+function fermerVariante() {
+  state.variante = null;
+  state.vueVariante = null;
+  varianteJob++;
+}
+
+function apresVariante() {
+  renderBoard();
+  renderMoves();
+  renderButtons();
+  analyseVariante();
+  renderAdvice();
+}
+
+function labelVariante(i) {
+  const n = state.variante.numeros()[i];
+  return `${n.no}${n.color === 'w' ? '.' : '…'} ${sanFr(n.san)}`;
+}
+
+// Interface « partie » attendue par buildAdvice et le panneau « Coup optimal ».
+function varianteGame(v) {
+  const g = state.game;
+  const fen = v.fen();
+  const ucis = v.ucis();
+  const tok = { gameId: g.id, branchId: 'brouillon-' + v.id, revision: v.revision, ply: ucis.length };
+  return {
+    playerColor: g.playerColor,
+    startFen: g.startFen,
+    moves: ucis.map((uci) => ({ uci })),
+    fen: () => fen,
+    turn: () => fen.split(' ')[1],
+    token: () => tok,
+    isCurrent: (t) => !!t && state.variante === v && t.branchId === tok.branchId && t.revision === v.revision && t.gameId === g.id,
+    status: () => ({ over: v.over() }),
+  };
+}
+
+let varianteJob = 0;
+async function analyseVariante() {
+  const v = state.variante;
+  const job = ++varianteJob;
+  const vg = varianteGame(v);
+  state.vueVariante = { id: v.id, revision: v.revision, status: 'computing', advice: null };
+  optimal.update(vg);
+  optimal.setEngine('computing', null);
+  if (v.over()) { state.vueVariante.status = 'over'; renderAdvice(); return; }
+  if (engine.state !== 'ready') { state.vueVariante.status = 'engine-error'; renderAdvice(); return; }
+  const ucis = vg.moves.map((m) => m.uci).join(' ');
+  let res;
+  try {
+    res = await engine.analyze({
+      position: `position fen ${state.game.startFen}${ucis ? ' moves ' + ucis : ''}`,
+      movetime: BUDGETS[state.settings.budget].movetime,
+      token: vg.token(),
+      multipv: CANDIDATES,
+    });
+  } catch (e) {
+    if (job === varianteJob) { state.vueVariante = { ...state.vueVariante, status: 'engine-error', error: e.message }; renderAdvice(); }
+    return;
+  }
+  if (job !== varianteJob || state.variante !== v || !vg.isCurrent(vg.token()) || res.cancelled) return;
+  const advice = buildAdvice(vg, res);
+  state.vueVariante = { ...state.vueVariante, status: advice.ok ? 'ready' : 'error', advice: advice.ok ? advice : null, error: advice.error };
+  if (advice.ok) optimal.setEngine('ready', advice);
+  renderAdvice();
+  renderBoard();
+}
+
+function renderBoardVariante() {
+  const g = state.game;
+  const v = state.variante;
+  const pos = v.chessAt();
+  board.setHint(null);
+  board.setPosition(pos, {
+    lastMove: v.lastMove() || (v.base > 0 ? g.verboseMove(v.base - 1) : null),
+    interactive: !pos.isGameOver(),
+  });
+  const arrows = [];
+  const vv = state.vueVariante;
+  if (vv?.status === 'ready' && vv.id === v.id && vv.revision === v.revision) {
+    const b = vv.advice.best;
+    arrows.push(...altArrows(vv.advice));
+    arrows.push({ from: b.from, to: b.to, kind: 'best' });
+  }
+  board.setArrows(arrows);
+  $('view-banner').classList.remove('hidden');
+  const depart = v.base === 0 ? L('la position de départ', 'the starting position') : moveLabel(v.base - 1);
+  const coups = v.numeros().map((n, i) => {
+    const no = n.color === 'w' ? `${n.no}.` : (i === 0 ? `${n.no}…` : '');
+    return `${no}<button type="button" class="link-btn${i + 1 === v.cur ? ' current' : ''}" data-vply="${i + 1}">${esc(sanFr(n.san))}</button>`;
+  }).join(' ');
+  $('view-text').innerHTML = `<strong>${L('🧪 Brouillon', '🧪 Draft')}</strong> ${L(`depuis ${esc(depart)}`, `from ${esc(depart)}`)}${coups ? ' : ' + coups : ''}<br><span class="small">${L('Ces coups ne sont pas ajoutés à la partie.', 'These moves are not added to the game.')}</span>`;
+  $('btn-quitter-brouillon').classList.remove('hidden');
+}
+
+function renderVarianteAdvice(el) {
+  const v = state.variante;
+  const vv = state.vueVariante;
+  const turn = v.turn();
+  let body;
+  if (!vv || vv.id !== v.id || vv.status === 'computing') body = `<div class="state"><span class="spinner"></span><span>${L('Stockfish analyse le brouillon…', 'Stockfish is analysing the draft…')}</span></div>`;
+  else if (vv.status === 'over') {
+    const c = v.chessAt();
+    body = `<p class="desc">${c.isCheckmate() ? L('Échec et mat dans le brouillon.', 'Checkmate in the draft.') : L('Partie nulle dans le brouillon.', 'Draw in the draft.')}</p>`;
+  } else if (vv.status === 'engine-error' || vv.status === 'error') body = `<div class="errbox">${esc(vv.error || L('Moteur indisponible', 'Engine unavailable'))}</div>`;
+  else {
+    const adv = vv.advice;
+    body = `<p class="label">${L('Meilleur coup selon Stockfish', 'Best move according to Stockfish')}</p>
+      <p class="move-big best">${esc(sanFr(adv.best.san))}</p>
+      <p class="desc">${esc(adv.bestDescription)}</p>
+      <dl>${evalBlock(adv)}<dt>${L('Suite calculée', 'Calculated line')}</dt><dd class="line">${esc(adv.lineText)}</dd></dl>
+      <p><button type="button" id="btn-brouillon-best">${L(`Essayer ${sanFr(adv.best.san)}`, `Try ${sanFr(adv.best.san)}`)}</button></p>
+      ${candidatesBlock(adv)}${techDetails(adv, { movetime: adv.movetime })}`;
+  }
+  el.innerHTML = `<p><span class="badge">${L('🧪 Brouillon', '🧪 Draft')}</span> ${L(`trait aux ${COLOR_NAMES[turn]}`, `${turn === 'w' ? 'White' : 'Black'} to move`)}</p>${body}
+    <p class="muted small">${L('La partie réelle ne change pas. « Annuler » retire le dernier coup essayé.', 'The real game does not change. “Undo” removes the last move tried.')}</p>`;
+  const bb = $('btn-brouillon-best');
+  if (bb) bb.onclick = () => playVariante(vv.advice.best.lan);
+}
+
 // ---------- Interface ----------
 
 function fillSelects() {
@@ -1014,6 +1215,8 @@ function bindUi() {
   $('btn-new').onclick = () => openNew('initial');
   $('btn-import').onclick = () => openNew('pgn');
   $('btn-undo').onclick = () => {
+    // Dans un brouillon, « Annuler » retire le dernier coup essayé, jamais un coup de la partie.
+    if (state.variante) { retirerVariante(); return; }
     const g = state.game;
     const removed = g.undo();
     if (!removed) return;
@@ -1042,10 +1245,14 @@ function bindUi() {
     });
   });
   $('btn-live').onclick = () => viewAt(state.game.ply);
+  $('btn-quitter-brouillon').onclick = () => { if (state.variante) viewAt(state.variante.base); };
+  $('btn-brouillon').onclick = () => ouvrirVariante();
+  $('view-text').onclick = (e) => { const b = e.target.closest('[data-vply]'); if (b && state.variante) { state.variante.aller(Number(b.dataset.vply)); apresVariante(); } };
   $('moves').onclick = (e) => { const b = e.target.closest('[data-ply]'); if (b) viewAt(Number(b.dataset.ply)); };
   document.querySelectorAll('[data-nav]').forEach((b) => {
     b.onclick = () => {
       const g = state.game;
+      if (state.variante) { navVariante(b.dataset.nav); return; }
       const cur = state.viewPly ?? g.ply;
       const nav = { start: 0, prev: cur - 1, next: cur + 1, end: g.ply }[b.dataset.nav];
       viewAt(nav);
@@ -1053,6 +1260,7 @@ function bindUi() {
   });
   document.addEventListener('keydown', (e) => {
     if (e.target.closest('input, textarea, select, dialog')) return;
+    if (state.variante && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { navVariante(e.key === 'ArrowLeft' ? 'prev' : 'next'); return; }
     const cur = state.viewPly ?? state.game.ply;
     if (e.key === 'ArrowLeft') viewAt(cur - 1);
     if (e.key === 'ArrowRight') viewAt(cur + 1);

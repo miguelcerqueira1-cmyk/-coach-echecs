@@ -374,6 +374,51 @@ test('3 coups candidats (MultiPV) : rejoués, notation française, flèches disc
   await expect(page.locator('#advice .cand-list li')).toHaveCount(3, { timeout: 60000 });
 });
 
+test('brouillon : essayer des coups depuis une position passée sans modifier la partie', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await waitAdvice(page);
+  for (const m of ['e4', 'e5', 'Cf3', 'Cc6']) await typeMove(page, m);
+  const avant = await waitAdvice(page);
+  // Retour après 1…e5 puis coup différent sur l'échiquier : brouillon, partie intacte.
+  await page.click('.board-nav [data-nav=prev]');
+  await page.click('.board-nav [data-nav=prev]');
+  await clickMove(page, 'f1', 'c4');
+  const banner = page.locator('#view-banner');
+  await expect(banner).toContainText('Brouillon');
+  await expect(banner).toContainText('Fc4');
+  await expect(page.locator('#advice')).toContainText('Meilleur coup selon Stockfish', { timeout: 30000 });
+  await expect(page.locator('.board-arrows line.arrow-best')).toHaveCount(1);
+  // On répond pour les Noirs aussi : le brouillon joue les deux camps.
+  await clickMove(page, 'g8', 'f6');
+  await expect(banner).toContainText('Cf6');
+  let s = await snap(page);
+  expect(s.moves).toEqual(avant.moves);
+  expect(s.revision).toBe(avant.revision);
+  // « Annuler » retire le dernier coup du brouillon, pas un coup de la partie.
+  await page.click('#btn-undo');
+  await expect(banner).not.toContainText('Cf6');
+  expect((await snap(page)).moves).toEqual(avant.moves);
+  // Le bouton « Essayer » joue le coup de Stockfish dans le brouillon.
+  await expect(page.locator('#btn-brouillon-best')).toBeVisible({ timeout: 30000 });
+  await page.click('#btn-brouillon-best');
+  await expect(page.locator('#view-text [data-vply]')).toHaveCount(2);
+  // Quitter : retour à la position de départ du brouillon, puis à la partie.
+  await page.click('#btn-quitter-brouillon');
+  await expect(banner).not.toContainText('Brouillon');
+  await expect(page.locator('#advice')).toContainText('Position consultée');
+  await page.click('#btn-live');
+  s = await waitAdvice(page);
+  expect(s.moves).toEqual(['e4', 'e5', 'Nf3', 'Nc6']);
+  // Depuis la position actuelle, le bouton « 🧪 Brouillon » ouvre un brouillon sans jouer de coup.
+  await page.click('#btn-brouillon');
+  await clickMove(page, 'f1', 'b5');
+  await expect(banner).toContainText('Fb5');
+  expect((await snap(page)).ply).toBe(4);
+  await page.reload();
+  expect((await snap(page)).moves).toEqual(['e4', 'e5', 'Nf3', 'Nc6']);
+});
+
 test('position passée : meilleur coup Stockfish calculé pour la position consultée', async ({ page }) => {
   await setup(page);
   await page.goto('./');

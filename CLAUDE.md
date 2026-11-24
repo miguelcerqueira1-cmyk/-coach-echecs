@@ -338,6 +338,14 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   sécurité 2,5 s). Restent en français volontairement : diagnostic envoyé au support, en-têtes
   PGN, payload de l'API Claude, chapitres de vidéos. La langue ne compte pas comme
   « utilisateur existant » ; une partie vide et les caches non plus.
+- **Brouillon d'analyse (2026-11-24, `variante-core.js`, page Moteur)** : depuis une position
+  consultée (◀), un coup joué sur l'échiquier ouvre un brouillon (`state.variante`, viewPly = sa
+  base) ; bouton « 🧪 Brouillon » pour partir de la position affichée, même actuelle. Les deux camps
+  jouent ; Stockfish analyse chaque position (MultiPV, jeton `brouillon-<id>`), « Essayer <coup> » ;
+  ⏮◀▶⏭ et flèches du clavier naviguent dans le brouillon ; « Annuler » retire un coup du brouillon ;
+  « Quitter le brouillon » / toute navigation dans la partie / changement de la partie le ferment.
+  Jamais enregistré (mémoire seulement) ; `Game` jamais modifié. La nulle/l'abandon sur la page
+  Moteur ont été écartés par l'utilisateur (pas d'adversaire réel).
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
