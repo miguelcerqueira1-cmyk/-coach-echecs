@@ -5,6 +5,9 @@
 //   { jours: ['AAAA-MM-JJ', …] (jours de visite, 10 derniers), premiereDonnee, derniereSauvegarde,
 //     refusInstall: n, installPlusTard: date, sauvegardePlusTard: date }
 
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+
 export const KEY = 'coach-echecs:installation-v1';
 // Clés qui signalent un vrai travail à protéger (progression, révisions, routine, analyses…).
 export const CLES_DONNEES = ['progression-v1', 'revision-v1', 'routine-v1', 'analyses-v1', 'finales-v1', 'classements-v1'].map((k) => `coach-echecs:${k}`);
@@ -70,8 +73,8 @@ export function rappelSauvegarde(etat, { now = new Date(), donnees = false, risq
 }
 
 export function texteDerniereSauvegarde(etat, now = new Date()) {
-  if (!etat.derniereSauvegarde) return 'Aucune sauvegarde faite depuis cet appareil.';
+  if (!etat.derniereSauvegarde) return L('Aucune sauvegarde faite depuis cet appareil.', 'No backup made from this device.');
   const n = joursEntre(etat.derniereSauvegarde, now);
-  const quand = n <= 0 ? 'aujourd’hui' : n === 1 ? 'hier' : `il y a ${n} jours`;
-  return `Dernière sauvegarde : ${quand} (${new Date(etat.derniereSauvegarde).toLocaleDateString('fr-FR')}).`;
+  const quand = n <= 0 ? L('aujourd’hui', 'today') : n === 1 ? L('hier', 'yesterday') : L(`il y a ${n} jours`, `${n} days ago`);
+  return L(`Dernière sauvegarde : ${quand} (${new Date(etat.derniereSauvegarde).toLocaleDateString('fr-FR')}).`, `Last backup: ${quand} (${new Date(etat.derniereSauvegarde).toLocaleDateString('en-GB')}).`);
 }

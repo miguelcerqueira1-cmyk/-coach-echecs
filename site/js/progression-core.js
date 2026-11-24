@@ -2,9 +2,12 @@
 // parties importées, classement Chess.com actuel) et chiffres de la routine sur 4 semaines.
 // Aucun chiffre n'est estimé : tout vient des API publiques ou des données enregistrées sur l'appareil.
 
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+
 export const KEY = 'coach-echecs:classements-v1';
 const JOUR = 86400000;
-export const PERFS = { blitz: 'Blitz', rapid: 'Rapide', bullet: 'Bullet', classical: 'Classique' };
+export const PERFS = { blitz: 'Blitz', rapid: L('Rapide', 'Rapid'), bullet: 'Bullet', classical: L('Classique', 'Classical') };
 
 // GET /api/user/{u}/rating-history → séries par cadence : points [année, mois (0-11), jour, classement].
 export function seriesLichess(json, now = Date.now()) {
@@ -55,14 +58,14 @@ export function seriesParties(data, site, now = Date.now()) {
     if (p.site !== site) continue;
     (groupes[p.speed] ||= []).push({ t: p.t, r: p.r });
   }
-  return Object.entries(groupes).map(([speed, pts]) => ({ id: speed, nom: speed ? speed[0].toUpperCase() + speed.slice(1) : 'Parties', ...resume(pts.sort((a, b) => a.t - b.t), now) }))
+  return Object.entries(groupes).map(([speed, pts]) => ({ id: speed, nom: speed ? speed[0].toUpperCase() + speed.slice(1) : L('Parties', 'Games'), ...resume(pts.sort((a, b) => a.t - b.t), now) }))
     .sort((a, b) => b.points.length - a.points.length);
 }
 
 // /pub/player/{u}/stats → classements actuels et records Chess.com.
 export function statsChessCom(json) {
   const out = [];
-  for (const [k, nom] of [['chess_blitz', 'Blitz'], ['chess_rapid', 'Rapide'], ['chess_bullet', 'Bullet'], ['chess_daily', 'Partie par jour']]) {
+  for (const [k, nom] of [['chess_blitz', 'Blitz'], ['chess_rapid', L('Rapide', 'Rapid')], ['chess_bullet', 'Bullet'], ['chess_daily', L('Partie par jour', 'Daily')]]) {
     const s = json?.[k];
     if (s?.last?.rating) out.push({ nom, actuel: s.last.rating, max: s.best?.rating ?? null, bilan: s.record ? { v: s.record.win, n: s.record.draw, d: s.record.loss } : null });
   }

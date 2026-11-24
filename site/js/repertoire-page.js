@@ -18,6 +18,12 @@ import { loadSettings } from './storage.js';
 import { canOpenFiche, openPaywall } from './pro.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
+import { langue } from './i18n.js';
+
+// Phrases en français ou en anglais selon la langue de l'interface.
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+const LOC = () => L('fr-FR', 'en-US');
+const camp = (turn) => (turn === 'w' ? L('Blancs', 'White') : L('Noirs', 'Black'));
 
 // Racine d'un répertoire en UCI (point de départ de l'arbre des coups).
 const racineUci = (id) => {
@@ -26,11 +32,11 @@ const racineUci = (id) => {
 };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const p1 = (x) => x.toFixed(1).replace('.', ',') + ' %';
+const p1 = (x) => L(x.toFixed(1).replace('.', ',') + ' %', x.toFixed(1) + '%');
 const SCORE_MIN_GAMES = 50; // en dessous, un % de score ne veut rien dire
 const VIDEO_KEY = 'coach-echecs:videos-perso';
 const BADGE_CLASS = { theorie: 'b-theorie', piege: 'b-piege', loufoque: 'b-loufoque' };
-const BADGE_LABEL = { theorie: 'Théorie', piege: 'Piège Blitz', loufoque: 'Coup loufoque à réfuter' };
+const BADGE_LABEL = { theorie: L('Théorie', 'Theory'), piege: L('Piège Blitz', 'Blitz trap'), loufoque: L('Coup loufoque à réfuter', 'Odd move to refute') };
 
 function sanLine(san, startFen = START_FEN) {
   const c = new Chess(startFen);
@@ -47,7 +53,7 @@ function markedLineHtml(san, markIndex, from = 0) {
     if (i < from) return;
     const no = Math.floor(i / 2) + 1;
     let t = esc(sanFr(mv.san));
-    if (i === markIndex) t = `<mark title="Coup fautif">${t} ?</mark>`;
+    if (i === markIndex) t = `<mark title="${L('Coup fautif', 'Faulty move')}">${t} ?</mark>`;
     out.push(mv.color === 'w' ? `${no}. ${t}` : (i === from ? `${no}… ${t}` : t));
   });
   return out.join(' ');
@@ -64,7 +70,7 @@ const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,
 
 function scoreText(v) {
   if (!v) return '—';
-  if (v.mated) return 'Mat';
+  if (v.mated) return L('Mat', 'Mate');
   return formatScore({ type: v.type, value: v.value });
 }
 function toWhite(v, pov) {
@@ -92,14 +98,15 @@ function curatedVideosHtml(e, cls = 'vd-curated') {
   if (!liens.length) return '';
   return `<div class="${cls}" data-curated="${esc(e.id)}">${liens.map((l) => {
     const debut = l.chapitre ? (l.url.match(/&t=(\d+)s/) || [])[1] : null;
-    const at = debut ? ` · dès ${Math.floor(debut / 60)}:${String(debut % 60).padStart(2, '0')}` : '';
-    return `<div class="small"><a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener"${l.chapitre ? ` title="Chapitre : ${esc(l.chapitre)}"` : ''}>▶ ${esc(l.titre)}</a> <span class="muted tiny">(${l.chaine ? `${esc(l.chaine)}, ` : ''}${esc(String(l.langue).toUpperCase())}${at})</span></div>`;
+    const at = debut ? ` · ${L('dès', 'from')} ${Math.floor(debut / 60)}:${String(debut % 60).padStart(2, '0')}` : '';
+    return `<div class="small"><a class="btn-link" href="${esc(l.url)}" target="_blank" rel="noopener"${l.chapitre ? ` title="${L('Chapitre :', 'Chapter:')} ${esc(l.chapitre)}"` : ''}>▶ ${esc(l.titre)}</a> <span class="muted tiny">(${l.chaine ? `${esc(l.chaine)}, ` : ''}${esc(String(l.langue).toUpperCase())}${at})</span></div>`;
   }).join('')}</div>`;
 }
 function loadVideos() { try { return JSON.parse(localStorage.getItem(VIDEO_KEY) || '{}'); } catch { return {}; } }
 function saveVideos(v) { try { localStorage.setItem(VIDEO_KEY, JSON.stringify(v)); } catch { /* stockage indisponible */ } }
 
-const bar = (s) => `<div class="wdl-bar" title="Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)}"><span class="w" style="width:${s.white}%"></span><span class="d" style="width:${s.draws}%"></span><span class="b" style="width:${s.black}%"></span></div>`;
+const wdl = (s) => L(`Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)}`, `White ${p1(s.white)} · draws ${p1(s.draws)} · Black ${p1(s.black)}`);
+const bar = (s) => `<div class="wdl-bar" title="${wdl(s)}"><span class="w" style="width:${s.white}%"></span><span class="d" style="width:${s.draws}%"></span><span class="b" style="width:${s.black}%"></span></div>`;
 
 export class RepertoirePage {
   constructor({ el, client, getFilter, openSan, openMaster, openGame = null, youtube, loadEliteData = loadElite }) {
@@ -132,12 +139,12 @@ export class RepertoirePage {
 
   async show() {
     if (!this.data) {
-      this.el.innerHTML = '<p class="state pad"><span class="spinner"></span> Chargement du répertoire…</p>';
+      this.el.innerHTML = `<p class="state pad"><span class="spinner"></span> ${L('Chargement du répertoire…', 'Loading the repertoire…')}</p>`;
       try {
         // Seulement les ouvertures choisies (Mon répertoire).
         this.data = filtrerData(await (await fetch('./data/repertoire.json', { cache: 'no-cache' })).json());
       } catch {
-        this.el.innerHTML = '<p class="errbox pad">Impossible de charger le répertoire (data/repertoire.json).</p>';
+        this.el.innerHTML = `<p class="errbox pad">${L('Impossible de charger le répertoire (data/repertoire.json).', 'Could not load the repertoire (data/repertoire.json).')}</p>`;
         return;
       }
       for (const e of this.data.entries) e._search = searchText(e);
@@ -208,26 +215,26 @@ export class RepertoirePage {
 
   rankingHtml(list) {
     if (!this.sort || this.view === 'trash') return '';
-    if (!this.client.explorerMode() && this.sort !== 'eval') return '<p class="errbox small">Classement par parties : jeton Lichess requis (⚙ Réglages).</p>';
+    if (!this.client.explorerMode() && this.sort !== 'eval') return `<p class="errbox small">${L('Classement par parties : jeton Lichess requis (⚙ Réglages).', 'Ranking by games: Lichess token required (⚙ Settings).')}</p>`;
     const pending = this.sortPending(list);
-    if (pending) return `<p class="state small"><span class="spinner"></span> Classement : statistiques en cours de chargement (${list.length - pending}/${list.length})…</p>`;
-    const src = this.sort.endsWith('maitres') ? 'maîtres' : 'mon niveau';
+    if (pending) return `<p class="state small"><span class="spinner"></span> ${L(`Classement : statistiques en cours de chargement (${list.length - pending}/${list.length})…`, `Ranking: loading statistics (${list.length - pending}/${list.length})…`)}</p>`;
+    const src = this.sort.endsWith('maitres') ? L('maîtres', 'masters') : L('mon niveau', 'my level');
     const name = (e) => `<button type="button" class="link-btn" data-goto="${e.id}">${esc(e.nom)}</button>`;
     if (this.sort === 'eval') {
       const top = list.filter((e) => this.sortValue(e) != null).slice(0, 3);
-      return `<div class="card ranking small"><strong>Meilleure évaluation Stockfish pour vous</strong> (fin de la ligne, profondeur ${this.data.moteur.profondeur}) : ${top.map((e) => `${name(e)} (${esc(scoreText(toWhite(e.verification.main, 'w')))})`).join(' · ')}<p class="muted tiny">Évaluation de la position à la fin de la fiche, point de vue des Blancs. Une évaluation moteur n’est pas un taux de victoire.</p></div>`;
+      return `<div class="card ranking small"><strong>${L('Meilleure évaluation Stockfish pour vous', 'Best Stockfish evaluation for you')}</strong> ${L(`(fin de la ligne, profondeur ${this.data.moteur.profondeur}) :`, `(end of the line, depth ${this.data.moteur.profondeur}):`)} ${top.map((e) => `${name(e)} (${esc(scoreText(toWhite(e.verification.main, 'w')))})`).join(' · ')}<p class="muted tiny">${L('Évaluation de la position à la fin de la fiche, point de vue des Blancs. Une évaluation moteur n’est pas un taux de victoire.', 'Evaluation of the position at the end of the line, from White’s point of view. An engine evaluation is not a win rate.')}</p></div>`;
     }
     const withStats = list.map((e) => ({ e, s: this.sortStats(e) })).filter((x) => x.s?.total);
-    if (!withStats.length) return `<p class="muted small">Aucune statistique (${src}) pour ces fiches.</p>`;
+    if (!withStats.length) return `<p class="muted small">${L(`Aucune statistique (${src}) pour ces fiches.`, `No statistics (${src}) for these lines.`)}</p>`;
     const most = withStats.reduce((a, b) => (b.s.total > a.s.total ? b : a));
     const scored = withStats.filter((x) => x.s.total >= SCORE_MIN_GAMES);
     const best = scored.length ? scored.reduce((a, b) => (this.myScore(b.e, b.s) > this.myScore(a.e, a.s) ? b : a)) : null;
     const worst = scored.length ? scored.reduce((a, b) => (this.myScore(b.e, b.s) < this.myScore(a.e, a.s) ? b : a)) : null;
     return `<div class="card ranking small">
-      <div>📊 <strong>La plus jouée</strong> (${src}) : ${name(most.e)} — ${most.s.total.toLocaleString('fr-FR')} parties</div>
-      ${best ? `<div>🏆 <strong>Meilleur score pour vous</strong> : ${name(best.e)} — ${p1(this.myScore(best.e, best.s))} (${best.s.total.toLocaleString('fr-FR')} parties)</div>` : ''}
-      ${worst && worst !== best ? `<div>⚠️ <strong>Score le plus faible</strong> : ${name(worst.e)} — ${p1(this.myScore(worst.e, worst.s))}</div>` : ''}
-      <p class="muted tiny">Score = victoires + ½ nulles pour votre camp, dans les parties qui ont atteint la position finale de la fiche (au moins ${SCORE_MIN_GAMES} parties pour le score). Fréquences observées, pas une évaluation.</p>
+      <div>📊 <strong>${L('La plus jouée', 'Most played')}</strong> (${src})${L(' :', ':')} ${name(most.e)} — ${most.s.total.toLocaleString(LOC())} ${L('parties', 'games')}</div>
+      ${best ? `<div>🏆 <strong>${L('Meilleur score pour vous', 'Best score for you')}</strong>${L(' :', ':')} ${name(best.e)} — ${p1(this.myScore(best.e, best.s))} (${best.s.total.toLocaleString(LOC())} ${L('parties', 'games')})</div>` : ''}
+      ${worst && worst !== best ? `<div>⚠️ <strong>${L('Score le plus faible', 'Lowest score')}</strong>${L(' :', ':')} ${name(worst.e)} — ${p1(this.myScore(worst.e, worst.s))}</div>` : ''}
+      <p class="muted tiny">${L(`Score = victoires + ½ nulles pour votre camp, dans les parties qui ont atteint la position finale de la fiche (au moins ${SCORE_MIN_GAMES} parties pour le score). Fréquences observées, pas une évaluation.`, `Score = wins + ½ draws for your side, in games that reached the final position of the line (at least ${SCORE_MIN_GAMES} games for the score). Observed frequencies, not an evaluation.`)}</p>
     </div>`;
   }
 
@@ -240,40 +247,40 @@ export class RepertoirePage {
     const d = this.data;
     if (this.view !== 'trash') this.view = this.repVue();
     const f = this.getFilter();
-    const filt = `${f.speeds.map((s) => SPEED_LABELS[s]).join(', ') || 'toutes cadences'} · ${f.ratings.map(bucketLabel).join(', ') || 'tous classements'}`;
+    const filt = `${f.speeds.map((s) => SPEED_LABELS[s]).join(', ') || L('toutes cadences', 'all time controls')} · ${f.ratings.map(bucketLabel).join(', ') || L('tous classements', 'all ratings')}`;
     const list = this.entries();
     const count = (pred) => d.entries.filter(pred).length;
     const chip = (attr, val, cur, label, n) => `<button type="button" class="chip" ${attr}="${val}" aria-pressed="${cur === val}">${label}${n != null ? ` <span class="chip-n">${n}</span>` : ''}</button>`;
     this.el.innerHTML = `
       <div class="rep-head">
-        <div class="chips" aria-label="Ouverture">
+        <div class="chips" aria-label="${L('Ouverture', 'Opening')}">
           ${d.choisis.map((id) => {
             const n = count((e) => e.rep === id);
-            return chip('data-view', id, this.view, `${couleurDe(id) === 'w' ? '♙' : '♟'} ${esc(REPERTOIRES[id].titre)} <span class="muted small">(${couleurDe(id) === 'w' ? 'Blancs' : 'Noirs'})</span>${n ? '' : ' <span class="badge soon-badge">bientôt</span>'}`, n || null);
+            return chip('data-view', id, this.view, `${couleurDe(id) === 'w' ? '♙' : '♟'} ${esc(REPERTOIRES[id].titre)} <span class="muted small">(${camp(couleurDe(id))})</span>${n ? '' : ` <span class="badge soon-badge">${L('bientôt', 'soon')}</span>`}`, n || null);
           }).join('')}
-          ${chip('data-view', 'trash', this.view, '🗑 Anti-trash Blitz', count((e) => e.punition || e.piege || e.badge === 'loufoque'))}
+          ${chip('data-view', 'trash', this.view, L('🗑 Anti-trash Blitz', '🗑 Blitz anti-trash'), count((e) => e.punition || e.piege || e.badge === 'loufoque'))}
         </div>
-        <div class="chips" aria-label="Type de ligne">
-          ${chip('data-badge-chip', '', this.badge, 'Tous types')}
-          ${chip('data-badge-chip', 'theorie', this.badge, 'Théorie')}
-          ${chip('data-badge-chip', 'piege', this.badge, 'Piège Blitz')}
-          ${chip('data-badge-chip', 'loufoque', this.badge, 'Coup loufoque')}
+        <div class="chips" aria-label="${L('Type de ligne', 'Line type')}">
+          ${chip('data-badge-chip', '', this.badge, L('Tous types', 'All types'))}
+          ${chip('data-badge-chip', 'theorie', this.badge, L('Théorie', 'Theory'))}
+          ${chip('data-badge-chip', 'piege', this.badge, L('Piège Blitz', 'Blitz trap'))}
+          ${chip('data-badge-chip', 'loufoque', this.badge, L('Coup loufoque', 'Odd move'))}
         </div>
         <div class="rep-filters">
-          <input type="search" data-q list="rep-joueurs" placeholder="Rechercher : nom, coup (Fg4, Bg4, 2…Fg4), code ECO (B12) ou joueur (Carlsen)" value="${esc(this.query)}">
+          <input type="search" data-q list="rep-joueurs" placeholder="${L('Rechercher : nom, coup (Fg4, Bg4, 2…Fg4), code ECO (B12) ou joueur (Carlsen)', 'Search: name, move (Bg4, 2…Bg4), ECO code (B12) or player (Carlsen)')}" value="${esc(this.query)}">
           <datalist id="rep-joueurs">${datalistHtml(this.joueurs, this.query)}</datalist>
-          ${this.view === 'trash' ? '' : `<select data-sort aria-label="Classer les variantes">
-            ${[['', 'Ordre du répertoire'], ['joue-niveau', 'Les plus jouées (mon niveau)'], ['score-niveau', 'Meilleur score pour moi (mon niveau)'], ['joue-maitres', 'Les plus jouées (maîtres)'], ['score-maitres', 'Meilleur score pour moi (maîtres)'], ['eval', 'Meilleure évaluation Stockfish']].map(([v, l]) => `<option value="${v}"${this.sort === v ? ' selected' : ''}>${l}</option>`).join('')}
+          ${this.view === 'trash' ? '' : `<select data-sort aria-label="${L('Classer les variantes', 'Sort the lines')}">
+            ${[['', L('Ordre du répertoire', 'Repertoire order')], ['joue-niveau', L('Les plus jouées (mon niveau)', 'Most played (my level)')], ['score-niveau', L('Meilleur score pour moi (mon niveau)', 'Best score for me (my level)')], ['joue-maitres', L('Les plus jouées (maîtres)', 'Most played (masters)')], ['score-maitres', L('Meilleur score pour moi (maîtres)', 'Best score for me (masters)')], ['eval', L('Meilleure évaluation Stockfish', 'Best Stockfish evaluation')]].map(([v, l]) => `<option value="${v}"${this.sort === v ? ' selected' : ''}>${l}</option>`).join('')}
           </select>`}
-          <details class="export-menu"><summary>⤓ Exporter en PGN</summary>
+          <details class="export-menu"><summary>⤓ ${L('Exporter en PGN', 'Export as PGN')}</summary>
             <div class="export-box">
-              ${d.choisis.filter((id) => count((e) => e.rep === id)).map((id) => `<button type="button" data-export="${id}">${esc(REPERTOIRES[id].titre)} (${count((e) => e.rep === id)} fiches)</button>`).join('')}
-              <button type="button" data-export="all">Tout le répertoire</button>
-              <p class="muted tiny">Lichess : Étude → « + » (nouveau chapitre) → onglet PGN → coller ou importer le fichier (64 chapitres max par étude : un fichier par ouverture). Chess.com : Analyse → Importer PGN. Les punitions et pièges sont inclus en variantes commentées.</p>
+              ${d.choisis.filter((id) => count((e) => e.rep === id)).map((id) => `<button type="button" data-export="${id}">${esc(REPERTOIRES[id].titre)} (${count((e) => e.rep === id)} ${L('fiches', 'lines')})</button>`).join('')}
+              <button type="button" data-export="all">${L('Tout le répertoire', 'Whole repertoire')}</button>
+              <p class="muted tiny">${L('Lichess : Étude → « + » (nouveau chapitre) → onglet PGN → coller ou importer le fichier (64 chapitres max par étude : un fichier par ouverture). Chess.com : Analyse → Importer PGN. Les punitions et pièges sont inclus en variantes commentées.', 'Lichess: Study → “+” (new chapter) → PGN tab → paste or import the file (64 chapters max per study: one file per opening). Chess.com: Analysis → Import PGN. Punishments and traps are included as commented variations.')}</p>
             </div>
           </details>
         </div>
-        <p class="small muted"><span data-count>${list.length} fiche(s) affichée(s).</span> Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.</p>
+        <p class="small muted"><span data-count>${L(`${list.length} fiche(s) affichée(s).`, `${list.length} line(s) shown.`)}</span> ${L(`Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.`, `“My level” statistics: ${esc(filt)} (adjustable in “Best move”); “masters”: titled players 2200+ FIDE; “Elite”: blitz/rapid games of the best Lichess and Chess.com players (observed frequencies, not an evaluation). Verified evaluations: ${esc(d.moteur.nom)}, depth ${d.moteur.profondeur}. ECO codes and names: Lichess chess-openings database (CC0); there is no official FIDE nomenclature of variations.`)}</p>
       </div>
       <div data-ranking>${this.rankingHtml(list)}</div>
       <section id="rep-players">${playersSectionHtml(this.joueurs, this.query, list.length)}</section>
@@ -291,7 +298,7 @@ export class RepertoirePage {
   // jamais recréée pendant la frappe (sinon Safari iPhone perd la saisie et se fige).
   renderResults() {
     const list = this.entries();
-    this.el.querySelector('[data-count]').textContent = `${list.length} fiche(s) affichée(s).`;
+    this.el.querySelector('[data-count]').textContent = L(`${list.length} fiche(s) affichée(s).`, `${list.length} line(s) shown.`);
     this.el.querySelector('[data-ranking]').innerHTML = this.rankingHtml(list);
     const sec = this.el.querySelector('#rep-players');
     sec.innerHTML = playersSectionHtml(this.joueurs, this.query, list.length);
@@ -313,10 +320,10 @@ export class RepertoirePage {
   soonHtml(id) {
     const r = REPERTOIRES[id];
     return `<section class="card soon-card" data-soon="${esc(id)}">
-      <h2>${couleurDe(id) === 'w' ? '♙' : '♟'} ${esc(r.titre)} <span class="badge soon-badge">bientôt</span></h2>
+      <h2>${couleurDe(id) === 'w' ? '♙' : '♟'} ${esc(r.titre)} <span class="badge soon-badge">${L('bientôt', 'soon')}</span></h2>
       <p class="small muted">${esc(r.sousTitre)}</p>
-      <p>Les fiches de cette ouverture sont en préparation : chaque piège et chaque punition sera vérifié par Stockfish avant publication.</p>
-      <p class="small">En attendant, l’<strong>arbre des coups joués</strong> ci-dessous (statistiques Lichess, à votre niveau ou chez les maîtres) et le <strong>Moteur</strong> fonctionnent déjà pour cette ouverture.</p>
+      <p>${L('Les fiches de cette ouverture sont en préparation : chaque piège et chaque punition sera vérifié par Stockfish avant publication.', 'The lines of this opening are being prepared: every trap and every punishment will be checked by Stockfish before publication.')}</p>
+      <p class="small">${L('En attendant, l’<strong>arbre des coups joués</strong> ci-dessous (statistiques Lichess, à votre niveau ou chez les maîtres) et le <strong>Moteur</strong> fonctionnent déjà pour cette ouverture.', 'Meanwhile, the <strong>tree of played moves</strong> below (Lichess statistics, at your level or among masters) and the <strong>Engine</strong> already work for this opening.')}</p>
     </section>`;
   }
 
@@ -324,10 +331,10 @@ export class RepertoirePage {
     return `<div class="rep-table-wrap">
       <table class="rep-table">
         <thead><tr>
-          <th>ECO · Nom</th><th>Séquence</th><th>Évaluation</th><th>Statistiques</th><th>Plan & structure</th>
-          <th>Punition tactique</th><th>Piège à éviter</th><th>Cases & pièces</th><th>Vidéo</th>
+          <th>${L('ECO · Nom', 'ECO · Name')}</th><th>${L('Séquence', 'Sequence')}</th><th>${L('Évaluation', 'Evaluation')}</th><th>${L('Statistiques', 'Statistics')}</th><th>${L('Plan & structure', 'Plan & structure')}</th>
+          <th>${L('Punition tactique', 'Tactical punishment')}</th><th>${L('Piège à éviter', 'Trap to avoid')}</th><th>${L('Cases & pièces', 'Squares & pieces')}</th><th>${L('Vidéo', 'Video')}</th>
         </tr></thead>
-        <tbody>${list.map((e) => this.row(e)).join('') || '<tr><td colspan="9" class="muted">Aucune fiche pour ce filtre.</td></tr>'}</tbody>
+        <tbody>${list.map((e) => this.row(e)).join('') || `<tr><td colspan="9" class="muted">${L('Aucune fiche pour ce filtre.', 'No line for this filter.')}</td></tr>`}</tbody>
       </table>
     </div>`;
   }
@@ -339,11 +346,11 @@ export class RepertoirePage {
         <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
-        <button type="button" class="primary small-btn unlock-btn" data-unlock="La fiche « ${esc(e.nom)} »">Débloquer avec Pro</button>
+        <button type="button" class="primary small-btn unlock-btn" data-unlock="La fiche « ${esc(e.nom)} »">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
       </td>
       <td data-label="Séquence" class="line">${esc(sanLine(e.san.slice(0, 4)))} …</td>
       <td data-label="Contenu Pro" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan)}</p>
-        <p class="small muted">Plan, pièges, réfutation vérifiée par Stockfish, statistiques et vidéos dans BlitzRefute Pro.</p></td>
+        <p class="small muted">${L('Plan, pièges, réfutation vérifiée par Stockfish, statistiques et vidéos dans BlitzRefute Pro.', 'Plan, traps, Stockfish-verified refutation, statistics and videos in BlitzRefute Pro.')}</p></td>
     </tr>`;
   }
 
@@ -354,21 +361,21 @@ export class RepertoirePage {
     const color = this.data.repertoires[e.rep].couleur;
     return `<tr data-id="${e.id}">
       <td data-label="ECO · Nom">
-        <span class="badge eco">${esc(e.eco)}</span> <button type="button" class="badge badge-btn ${BADGE_CLASS[e.badge]}" data-badge-filter="${e.badge}" title="Afficher toutes les fiches de ce type">${esc(BADGE_LABEL[e.badge])}</button>
+        <span class="badge eco">${esc(e.eco)}</span> <button type="button" class="badge badge-btn ${BADGE_CLASS[e.badge]}" data-badge-filter="${e.badge}" title="${L('Afficher toutes les fiches de ce type', 'Show all lines of this type')}">${esc(BADGE_LABEL[e.badge])}</button>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
         <div class="row-actions">
-          <button type="button" class="primary small-btn" data-test="${e.id}">▶ Tester cette ligne</button>
-          <button type="button" class="link-btn" data-tree="${e.id}">Arbre des coups joués</button>
+          <button type="button" class="primary small-btn" data-test="${e.id}">▶ ${L('Tester cette ligne', 'Test this line')}</button>
+          <button type="button" class="link-btn" data-tree="${e.id}">${L('Arbre des coups joués', 'Tree of played moves')}</button>
         </div>
       </td>
       <td data-label="Séquence" class="line">${esc(sanLine(e.san))}</td>
       <td data-label="Évaluation">${this.evalCell(e, live)}</td>
       <td data-label="Statistiques">${this.statsCell(live, e)}</td>
-      <td data-label="Plan & structure"><p class="small">${esc(e.plan)}</p><p class="small"><strong>Structure :</strong> ${esc(e.structure)}</p></td>
+      <td data-label="Plan & structure"><p class="small">${esc(e.plan)}</p><p class="small"><strong>${L('Structure :', 'Structure:')}</strong> ${esc(e.structure)}</p></td>
       <td data-label="Punition tactique">${this.claimCell(e, 'punition', v?.punition, color)}</td>
       <td data-label="Piège à éviter">${this.claimCell(e, 'piege', v?.piege, color)}</td>
-      <td data-label="Cases & pièces" class="small"><p><strong>Cases clés :</strong> ${esc(e.cases)}</p><p><strong>À échanger :</strong> ${esc(e.echanger)}</p><p><strong>À conserver :</strong> ${esc(e.conserver)}</p></td>
+      <td data-label="Cases & pièces" class="small"><p><strong>${L('Cases clés :', 'Key squares:')}</strong> ${esc(e.cases)}</p><p><strong>${L('À échanger :', 'To trade:')}</strong> ${esc(e.echanger)}</p><p><strong>${L('À conserver :', 'To keep:')}</strong> ${esc(e.conserver)}</p></td>
       <td data-label="Vidéo">${this.videoCell(e)}</td>
     </tr>`;
   }
@@ -376,68 +383,70 @@ export class RepertoirePage {
   evalCell(e, live) {
     const c = live.cloud;
     let cloud;
-    if (!c) cloud = '<span class="muted small">Cloud Eval : en attente</span>';
+    if (!c) cloud = `<span class="muted small">${L('Cloud Eval : en attente', 'Cloud Eval: pending')}</span>`;
     else if (c.status === 'loading') cloud = '<span class="state small"><span class="spinner"></span>Cloud Eval…</span>';
-    else if (c.status === 'absent') cloud = '<span class="muted small">Cloud Eval : position absente du cache Lichess</span>';
+    else if (c.status === 'absent') cloud = `<span class="muted small">${L('Cloud Eval : position absente du cache Lichess', 'Cloud Eval: position not in the Lichess cache')}</span>`;
     else if (c.status === 'error') cloud = `<span class="error-text small">${esc(c.error)}</span>`;
-    else cloud = `<div><strong>${esc(formatScore(c.score))}</strong> <span class="muted tiny">Cloud Eval, prof. ${c.depth}</span></div><div class="tiny">Meilleur : ${esc(sanFr(c.san))}</div>`;
+    else cloud = `<div><strong>${esc(formatScore(c.score))}</strong> <span class="muted tiny">Cloud Eval, ${L('prof.', 'depth')} ${c.depth}</span></div><div class="tiny">${L('Meilleur :', 'Best:')} ${esc(sanFr(c.san))}</div>`;
     const v = e.verification;
-    return cloud + (v ? `<div class="small">Stockfish (vérif.) : <strong>${esc(scoreText(toWhite(v.main, v.main.pov)))}</strong></div>` : '');
+    return cloud + (v ? `<div class="small">${L('Stockfish (vérif.) :', 'Stockfish (check):')} <strong>${esc(scoreText(toWhite(v.main, v.main.pov)))}</strong></div>` : '');
   }
 
   statsCell(live, e) {
     const one = (x, label) => {
-      if (!x) return `<div class="muted tiny">${label} : en attente</div>`;
+      if (!x) return `<div class="muted tiny">${L(`${label} : en attente`, `${label}: pending`)}</div>`;
       if (x.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
-      if (x.status === 'notoken') return `<div class="muted tiny">${label} : jeton Lichess requis (⚙)</div>`;
-      if (x.status === 'error') return `<div class="error-text tiny">${label} : ${esc(x.error)}</div>`;
+      if (x.status === 'notoken') return `<div class="muted tiny">${L(`${label} : jeton Lichess requis (⚙)`, `${label}: Lichess token required (⚙)`)}</div>`;
+      if (x.status === 'error') return `<div class="error-text tiny">${label}${L(' :', ':')} ${esc(x.error)}</div>`;
       const s = x.stats;
-      if (!s.total) return `<div class="muted tiny">${label} : aucune partie</div>`;
-      return `<div class="stat-line"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString('fr-FR')} parties</span>${bar(s)}<span class="tiny">Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)}</span></div>`;
+      if (!s.total) return `<div class="muted tiny">${L(`${label} : aucune partie`, `${label}: no games`)}</div>`;
+      return `<div class="stat-line"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString(LOC())} ${L('parties', 'games')}</span>${bar(s)}<span class="tiny">${wdl(s)}</span></div>`;
     };
-    return one(live.explorer, 'Mon niveau') + one(live.masters, 'Maîtres') + this.eliteLine(e.fenFinale, e.rep);
+    return one(live.explorer, L('Mon niveau', 'My level')) + one(live.masters, L('Maîtres', 'Masters')) + this.eliteLine(e.fenFinale, e.rep);
   }
 
   // Ligne « Élite » : lue dans le fichier statique, sans requête réseau supplémentaire.
   eliteLine(fen, rep = null) {
     const el = this.elite;
     const camp = !!loadSettings().eliteCamp;
-    const label = camp ? `Élite (${CAMP_LABEL})` : 'Élite';
-    if (rep && !REPERTOIRES[rep]?.elite) return `<div class="muted tiny elite-absent">${label} : données Élite pas encore collectées pour cette ouverture</div>`;
+    const E = L('Élite', 'Elite');
+    const label = camp ? `${E} (${CAMP_LABEL})` : E;
+    const sep = L(' :', ':');
+    if (rep && !REPERTOIRES[rep]?.elite) return `<div class="muted tiny elite-absent">${label}${sep} ${L('données Élite pas encore collectées pour cette ouverture', 'Elite data not yet collected for this opening')}</div>`;
     if (el.status === 'loading') return `<div class="state tiny"><span class="spinner"></span>${label}…</div>`;
-    if (el.status !== 'ok') return `<div class="muted tiny">${label} : jeu de données non publié</div>`;
+    if (el.status !== 'ok') return `<div class="muted tiny">${label}${sep} ${L('jeu de données non publié', 'dataset not published')}</div>`;
     const x = lookupElite(el.data, fen, { camp });
-    if (x.status === 'nocamp') return `<div class="muted tiny elite-absent">${label} : ${esc(NOCAMP_TEXT)}</div>`;
-    if (x.status !== 'ok') return `<div class="muted tiny elite-absent">${label} : position absente (aucune partie du top retenue)</div>`;
+    if (x.status === 'nocamp') return `<div class="muted tiny elite-absent">${label}${sep} ${esc(NOCAMP_TEXT)}</div>`;
+    if (x.status !== 'ok') return `<div class="muted tiny elite-absent">${label}${sep} ${L('position absente (aucune partie du top retenue)', 'position missing (no top game kept)')}</div>`;
     const s = x.stats;
-    return `<div class="stat-line stat-elite"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString('fr-FR')} parties · ensuite surtout ${esc(sanFr(x.top.san))} (${p1((100 * x.top.stats.total) / x.total)})</span>${bar(s)}<span class="tiny">Blancs ${p1(s.white)} · nulles ${p1(s.draws)} · Noirs ${p1(s.black)} · ${esc(splitText(x.split))}</span></div>`;
+    return `<div class="stat-line stat-elite"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString(LOC())} ${L('parties', 'games')} · ${L('ensuite surtout', 'then mostly')} ${esc(sanFr(x.top.san))} (${p1((100 * x.top.stats.total) / x.total)})</span>${bar(s)}<span class="tiny">${wdl(s)} · ${esc(splitText(x.split))}</span></div>`;
   }
 
   claimCell(e, kind, v, color) {
     const c = e[kind];
     if (!c) return '<span class="muted small">—</span>';
-    let verdict = '<span class="badge">non vérifié</span>';
+    let verdict = `<span class="badge">${L('non vérifié', 'not verified')}</span>`;
     if (v) {
-      const fin = v.final.mated ? (v.final.mated === color ? 'mat contre nous' : 'mat') : formatScore({ type: v.final.type, value: v.final.value });
+      const fin = v.final.mated ? (v.final.mated === color ? L('mat contre nous', 'mate against us') : L('mat', 'mate')) : formatScore({ type: v.final.type, value: v.final.value });
       verdict = v.ok
-        ? `<span class="badge ok" title="Évaluation finale du point de vue de notre camp">✔ Stockfish : ${esc(fin)}</span>`
-        : `<span class="badge err">✘ non confirmé (${esc(fin)})</span>`;
+        ? `<span class="badge ok" title="${L('Évaluation finale du point de vue de notre camp', 'Final evaluation from our side’s point of view')}">✔ Stockfish${L(' :', ':')} ${esc(fin)}</span>`
+        : `<span class="badge err">✘ ${L('non confirmé', 'not confirmed')} (${esc(fin)})</span>`;
     }
     const rest = c.san.slice(c.marked);
     const engineAlt = v && v.afterError?.best && kind === 'punition' && v.afterError.best !== rest[1]
-      ? `<div class="muted tiny">Meilleure suite selon le moteur après l’erreur : ${esc(v.afterError.pv.slice(0, 4).map(sanFr).join(' '))}</div>` : '';
+      ? `<div class="muted tiny">${L('Meilleure suite selon le moteur après l’erreur :', 'Best continuation according to the engine after the mistake:')} ${esc(v.afterError.pv.slice(0, 4).map(sanFr).join(' '))}</div>` : '';
     return `<div class="line small">${markedLineHtml(c.san, c.marked)}</div><p class="small">${esc(c.texte)}</p>${verdict}${engineAlt}
-      <div><button type="button" class="link-btn small" data-test-claim="${e.id}:${kind}">▶ Tester</button></div>`;
+      <div><button type="button" class="link-btn small" data-test-claim="${e.id}:${kind}">▶ ${L('Tester', 'Test')}</button></div>`;
   }
 
   videoCell(e) {
     const perso = this.videos[e.id];
     const verified = e.video.url && e.video.verifie
-      ? `<a class="btn-link" href="${esc(e.video.url)}" target="_blank" rel="noopener">▶ Vidéo (passage précis)</a>` : '';
+      ? `<a class="btn-link" href="${esc(e.video.url)}" target="_blank" rel="noopener">▶ ${L('Vidéo (passage précis)', 'Video (exact moment)')}</a>` : '';
     const mine = perso
-      ? `<a class="btn-link" href="${esc(perso)}" target="_blank" rel="noopener">▶ Mon lien horodaté</a> <button type="button" class="link-btn tiny" data-video-del="${e.id}">retirer</button>`
-      : `<button type="button" class="link-btn" data-video-add="${e.id}">+ Ajouter mon lien horodaté</button>`;
-    return `${verified}${curatedVideosHtml(e)}<button type="button" class="small-btn" data-videos="${e.id}">🎬 Vidéos (${Object.keys(LANGS).length} langues)</button><div>${mine}</div>`;
+      ? `<a class="btn-link" href="${esc(perso)}" target="_blank" rel="noopener">▶ ${L('Mon lien horodaté', 'My timestamped link')}</a> <button type="button" class="link-btn tiny" data-video-del="${e.id}">${L('retirer', 'remove')}</button>`
+      : `<button type="button" class="link-btn" data-video-add="${e.id}">+ ${L('Ajouter mon lien horodaté', 'Add my timestamped link')}</button>`;
+    return `${verified}${curatedVideosHtml(e)}<button type="button" class="small-btn" data-videos="${e.id}">🎬 ${L(`Vidéos (${Object.keys(LANGS).length} langues)`, `Videos (${Object.keys(LANGS).length} languages)`)}</button><div>${mine}</div>`;
   }
 
   // ---------- Vue Anti-trash ----------
@@ -450,36 +459,36 @@ export class RepertoirePage {
     const lockedCard = (e) => `<article class="card trash-card locked-card">
         <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span></div>
         <h3>${esc(e.nom)}</h3>
-        <button type="button" class="primary small-btn" data-unlock="La réfutation « ${esc(e.nom)} »">Débloquer avec Pro</button>
+        <button type="button" class="primary small-btn" data-unlock="La réfutation « ${esc(e.nom)} »">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
       </article>`;
     const card = (e, kind) => {
       if (!canOpenFiche(e.id)) return lockedCard(e);
       const c = e[kind];
       const v = e.verification?.[kind];
       const color = reps[e.rep].couleur;
-      const fin = v ? (v.final.mated ? (v.final.mated === color ? 'mat contre nous' : 'mat') : formatScore({ type: v.final.type, value: v.final.value })) : null;
+      const fin = v ? (v.final.mated ? (v.final.mated === color ? L('mat contre nous', 'mate against us') : L('mat', 'mate')) : formatScore({ type: v.final.type, value: v.final.value })) : null;
       const err = c.san[c.marked];
       const no = `${Math.floor(c.marked / 2) + 1}${c.marked % 2 ? '…' : '.'}`;
       return `<article class="card trash-card ${kind}">
-        <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span> ${v?.ok ? `<span class="badge ok">✔ Stockfish : ${esc(fin)}</span>` : ''}</div>
+        <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span> ${v?.ok ? `<span class="badge ok">✔ Stockfish${L(' :', ':')} ${esc(fin)}</span>` : ''}</div>
         <h3>${esc(e.nom)}</h3>
-        <p class="trash-move">${kind === 'punition' ? 'Coup adverse' : 'Votre erreur à éviter'} : <mark>${esc(no)} ${esc(sanFr(err))} ?</mark></p>
-        <p class="small"><strong>${kind === 'punition' ? 'Réfutation immédiate' : 'Sanction'} :</strong> <span class="line">${markedLineHtml(c.san, -1, c.marked + 1) || '—'}</span></p>
+        <p class="trash-move">${kind === 'punition' ? L('Coup adverse', 'Opponent’s move') : L('Votre erreur à éviter', 'Your mistake to avoid')}${L(' :', ':')} <mark>${esc(no)} ${esc(sanFr(err))} ?</mark></p>
+        <p class="small"><strong>${kind === 'punition' ? L('Réfutation immédiate', 'Immediate refutation') : L('Sanction', 'Penalty')}${L(' :', ':')}</strong> <span class="line">${markedLineHtml(c.san, -1, c.marked + 1) || '—'}</span></p>
         <p class="small">${esc(c.texte)}</p>
-        <div class="actions"><button type="button" class="primary small-btn" data-test-claim="${e.id}:${kind}">▶ Tester</button>
-          <button type="button" class="link-btn" data-goto="${e.id}">Voir la fiche</button></div>
+        <div class="actions"><button type="button" class="primary small-btn" data-test-claim="${e.id}:${kind}">▶ ${L('Tester', 'Test')}</button>
+          <button type="button" class="link-btn" data-goto="${e.id}">${L('Voir la fiche', 'View the line')}</button></div>
       </article>`;
     };
     const plain = (e) => (!canOpenFiche(e.id) ? lockedCard(e) : `<article class="card trash-card">
         <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span></div>
         <h3>${esc(e.nom)}</h3><p class="small line">${esc(sanLine(e.san))}</p><p class="small">${esc(e.plan)}</p>
-        <div class="actions"><button type="button" class="primary small-btn" data-test="${e.id}">▶ Tester</button><button type="button" class="link-btn" data-goto="${e.id}">Voir la fiche</button></div>
+        <div class="actions"><button type="button" class="primary small-btn" data-test="${e.id}">▶ ${L('Tester', 'Test')}</button><button type="button" class="link-btn" data-goto="${e.id}">${L('Voir la fiche', 'View the line')}</button></div>
       </article>`);
     return `<section class="trash">
-      <p class="small">Coups bizarres fréquents en Blitz autour de 1000 Elo : sorties de Dame précoces, gambits douteux, poussées de pions hâtives, et vos propres réflexes perdants. Chaque réfutation est vérifiée par Stockfish.</p>
-      <h2>Coups adverses à punir (${punitions.length})</h2><div class="trash-grid">${punitions.map((e) => card(e, 'punition')).join('') || '<p class="muted">Aucun.</p>'}</div>
-      ${loufoques.length ? `<h2>Coups atypiques sans réfutation forcée (${loufoques.length})</h2><p class="muted small">Le moteur les juge inférieurs mais sans punition tactique immédiate : jouer simplement le plan indiqué.</p><div class="trash-grid">${loufoques.map(plain).join('')}</div>` : ''}
-      <h2>Pièges à ne pas commettre (${pieges.length})</h2><div class="trash-grid">${pieges.map((e) => card(e, 'piege')).join('') || '<p class="muted">Aucun.</p>'}</div>
+      <p class="small">${L('Coups bizarres fréquents en Blitz autour de 1000 Elo : sorties de Dame précoces, gambits douteux, poussées de pions hâtives, et vos propres réflexes perdants. Chaque réfutation est vérifiée par Stockfish.', 'Odd moves common in Blitz around 1000 Elo: early queen sorties, dubious gambits, hasty pawn pushes, and your own losing reflexes. Every refutation is checked by Stockfish.')}</p>
+      <h2>${L('Coups adverses à punir', 'Opponent moves to punish')} (${punitions.length})</h2><div class="trash-grid">${punitions.map((e) => card(e, 'punition')).join('') || `<p class="muted">${L('Aucun.', 'None.')}</p>`}</div>
+      ${loufoques.length ? `<h2>${L('Coups atypiques sans réfutation forcée', 'Unusual moves without a forced refutation')} (${loufoques.length})</h2><p class="muted small">${L('Le moteur les juge inférieurs mais sans punition tactique immédiate : jouer simplement le plan indiqué.', 'The engine rates them as inferior but with no immediate tactical punishment: simply play the plan given.')}</p><div class="trash-grid">${loufoques.map(plain).join('')}</div>` : ''}
+      <h2>${L('Pièges à ne pas commettre', 'Traps not to fall into')} (${pieges.length})</h2><div class="trash-grid">${pieges.map((e) => card(e, 'piege')).join('') || `<p class="muted">${L('Aucun.', 'None.')}</p>`}</div>
     </section>`;
   }
 
@@ -521,7 +530,7 @@ export class RepertoirePage {
         const u = r.pvs[0]?.moves[0];
         let san = null;
         try { san = new Chess(e.fenFinale).move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }).san; } catch { /* coup invalide ignoré */ }
-        st.cloud = san ? { status: 'ok', score: r.pvs[0].score, depth: r.depth, san } : { status: 'error', error: 'Réponse Cloud Eval invalide' };
+        st.cloud = san ? { status: 'ok', score: r.pvs[0].score, depth: r.depth, san } : { status: 'error', error: L('Réponse Cloud Eval invalide', 'Invalid Cloud Eval response') };
       }
       this.updateRow(e);
     }).catch((err) => { if (gen === this.generation) { st.cloud = { status: 'error', error: err.message }; this.updateRow(e); } });
@@ -564,9 +573,10 @@ export class RepertoirePage {
 
   treeHtml() {
     const src = this.treeSource;
-    const toggle = `<div class="seg"><button type="button" data-tree-src="niveau" aria-selected="${src === 'niveau'}">Mon niveau</button><button type="button" data-tree-src="maitres" aria-selected="${src === 'maitres'}">Maîtres</button><button type="button" data-tree-src="elite" aria-selected="${src === 'elite'}">Élite blitz/rapide</button></div>`;
+    const toggle = `<div class="seg"><button type="button" data-tree-src="niveau" aria-selected="${src === 'niveau'}">${L('Mon niveau', 'My level')}</button><button type="button" data-tree-src="maitres" aria-selected="${src === 'maitres'}">${L('Maîtres', 'Masters')}</button><button type="button" data-tree-src="elite" aria-selected="${src === 'elite'}">${L('Élite blitz/rapide', 'Elite blitz/rapid')}</button></div>`;
+    const titre = `<h2>${L('Arbre des coups joués', 'Tree of played moves')}</h2>`;
     if (!this.tree) {
-      return `<h2>Arbre des coups joués</h2>${toggle}<p class="muted small">Touchez « Arbre des coups joués » sur une fiche, ou <button type="button" class="link-btn" data-tree-root>partez de la racine du répertoire</button>, pour explorer tous les coups réellement joués — à votre niveau (coups loufoques compris), chez les maîtres ou chez les meilleurs joueurs blitz/rapide en ligne.</p>`;
+      return `${titre}${toggle}<p class="muted small">${L('Touchez « Arbre des coups joués » sur une fiche, ou', 'Tap “Tree of played moves” on a line, or')} <button type="button" class="link-btn" data-tree-root>${L('partez de la racine du répertoire', 'start from the root of the repertoire')}</button>${L(', pour explorer tous les coups réellement joués — à votre niveau (coups loufoques compris), chez les maîtres ou chez les meilleurs joueurs blitz/rapide en ligne.', ', to explore every move actually played — at your level (odd moves included), among masters or among the best online blitz/rapid players.')}</p>`;
     }
     const t = this.tree;
     const c = new Chess();
@@ -575,9 +585,9 @@ export class RepertoirePage {
     const turn = c.turn();
     let body = '';
     const n = t.node;
-    if (!n || n.status === 'loading') body = '<p class="state"><span class="spinner"></span> Chargement…</p>';
-    else if (n.status === 'notoken') body = '<p class="muted">Jeton Lichess requis (⚙ Réglages) pour l’Opening Explorer.</p>';
-    else if (n.status === 'unavailable') body = `<p class="muted">Jeu de données Élite non publié sur ce site (${esc(n.error)}).</p>`;
+    if (!n || n.status === 'loading') body = `<p class="state"><span class="spinner"></span> ${L('Chargement…', 'Loading…')}</p>`;
+    else if (n.status === 'notoken') body = `<p class="muted">${L('Jeton Lichess requis (⚙ Réglages) pour l’Opening Explorer.', 'Lichess token required (⚙ Settings) for the Opening Explorer.')}</p>`;
+    else if (n.status === 'unavailable') body = `<p class="muted">${L(`Jeu de données Élite non publié sur ce site (${esc(n.error)}).`, `Elite dataset not published on this site (${esc(n.error)}).`)}</p>`;
     else if (n.status === 'nocamp') body = `<p class="muted elite-absent">${esc(NOCAMP_TEXT)}</p>`;
     else if (n.status === 'absent') body = `<p class="muted elite-absent">${esc(absentText(n.meta, n.camp))}</p>`;
     else if (n.status === 'error') body = `<p class="errbox">${esc(n.error)}</p>`;
@@ -587,29 +597,29 @@ export class RepertoirePage {
         const s = m.stats;
         const tag = known.get(m.uci);
         return `<tr>
-          <td><button type="button" class="link-btn" data-child="${m.uci}">${esc(sanFr(m.san))}</button>${tag ? ` <span class="badge tiny" title="${esc(tag)}">fiche</span>` : ''}</td>
-          <td class="num">${s.total.toLocaleString('fr-FR')}</td>
+          <td><button type="button" class="link-btn" data-child="${m.uci}">${esc(sanFr(m.san))}</button>${tag ? ` <span class="badge tiny" title="${esc(tag)}">${L('fiche', 'line')}</span>` : ''}</td>
+          <td class="num">${s.total.toLocaleString(LOC())}</td>
           <td>${bar(s)}<span class="tiny">${p1(s.white)} / ${p1(s.draws)} / ${p1(s.black)}</span></td>
           <td class="num">${p1(m.win)}</td>
         </tr>`;
       }).join('');
       const res = (g) => (g.winner === 'white' ? '1-0' : g.winner === 'black' ? '0-1' : '½-½');
       let games = src === 'maitres' && n.games?.length
-        ? `<details class="master-games" open><summary>Parties de référence de maîtres (${n.games.length})</summary><ul>${n.games.map((g) => `<li><button type="button" class="link-btn" data-master="${esc(g.id)}">${esc(g.white.name)} (${g.white.rating}) – ${esc(g.black.name)} (${g.black.rating})</button> <span class="muted small">${res(g)}, ${esc(String(g.year))}</span></li>`).join('')}</ul></details>` : '';
+        ? `<details class="master-games" open><summary>${L('Parties de référence de maîtres', 'Masters’ reference games')} (${n.games.length})</summary><ul>${n.games.map((g) => `<li><button type="button" class="link-btn" data-master="${esc(g.id)}">${esc(g.white.name)} (${g.white.rating}) – ${esc(g.black.name)} (${g.black.rating})</button> <span class="muted small">${res(g)}, ${esc(String(g.year))}</span></li>`).join('')}</ul></details>` : '';
       if (src === 'elite' && n.games?.length) {
-        games = `<details class="master-games elite-games" open><summary>Parties exemples du top (${n.games.length})</summary><ul>${n.games.map((g, i) => `<li><button type="button" class="link-btn" data-elite-game="${i}">${esc(g.label)}</button> <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))}, ${esc(String(g.y))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}</span> <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('')}</ul></details>`;
+        games = `<details class="master-games elite-games" open><summary>${L('Parties exemples du top', 'Example games from the top')} (${n.games.length})</summary><ul>${n.games.map((g, i) => `<li><button type="button" class="link-btn" data-elite-game="${i}">${esc(g.label)}</button> <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))}, ${esc(String(g.y))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}</span> <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="${L(`Voir la partie sur ${esc(g.platform)}`, `View the game on ${esc(g.platform)}`)}">↗</a></li>`).join('')}</ul></details>`;
       }
-      const who = { niveau: 'à votre niveau', maitres: 'de maîtres', elite: `du top blitz/rapide (${esc(splitText(n.split))})` }[src];
+      const who = { niveau: L('à votre niveau', 'at your level'), maitres: L('de maîtres', 'by masters'), elite: L(`du top blitz/rapide (${esc(splitText(n.split))})`, `from the blitz/rapid top (${esc(splitText(n.split))})`) }[src];
       body = `${n.opening ? `<p class="small"><span class="badge eco">${esc(n.opening.eco)}</span> ${esc(n.opening.name)}</p>` : ''}
-        <p class="muted small">${n.total.toLocaleString('fr-FR')} parties ${who} · trait aux ${turn === 'w' ? 'Blancs' : 'Noirs'}</p>
-        ${src === 'elite' ? `<p class="muted tiny">Fréquences observées chez les meilleurs joueurs en ligne, pas une évaluation moteur. ${esc(eliteSummary(n.meta))}</p>` : ''}
-        <table class="tree-table"><thead><tr><th>Coup</th><th>Parties</th><th>Blancs / nulles / Noirs</th><th>% victoire ${turn === 'w' ? 'Blancs' : 'Noirs'}</th></tr></thead>
-        <tbody>${rows || `<tr><td colspan="4" class="muted">Aucun coup joué ici ${{ niveau: 'avec ce filtre', maitres: 'par les maîtres', elite: 'dans le jeu Élite' }[src]}.</td></tr>`}</tbody></table>${games}`;
+        <p class="muted small">${L(`${n.total.toLocaleString(LOC())} parties ${who} · trait aux ${turn === 'w' ? 'Blancs' : 'Noirs'}`, `${n.total.toLocaleString('en-US')} games ${who} · ${camp(turn)} to move`)}</p>
+        ${src === 'elite' ? `<p class="muted tiny">${L('Fréquences observées chez les meilleurs joueurs en ligne, pas une évaluation moteur.', 'Observed frequencies among the best online players, not an engine evaluation.')} ${esc(eliteSummary(n.meta))}</p>` : ''}
+        <table class="tree-table"><thead><tr><th>${L('Coup', 'Move')}</th><th>${L('Parties', 'Games')}</th><th>${L('Blancs / nulles / Noirs', 'White / draws / Black')}</th><th>${L(`% victoire ${turn === 'w' ? 'Blancs' : 'Noirs'}`, `${camp(turn)} win %`)}</th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="4" class="muted">${L(`Aucun coup joué ici ${{ niveau: 'avec ce filtre', maitres: 'par les maîtres', elite: 'dans le jeu Élite' }[src]}.`, `No move played here ${{ niveau: 'with this filter', maitres: 'by masters', elite: 'in the Elite dataset' }[src]}.`)}</td></tr>`}</tbody></table>${games}`;
     }
-    return `<h2>Arbre des coups joués</h2>${toggle}
-      <p class="crumbs"><button type="button" class="link-btn" data-crumb="0">Départ</button> ${crumbs}</p>
+    return `${titre}${toggle}
+      <p class="crumbs"><button type="button" class="link-btn" data-crumb="0">${L('Départ', 'Start')}</button> ${crumbs}</p>
       ${body}
-      <p class="muted small">« fiche » : coup couvert par une fiche du répertoire. Coups validés par chess.js avant affichage.</p>`;
+      <p class="muted small">${L('« fiche » : coup couvert par une fiche du répertoire. Coups validés par chess.js avant affichage.', '“line”: move covered by a repertoire line. Moves validated by chess.js before display.')}</p>`;
   }
 
   knownChildren(path) {
@@ -617,8 +627,8 @@ export class RepertoirePage {
     const lines = [];
     for (const e of this.data.entries) {
       lines.push([e.uci, e.nom]);
-      if (e.punition) lines.push([e.punition.uci, `${e.nom} (punition)`]);
-      if (e.piege) lines.push([e.piege.uci, `${e.nom} (piège)`]);
+      if (e.punition) lines.push([e.punition.uci, `${e.nom} (${L('punition', 'punishment')})`]);
+      if (e.piege) lines.push([e.piege.uci, `${e.nom} (${L('piège', 'trap')})`]);
     }
     for (const [uci, nom] of lines) {
       if (uci.length > path.length && path.every((u, i) => uci[i] === u) && !out.has(uci[path.length])) out.set(uci[path.length], nom);
@@ -674,22 +684,22 @@ export class RepertoirePage {
 
   liveHtml() {
     const el = this.elite;
-    const head = '<h2>🔴 Nouvelles parties du top</h2>';
-    if (el.status === 'loading') return `${head}<p class="state small"><span class="spinner"></span> Chargement…</p>`;
-    if (el.status !== 'ok') return `${head}<p class="muted small">Jeu de données Élite non publié sur ce site.</p>`;
+    const head = `<h2>🔴 ${L('Nouvelles parties du top', 'New games from the top')}</h2>`;
+    if (el.status === 'loading') return `${head}<p class="state small"><span class="spinner"></span> ${L('Chargement…', 'Loading…')}</p>`;
+    if (el.status !== 'ok') return `${head}<p class="muted small">${L('Jeu de données Élite non publié sur ce site.', 'Elite dataset not published on this site.')}</p>`;
     // Parties du top limitées aux ouvertures choisies dont les données Élite sont collectées.
     const suivis = this.data.choisis.filter((id) => REPERTOIRES[id]?.elite);
-    if (!suivis.length) return `${head}<p class="muted small">Données Élite pas encore collectées pour vos ouvertures (${esc(this.data.choisis.map((id) => REPERTOIRES[id].titre).join(', '))}).</p>`;
+    if (!suivis.length) return `${head}<p class="muted small">${L(`Données Élite pas encore collectées pour vos ouvertures (${esc(this.data.choisis.map((id) => REPERTOIRES[id].titre).join(', '))}).`, `Elite data not yet collected for your openings (${esc(this.data.choisis.map((id) => REPERTOIRES[id].titre).join(', '))}).`)}</p>`;
     const list = recentInfo(el.data).filter((g) => suivis.includes(g.rep));
     const rows = list.map((g, i) => `<li>
-        <span class="tiny live-when" title="${esc(new Date(g.t).toLocaleString('fr-FR'))}">${esc(ago(g.t))}</span>
+        <span class="tiny live-when" title="${esc(new Date(g.t).toLocaleString(LOC()))}">${esc(ago(g.t))}</span>
         <button type="button" class="link-btn" data-live-game="${i}">${esc(g.label)}</button>
         <span class="muted small">${esc(g.r.replace('1/2-1/2', '½-½'))} · ${esc(g.platform)} ${esc(SPEED_LABELS[g.s] || g.s)}${g.opening ? ` · ${esc(g.opening)}` : ''}</span>
-        <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="Voir la partie sur ${esc(g.platform)}">↗</a></li>`).join('');
+        <a class="tiny" href="${esc(g.url)}" target="_blank" rel="noopener" title="${L(`Voir la partie sur ${esc(g.platform)}`, `View the game on ${esc(g.platform)}`)}">↗</a></li>`).join('');
     return `${head}
-      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent votre répertoire (${esc(suivis.map((id) => REPERTOIRES[id].titre).join(' ou '))}, quel que soit l’ordre des coups) ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).</p>
-      ${rows ? `<ul class="live-list">${rows}</ul>` : '<p class="muted small">Aucune partie récente dans le jeu de données.</p>'}
-      <p class="muted tiny">Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).</p>`;
+      <p class="muted tiny">${esc(eliteSummary(el.data.meta))} ${L(`Dernières parties des 50 meilleurs joueurs blitz/rapide de Lichess et Chess.com qui atteignent votre répertoire (${esc(suivis.map((id) => REPERTOIRES[id].titre).join(' ou '))}, quel que soit l’ordre des coups) ; une partie apparaît au passage suivant sa fin (≈ toutes les 30 min, parfois plus tard).`, `Latest games of the 50 best blitz/rapid players on Lichess and Chess.com that reach your repertoire (${esc(suivis.map((id) => REPERTOIRES[id].titre).join(' or '))}, whatever the move order); a game appears on the next run after it ends (≈ every 30 min, sometimes later).`)}</p>
+      ${rows ? `<ul class="live-list">${rows}</ul>` : `<p class="muted small">${L('Aucune partie récente dans le jeu de données.', 'No recent game in the dataset.')}</p>`}
+      <p class="muted tiny">${L('Toucher une partie l’ouvre sur l’échiquier (votre partie actuelle est sauvegardée).', 'Tapping a game opens it on the board (your current game is saved).')}</p>`;
   }
 
   renderLive() {
@@ -702,7 +712,7 @@ export class RepertoirePage {
   bindLive(el) {
     el.querySelectorAll('[data-live-game]').forEach((b) => b.addEventListener('click', () => {
       const g = recentInfo(this.elite.data)[Number(b.dataset.liveGame)];
-      if (g) this.openGame?.(g.san, g.color, `la partie ${g.label}`, eliteHeaders(g));
+      if (g) this.openGame?.(g.san, g.color, L(`la partie ${g.label}`, `the game ${g.label}`), eliteHeaders(g));
     }));
   }
 
@@ -719,42 +729,42 @@ export class RepertoirePage {
     const e = this.data.entries.find((x) => x.id === id);
     const dlg = this.el.querySelector('[data-video-dlg]');
     this.videoLang = lang;
-    const head = `<div class="vd-head"><h2>Vidéos : ${esc(e.nom)}</h2><button type="button" class="icon-btn" data-vclose aria-label="Fermer">✕</button></div>
-      ${e.video?.liens?.length ? `<h3 class="small">Sélection vérifiée</h3>${curatedVideosHtml(e, 'vd-curated vd-curated-dlg')}<h3 class="small">Recherche par langue</h3>` : ''}
+    const head = `<div class="vd-head"><h2>${L('Vidéos :', 'Videos:')} ${esc(e.nom)}</h2><button type="button" class="icon-btn" data-vclose aria-label="${L('Fermer', 'Close')}">✕</button></div>
+      ${e.video?.liens?.length ? `<h3 class="small">${L('Sélection vérifiée', 'Verified selection')}</h3>${curatedVideosHtml(e, 'vd-curated vd-curated-dlg')}<h3 class="small">${L('Recherche par langue', 'Search by language')}</h3>` : ''}
       <div class="chips">${Object.entries(LANGS).map(([k, l]) => `<button type="button" class="chip" data-vlang="${k}" aria-pressed="${k === lang}">${esc(l.label)}</button>`).join('')}</div>`;
     const render = (body) => {
-      dlg.innerHTML = `${head}${body}<p class="muted tiny">L’application trouve et classe les vidéos ; elle ne les regarde pas. Pour garder un passage précis, utilisez « ⏱ Garder ce passage ».</p>`;
+      dlg.innerHTML = `${head}${body}<p class="muted tiny">${L('L’application trouve et classe les vidéos ; elle ne les regarde pas. Pour garder un passage précis, utilisez « ⏱ Garder ce passage ».', 'The app finds and sorts videos; it does not watch them. To keep an exact moment, use “⏱ Keep this moment”.')}</p>`;
       dlg.querySelector('[data-vclose]').onclick = () => dlg.close();
       dlg.querySelectorAll('[data-vlang]').forEach((b) => { b.onclick = () => this.openVideos(id, b.dataset.vlang); });
       dlg.querySelectorAll('[data-vkeep]').forEach((b) => { b.onclick = () => this.keepVideo(id, `https://www.youtube.com/watch?v=${b.dataset.vkeep}`); });
     };
     if (!dlg.open) dlg.showModal();
     if (!this.youtube?.hasKey()) {
-      render(`<p class="small">Sans clé API YouTube, l’application ouvre une recherche YouTube dans la langue choisie :</p>
-        <p><a class="primary-link" href="${esc(searchLink(e, lang))}" target="_blank" rel="noopener">▶ Rechercher « ${esc(e.nom)} » en ${esc(LANGS[lang].label)}</a></p>
-        <p class="muted small">Avec une clé gratuite (⚙ Réglages → Clé API YouTube), la liste des vidéos s’affiche ici avec chaîne, durée et vues.</p>`);
+      render(`<p class="small">${L('Sans clé API YouTube, l’application ouvre une recherche YouTube dans la langue choisie :', 'Without a YouTube API key, the app opens a YouTube search in the chosen language:')}</p>
+        <p><a class="primary-link" href="${esc(searchLink(e, lang))}" target="_blank" rel="noopener">▶ ${L(`Rechercher « ${esc(e.nom)} » en ${esc(LANGS[lang].label)}`, `Search “${esc(e.nom)}” in ${esc(LANGS[lang].label)}`)}</a></p>
+        <p class="muted small">${L('Avec une clé gratuite (⚙ Réglages → Clé API YouTube), la liste des vidéos s’affiche ici avec chaîne, durée et vues.', 'With a free key (⚙ Settings → YouTube API key), the list of videos is shown here with channel, length and views.')}</p>`);
       return;
     }
-    render('<p class="state"><span class="spinner"></span> Recherche des vidéos…</p>');
+    render(`<p class="state"><span class="spinner"></span> ${L('Recherche des vidéos…', 'Searching videos…')}</p>`);
     try {
       const items = await this.youtube.search(e, lang);
       if (this.videoLang !== lang || !dlg.open) return;
       render(items.length ? `<ul class="vd-list">${items.map((it) => `<li>
           <a href="https://www.youtube.com/watch?v=${esc(it.id)}" target="_blank" rel="noopener" class="vd-thumb">${it.thumb ? `<img src="${esc(it.thumb)}" alt="" loading="lazy">` : ''}</a>
           <div><a href="https://www.youtube.com/watch?v=${esc(it.id)}" target="_blank" rel="noopener" class="vd-title">${esc(decodeEntities(it.title))}</a>
-          <div class="muted tiny">${esc(decodeEntities(it.channel))}${it.duration ? ` · ${esc(it.duration)}` : ''}${it.views ? ` · ${it.views.toLocaleString('fr-FR')} vues` : ''}${it.published ? ` · ${esc(it.published)}` : ''}</div>
-          <button type="button" class="link-btn tiny" data-vkeep="${esc(it.id)}">⏱ Garder ce passage</button></div></li>`).join('')}</ul>`
-        : `<p class="muted">Aucune vidéo trouvée en ${esc(LANGS[lang].label)}. <a href="${esc(searchLink(e, lang))}" target="_blank" rel="noopener">Recherche YouTube</a></p>`);
+          <div class="muted tiny">${esc(decodeEntities(it.channel))}${it.duration ? ` · ${esc(it.duration)}` : ''}${it.views ? ` · ${it.views.toLocaleString(LOC())} ${L('vues', 'views')}` : ''}${it.published ? ` · ${esc(it.published)}` : ''}</div>
+          <button type="button" class="link-btn tiny" data-vkeep="${esc(it.id)}">⏱ ${L('Garder ce passage', 'Keep this moment')}</button></div></li>`).join('')}</ul>`
+        : `<p class="muted">${L(`Aucune vidéo trouvée en ${esc(LANGS[lang].label)}.`, `No video found in ${esc(LANGS[lang].label)}.`)} <a href="${esc(searchLink(e, lang))}" target="_blank" rel="noopener">${L('Recherche YouTube', 'YouTube search')}</a></p>`);
     } catch (err) {
-      render(`<p class="errbox">${esc(err.message)}</p><p><a href="${esc(searchLink(e, lang))}" target="_blank" rel="noopener">Rechercher directement sur YouTube</a></p>`);
+      render(`<p class="errbox">${esc(err.message)}</p><p><a href="${esc(searchLink(e, lang))}" target="_blank" rel="noopener">${L('Rechercher directement sur YouTube', 'Search directly on YouTube')}</a></p>`);
     }
   }
 
   keepVideo(id, url) {
-    const time = window.prompt('Moment précis à garder (mm:ss, hh:mm:ss ou secondes ; vide = début) :', '');
+    const time = window.prompt(L('Moment précis à garder (mm:ss, hh:mm:ss ou secondes ; vide = début) :', 'Exact moment to keep (mm:ss, hh:mm:ss or seconds; empty = start):'), '');
     if (time === null) return;
     const link = buildVideoLink(url, time);
-    if (!link) { window.alert('Horodatage non reconnu.'); return; }
+    if (!link) { window.alert(L('Horodatage non reconnu.', 'Timestamp not recognised.')); return; }
     this.videos[id] = link;
     saveVideos(this.videos);
     this.el.querySelector('[data-video-dlg]').close();
@@ -762,11 +772,11 @@ export class RepertoirePage {
   }
 
   addVideo(id) {
-    const url = window.prompt('Adresse de la vidéo YouTube (youtube.com/watch?v=… ou youtu.be/…) :');
+    const url = window.prompt(L('Adresse de la vidéo YouTube (youtube.com/watch?v=… ou youtu.be/…) :', 'YouTube video address (youtube.com/watch?v=… or youtu.be/…):'));
     if (!url) return;
-    const time = window.prompt('Moment précis (mm:ss, hh:mm:ss ou secondes ; laisser vide pour le début) :', '');
+    const time = window.prompt(L('Moment précis (mm:ss, hh:mm:ss ou secondes ; laisser vide pour le début) :', 'Exact moment (mm:ss, hh:mm:ss or seconds; leave empty for the start):'), '');
     const link = buildVideoLink(url, time);
-    if (!link) { window.alert('Adresse ou horodatage non reconnu.'); return; }
+    if (!link) { window.alert(L('Adresse ou horodatage non reconnu.', 'Address or timestamp not recognised.')); return; }
     this.videos[id] = link;
     saveVideos(this.videos);
     this.render();
@@ -795,7 +805,7 @@ export class RepertoirePage {
     const e = this.data.entries.find((x) => x.id === id);
     const color = this.data.repertoires[e.rep].couleur;
     const san = kind ? e[kind].san : e.san;
-    const label = kind ? `${e.nom} (${kind === 'punition' ? 'punition' : 'piège'})` : e.nom;
+    const label = kind ? `${e.nom} (${kind === 'punition' ? L('punition', 'punishment') : L('piège', 'trap')})` : e.nom;
     this.openSan(san, color, label);
   }
 
@@ -889,7 +899,7 @@ export class RepertoirePage {
     }));
     el.querySelectorAll('[data-elite-game]').forEach((b) => b.addEventListener('click', () => {
       const g = this.tree?.node?.games?.[Number(b.dataset.eliteGame)];
-      if (g) this.openGame?.(g.san, couleurDe(this.repVue()), `la partie ${g.label}`, eliteHeaders(g));
+      if (g) this.openGame?.(g.san, couleurDe(this.repVue()), L(`la partie ${g.label}`, `the game ${g.label}`), eliteHeaders(g));
     }));
   }
 }

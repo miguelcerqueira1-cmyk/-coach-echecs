@@ -4,6 +4,8 @@
 import { localiserData } from './donnees-langue.js';
 import { GROUPES, REPERTOIRES, parGroupe, choisis, aChoisi, enregistrer } from './mon-repertoire.js';
 import { marquer as marquerVisite } from './tour.js';
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ETAPES = Object.keys(GROUPES);
@@ -37,22 +39,22 @@ export class ChoixPage {
       const n = this.counts?.[r.id] || 0;
       const on = this.sel.has(r.id);
       return `<button type="button" class="choix-card" data-rep="${esc(r.id)}" aria-pressed="${on}">
-        <span class="choix-top"><strong>${r.couleur === 'w' ? '♙' : '♟'} ${esc(r.titre)}</strong>${this.counts ? (n ? `<span class="badge ok">${n} fiches</span>` : '<span class="badge soon-badge">bientôt</span>') : ''}</span>
+        <span class="choix-top"><strong>${r.couleur === 'w' ? '♙' : '♟'} ${esc(r.titre)}</strong>${this.counts ? (n ? `<span class="badge ok">${n} ${L('fiches', 'lines')}</span>` : `<span class="badge soon-badge">${L('bientôt', 'soon')}</span>`) : ''}</span>
         <span class="small muted">${esc(r.sousTitre)}</span>
         <span class="choix-check" aria-hidden="true">${on ? '✔' : ''}</span>
       </button>`;
     };
     const resume = [...this.sel].map((id) => REPERTOIRES[id]?.titre).filter(Boolean);
     this.el.innerHTML = `<div class="choix">
-      <ol class="choix-steps" aria-label="Étapes">${ETAPES.map((id, i) => `<li class="${i === this.step ? 'on' : i < this.step ? 'done' : ''}">${i + 1}. ${esc(GROUPES[id].titre)}</li>`).join('')}</ol>
+      <ol class="choix-steps" aria-label="${L('Étapes', 'Steps')}">${ETAPES.map((id, i) => `<li class="${i === this.step ? 'on' : i < this.step ? 'done' : ''}">${i + 1}. ${esc(GROUPES[id].titre)}</li>`).join('')}</ol>
       <h2 data-choix-q>${esc(g.question)}</h2>
-      <p class="small muted">Un ou plusieurs choix, ou aucun : passez l’étape. Les ouvertures « bientôt » sont en préparation (fiches vérifiées par Stockfish avant publication).</p>
+      <p class="small muted">${L('Un ou plusieurs choix, ou aucun : passez l’étape. Les ouvertures « bientôt » sont en préparation (fiches vérifiées par Stockfish avant publication).', 'One or more choices, or none: skip the step. Openings marked “soon” are in preparation (lines checked by Stockfish before publication).')}</p>
       <div class="choix-grid">${parGroupe(g.id).map(card).join('')}</div>
-      ${last ? `<p class="small choix-recap">Votre répertoire : ${resume.length ? `<strong>${resume.map(esc).join(' · ')}</strong>` : '<span class="muted">aucune ouverture choisie pour l’instant</span>'}</p>` : ''}
+      ${last ? `<p class="small choix-recap">${L('Votre répertoire :', 'Your repertoire:')} ${resume.length ? `<strong>${resume.map(esc).join(' · ')}</strong>` : `<span class="muted">${L('aucune ouverture choisie pour l’instant', 'no opening chosen yet')}</span>`}</p>` : ''}
       <p class="error-text small" data-choix-err role="alert">${esc(this.error)}</p>
       <div class="actions choix-nav">
-        ${this.step ? '<button type="button" data-choix-prev>← Retour</button>' : ''}
-        <button type="button" class="primary" data-choix-next>${last ? 'Valider mes ouvertures' : 'Suivant →'}</button>
+        ${this.step ? `<button type="button" data-choix-prev>${L('← Retour', '← Back')}</button>` : ''}
+        <button type="button" class="primary" data-choix-next>${last ? L('Valider mes ouvertures', 'Confirm my openings') : L('Suivant →', 'Next →')}</button>
       </div>
     </div>`;
     this.el.querySelectorAll('[data-rep]').forEach((b) => b.addEventListener('click', () => {

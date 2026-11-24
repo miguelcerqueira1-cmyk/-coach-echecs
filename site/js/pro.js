@@ -8,6 +8,8 @@
 // Le code d'accès n'est jamais écrit en clair ici : seule son empreinte SHA-256 est comparée.
 
 import { FICHES_GRATUITES } from '../data/repertoires/meta.js';
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 const KEY = 'coach-echecs:pro';
 // Empreinte SHA-256 du code administrateur (le code lui-même n'est pas dans le dépôt).
@@ -18,12 +20,12 @@ const CODE_HASHES = ['96c385bdf2fc8a78972ab9b37af0d4375c2a459080f437b4a8002323ad
 export const FREE_FICHES = FICHES_GRATUITES;
 
 export const PRO_FEATURES = [
-  ['📚', 'L’encyclopédie complète', 'Toutes les variantes de vos ouvertures : plans, pièges, réfutations vérifiées par Stockfish, vidéos'],
-  ['⏱', 'Réflexes anti-trash', 'Punitions chronométrées des coups douteux du Blitz'],
-  ['🧠', 'Répétition espacée', 'Les lignes reviennent juste avant que vous les oubliiez'],
-  ['🎯', 'Positions de mes parties', 'Vos sorties de répertoire Lichess / Chess.com transformées en exercices'],
-  ['📖', 'Tous les cours', 'Chaque variante en leçon pas à pas, piège et punition à jouer'],
-  ['♚', 'Toutes les finales essentielles', 'Lucena, Philidor, opposition, règle du carré : jouées contre Stockfish'],
+  ['📚', L('L’encyclopédie complète', 'The complete encyclopedia'), L('Toutes les variantes de vos ouvertures : plans, pièges, réfutations vérifiées par Stockfish, vidéos', 'All the lines of your openings: plans, traps, refutations checked by Stockfish, videos')],
+  ['⏱', L('Réflexes anti-trash', 'Anti-trash reflexes'), L('Punitions chronométrées des coups douteux du Blitz', 'Timed punishments of dubious Blitz moves')],
+  ['🧠', L('Répétition espacée', 'Spaced repetition'), L('Les lignes reviennent juste avant que vous les oubliiez', 'Lines come back just before you forget them')],
+  ['🎯', L('Positions de mes parties', 'Positions from my games'), L('Vos sorties de répertoire Lichess / Chess.com transformées en exercices', 'Your Lichess / Chess.com repertoire deviations turned into exercises')],
+  ['📖', L('Tous les cours', 'All the lessons'), L('Chaque variante en leçon pas à pas, piège et punition à jouer', 'Each line as a step-by-step lesson, with a trap and a punishment to play')],
+  ['♚', L('Toutes les finales essentielles', 'All the essential endgames'), L('Lucena, Philidor, opposition, règle du carré : jouées contre Stockfish', 'Lucena, Philidor, opposition, rule of the square: played against Stockfish')],
 ];
 
 export function isPro() {
@@ -63,7 +65,7 @@ export function openPaywall({ reason = '', paymentUrl = PAYMENT_URL } = {}) {
   const dlg = document.getElementById('dlg-pro');
   if (!dlg) return;
   dlg.querySelector('[data-pro-reason]').innerHTML = reason
-    ? `<span class="pro-lock">🔒</span> <strong>${esc(reason)}</strong> fait partie de BlitzRefute Pro.` : '';
+    ? `<span class="pro-lock">🔒</span> <strong>${esc(reason)}</strong> ${L('fait partie de BlitzRefute Pro.', 'is part of BlitzRefute Pro.')}` : '';
   dlg.querySelector('[data-pro-list]').innerHTML = PRO_FEATURES.map(([i, t, d]) => `<li><span class="pro-ico" aria-hidden="true">${i}</span><span><strong>${esc(t)}</strong><br><span class="muted small">${esc(d)}</span></span></li>`).join('');
   const buy = dlg.querySelector('[data-pro-buy]');
   const soon = dlg.querySelector('[data-pro-soon]');
@@ -84,7 +86,7 @@ export function bindPaywall() {
     ev.preventDefault();
     const msg = dlg.querySelector('[data-pro-msg]');
     const ok = await unlockWithCode(dlg.querySelector('[data-pro-code]').value);
-    msg.textContent = ok ? '✔ BlitzRefute Pro est activé sur cet appareil.' : 'Code non reconnu.';
+    msg.textContent = ok ? L('✔ BlitzRefute Pro est activé sur cet appareil.', '✔ BlitzRefute Pro is active on this device.') : L('Code non reconnu.', 'Code not recognised.');
     msg.className = ok ? 'small ok-text' : 'small error-text';
     if (ok) setTimeout(() => dlg.close(), 900);
   });
@@ -94,7 +96,7 @@ export function bindPaywall() {
 export function renderPlan() {
   const pro = isPro();
   const pill = document.getElementById('plan-pill');
-  if (pill) { pill.textContent = pro ? 'Pro' : 'Gratuit'; pill.classList.toggle('pro', pro); }
+  if (pill) { pill.textContent = pro ? 'Pro' : L('Gratuit', 'Free'); pill.classList.toggle('pro', pro); }
   const btn = document.getElementById('btn-pro');
   if (btn) btn.hidden = pro;
 }

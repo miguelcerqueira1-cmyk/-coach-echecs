@@ -2,15 +2,18 @@
 // Une bulle fixée en bas de l'écran (lisible sur téléphone), l'élément présenté entouré et amené à
 // l'écran ; on change de page par le hash. Aucune donnée envoyée nulle part.
 
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+
 export const KEY = 'coach-echecs:visite'; // 'a-faire' | 'faite'
 
 export const ETAPES = [
-  { page: '#/entrainement', cible: '[data-routine]', titre: '📅 Ta routine du jour', texte: 'Ton programme de chaque jour, adapté à ton temps : problèmes, théorie, parties. Commence toujours ici.' },
-  { page: '#/entrainement', cible: '.hub-learn', titre: '📖 Apprendre', texte: 'Tes ouvertures en leçons, une variante à la fois : les coups, les pièges, puis tu rejoues toi-même.' },
-  { page: '#/repertoire', cible: '#page-repertoire', titre: '📚 Le répertoire', texte: 'L’encyclopédie de tes ouvertures : chaque variante avec son plan, ses pièges et comment punir les erreurs adverses.' },
-  { page: '#/parties', cible: '.games-form', titre: '🎮 Mes parties', texte: 'Connecte Lichess ou indique ton pseudo Chess.com : l’appli analyse tes parties, ton temps et l’endroit où tu quittes ton répertoire.' },
-  { page: '#/moteur', cible: '#board', titre: '♟ L’échiquier', texte: 'Joue n’importe quelle position : Stockfish te conseille le meilleur coup et t’explique pourquoi.' },
-  { page: null, cible: '#btn-settings', titre: '⚙ Réglages et aide', texte: 'Apparence, installation de l’appli sur ton téléphone, tes données, et l’aide si tu as une question. Bon jeu !' },
+  { page: '#/entrainement', cible: '[data-routine]', titre: L('📅 Ta routine du jour', '📅 Your daily routine'), texte: L('Ton programme de chaque jour, adapté à ton temps : problèmes, théorie, parties. Commence toujours ici.', 'Your plan for each day, fitted to your time: puzzles, theory, games. Always start here.') },
+  { page: '#/entrainement', cible: '.hub-learn', titre: L('📖 Apprendre', '📖 Learn'), texte: L('Tes ouvertures en leçons, une variante à la fois : les coups, les pièges, puis tu rejoues toi-même.', 'Your openings as lessons, one line at a time: the moves, the traps, then you replay them yourself.') },
+  { page: '#/repertoire', cible: '#page-repertoire', titre: L('📚 Le répertoire', '📚 The repertoire'), texte: L('L’encyclopédie de tes ouvertures : chaque variante avec son plan, ses pièges et comment punir les erreurs adverses.', 'The encyclopedia of your openings: each line with its plan, its traps and how to punish your opponent’s mistakes.') },
+  { page: '#/parties', cible: '.games-form', titre: L('🎮 Mes parties', '🎮 My games'), texte: L('Connecte Lichess ou indique ton pseudo Chess.com : l’appli analyse tes parties, ton temps et l’endroit où tu quittes ton répertoire.', 'Connect Lichess or enter your Chess.com username: the app analyses your games, your time and where you leave your repertoire.') },
+  { page: '#/moteur', cible: '#board', titre: L('♟ L’échiquier', '♟ The board'), texte: L('Joue n’importe quelle position : Stockfish te conseille le meilleur coup et t’explique pourquoi.', 'Play any position: Stockfish suggests the best move and explains why.') },
+  { page: null, cible: '#btn-settings', titre: L('⚙ Réglages et aide', '⚙ Settings and help'), texte: L('Apparence, installation de l’appli sur ton téléphone, tes données, et l’aide si tu as une question. Bon jeu !', 'Appearance, installing the app on your phone, your data, and help if you have a question. Enjoy!') },
 ];
 
 export function aFaire(storage = localStorage) {
@@ -30,7 +33,7 @@ export function lancerVisite({ etapes = ETAPES } = {}) {
   const bulle = document.createElement('div');
   bulle.className = 'tour-bulle';
   bulle.setAttribute('role', 'dialog');
-  bulle.setAttribute('aria-label', 'Visite guidée');
+  bulle.setAttribute('aria-label', L('Visite guidée', 'Guided tour'));
   document.body.append(bulle);
 
   const nettoyer = () => { cible?.classList.remove('tour-cible'); cible = null; };
@@ -52,7 +55,7 @@ export function lancerVisite({ etapes = ETAPES } = {}) {
     nettoyer();
     if (e.page && location.hash !== e.page) location.hash = e.page;
     bulle.innerHTML = `<p class="tour-num">${i + 1} / ${etapes.length}</p><h3>${esc(e.titre)}</h3><p>${esc(e.texte)}</p>
-      <div class="tour-actions"><button type="button" data-tour-passer>Passer</button><button type="button" class="primary" data-tour-suivant>${i === etapes.length - 1 ? 'C’est parti !' : 'Suivant →'}</button></div>`;
+      <div class="tour-actions"><button type="button" data-tour-passer>${L('Passer', 'Skip')}</button><button type="button" class="primary" data-tour-suivant>${i === etapes.length - 1 ? L('C’est parti !', 'Let’s go!') : L('Suivant →', 'Next →')}</button></div>`;
     bulle.querySelector('[data-tour-passer]').addEventListener('click', fin);
     bulle.querySelector('[data-tour-suivant]').addEventListener('click', () => {
       if (i >= etapes.length - 1) { fin(); return; }

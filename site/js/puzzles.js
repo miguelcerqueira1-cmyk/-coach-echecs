@@ -6,6 +6,8 @@ import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
 import { urlProbleme, lireProbleme, verdict, bilan, N_PROBLEMES } from './puzzles-core.js';
+import { langue } from './i18n.js';
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
@@ -43,17 +45,17 @@ export class PuzzleRunner {
         ${this.chrono ? '<div class="drill-timer" data-timer><span></span></div>' : ''}
         <div class="board-wrap" data-board></div>
         <div class="actions">
-          <button type="button" data-solution>💡 Voir la solution</button>
-          <button type="button" class="primary" data-next hidden>Problème suivant →</button>
-          <button type="button" data-quit>Terminer</button>
+          <button type="button" data-solution>💡 ${L('Voir la solution', 'Show solution')}</button>
+          <button type="button" class="primary" data-next hidden>${L('Problème suivant →', 'Next puzzle →')}</button>
+          <button type="button" data-quit>${L('Terminer', 'Finish')}</button>
         </div>
       </section>
       <section class="card train-panel">
-        <h2>${esc(this.titre || `🧩 Tactique : ${this.theme.nom}`)}</h2>
-        <p class="small"><strong>Son coup d’abord :</strong> regarde le coup qu’il vient de jouer (surligné). Qu’a-t-il changé ? Puis trouve le meilleur coup.</p>
+        <h2>${esc(this.titre || L(`🧩 Tactique : ${this.theme.nom}`, `🧩 Tactics: ${this.theme.nom}`))}</h2>
+        <p class="small"><strong>${L('Son coup d’abord :', 'Their move first:')}</strong> ${L('regarde le coup qu’il vient de jouer (surligné). Qu’a-t-il changé ? Puis trouve le meilleur coup.', 'look at the move they just played (highlighted). What did it change? Then find the best move.')}</p>
         <div data-head class="small"></div>
         <div data-feedback class="small"></div>
-        <p class="muted tiny">${esc(this.note || 'Problèmes de la base Lichess (licence CC0). Niveau et chrono réglables dans la routine. Ils ne comptent pas pour ton classement Lichess.')}</p>
+        <p class="muted tiny">${esc(this.note || L('Problèmes de la base Lichess (licence CC0). Niveau et chrono réglables dans la routine. Ils ne comptent pas pour ton classement Lichess.', 'Puzzles from the Lichess database (CC0 licence). Level and timer can be set in the routine. They don’t count for your Lichess rating.'))}</p>
       </section>
     </div>`;
     this.board = new Board(this.$('[data-board]'), { piecesUrl: './pieces/', onMove: (mv) => this.onMove(mv) });
@@ -69,11 +71,11 @@ export class PuzzleRunner {
     for (let essai = 0; essai < 3; essai++) {
       const diff = typeof this.difficulty === 'function' ? this.difficulty() : this.difficulty;
       const r = await this.queue.run(urlProbleme(this.theme.id, diff), { headers: { accept: 'application/json' } });
-      if (!r.res.ok) throw new Error(`Lichess : erreur ${r.res.status}`);
+      if (!r.res.ok) throw new Error(L(`Lichess : erreur ${r.res.status}`, `Lichess: error ${r.res.status}`));
       const p = lireProbleme(await r.res.json());
       if (p && !this.vus.has(p.id)) { this.vus.add(p.id); return p; }
     }
-    throw new Error('Lichess n’a pas renvoyé de nouveau problème.');
+    throw new Error(L('Lichess n’a pas renvoyé de nouveau problème.', 'Lichess did not return a new puzzle.'));
   }
 
   async suivant() {
@@ -83,7 +85,7 @@ export class PuzzleRunner {
     this.board.hideBubble();
     this.board.setArrows([]);
     if (this.resultats.length >= this.n) { this.finir(); return; }
-    this.status('Chargement du problème…');
+    this.status(L('Chargement du problème…', 'Loading puzzle…'));
     let p;
     try { p = await this.prochain; } catch (err) { if (this.alive) this.erreur(err); return; }
     if (!this.alive) return;
@@ -92,13 +94,13 @@ export class PuzzleRunner {
     this.cur = { i: 0, erreurs: 0, vu: false, fini: false };
     this.chess = new Chess(p.fenAvant);
     this.board.setOrientation(new Chess(p.fen).turn());
-    this.$('[data-head]').innerHTML = `<p><strong>Problème ${this.resultats.length + 1} / ${this.n}</strong>${p.rating ? ` · difficulté ${esc(p.rating)}` : ''} · <a href="${esc(p.url)}" target="_blank" rel="noopener">voir sur Lichess ↗</a></p>`;
+    this.$('[data-head]').innerHTML = `<p><strong>${L('Problème', 'Puzzle')} ${this.resultats.length + 1} / ${this.n}</strong>${p.rating ? ` · ${L('difficulté', 'difficulty')} ${esc(p.rating)}` : ''} · <a href="${esc(p.url)}" target="_blank" rel="noopener">${L('voir sur Lichess ↗', 'view on Lichess ↗')}</a></p>`;
     this.board.setPosition(this.chess, {});
-    this.status('Regarde son coup…');
+    this.status(L('Regarde son coup…', 'Watch their move…'));
     this.later(() => {
       this.chess.move(p.dernier);
       this.dessiner(true);
-      this.status(`Il a joué <strong>${esc(sanFr(p.dernier.san))}</strong>. À toi : trouve le meilleur coup.`, 'player');
+      this.status(L(`Il a joué <strong>${esc(sanFr(p.dernier.san))}</strong>. À toi : trouve le meilleur coup.`, `They played <strong>${esc(sanFr(p.dernier.san))}</strong>. Your turn: find the best move.`), 'player');
       this.lancerChrono();
     }, 700);
   }
@@ -118,7 +120,7 @@ export class PuzzleRunner {
       if (left <= 0) {
         this.arreterChrono();
         c.horsTemps = true;
-        this.status('⏱ Temps écoulé : ce problème compte comme raté. Tu peux le finir ou voir la solution.', 'err');
+        this.status(L('⏱ Temps écoulé : ce problème compte comme raté. Tu peux le finir ou voir la solution.', '⏱ Time’s up: this puzzle counts as failed. You can finish it or see the solution.'), 'err');
       }
     }, 100);
   }
@@ -139,16 +141,16 @@ export class PuzzleRunner {
       c.erreurs++;
       this.dessiner(true);
       this.board.flashError(mv.to, c.erreurs === 1
-        ? 'Pas le bon coup. Regarde ce que menace la dernière pièce qu’il a jouée, et ce qui est en prise.'
-        : 'Toujours pas. Tu peux réessayer ou « Voir la solution ».');
-      this.status('✘ Raté du premier coup — réessaie.', 'err');
+        ? L('Pas le bon coup. Regarde ce que menace la dernière pièce qu’il a jouée, et ce qui est en prise.', 'Not the right move. Look at what the last piece they moved threatens, and what is hanging.')
+        : L('Toujours pas. Tu peux réessayer ou « Voir la solution ».', 'Still not. You can try again or “Show solution”.'));
+      this.status(L('✘ Raté du premier coup — réessaie.', '✘ Missed on the first try — try again.'), 'err');
       return;
     }
     this.chess.move(toObj(uci));
     c.i++;
     if (v === 'mat' || c.i >= this.p.solution.length) { this.dessiner(false); this.reussi(); return; }
     this.dessiner(false);
-    this.board.showBubble('✔ Bien vu !', 'ok');
+    this.board.showBubble(L('✔ Bien vu !', '✔ Well spotted!'), 'ok');
     this.later(() => this.jouerReponse(), 450);
   }
 
@@ -157,7 +159,7 @@ export class PuzzleRunner {
     this.chess.move(toObj(this.p.solution[c.i]));
     c.i++;
     this.dessiner(true);
-    this.status('Continue : quel est le coup suivant ?', 'player');
+    this.status(L('Continue : quel est le coup suivant ?', 'Keep going: what is the next move?'), 'player');
   }
 
   reussi() {
@@ -167,8 +169,8 @@ export class PuzzleRunner {
     const ok = !c.erreurs && !c.vu && !c.horsTemps;
     this.resultats.push({ id: this.p.id, reussi: ok });
     this.annoncer(ok);
-    this.status(ok ? '✔ Résolu du premier coup !' : c.horsTemps && !c.erreurs ? '✔ Résolu, mais après le temps : ne compte pas comme réussi.' : '✔ Résolu (après une erreur : ne compte pas comme réussi).', ok ? 'ok' : '');
-    this.board.showBubble(ok ? '✔ Résolu !' : '✔ Résolu', 'ok');
+    this.status(ok ? L('✔ Résolu du premier coup !', '✔ Solved on the first try!') : c.horsTemps && !c.erreurs ? L('✔ Résolu, mais après le temps : ne compte pas comme réussi.', '✔ Solved, but after the time limit: doesn’t count as a success.') : L('✔ Résolu (après une erreur : ne compte pas comme réussi).', '✔ Solved (after a mistake: doesn’t count as a success).'), ok ? 'ok' : '');
+    this.board.showBubble(ok ? L('✔ Résolu !', '✔ Solved!') : L('✔ Résolu', '✔ Solved'), 'ok');
     this.finProbleme();
   }
 
@@ -190,8 +192,8 @@ export class PuzzleRunner {
     }
     if (!this.alive) return;
     this.resultats.push({ id: this.p.id, reussi: false });
-    this.status('Solution affichée : ce problème compte comme raté.');
-    this.$('[data-feedback]').innerHTML = `<p>Solution : <strong>${esc(sans.join(' '))}</strong></p>`;
+    this.status(L('Solution affichée : ce problème compte comme raté.', 'Solution shown: this puzzle counts as failed.'));
+    this.$('[data-feedback]').innerHTML = `<p>${L('Solution :', 'Solution:')} <strong>${esc(sans.join(' '))}</strong></p>`;
     this.annoncer(false);
     this.finProbleme();
   }
@@ -206,14 +208,14 @@ export class PuzzleRunner {
     this.$('[data-solution]').hidden = true;
     const b = this.$('[data-next]');
     b.hidden = false;
-    b.textContent = this.resultats.length >= this.n ? 'Voir mon bilan →' : 'Problème suivant →';
+    b.textContent = this.resultats.length >= this.n ? L('Voir mon bilan →', 'See my summary →') : L('Problème suivant →', 'Next puzzle →');
     b.focus({ preventScroll: true });
   }
 
   erreur(err) {
-    this.status('Problèmes indisponibles pour le moment.', 'err');
+    this.status(L('Problèmes indisponibles pour le moment.', 'Puzzles unavailable for now.'), 'err');
     this.$('[data-solution]').hidden = true;
-    this.$('[data-feedback]').innerHTML = `<p class="errbox">${esc(err?.message || 'Lichess injoignable.')} Vérifie ta connexion, ou fais les problèmes directement sur Lichess : <a href="${esc(this.theme.url)}" target="_blank" rel="noopener">${esc(this.theme.nom)} ↗</a></p>`;
+    this.$('[data-feedback]').innerHTML = `<p class="errbox">${esc(err?.message || L('Lichess injoignable.', 'Lichess unreachable.'))} ${L('Vérifie ta connexion, ou fais les problèmes directement sur Lichess :', 'Check your connection, or do the puzzles directly on Lichess:')} <a href="${esc(this.theme.url)}" target="_blank" rel="noopener">${esc(this.theme.nom)} ↗</a></p>`;
   }
 
   finir() {

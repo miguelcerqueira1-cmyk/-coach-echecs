@@ -10,12 +10,17 @@
 import { Chess } from '../vendor/chess.js';
 import { enrichMoves, nodeStats, SPEED_LABELS } from './lichess.js';
 import { REPERTOIRES, couleurDe } from '../data/repertoires/meta.js';
+import { langue } from './i18n.js';
+
+// Phrases en français ou en anglais selon la langue de l'interface.
+const L = (fr, en) => (langue() === 'en' ? en : fr);
+const LOC = () => L('fr-FR', 'en-US');
 
 export const ELITE_LIVE_URL = 'https://raw.githubusercontent.com/miguelcerqueira1-cmyk/-coach-echecs/donnees-elite/elite.json';
 export const ELITE_URL = './data/elite.json';
 const RELOAD_MS = 5 * 60000; // même durée que le cache de raw.githubusercontent.com
-export const PLATFORM_LABELS = { li: 'Lichess', cc: 'Chess.com', bc: 'Tournois' };
-export const SOURCE_NAMES = { li: 'Lichess', cc: 'Chess.com', bc: 'Tournois (retransmissions Lichess)' };
+export const PLATFORM_LABELS = { li: 'Lichess', cc: 'Chess.com', bc: L('Tournois', 'Tournaments') };
+export const SOURCE_NAMES = { li: 'Lichess', cc: 'Chess.com', bc: L('Tournois (retransmissions Lichess)', 'Tournaments (Lichess broadcasts)') };
 // Racines des répertoires dont les données Élite sont collectées (repertoires/meta.js : elite).
 export const ROOTS = Object.fromEntries(Object.values(REPERTOIRES).filter((r) => r.elite).map((r) => [r.id, r.racine]));
 
@@ -101,33 +106,35 @@ export function ago(when, now = Date.now()) {
   const t = typeof when === 'number' ? when : Date.parse(when);
   if (!Number.isFinite(t)) return '?';
   const min = Math.max(0, Math.round((now - t) / 60000));
-  if (min < 1) return 'à l’instant';
-  if (min < 60) return `il y a ${min} min`;
-  if (min < 48 * 60) return `il y a ${Math.round(min / 60)} h`;
-  return `il y a ${Math.round(min / 1440)} j`;
+  if (min < 1) return L('à l’instant', 'just now');
+  if (min < 60) return L(`il y a ${min} min`, `${min} min ago`);
+  if (min < 48 * 60) return L(`il y a ${Math.round(min / 60)} h`, `${Math.round(min / 60)} h ago`);
+  return L(`il y a ${Math.round(min / 1440)} j`, `${Math.round(min / 1440)} d ago`);
 }
 
 // Résumé lisible des métadonnées (fraîcheur, joueurs, parties par plateforme, sources en échec).
 export function eliteSummary(meta, now = Date.now()) {
   if (!meta) return '';
-  const d = meta.generatedAt ? `Mis à jour ${ago(meta.generatedAt, now)} (${new Date(meta.generatedAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })})` : 'Date inconnue';
+  const quand = meta.generatedAt ? `${ago(meta.generatedAt, now)} (${new Date(meta.generatedAt).toLocaleString(LOC(), { dateStyle: 'short', timeStyle: 'short' })})` : '';
+  const d = meta.generatedAt ? L(`Mis à jour ${quand}`, `Updated ${quand}`) : L('Date inconnue', 'Unknown date');
   const src = meta.sources || {};
   const part = (k) => {
     const s = src[k];
     if (!s || s.status === 'ignoré') return null;
-    if (s.status === 'erreur') return `${SOURCE_NAMES[k]} : indisponible lors de la génération (aucune partie)`;
-    const who = k === 'bc' ? `${s.events ?? 0} tournois` : `${s.players} joueurs`;
-    return `${SOURCE_NAMES[k]} : ${s.gamesKept.toLocaleString('fr-FR')} parties de ${who}${s.status === 'partiel' ? ' (récupération partielle)' : ''}`;
+    if (s.status === 'erreur') return L(`${SOURCE_NAMES[k]} : indisponible lors de la génération (aucune partie)`, `${SOURCE_NAMES[k]}: unavailable when generated (no games)`);
+    const who = k === 'bc' ? L(`${s.events ?? 0} tournois`, `${s.events ?? 0} tournaments`) : L(`${s.players} joueurs`, `${s.players} players`);
+    const partiel = s.status === 'partiel' ? L(' (récupération partielle)', ' (partial fetch)') : '';
+    return L(`${SOURCE_NAMES[k]} : ${s.gamesKept.toLocaleString('fr-FR')} parties de ${who}${partiel}`, `${SOURCE_NAMES[k]}: ${s.gamesKept.toLocaleString('en-US')} games from ${who}${partiel}`);
   };
-  const su = src.su && src.su.status !== 'ignoré' ? `joueurs suivis : ${src.su.verified} comptes vérifiés` : null;
-  return `${d} — ${[part('li'), part('cc'), part('bc'), su].filter(Boolean).join(' ; ')}.`;
+  const su = src.su && src.su.status !== 'ignoré' ? L(`joueurs suivis : ${src.su.verified} comptes vérifiés`, `followed players: ${src.su.verified} verified accounts`) : null;
+  return `${d} — ${[part('li'), part('cc'), part('bc'), su].filter(Boolean).join(L(' ; ', '; '))}.`;
 }
 
 // Répartition par source, ex. « Lichess 12 · Chess.com 30 » (+ « Tournois 3 » s'il y en a).
 export function splitText(split) {
-  if (!split) return 'même camp que moi (plateformes non détaillées)';
+  if (!split) return L('même camp que moi (plateformes non détaillées)', 'same side as me (platforms not broken down)');
   return Object.entries(PLATFORM_LABELS).filter(([k]) => k !== 'bc' || split?.bc)
-    .map(([k, l]) => `${l} ${(split?.[k] || 0).toLocaleString('fr-FR')}`).join(' · ');
+    .map(([k, l]) => `${l} ${(split?.[k] || 0).toLocaleString(LOC())}`).join(' · ');
 }
 
 // En-têtes PGN d'une partie exemple (lien vers l'original conservé dans Site).
@@ -146,14 +153,15 @@ const normalize = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, ''
 // Position absente : explication honnête du périmètre (aucun chiffre extrapolé).
 export function absentText(meta, camp = false) {
   const f = meta?.filters || {};
-  return `Position absente du jeu Élite${camp ? ' avec la règle de couleur (joueur du top dans notre camp)' : ''} : il ne couvre que les positions du répertoire (Gambit Dame, Caro-Kann, transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`;
+  return L(`Position absente du jeu Élite${camp ? ' avec la règle de couleur (joueur du top dans notre camp)' : ''} : il ne couvre que les positions du répertoire (Gambit Dame, Caro-Kann, transpositions comprises) et leurs suites, jusqu’au demi-coup ${f.plies ?? '?'}, atteintes par au moins ${f.minPositionGames ?? '?'} parties retenues. Rien n’est extrapolé.`,
+    `Position not in the Elite dataset${camp ? ' with the colour rule (top player on our side)' : ''}: it only covers repertoire positions (Queen’s Gambit, Caro-Kann, transpositions included) and their continuations, up to ply ${f.plies ?? '?'}, reached by at least ${f.minPositionGames ?? '?'} kept games. Nothing is extrapolated.`);
 }
 
 // Règle de couleur demandée mais absente du fichier publié (collecte antérieure à l'option).
-export const NOCAMP_TEXT = 'Règle de couleur indisponible : le jeu Élite publié date d’avant cette option (elle arrivera avec la prochaine collecte). Décochez-la dans ⚙ Réglages pour voir toutes les parties.';
-export const CAMP_LABEL = 'mon camp seulement';
+export const NOCAMP_TEXT = L('Règle de couleur indisponible : le jeu Élite publié date d’avant cette option (elle arrivera avec la prochaine collecte). Décochez-la dans ⚙ Réglages pour voir toutes les parties.', 'Colour rule unavailable: the published Elite dataset predates this option (it will come with the next collection). Untick it in ⚙ Settings to see all games.');
+export const CAMP_LABEL = L('mon camp seulement', 'my side only');
 
-export const SOURCE_LABELS = { direct: 'mise à jour continue (branche donnees-elite)', site: 'copie publiée avec le site' };
+export const SOURCE_LABELS = { direct: L('mise à jour continue (branche donnees-elite)', 'continuous updates (donnees-elite branch)'), site: L('copie publiée avec le site', 'copy published with the site') };
 
 // « Nouvelles parties » : dernières parties gardées, tous joueurs du top confondus.
 export function recentInfo(data) {
@@ -184,7 +192,7 @@ export function loadElite(fetchImpl = (...a) => fetch(...a), now = Date.now()) {
     try {
       return { status: 'ok', data: await get(ELITE_URL), source: 'site' };
     } catch (e) {
-      return { status: 'unavailable', error: `data/elite.json absent ou illisible (${e.message})` };
+      return { status: 'unavailable', error: L(`data/elite.json absent ou illisible (${e.message})`, `data/elite.json missing or unreadable (${e.message})`) };
     }
   })();
   cache = { at: now, promise };
