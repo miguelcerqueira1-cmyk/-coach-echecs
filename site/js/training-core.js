@@ -7,6 +7,7 @@
 //  - erreurs adverses connues : coup fautif marqué dans les punitions (à punir).
 
 import { couleurDe } from '../data/repertoires/meta.js';
+import { langue } from './i18n.js';
 
 export const key = (path) => path.join(',');
 
@@ -68,7 +69,16 @@ export function verdict({ inBook, isBookMove, isTrap, loss }) {
   return { level: 'gaffe', ok: false };
 }
 
-export const VERDICT_TEXT = {
+export const VERDICT_TEXT = langue() === 'en' ? {
+  repertoire: '✔ Repertoire move',
+  bon: '✔ Good move (the engine agrees)',
+  'bon-hors-fiche': '✔ Good move, but not the one in your repertoire',
+  inconnu: '✔ Move played',
+  imprecision: '≈ Inaccuracy',
+  erreur: '✘ Mistake',
+  gaffe: '✘ Blunder',
+  piege: '✘ That’s the line’s trap!',
+} : {
   repertoire: '✔ Coup du répertoire',
   bon: '✔ Bon coup (le moteur est d’accord)',
   'bon-hors-fiche': '✔ Bon coup, mais ce n’est pas celui de votre répertoire',
