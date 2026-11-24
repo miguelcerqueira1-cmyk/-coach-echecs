@@ -111,6 +111,15 @@ test('Révision espacée : position ratée revient, réussie s’espace, compteu
 
 const status = (page) => page.locator('#page-entrainement [data-status]');
 const openAll = (page) => page.evaluate(() => document.querySelectorAll('.dash-more, [data-dashboard]').forEach((d) => { d.open = true; }));
+// Le tableau de bord peut s'afficher (ou se réafficher, repliés) après l'ouverture : on rouvre
+// jusqu'à ce que le bouton voulu soit visible, puis on clique.
+async function cliquerDash(page, sel) {
+  await expect(async () => {
+    await openAll(page);
+    await expect(page.locator(sel).first()).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 20000 });
+  await page.locator(sel).first().click();
+}
 async function ours(page, uci) {
   await expect(status(page)).toContainText('À vous', { timeout: 10000 });
   await move(page, uci);
@@ -121,8 +130,7 @@ test('Lignes : l’application joue l’adversaire, erreur refusée et expliqué
   await page.goto('./#/entrainement');
   await expect(page.locator('[data-dashboard]')).toContainText('Progression par variante');
   const line = 'd2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8 g1f3 b8d7 a1c1 c7c6 f1d3 d5c4 d3c4 f6d5'.split(' ');
-  await openAll(page);
-  await page.click('[data-dash-line="gd-orthodoxe"]');
+  await cliquerDash(page, '[data-dash-line="gd-orthodoxe"]');
   const log = page.locator('#page-entrainement [data-log]');
   await ours(page, 'd2d4');
   await expect(log).toContainText('✔ d4');
@@ -165,8 +173,7 @@ test('Lignes : l’application joue l’adversaire, erreur refusée et expliqué
 test('Drill anti-trash : punition réussie dans le temps, puis ratée avec la solution affichée', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
-  await openAll(page);
-  await page.click('[data-dash-trash="gd-echange"]');
+  await cliquerDash(page, '[data-dash-trash="gd-echange"]');
   const log = page.locator('#page-entrainement [data-log]');
   await expect(log).toContainText('L’adversaire joue', { timeout: 10000 });
   await expect(page.locator('#page-entrainement [data-timer]')).toBeVisible();
@@ -175,8 +182,7 @@ test('Drill anti-trash : punition réussie dans le temps, puis ratée avec la so
   await page.click('[data-continue]');
   await expect(page.locator('.hub-result')).toContainText('1 / 1 punition(s) réussie(s)');
   // Deuxième essai : mauvais coup → solution complète.
-  await openAll(page);
-  await page.click('[data-dash-trash="gd-echange"]');
+  await cliquerDash(page, '[data-dash-trash="gd-echange"]');
   await expect(log).toContainText('L’adversaire joue', { timeout: 10000 });
   await ours(page, 'a2a3');
   await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('La punition : 7. Fxf6 Fxf6 8. Db3 c6 9. Dxb7');
@@ -294,8 +300,7 @@ test('Ligne complète (suite Stockfish jusqu’au 15e coup) et rythme Blitz : tr
   expect(full.length).toBe(30);
   await page.click('[data-back]').catch(() => {});
   await page.goto('./#/entrainement');
-  await openAll(page);
-  await page.click('[data-dash-line="gd-orthodoxe"]');
+  await cliquerDash(page, '[data-dash-line="gd-orthodoxe"]');
   await expect(page.locator('#page-entrainement [data-timer]')).toBeVisible();
   await expect(page.locator('#page-entrainement .board-bubble')).toContainText('Trop lent', { timeout: 8000 });
   for (let i = 2; i < full.length; i += 2) await ours(page, full[i]);
