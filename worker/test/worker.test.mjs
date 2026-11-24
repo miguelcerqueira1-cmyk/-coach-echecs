@@ -164,3 +164,21 @@ test('synchronisation : sans code d’accès, versions, conflit 409, gros conten
   assert.equal((await call(`/v1/sync/${id}`, { code: '', method: 'DELETE' })).status, 204);
   assert.equal((await call(`/v1/sync/${id}`, { code: '' })).status, 404);
 });
+
+test('statistiques de visite : page comptée, page inconnue refusée, totaux par jour', async () => {
+  const h = { origin: ORIGIN, 'content-type': 'text/plain' };
+  for (const p of ['repertoire', 'repertoire', 'entrainement']) {
+    const r = await fetch(BASE + '/v1/vue', { method: 'POST', headers: h, body: JSON.stringify({ p }) });
+    assert.equal(r.status, 204);
+  }
+  const bad = await fetch(BASE + '/v1/vue', { method: 'POST', headers: h, body: JSON.stringify({ p: '../secret' }) });
+  assert.equal(bad.status, 400);
+  const r = await fetch(BASE + '/v1/vues?jours=7', { headers: { origin: ORIGIN } });
+  assert.equal(r.status, 200);
+  const { jours } = await r.json();
+  const aujourdhui = jours.find((j) => j.jour === new Date().toISOString().slice(0, 10));
+  assert.ok(aujourdhui.pages.repertoire >= 2);
+  assert.ok(aujourdhui.pages.entrainement >= 1);
+  const autre = await fetch(BASE + '/v1/vues', { headers: { origin: 'https://exemple.com' } });
+  assert.equal(autre.status, 403);
+});

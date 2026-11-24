@@ -177,6 +177,7 @@ export const EXACT = {
   "Nouvelle partie": "New game",
   "Annuler": "Undo",
   "Retourner": "Flip",
+  "📊 Visites par page (30 derniers jours)": "📊 Visits per page (last 30 days)",
   "Sur iPhone, si le fichier reste introuvable : « Copier mes données » ici (dans le navigateur), puis « Coller des données » dans l’appli installée.": "On iPhone, if the file cannot be found: “Copy my data” here (in the browser), then “Paste data” in the installed app.",
   "📋 Copier mes données": "📋 Copy my data",
   "📥 Coller des données": "📥 Paste data",

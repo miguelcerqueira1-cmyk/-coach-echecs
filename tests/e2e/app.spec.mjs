@@ -535,3 +535,12 @@ test('mes données : export (sans secrets) puis import sur un autre appareil', a
   expect(await other.evaluate(() => localStorage.getItem('coach-echecs:jeton-lichess'))).toBeNull();
   await other.context().close();
 });
+
+test('réglages : visites par page indisponibles sans serveur (site local)', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await page.click('#btn-settings');
+  await page.locator('#form-settings details summary', { hasText: 'Avancé' }).click();
+  await page.click('#btn-vues');
+  await expect(page.locator('#vues-resultat')).toContainText('Serveur non configuré');
+});

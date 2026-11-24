@@ -366,6 +366,11 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   domaine). Script chargé seulement sur ce nom d'hôte, jamais en local, sous Playwright
   (`navigator.webdriver`) ni avec Do-Not-Track / GPC. FAQ « Où sont enregistrées mes données ? »
   mentionne le compteur. Tableau de bord : Cloudflare → Web Analytics.
+  **Pages vues par page (2026-11-24)** : Cloudflare ne gère pas le routage par « # » → comptage par
+  notre Worker : `suivrePages` (stats.js) envoie `POST /v1/vue {p}` (sendBeacon) à chaque page,
+  mêmes conditions ; Worker : `Gate.compterVue` (compteur `vues:AAAA-MM-JJ` par page, limite
+  `VUES_PER_HOUR` par IP effacée chaque heure, 90 jours gardés), `GET /v1/vues?jours=N` (totaux
+  publics, CORS du site). Affichage : ⚙ Réglages → Avancé → « 📊 Visites par page ».
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

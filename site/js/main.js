@@ -7,7 +7,7 @@ import { ChoixPage } from './choix.js';
 import './pwa.js'; // service worker, bandeau de mise à jour
 import { demarrer as demarrerInstallation, sauvegarder, copierDonnees } from './installation.js';
 import { demarrerSync } from './sync.js';
-import { demarrerStats } from './stats.js';
+import { demarrerStats, lireVues, resumeVues } from './stats.js';
 import { initLangue, langue, choisirLangue } from './i18n.js';
 import { Game, parseMoveText } from './game.js';
 import { Variante } from './variante-core.js';
@@ -1247,6 +1247,22 @@ function bindUi() {
     });
   });
   $('btn-live').onclick = () => viewAt(state.game.ply);
+  $('btn-vues').onclick = async () => {
+    const out = $('vues-resultat');
+    const api = state.settings.apiUrl || state.config.apiUrl;
+    if (!api) { out.textContent = L('Serveur non configuré : statistiques indisponibles.', 'Server not configured: statistics unavailable.'); return; }
+    out.textContent = L('Chargement…', 'Loading…');
+    try {
+      const r = resumeVues(await lireVues(api, 30));
+      if (!r.total) { out.textContent = L('Aucune page vue enregistrée pour l’instant.', 'No page views recorded yet.'); return; }
+      const NOMS = { accueil: L('Accueil', 'Home'), ouvertures: L('Choix des ouvertures', 'Opening choice'), moteur: L('Moteur', 'Engine'), repertoire: L('Répertoire', 'Repertoire'), entrainement: L('Entraînement', 'Training'), progression: L('Ma progression', 'My progress'), parties: L('Mes parties', 'My games') };
+      out.innerHTML = `<p><strong>${r.total}</strong> ${L('pages vues', 'page views')}</p><ul>${r.pages.map(([p, n]) => `<li>${esc(NOMS[p] || p)} : ${n}</li>`).join('')}</ul>`
+        + `<p class="muted">${L('Par jour', 'Per day')} : ${r.parJour.slice(0, 14).map((j) => `${esc(j.jour.slice(5))} ${j.n}`).join(' · ')}</p>`
+        + `<p class="muted">${L('Comptage anonyme sans cookies (visites de tests et « ne pas suivre » exclues). Visiteurs uniques : tableau de bord Cloudflare → Web Analytics.', 'Anonymous cookie-free count (test visits and “do not track” excluded). Unique visitors: Cloudflare dashboard → Web Analytics.')}</p>`;
+    } catch (e) {
+      out.textContent = L(`Serveur injoignable (${e.message}).`, `Server unreachable (${e.message}).`);
+    }
+  };
   $('btn-quitter-brouillon').onclick = () => { if (state.variante) viewAt(state.variante.base); };
   $('btn-brouillon').onclick = () => ouvrirVariante();
   $('view-text').onclick = (e) => { const b = e.target.closest('[data-vply]'); if (b && state.variante) { state.variante.aller(Number(b.dataset.vply)); apresVariante(); } };

@@ -46,6 +46,29 @@ export class Gate extends DurableObject {
     return true;
   }
 
+  // Pages vues (statistiques anonymes) : compteur par jour et par page, aucune IP ni identifiant
+  // conservé au-delà de l'heure en cours (limite anti-abus par IP, effacée chaque heure).
+  async compterVue(page, ip, perHour) {
+    const hour = Math.floor(Date.now() / 3600000);
+    const f = await this._get('vuesip', { period: hour, ips: {} });
+    if ((f.ips[ip] || 0) >= perHour) return false;
+    f.ips[ip] = (f.ips[ip] || 0) + 1;
+    const key = 'vues:' + new Date().toISOString().slice(0, 10);
+    const jour = (await this.ctx.storage.get(key)) || {};
+    jour[page] = (jour[page] || 0) + 1;
+    await this.ctx.storage.put({ vuesip: f, [key]: jour });
+    return true;
+  }
+
+  // Derniers jours (au plus 90), du plus récent au plus ancien ; les jours plus anciens sont effacés.
+  async vues(jours) {
+    const all = await this.ctx.storage.list({ prefix: 'vues:' });
+    const keys = [...all.keys()].sort().reverse();
+    const vieux = keys.slice(90);
+    if (vieux.length) await this.ctx.storage.delete(vieux);
+    return keys.slice(0, jours).map((k) => ({ jour: k.slice(5), pages: all.get(k) }));
+  }
+
   // Relais Opening Explorer : limite séparée, sans toucher au quota Claude.
   async consumeExplorer(perMinute) {
     const minute = Math.floor(Date.now() / 60000);
@@ -131,6 +154,24 @@ async function syncRoute(request, env, url, headers) {
   return r.ok ? json(r, 200, headers) : json({ error: 'Les données ont changé sur un autre appareil.', version: r.version }, 409, headers);
 }
 
+export const PAGES_SUIVIES = ['accueil', 'ouvertures', 'moteur', 'repertoire', 'entrainement', 'progression', 'parties'];
+async function vuesRoute(request, env, url, headers) {
+  const gate = env.GATE.get(env.GATE.idFromName('global'));
+  if (url.pathname === '/v1/vues' && request.method === 'GET') {
+    const jours = Math.min(90, Math.max(1, Number(url.searchParams.get('jours')) || 30));
+    return json({ jours: await gate.vues(jours) }, 200, headers);
+  }
+  if (url.pathname !== '/v1/vue' || request.method !== 'POST') return json({ error: 'Méthode non autorisée' }, 405, headers);
+  const raw = await request.text();
+  if (raw.length > 200) return json({ error: 'Trop long' }, 413, headers);
+  let page;
+  try { page = JSON.parse(raw).p; } catch { return json({ error: 'JSON invalide' }, 400, headers); }
+  if (!PAGES_SUIVIES.includes(page)) return json({ error: 'Page inconnue' }, 400, headers);
+  const ip = request.headers.get('cf-connecting-ip') || 'inconnue';
+  const ok = await gate.compterVue(page, ip, Number(env.VUES_PER_HOUR || 300));
+  return ok ? new Response(null, { status: 204, headers }) : json({ error: 'Trop de visites cette heure-ci.' }, 429, headers);
+}
+
 function corsHeaders(env, origin) {
   const allowed = (env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
   const h = { vary: 'Origin' };
@@ -200,6 +241,8 @@ export default {
     if (!cors.allowed) return json({ error: 'Origine non autorisée' }, 403, cors.headers);
     // Synchronisation : ouverte à tous les utilisateurs (pas de code d'accès), contenu chiffré.
     if (url.pathname.startsWith('/v1/sync/')) return syncRoute(request, env, url, cors.headers);
+    // Statistiques de visite par page : comptage anonyme (POST) et lecture des totaux (GET).
+    if (url.pathname === '/v1/vue' || url.pathname === '/v1/vues') return vuesRoute(request, env, url, cors.headers);
     if (!['/v1/status', '/v1/explain', '/v1/explorer'].includes(url.pathname)) return json({ error: 'Introuvable' }, 404, cors.headers);
 
     if (!env.ACCESS_CODE || env.ACCESS_CODE.length < 8) {
