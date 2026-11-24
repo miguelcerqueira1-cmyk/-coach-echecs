@@ -93,8 +93,9 @@ test('rappel de sauvegarde (ordinateur) et Réglages : guide, date de la derniè
 
 test('iPhone avec des données : le guide explique comment emporter ses données dans l’appli @mobile', async ({ browser }) => {
   const ctx = await browser.newContext({ ...devices['iPhone 14'], baseURL: test.info().project.use.baseURL });
-  await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
   const page = await ctx.newPage();
+  // Presse-papiers simulé (les permissions de presse-papiers n'existent pas sur WebKit).
+  await page.addInitScript(() => { Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (t) => { window.__copie = t; }, readText: async () => window.__copie || '' } }); });
   await setup(page, { jours: [hier], premiereDonnee: hier }, { 'coach-echecs:progression-v1': JSON.stringify({ lignes: { 'gd-orthodoxe': { ok: 1, ko: 0 } }, drills: {}, jours: [], sorties: [], cours: {} }) });
   await page.goto('./#/repertoire');
   await page.click('#btn-settings');
@@ -103,7 +104,8 @@ test('iPhone avec des données : le guide explique comment emporter ses données
   await expect(dlg.locator('.inst-alerte')).toContainText('emporte tes données');
   await expect(dlg.locator('.inst-alerte')).toContainText('Coller des données');
   await dlg.locator('[data-install-copier-donnees]').click();
-  await expect(dlg.locator('[data-install-copie-donnees]')).not.toBeEmpty();
+  await expect(dlg.locator('[data-install-copie-donnees]')).toContainText('Copié');
+  expect(await page.evaluate(() => window.__copie)).toContain('gd-orthodoxe');
   await ctx.close();
 });
 
