@@ -80,7 +80,7 @@ jobs:
           retention-days: 7
 
   worker:
-    name: Déploiement de l'API Claude (Cloudflare Worker)
+    name: "Déploiement du serveur (Cloudflare Worker) : synchronisation, API Claude si configurée"
     needs: verify
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
@@ -96,15 +96,18 @@ jobs:
           ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
           CODE: ${{ secrets.COACH_ACCESS_CODE }}
         run: |
+          # Seuls les deux secrets Cloudflare sont nécessaires (synchronisation entre appareils).
+          # ANTHROPIC_API_KEY + COACH_ACCESS_CODE activent en plus les explications Claude (payantes).
           missing=""
           [ -n "$CF_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
           [ -n "$CF_ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
-          [ -n "$ANTHROPIC" ] || missing="$missing ANTHROPIC_API_KEY"
-          [ -n "$CODE" ] || missing="$missing COACH_ACCESS_CODE"
+          if [ -z "$ANTHROPIC" ] || [ -z "$CODE" ]; then
+            echo "::notice::Explications Claude non activées (ANTHROPIC_API_KEY / COACH_ACCESS_CODE absents) : choix volontaire, le reste fonctionne."
+          fi
           if [ -n "$missing" ]; then
-            echo "::notice::API Claude non déployée : secrets manquants :$missing. Le site est publié sans explications Claude."
+            echo "::notice::Serveur non déployé : secrets manquants :$missing. Le site est publié sans synchronisation."
             echo "ok=false" >> "$GITHUB_OUTPUT"
-          elif [ ${#CODE} -lt 12 ]; then
+          elif [ -n "$CODE" ] && [ ${#CODE} -lt 12 ]; then
             echo "::error::COACH_ACCESS_CODE doit contenir au moins 12 caractères."
             exit 1
           else
@@ -139,7 +142,9 @@ jobs:
           npx wrangler deploy --var "ALLOWED_ORIGINS:$ORIGIN" --var "CLAUDE_MODEL:$MODEL" --var "DAILY_LIMIT:$DAILY" 2>&1 | tee deploy.log
           # Les secrets ne passent ni par la ligne de commande ni par un fichier du dépôt.
           # LICHESS_TOKEN (facultatif) active le relais Opening Explorer.
-          node -e 'const e=process.env, s={ANTHROPIC_API_KEY:e.ANTHROPIC_API_KEY, ACCESS_CODE:e.ACCESS_CODE}; if (e.LICHESS_TOKEN) s.LICHESS_TOKEN=e.LICHESS_TOKEN; process.stdout.write(JSON.stringify(s))' | npx wrangler secret bulk
+          node -e 'const e=process.env, s={}; for (const k of ["ANTHROPIC_API_KEY","ACCESS_CODE","LICHESS_TOKEN"]) if (e[k]) s[k]=e[k]; process.stdout.write(JSON.stringify(s))' > /tmp/secrets.json
+          if [ "$(cat /tmp/secrets.json)" != "{}" ]; then npx wrangler secret bulk < /tmp/secrets.json; fi
+          rm -f /tmp/secrets.json
           url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
           if [ -z "$url" ]; then
             echo "::error::Adresse workers.dev introuvable. Ouvrez une fois « Workers & Pages » dans le tableau de bord Cloudflare pour créer votre sous-domaine workers.dev, puis relancez."
@@ -247,12 +252,21 @@ jobs:
               }
               console.log(await (await fetch(site + "config.json")).text());
             })();'
-      - name: API Claude en ligne et protégée (sans code → 401)
+      - name: Serveur en ligne (API Claude fermée sans code, synchronisation joignable)
         if: needs.worker.outputs.url != ''
         env:
           API: ${{ needs.worker.outputs.url }}
+          SITE: ${{ needs.pages.outputs.url }}
         run: |
-          node -e 'fetch(process.env.API + "/v1/status").then((r) => { console.log("Sans code :", r.status); process.exit(r.status === 401 ? 0 : 1); })'
+          node -e '(async () => {
+            const origin = new URL(process.env.SITE).origin;
+            const st = await fetch(process.env.API + "/v1/status", { headers: { origin } });
+            console.log("API Claude sans code :", st.status);   // 401 (code exigé) ou 503 (Claude non activé)
+            if (![401, 503].includes(st.status)) process.exit(1);
+            const sy = await fetch(process.env.API + "/v1/sync/" + "0".repeat(64), { headers: { origin } });
+            console.log("Synchronisation (code inconnu) :", sy.status);
+            if (sy.status !== 404) process.exit(1);
+          })();'
       - name: Liens vidéo du répertoire (oEmbed YouTube ; avertissements seulement, jamais bloquant)
         continue-on-error: true
         timeout-minutes: 5
