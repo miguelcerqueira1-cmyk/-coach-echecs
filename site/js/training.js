@@ -18,7 +18,7 @@ import FINALES_FR from '../data/finales.js';
 import { langue } from './i18n.js';
 
 const L = (fr, en) => (langue() === 'en' ? en : fr);
-const LOC = langue() === 'en' ? 'en-GB' : LOC;
+const LOC = langue() === 'en' ? 'en-GB' : 'fr-FR';
 
 // Finales dans la langue de l'interface (titre et méthode).
 const FINALES = FINALES_FR.map((f) => (langue() === 'en' && f.en ? { ...f, ...f.en } : f));
