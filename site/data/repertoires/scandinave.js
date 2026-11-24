@@ -19,9 +19,9 @@ export default [
     conserver: 'Pion c6 (protège d5 et b5)',
     video: { recherche: 'Scandinavian Defense 3...Qa5 main line c6 Bf5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -39,9 +39,9 @@ export default [
     conserver: 'Pion c6',
     video: { recherche: 'Scandinavian Qa5 4.Bc4 Nf6 5.Qf3 trap', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -59,9 +59,9 @@ export default [
     conserver: 'Dame en d6, à l’abri des attaques',
     video: { recherche: 'Scandinavian Defense 3...Qd6 a6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -76,9 +76,9 @@ export default [
     conserver: 'Dame centrale',
     video: { recherche: 'Scandinavian 2...Qxd5 3.Nf3 Bg4 long castle', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -93,9 +93,9 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Scandinavian 2...Nf6 3.d4 Nxd5 fianchetto', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -110,9 +110,9 @@ export default [
     conserver: 'Cavalier en d5',
     video: { recherche: 'Scandinavian 2...Nf6 3.c4 c6 gambit', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -127,9 +127,9 @@ export default [
     conserver: 'Pression sur d4',
     video: { recherche: 'Scandinavian 2.e5 Bf5 advance', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -144,9 +144,9 @@ export default [
     conserver: 'Pion d4 (espace)',
     video: { recherche: 'Scandinavian 2.Nc3 d4 how to play', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=iTUWt25Z2e4', titre: 'Défense Scandinave (par le GMI Christian Bauer) - Echecs ouverture', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

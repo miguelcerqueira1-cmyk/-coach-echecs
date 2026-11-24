@@ -16,8 +16,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Kings Indian Attack vs c6 d5 Bg4 setup', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -32,8 +32,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Reti opening 2.c4 c6 3.b3 Bf5 setup', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -48,8 +48,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Slav exchange variation plans for black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -64,8 +64,8 @@ export default [
     conserver: 'Fou d6',
     video: { recherche: 'Reti 2.c4 c6 3.e3 Nf6 semi-slav setup', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -80,8 +80,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Colle system Bf5 early for black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -96,8 +96,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Nimzo-Larsen 1.Nf3 d5 2.b3 Bg4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

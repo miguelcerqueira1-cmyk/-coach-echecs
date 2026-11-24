@@ -20,8 +20,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'English opening reversed Dragon 1.c4 e5 2.Nc3 Nf6 3.g3 d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -36,8 +36,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Closed English 1.c4 e5 2.Nc3 Nc6 3.g3 g6 f5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -52,8 +52,8 @@ export default [
     conserver: 'Pion e4',
     video: { recherche: 'English four knights 4.g3 Bb4 e4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -68,8 +68,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'English 1.c4 e5 2.g3 Nf6 3.Bg2 d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -84,8 +84,8 @@ export default [
     conserver: 'Pion e4',
     video: { recherche: 'English 1.c4 e5 2.Nf3 e4 3.Nd4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

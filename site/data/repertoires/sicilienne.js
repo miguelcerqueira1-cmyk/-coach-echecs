@@ -21,8 +21,8 @@ export default [
     conserver: 'Pion e6 (contrôle de d5) et Dame en c7',
     video: { recherche: 'Sicilian Taimanov 5.Nc3 Qc7 6.Be2 a6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -40,8 +40,8 @@ export default [
     conserver: 'Pion b5 (levier …b4)',
     video: { recherche: 'Sicilian Taimanov English Attack 6.Be3 a6 7.Qd2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -56,8 +56,8 @@ export default [
     conserver: 'Pions d6 et e6',
     video: { recherche: 'Sicilian Taimanov 5.Nb5 d6 6.c4 hedgehog', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -72,7 +72,7 @@ export default [
     conserver: 'Cavalier d5/b6 actif',
     video: { recherche: 'Alapin Sicilian 2.c3 Nf6 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -90,8 +90,8 @@ export default [
     conserver: 'Le pion de plus et la Dame en c7',
     video: { recherche: 'Smith-Morra gambit Siberian trap Nd4 Qh2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -106,7 +106,7 @@ export default [
     conserver: 'Paire de Fous si les Blancs prennent en c6',
     video: { recherche: 'Grand Prix Attack 2.Nc3 Nc6 3.f4 e6 d5 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=y_nTGCFsrUc', titre: 'The Grand Prix Attack against the Sicilian', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=y_nTGCFsrUc', titre: 'The Grand Prix Attack against the Sicilian', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {

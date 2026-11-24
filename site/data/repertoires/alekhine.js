@@ -17,8 +17,8 @@ export default [
     conserver: 'Cavalier b6 (contrôle c4 et d5)',
     video: { recherche: 'Alekhine Defense modern variation 4...Bg4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -36,8 +36,8 @@ export default [
     conserver: 'Pion c6 qui soutient d5',
     video: { recherche: 'Alekhine Defense 4...dxe5 5.Nxe5 Nd7 trap Nxf7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -55,8 +55,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Alekhine Defense Alburt variation 4...g6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -71,8 +71,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Alekhine Defense exchange variation 5...cxd6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -87,8 +87,8 @@ export default [
     conserver: 'Les deux Cavaliers (b6, c6) qui pressent le centre',
     video: { recherche: 'Alekhine Defense Four Pawns Attack main line', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -103,8 +103,8 @@ export default [
     conserver: 'Pion d6 contre le pion e5',
     video: { recherche: 'Alekhine Defense 3.Nc3 Nxc3 dxc3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -122,8 +122,8 @@ export default [
     conserver: 'Pion c5',
     video: { recherche: 'Alekhine Defense 3.Bc4 Nb6 4.Bb3 c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -138,8 +138,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Alekhine Defense 2.Nc3 d5 3.e5 Nfd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

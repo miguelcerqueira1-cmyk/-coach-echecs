@@ -17,8 +17,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Dragon Yugoslav Attack 9.Bc4 Bd7 Soltis h5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: 'Chess Mode', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -33,8 +33,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Dragon Yugoslav 9.O-O-O d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: 'Chess Mode', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -49,8 +49,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Dragon Yugoslav 9.g4 Be6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: 'Chess Mode', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -68,7 +68,7 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Dragon classical 6.Be2 Bg7 7.O-O O-O', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -86,7 +86,7 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Dragon 6.Bc4 Ng4 trap Be3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -104,7 +104,7 @@ export default [
     conserver: 'Cavalier d7 (garde e5)',
     video: { recherche: 'Dragon Levenfish 6.f4 Nbd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -119,7 +119,7 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Dragon fianchetto 6.g3 Nc6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

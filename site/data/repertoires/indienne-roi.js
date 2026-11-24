@@ -17,8 +17,8 @@ export default [
     conserver: 'Fou g7 (défenseur du Roque et clé des cases noires)',
     video: { recherche: 'King\'s Indian Defense Mar del Plata plans for Black explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -36,8 +36,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'King\'s Indian Exchange Variation 7.dxe5 how Black equalizes', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -52,8 +52,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'King\'s Indian 8.Be3 Ng4 Gligoric variation explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -68,8 +68,8 @@ export default [
     conserver: 'Fou g7 (diagonale a1-h8 vers le grand Roque)',
     video: { recherche: 'King\'s Indian Samisch 6.Be3 e5 plan for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -84,8 +84,8 @@ export default [
     conserver: 'Fou g7 (diagonale longue)',
     video: { recherche: 'King\'s Indian Four Pawns Attack 6...c5 7.d5 e6 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -100,8 +100,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'King\'s Indian Averbakh variation 6.Bg5 c5 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -116,8 +116,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'King\'s Indian Fianchetto variation Nbd7 e5 c6 Qb6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -135,8 +135,8 @@ export default [
     conserver: 'Toutes les pièces : finir le développement',
     video: { recherche: 'King\'s Indian Defense opening traps for Black to avoid', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

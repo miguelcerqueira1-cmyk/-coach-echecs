@@ -20,9 +20,9 @@ export default [
     conserver: 'Le contrôle de d5',
     video: { recherche: 'Najdorf English Attack 6.Be3 e5 7.Nb3 Be6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=wgGPke_l1H0', titre: 'Sicilienne Najdorf "Attaque Anglaise"', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=wgGPke_l1H0', titre: 'Sicilienne Najdorf "Attaque Anglaise"', chaine: 'olivier Delabarre', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -40,8 +40,8 @@ export default [
     conserver: 'Pion e6 (protège d5 et f5)',
     video: { recherche: 'Najdorf 6.Bg5 e6 7.f4 Be7 8.Qf3 Qc7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -56,8 +56,8 @@ export default [
     conserver: 'Le contrôle de d5',
     video: { recherche: 'Najdorf 6.Be2 e5 7.Nb3 Be7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -75,8 +75,8 @@ export default [
     conserver: 'Pion e6',
     video: { recherche: 'Najdorf Fischer Sozin 6.Bc4 e6 7.Bb3 b5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -91,8 +91,8 @@ export default [
     conserver: 'Pion h5',
     video: { recherche: 'Najdorf 6.h3 e5 7.Nde2 h5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -107,8 +107,8 @@ export default [
     conserver: 'Cavalier d7 (vers c5 ou e5)',
     video: { recherche: 'Najdorf 6.f4 e5 7.Nf3 Nbd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {

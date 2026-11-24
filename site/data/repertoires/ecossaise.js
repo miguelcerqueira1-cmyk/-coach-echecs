@@ -16,8 +16,8 @@ export default [
     conserver: 'Pion e4',
     video: { recherche: 'Scotch Game 4...Bc5 5.Be3 Qf6 6.c3 white plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -32,8 +32,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Scotch Game Mieses Variation 5.Nxc6 bxc6 6.e5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -48,8 +48,8 @@ export default [
     conserver: 'L’avance de développement',
     video: { recherche: 'Scotch Game Steinitz 4...Qh4 5.Nc3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -64,9 +64,9 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Scotch Gambit 4.Bc4 Bc5 5.c3 Nf6 6.e5 d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=xjMYoxjqgms', titre: 'Gambit écossais (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xjMYoxjqgms', titre: 'Gambit écossais (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -81,8 +81,8 @@ export default [
     conserver: 'Pion e4',
     video: { recherche: 'Scotch Game 3...d6 4.Bb5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -97,8 +97,8 @@ export default [
     conserver: 'Cavalier d5',
     video: { recherche: 'Scotch 4...Bc5 5.Nb3 Bb6 6.a4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -113,8 +113,8 @@ export default [
     conserver: 'Pion e4',
     video: { recherche: 'Scotch 4...Bc5 5.Nxc6 Qf6 6.Qd2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -129,8 +129,8 @@ export default [
     conserver: 'Fou d3',
     video: { recherche: 'Scotch Four Knights 5...Bb4 6.Nxc6 bxc6 7.Bd3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -145,8 +145,8 @@ export default [
     conserver: 'Fou c4',
     video: { recherche: 'Scotch 3...Nxd4 4.Nxd4 exd4 5.Qxd4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -164,8 +164,8 @@ export default [
     conserver: 'La Dame active',
     video: { recherche: 'Scotch 3...f6 refutation Nxe5 Qh5+', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

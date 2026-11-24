@@ -110,7 +110,7 @@ export default [
     conserver: 'Initiative au centre',
     video: { recherche: 'Ruy Lopez Classical Defense 3...Bc5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=BXWdBp8qvpc', titre: 'Ruy Lopez - Classical Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=BXWdBp8qvpc', titre: 'Ruy Lopez - Classical Defense | Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 Bc5', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -125,7 +125,7 @@ export default [
     conserver: 'Fou a4/b3 sur la diagonale',
     video: { recherche: 'Bird Defense Ruy Lopez 3...Nd4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=cACtJz6PM28', titre: 'Bird\'s Defense: Ruy Lopez Chess Opening', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=cACtJz6PM28', titre: 'Bird\'s Defense: Ruy Lopez Chess Opening', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -186,7 +186,7 @@ export default [
     conserver: 'Pion de plus',
     video: { recherche: 'Marshall Attack main line for white Re4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -201,7 +201,7 @@ export default [
     conserver: 'Fou b3',
     video: { recherche: 'Anti-Marshall 8.a4 Ruy Lopez', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

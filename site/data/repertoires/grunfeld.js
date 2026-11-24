@@ -17,8 +17,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Grunfeld exchange variation 8.Rb1 Qxa2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -36,8 +36,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Grunfeld exchange classical 7.Bc4 c5 8.Ne2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -52,8 +52,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Grunfeld Russian system Hungarian variation 7...a6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -71,8 +71,8 @@ export default [
     conserver: 'Dame en a5 (clouage)',
     video: { recherche: 'Grunfeld 4.Bf4 Bg7 5.e3 c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -90,8 +90,8 @@ export default [
     conserver: 'Pion c4',
     video: { recherche: 'Grunfeld 4.Bg5 Ne4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -106,8 +106,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Grunfeld 4.e3 quiet system c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -122,8 +122,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Grunfeld against 3.f3 d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -138,8 +138,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Grunfeld fianchetto 3.g3 d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

@@ -17,7 +17,7 @@ export default [
     conserver: 'Fou c5 (sur la diagonale de f2)',
     video: { recherche: 'Giuoco Pianissimo black plan a6 Ba7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -35,7 +35,7 @@ export default [
     conserver: 'Avance de développement',
     video: { recherche: 'Two Knights Defense 4.Ng5 d5 5.exd5 Na5 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -50,8 +50,8 @@ export default [
     conserver: 'La paire de Fous',
     video: { recherche: 'Berlin Defense endgame explained for beginners', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=bdtGxUZANxs', titre: 'Ruy Lopez - Berlin Defense ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=bdtGxUZANxs', titre: 'Ruy Lopez - Berlin Defense ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 Nf6', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -69,8 +69,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Noah\'s Ark Trap Ruy Lopez explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -85,8 +85,8 @@ export default [
     conserver: 'Dame active en f6',
     video: { recherche: 'Scotch Game 4...Bc5 5.Be3 Qf6 black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -101,9 +101,9 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Vienna Gambit 3...d5 black response', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=jeuEDHDgIM4', titre: 'Chess Openings: Vienna Gambit - Forgotten but Tricky!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=jeuEDHDgIM4', titre: 'Chess Openings: Vienna Gambit - Forgotten but Tricky!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -118,7 +118,7 @@ export default [
     conserver: 'Pion f4',
     video: { recherche: 'King\'s Gambit Accepted 3...d5 modern defense', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -136,7 +136,7 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'how to stop scholar\'s mate 2.Qh5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

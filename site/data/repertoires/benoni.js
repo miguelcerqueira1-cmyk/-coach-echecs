@@ -17,8 +17,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Modern Benoni main line plans Re8 Na6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -33,8 +33,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Modern Benoni fianchetto variation', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -49,8 +49,8 @@ export default [
     conserver: 'Cavalier d7 (contrôle e5)',
     video: { recherche: 'Benoni Taimanov attack 8.Bb5+ Nfd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -65,8 +65,8 @@ export default [
     conserver: 'Pion d7 (rupture …d5 plus tard)',
     video: { recherche: '1.d4 Nf6 2.c4 c5 3.Nf3 cxd4 4.Nxd4 e6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -81,8 +81,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Benko Gambit accepted main line plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -97,8 +97,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Benko Gambit 5.e3 declined', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

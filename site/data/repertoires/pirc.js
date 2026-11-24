@@ -17,8 +17,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Pirc Defense classical 6...Bg4 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -33,8 +33,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Pirc Austrian Attack 5...c5 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -49,8 +49,8 @@ export default [
     conserver: 'Le roi au centre tant que h4-h5 menace',
     video: { recherche: 'Pirc Defense 150 Attack Be3 Qd2 c6 b5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -68,8 +68,8 @@ export default [
     conserver: 'Tour h8 sur la colonne h',
     video: { recherche: 'Pirc Defense Byrne 4.Bg5 h6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -84,8 +84,8 @@ export default [
     conserver: 'Pion c6 qui soutient d5',
     video: { recherche: 'Pirc Defense 4.Bc4 Bg7 5.Qe2 c6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -100,8 +100,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Pirc Defense 3.Nd2 quiet system c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -116,8 +116,8 @@ export default [
     conserver: 'Les deux Cavaliers qui visent e5',
     video: { recherche: 'Pirc Defense 3.e5 dxe5 queen trade', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=VI-jpSwp1zc', titre: 'La DÉFENSE PIRC aux Échecs : Contre-attaquez Rapidement ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=tX6Ym8AFplU', titre: 'Chess Openings: Learn to Play the Pirc Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

@@ -520,9 +520,15 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   l'usage, décision de l'utilisateur ; l'explication gratuite fonctionne sans.
 - Élite : le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
 - Plus de fiches (168 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
-- Vidéos des nouveaux répertoires : aucune pour Sicilienne, Française, Scandinave, Indienne du Roi,
-  GD refusé (Noirs), Nimzo / Indienne de la Dame ; 24 (Italienne/Espagnole) et 8 (Londres/Anglaise)
-  depuis la vidéothèque Lichess. Données Élite : seulement gd et ck (`elite: true`).
+- **Vidéos des nouveaux répertoires (2026-11-24)** : 160 fiches de 27 répertoires complétées par
+  recherche web (`scripts/ajout-videos-2026-11-24.mjs`, vidéos de présentation par ouverture + vidéos
+  ciblées par famille), confirmées par oEmbed en CI (workflow « Chapitres » lancé sur la branche,
+  `verify-videos.mjs --json` → `scripts/videos-confirmees-2026-11-24.json` : vrai titre et vraie
+  chaîne, 0 morte) avant de passer `verifie: true`. Méthode à réutiliser : ajouter avec
+  `chaine: null, verifie: false`, lancer le workflow sur la branche, reporter, puis publier.
+  La vidéothèque Lichess est derrière une protection anti-robots (inaccessible d'ici).
+  Restent sans vidéo ≈ 50 fiches (déviations, coups loufoques, Slave/systèmes sans c4 des Noirs,
+  Indienne de la Dame, anti-siciliennes rares, Deux Cavaliers, Steinitz…). Données Élite : seulement gd et ck (`elite: true`).
 - Branche `licences-pro` (vrai verrou) écrite AVANT le grand public : à adapter aux 16 répertoires
   (fiches gratuites de meta.js) au moment de la vente.
 - Analyse : variantes d'analyse (`analysisBranches`)

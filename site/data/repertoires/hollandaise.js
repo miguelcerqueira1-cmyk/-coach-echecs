@@ -16,8 +16,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'Leningrad Dutch plans Qe8 e5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -32,8 +32,8 @@ export default [
     conserver: 'Cavalier e4',
     video: { recherche: 'Stonewall Dutch plans for black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7DVRqdwnleQ', titre: 'How to Play the Stonewall Dutch Defence', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7DVRqdwnleQ', titre: 'How to Play the Stonewall Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -48,7 +48,7 @@ export default [
     conserver: 'Pion e4',
     video: { recherche: 'Staunton Gambit Dutch 2.e4 fxe4 black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -66,7 +66,7 @@ export default [
     conserver: 'La sécurité du roi',
     video: { recherche: 'Dutch Defense 2.Bg5 h6 3.Bh4 g5 trap Bg6 mate', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -81,7 +81,7 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Dutch Defense 2.Nc3 d5 Stonewall', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

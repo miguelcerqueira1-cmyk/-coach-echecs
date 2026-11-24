@@ -17,8 +17,8 @@ export default [
     conserver: 'Fou g2',
     video: { recherche: 'Catalan closed variation Nbd7 c6 e4 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -33,8 +33,8 @@ export default [
     conserver: 'Fou g2',
     video: { recherche: 'Open Catalan 7.Qc2 a6 8.Qxc4 b5 Bd2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -49,8 +49,8 @@ export default [
     conserver: 'Dame blanche',
     video: { recherche: 'Open Catalan 5...c5 6.O-O Nc6 7.Qa4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -68,8 +68,8 @@ export default [
     conserver: 'Fou g2',
     video: { recherche: 'Catalan 4...dxc4 5...b5 6.Ne5 a4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -84,8 +84,8 @@ export default [
     conserver: 'Pion d4',
     video: { recherche: 'Catalan 5.Qa4+ Bd7 6.Qxc4 Bc6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -100,8 +100,8 @@ export default [
     conserver: 'Fou g2',
     video: { recherche: 'Catalan 3...Bb4+ 4.Bd2 Be7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -116,8 +116,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Catalan 3...c5 4.d5 Benoni fianchetto', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -132,8 +132,8 @@ export default [
     conserver: 'Fou g2',
     video: { recherche: 'Catalan against Semi-Slav c6 Nbd7 Qc2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

@@ -17,8 +17,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Vienna Gambit 3.f4 d5 main line', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=jeuEDHDgIM4', titre: 'Chess Openings: Vienna Gambit - Forgotten but Tricky!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=jeuEDHDgIM4', titre: 'Chess Openings: Vienna Gambit - Forgotten but Tricky!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -36,7 +36,7 @@ export default [
     conserver: 'Fou b3 (diagonale vers f7)',
     video: { recherche: 'Vienna 3.Bc4 Nxe4 4.Qh5 Frankenstein-Dracula', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -54,7 +54,7 @@ export default [
     conserver: 'Cavalier d5',
     video: { recherche: 'Vienna 2...Nc6 3.Bc4 Bc5 4.Qg4 trap', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -69,7 +69,7 @@ export default [
     conserver: 'Fou c4',
     video: { recherche: 'Vienna 2...Bc5 3.Bc4 Nf6 4.d3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -84,7 +84,7 @@ export default [
     conserver: 'Fou c4',
     video: { recherche: 'Vienna 2...Nf6 3.Bc4 Nc6 4.d3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -99,7 +99,7 @@ export default [
     conserver: 'Fou g2',
     video: { recherche: 'Vienna 3.g3 d5 Mieses', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

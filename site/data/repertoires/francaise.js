@@ -20,8 +20,8 @@ export default [
     conserver: 'Pression sur d4',
     video: { recherche: 'French Advance 3.e5 c5 4.c3 Nc6 5.Nf3 Qb6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=RC_L_EhQMU8', titre: 'Défense Française variante d\'avance 1. e4 e6 2. d4 d5 3. e5 - Leçon d\'échecs', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=RC_L_EhQMU8', titre: 'Défense Française variante d\'avance 1. e4 e6 2. d4 d5 3. e5 - Leçon d\'échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -36,7 +36,7 @@ export default [
     conserver: 'Tours sur la colonne e',
     video: { recherche: 'French Exchange variation 3.exd5 exd5 plans for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -51,8 +51,8 @@ export default [
     conserver: 'Fou c8, à sortir en d7 ou b7',
     video: { recherche: 'French Tarrasch 3.Nd2 c5 4.exd5 Qxd5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=wV-6gYnR5Lk', titre: 'Expliquez moi cette ouverture - La Tarrasch', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=wV-6gYnR5Lk', titre: 'Expliquez moi cette ouverture - La Tarrasch', chaine: 'Echecs - CrazyBishops', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -67,7 +67,7 @@ export default [
     conserver: 'Cavalier c6 (pression sur d4)',
     video: { recherche: 'French Classical Steinitz 4.e5 Nfd7 5.f4 c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -82,7 +82,7 @@ export default [
     conserver: 'Dame e7 (défend f7 et g7)',
     video: { recherche: 'French Classical 4.Bg5 Be7 5.e5 Nfd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -100,7 +100,7 @@ export default [
     conserver: 'Pression …c5 / …Cc6 sur d4',
     video: { recherche: 'French Defense 3.Bd3 dxe4 response', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -115,7 +115,7 @@ export default [
     conserver: 'Fou e7 pour défendre le roque',
     video: { recherche: 'French vs King\'s Indian Attack 2.d3 plan for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -130,7 +130,7 @@ export default [
     conserver: 'Pions c5/d5 au centre',
     video: { recherche: 'French Defense 2.Qe2 Chigorin variation how to play', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs !', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

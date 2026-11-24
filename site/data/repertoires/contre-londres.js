@@ -16,8 +16,8 @@ export default [
     conserver: 'Pression sur b2',
     video: { recherche: 'how to beat the London System c5 Qb6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -32,8 +32,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'London System black setup Bd6 b6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -48,8 +48,8 @@ export default [
     conserver: 'Fou f5',
     video: { recherche: 'London System symmetrical Bf5 black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -67,8 +67,8 @@ export default [
     conserver: 'La Dame près du roi',
     video: { recherche: 'London System Qb6 Nc3 Qxb2 trap', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -83,8 +83,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'London System 2...c5 3.dxc5 Nc6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -99,8 +99,8 @@ export default [
     conserver: 'Pion c4',
     video: { recherche: 'London System 2...c5 3.e3 Nc6 4.Nf3 Bg4 Qb6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -115,8 +115,8 @@ export default [
     conserver: 'Cavalier f6 (contrôle e4)',
     video: { recherche: 'London System Nd2 Bd6 b6 plan for black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -131,8 +131,8 @@ export default [
     conserver: 'Fou g7',
     video: { recherche: 'London System vs g6 fianchetto c5 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

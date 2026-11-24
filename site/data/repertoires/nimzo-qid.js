@@ -17,7 +17,7 @@ export default [
     conserver: 'Cavalier f6 (contrôle de e4)',
     video: { recherche: 'Nimzo-Indian Rubinstein 4.e3 O-O 5.Bd3 d5 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -35,8 +35,8 @@ export default [
     conserver: 'Fou b7 sur la grande diagonale',
     video: { recherche: 'Nimzo-Indian Classical 4.Qc2 O-O 5.a3 Bxc3 6.Qxc3 b6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=3SzZnyyWpIA', titre: 'The Nimzo-Indian Defence, Classical Variation - Chess Openings Explained', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3SzZnyyWpIA', titre: 'The Nimzo-Indian Defence, Classical Variation - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -51,7 +51,7 @@ export default [
     conserver: 'Pression sur c4',
     video: { recherche: 'Nimzo-Indian Samisch 4.a3 Bxc3 5.bxc3 c5 Ba6 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -66,7 +66,7 @@ export default [
     conserver: 'Pion c5 (contrôle de d4)',
     video: { recherche: 'Nimzo-Indian Leningrad variation 4.Bg5 h6 c5 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -81,7 +81,7 @@ export default [
     conserver: 'Fou b7',
     video: { recherche: 'Nimzo-Indian 4.Nf3 b6 5.Bg5 Bb7 h6 g5 Ne4 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -123,7 +123,7 @@ export default [
     conserver: 'Tour a8 à l’abri de la grande diagonale',
     video: { recherche: 'Catalan Opening Open 6...dxc4 7.Qc2 a6 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

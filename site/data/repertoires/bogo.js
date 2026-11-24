@@ -16,8 +16,8 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Bogo-Indian 4.Bd2 Qe7 5.g3 Nc6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -35,8 +35,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Bogo-Indian 4.Bd2 Bxd2+ 5.Qxd2', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -51,8 +51,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Bogo-Indian 4.Bd2 a5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -67,8 +67,8 @@ export default [
     conserver: 'Fou b7',
     video: { recherche: 'Bogo-Indian 4.Nbd2 b6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -83,8 +83,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Bogo-Indian 4.Bd2 Be7 retreat', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'How to play the Bogo-indian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

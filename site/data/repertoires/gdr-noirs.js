@@ -14,7 +14,7 @@ export default [
     conserver: 'Pion d5 tant que le développement n’est pas fini',
     video: { recherche: 'Queen\'s Gambit Declined Tartakower variation for Black explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -33,7 +33,7 @@ export default [
     conserver: 'Dame a5 tant que le Cavalier c3 est cloué',
     video: { recherche: 'Cambridge Springs Defense trap Bd3 Ne4 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -52,7 +52,7 @@ export default [
     conserver: 'Cavalier d7 (il défend f6 et rend la combinaison possible)',
     video: { recherche: 'Elephant trap Queen\'s Gambit Declined Nxd5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -68,7 +68,7 @@ export default [
     conserver: 'Pion c6 bien défendu',
     video: { recherche: 'Queen\'s Gambit Declined Exchange Variation Carlsbad structure plans for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -87,7 +87,7 @@ export default [
     conserver: 'Fou c8 pour la finale (activé par …b6, …Fb7 ou …Fe6)',
     video: { recherche: 'Queen\'s Gambit Declined Qc2 c5 equalizing for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
       ] },
   },
@@ -130,8 +130,8 @@ export default [
     conserver: 'Pression sur b2 sans prendre trop tôt',
     video: { recherche: 'London System as Black c5 Qb6 b2 pawn', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
