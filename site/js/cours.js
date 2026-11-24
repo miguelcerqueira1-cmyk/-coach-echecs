@@ -8,11 +8,15 @@ import { Board } from './board.js';
 import { sanFr } from './analysis.js';
 import { lessonSteps, nomFr } from './lesson-core.js';
 import { raisonErreur } from './drills-core.js';
+import { langue } from './i18n.js';
+
+// Phrases en français ou en anglais selon la langue de l'interface.
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const toObj = (u) => ({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
-const STAGES = ['Présentation', 'Les coups', 'À retenir', 'À vous'];
-const BADGE = { theorie: 'Théorie', piege: 'Piège Blitz', loufoque: 'Coup loufoque' };
+const STAGES = () => [L('Présentation', 'Overview'), L('Les coups', 'The moves'), L('À retenir', 'Key points'), L('À vous', 'Your turn')];
+const BADGE = () => ({ theorie: L('Théorie', 'Theory'), piege: L('Piège Blitz', 'Blitz trap'), loufoque: L('Coup loufoque', 'Offbeat move') });
 
 export class LessonView {
   // mesParties : mes vraies parties dans cette variante (coups gardés), pour la comparaison.
@@ -47,8 +51,8 @@ export class LessonView {
   layout() {
     this.el.innerHTML = `<div class="lesson" data-lesson="${esc(this.e.id)}">
       <div class="lesson-top">
-        <button type="button" class="small-btn" data-close>← Retour au cours</button>
-        <ol class="lesson-stages">${STAGES.map((s, i) => `<li><button type="button" class="chip" data-stage="${i}">${i + 1}. ${s}</button></li>`).join('')}</ol>
+        <button type="button" class="small-btn" data-close>${L('← Retour au cours', '← Back to the course')}</button>
+        <ol class="lesson-stages">${STAGES().map((s, i) => `<li><button type="button" class="chip" data-stage="${i}">${i + 1}. ${s}</button></li>`).join('')}</ol>
       </div>
       <div class="train-layout">
         <section><div class="lesson-name" data-name></div><div class="board-wrap" data-board></div><div class="lesson-nav" data-nav></div><div class="lesson-under" data-under></div></section>
@@ -104,7 +108,7 @@ export class LessonView {
     this.board.setPosition(c, { lastMove: last });
     const ours = (ply % 2 === 0 ? 'w' : 'b') === this.color;
     this.board.setArrows(last ? [{ from: last.from, to: last.to, kind: ply === p.ecart ? 'threat' : ours ? 'best' : 'reply' }] : []);
-    this.el.querySelector('[data-name]').innerHTML = `<strong>🎮 Ma partie</strong>${p.r.opp ? ` contre ${esc(p.r.opp)}` : ''} <span class="muted tiny">· ${ply < 0 ? 'position de départ' : `après ${esc(coupNo(ply, p.san[ply]))}`}</span>`;
+    this.el.querySelector('[data-name]').innerHTML = `<strong>${L('🎮 Ma partie', '🎮 My game')}</strong>${p.r.opp ? L(` contre ${esc(p.r.opp)}`, ` vs ${esc(p.r.opp)}`) : ''} <span class="muted tiny">· ${ply < 0 ? L('position de départ', 'starting position') : L(`après ${esc(coupNo(ply, p.san[ply]))}`, `after ${esc(coupNo(ply, p.san[ply]))}`)}</span>`;
   }
 
   drawAt(ply, { arrow = true } = {}) {
@@ -117,8 +121,8 @@ export class LessonView {
     this.board.setArrows(arrow && s ? [{ from: s.uci.slice(0, 2), to: s.uci.slice(2, 4), kind: s.ours ? 'best' : 'reply' }] : []);
     const n = this.nameAt(ply);
     this.el.querySelector('[data-name]').innerHTML = n
-      ? `<span class="lesson-eco">${esc(n.eco)}</span> <strong>${esc(n.fr)}</strong><span class="muted tiny"> · nom officiel : ${esc(n.name)}</span>`
-      : '<span class="muted">Position de départ</span>';
+      ? `<span class="lesson-eco">${esc(n.eco)}</span> <strong>${esc(n.fr)}</strong><span class="muted tiny">${L(' · nom officiel : ', ' · official name: ')}${esc(n.name)}</span>`
+      : `<span class="muted">${L('Position de départ', 'Starting position')}</span>`;
   }
 
   render() {
@@ -133,13 +137,13 @@ export class LessonView {
     if (this.stage === 0) {
       this.drawAt(this.steps.length - 1, { arrow: false });
       const finalName = nomFr(e.ecoNom);
-      panel.innerHTML = `<p class="muted small">${esc(e.famille)} · <span class="badge eco">${esc(e.eco)}</span> <span class="badge">${esc(BADGE[e.badge] || e.badge)}</span> · vous avez les ${me}</p>
+      panel.innerHTML = `<p class="muted small">${esc(e.famille)} · <span class="badge eco">${esc(e.eco)}</span> <span class="badge">${esc(BADGE()[e.badge] || e.badge)}</span> · ${L(`vous avez les ${me}`, `you have ${this.color === 'w' ? 'White' : 'Black'}`)}</p>
         <h2>${esc(e.nom)}</h2>
-        <p class="lesson-official">Nom officiel : <strong>${esc(finalName)}</strong><br><span class="muted tiny">${esc(e.ecoNom)} (${esc(e.eco)})</span></p>
-        <h3>L’idée</h3><p>${esc(e.plan)}</p>
-        <h3>La structure</h3><p>${esc(e.structure)}</p>
-        <p class="muted small">La position finale de la ligne est affichée. Étape suivante : les ${this.steps.length} demi-coups, un par un, avec le nom de l’ouverture qui se précise à chaque coup${this.steps.length > this.nFiche ? ` (les ${this.nFiche} de la fiche, puis la suite conseillée par Stockfish jusqu’au ${Math.ceil(this.steps.length / 2)}e coup)` : ''}.</p>
-        <div class="actions"><button type="button" class="primary" data-next>Voir les coups →</button></div>`;
+        <p class="lesson-official">${L('Nom officiel : ', 'Official name: ')}<strong>${esc(finalName)}</strong><br><span class="muted tiny">${esc(e.ecoNom)} (${esc(e.eco)})</span></p>
+        <h3>${L('L’idée', 'The idea')}</h3><p>${esc(e.plan)}</p>
+        <h3>${L('La structure', 'The structure')}</h3><p>${esc(e.structure)}</p>
+        <p class="muted small">${L(`La position finale de la ligne est affichée. Étape suivante : les ${this.steps.length} demi-coups, un par un, avec le nom de l’ouverture qui se précise à chaque coup${this.steps.length > this.nFiche ? ` (les ${this.nFiche} de la fiche, puis la suite conseillée par Stockfish jusqu’au ${Math.ceil(this.steps.length / 2)}e coup)` : ''}.`, `The final position of the line is shown. Next step: the ${this.steps.length} half-moves, one by one, with the opening name getting more precise at each move${this.steps.length > this.nFiche ? ` (the ${this.nFiche} of the line, then the continuation recommended by Stockfish up to move ${Math.ceil(this.steps.length / 2)})` : ''}.`)}</p>
+        <div class="actions"><button type="button" class="primary" data-next>${L('Voir les coups →', 'See the moves →')}</button></div>`;
       panel.querySelector('[data-next]').addEventListener('click', () => { this.ply = -1; this.go(1); });
       return;
     }
@@ -149,18 +153,18 @@ export class LessonView {
       const total = this.steps.length;
       // Explication juste sous l'échiquier (visible sans défiler sur téléphone) ; à côté : tous les coups.
       if (!s) {
-        under.innerHTML = `<div class="card lesson-step"><h2>Position de départ</h2><p>${me === 'Blancs' ? 'Vous avez les Blancs : vous jouez le premier coup.' : 'Vous avez les Noirs : l’adversaire commence.'}</p><p class="muted small">Touchez « Suivant » pour avancer coup par coup. Flèche verte : votre coup ; orange : celui de l’adversaire.</p></div>`;
+        under.innerHTML = `<div class="card lesson-step"><h2>${L('Position de départ', 'Starting position')}</h2><p>${me === 'Blancs' ? L('Vous avez les Blancs : vous jouez le premier coup.', 'You have White: you play the first move.') : L('Vous avez les Noirs : l’adversaire commence.', 'You have Black: your opponent starts.')}</p><p class="muted small">${L('Touchez « Suivant » pour avancer coup par coup. Flèche verte : votre coup ; orange : celui de l’adversaire.', 'Tap “Next” to go move by move. Green arrow: your move; orange: your opponent’s.')}</p></div>`;
       } else {
-        under.innerHTML = `<div class="card lesson-step"><p class="muted small">Coup ${this.ply + 1} / ${total} · ${s.ours ? '<strong>votre coup</strong>' : 'coup de l’adversaire'}</p>
+        under.innerHTML = `<div class="card lesson-step"><p class="muted small">${L('Coup', 'Move')} ${this.ply + 1} / ${total} · ${s.ours ? L('<strong>votre coup</strong>', '<strong>your move</strong>') : L('coup de l’adversaire', 'opponent’s move')}</p>
           <h2 class="lesson-move ${s.ours ? 'ours' : 'theirs'}">${esc(s.label)}</h2>
-          ${s.nom ? `<p class="lesson-newname">📛 Vous entrez dans : <strong>${esc(s.nom.fr)}</strong> <span class="muted tiny">(${esc(s.nom.eco)})</span></p>` : ''}
+          ${s.nom ? `<p class="lesson-newname">${L('📛 Vous entrez dans : ', '📛 You are entering: ')}<strong>${esc(s.nom.fr)}</strong> <span class="muted tiny">(${esc(s.nom.eco)})</span></p>` : ''}
           ${this.cmpLigneHtml()}
           <ul class="lesson-notes">${s.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>
-          ${this.ply === total - 1 ? '<div class="actions"><button type="button" class="primary" data-next>À retenir →</button></div>' : ''}</div>`;
+          ${this.ply === total - 1 ? `<div class="actions"><button type="button" class="primary" data-next>${L('À retenir →', 'Key points →')}</button></div>` : ''}</div>`;
         under.querySelector('[data-next]')?.addEventListener('click', () => this.go(2));
       }
-      panel.innerHTML = `<h2>Les coups de la ligne</h2><p class="small muted">Touchez un coup pour y aller. En vert : vos coups.</p>
-        <p class="moves-annot">${this.steps.map((x) => `${x.ply === this.nFiche ? '<span class="suite-sep small muted" title="Au-delà de la fiche : meilleurs coups de Stockfish">🤖 suite Stockfish :</span> ' : ''}<button type="button" class="m ${x.ours ? 'mine' : ''} ${x.moteur ? 'moteur' : ''} ${x.ply === this.ply ? 'current' : ''}" data-ply="${x.ply}">${esc(x.label)}</button>`).join(' ')}</p>`;
+      panel.innerHTML = `<h2>${L('Les coups de la ligne', 'The moves of the line')}</h2><p class="small muted">${L('Touchez un coup pour y aller. En vert : vos coups.', 'Tap a move to go there. In green: your moves.')}</p>
+        <p class="moves-annot">${this.steps.map((x) => `${x.ply === this.nFiche ? L('<span class="suite-sep small muted" title="Au-delà de la fiche : meilleurs coups de Stockfish">🤖 suite Stockfish :</span> ', '<span class="suite-sep small muted" title="Beyond the line: Stockfish’s best moves">🤖 Stockfish continuation:</span> ') : ''}<button type="button" class="m ${x.ours ? 'mine' : ''} ${x.moteur ? 'moteur' : ''} ${x.ply === this.ply ? 'current' : ''}" data-ply="${x.ply}">${esc(x.label)}</button>`).join(' ')}</p>`;
       panel.insertAdjacentHTML('beforeend', this.cmpPanelHtml());
       panel.querySelectorAll('[data-ply]').forEach((b) => b.addEventListener('click', () => { this.stop(); this.ply = Number(b.dataset.ply); this.render(); }));
       panel.querySelector('[data-cmp-select]')?.addEventListener('change', (ev) => {
@@ -171,9 +175,9 @@ export class LessonView {
         this.render();
       });
       panel.querySelectorAll('[data-cmp-vue]').forEach((b) => b.addEventListener('click', () => { this.cmp.vue = b.dataset.cmpVue; this.render(); }));
-      nav.innerHTML = `<button type="button" data-prev aria-label="Coup précédent" ${this.ply < 0 ? 'disabled' : ''}>◀</button>
-        <button type="button" class="primary" data-play>${this.timer ? '⏸ Pause' : '▶ Lecture'}</button>
-        <button type="button" data-step aria-label="Coup suivant" ${this.ply >= total - 1 ? 'disabled' : ''}>Suivant ▶</button>`;
+      nav.innerHTML = `<button type="button" data-prev aria-label="${L('Coup précédent', 'Previous move')}" ${this.ply < 0 ? 'disabled' : ''}>◀</button>
+        <button type="button" class="primary" data-play>${this.timer ? '⏸ Pause' : L('▶ Lecture', '▶ Play')}</button>
+        <button type="button" data-step aria-label="${L('Coup suivant', 'Next move')}" ${this.ply >= total - 1 ? 'disabled' : ''}>${L('Suivant ▶', 'Next ▶')}</button>`;
       nav.querySelector('[data-prev]').addEventListener('click', () => { this.stop(); this.ply = Math.max(-1, this.ply - 1); this.render(); });
       nav.querySelector('[data-step]').addEventListener('click', () => { this.stop(); this.ply = Math.min(total - 1, this.ply + 1); this.render(); });
       nav.querySelector('[data-play]').addEventListener('click', () => this.togglePlay());
@@ -182,21 +186,21 @@ export class LessonView {
     // Étape 2 : à retenir.
     if (this.drill) this.renderDrill();
     else this.drawAt(this.steps.length - 1, { arrow: false });
-    const claim = (c, kind) => (c ? `<div class="lesson-claim ${kind}"><h3>${kind === 'piege' ? '⚠ Le piège à éviter' : '🎯 La punition à connaître'}</h3><p>${esc(c.texte)}</p>
+    const claim = (c, kind) => (c ? `<div class="lesson-claim ${kind}"><h3>${kind === 'piege' ? L('⚠ Le piège à éviter', '⚠ The trap to avoid') : L('🎯 La punition à connaître', '🎯 The punishment to know')}</h3><p>${esc(c.texte)}</p>
       <p class="line small">${esc(lineFr(c.san))}</p>
-      <div class="actions"><button type="button" class="primary small-btn" data-drill="${kind}">♟ La jouer coup par coup</button>
-      <button type="button" class="small-btn" data-show="${kind}">Voir défiler</button></div></div>` : '');
+      <div class="actions"><button type="button" class="primary small-btn" data-drill="${kind}">${L('♟ La jouer coup par coup', '♟ Play it move by move')}</button>
+      <button type="button" class="small-btn" data-show="${kind}">${L('Voir défiler', 'Watch it play')}</button></div></div>` : '');
     const liens = (e.video?.liens || []).slice().sort((a, b) => (a.langue === 'fr' ? -1 : 0) - (b.langue === 'fr' ? -1 : 0));
-    panel.innerHTML = `<h2>À retenir</h2>
+    panel.innerHTML = `<h2>${L('À retenir', 'Key points')}</h2>
       <dl class="lesson-keys">
-        <dt>Cases et pièces clés</dt><dd>${esc(e.cases)}</dd>
-        <dt>À échanger</dt><dd>${esc(e.echanger)}</dd>
-        <dt>À conserver</dt><dd>${esc(e.conserver)}</dd>
+        <dt>${L('Cases et pièces clés', 'Key squares and pieces')}</dt><dd>${esc(e.cases)}</dd>
+        <dt>${L('À échanger', 'To exchange')}</dt><dd>${esc(e.echanger)}</dd>
+        <dt>${L('À conserver', 'To keep')}</dt><dd>${esc(e.conserver)}</dd>
       </dl>
       ${claim(e.piege, 'piege')}${claim(e.punition, 'punition')}
-      ${liens.length ? `<h3>🎬 Pour aller plus loin</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())})</span>
-        ${l.chapitre ? `<br><span class="badge tiny video-chap">▶ s’ouvre à ${esc(l.chapitre)}</span>` : '<br><span class="muted tiny">Début de la vidéo (l’auteur n’a pas publié de chapitres)</span>'}</li>`).join('')}</ul>` : ''}
-      <div class="actions"><button type="button" class="primary" data-next>À vous de jouer la ligne →</button></div>`;
+      ${liens.length ? `<h3>${L('🎬 Pour aller plus loin', '🎬 Going further')}</h3><ul>${liens.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.titre)}</a> <span class="muted small">(${esc(l.chaine)}, ${esc(String(l.langue).toUpperCase())})</span>
+        ${l.chapitre ? `<br><span class="badge tiny video-chap">${L(`▶ s’ouvre à ${esc(l.chapitre)}`, `▶ opens at ${esc(l.chapitre)}`)}</span>` : L('<br><span class="muted tiny">Début de la vidéo (l’auteur n’a pas publié de chapitres)</span>', '<br><span class="muted tiny">Start of the video (the author has not published chapters)</span>')}</li>`).join('')}</ul>` : ''}
+      <div class="actions"><button type="button" class="primary" data-next>${L('À vous de jouer la ligne →', 'Your turn to play the line →')}</button></div>`;
     panel.querySelector('[data-next]').addEventListener('click', () => this.go(3));
     panel.querySelectorAll('[data-show]').forEach((b) => b.addEventListener('click', () => { this.drill = null; this.el.querySelector('[data-under]').innerHTML = ''; this.showClaim(e[b.dataset.show]); }));
     panel.querySelectorAll('[data-drill]').forEach((b) => b.addEventListener('click', () => this.startDrill(b.dataset.drill)));
@@ -241,27 +245,27 @@ export class LessonView {
     const moves = c.san.map((_, i) => `<span class="m ${i === c.marked ? 'fault' : ''} ${i < d.i ? 'played' : ''} ${i === d.i ? 'current' : ''}">${esc(this.drillLabel(i))}</span>`).join(' ');
     let body;
     if (done) {
-      body = `<p class="drill-done">✔ Séquence jouée jusqu’au bout.</p><p>${esc(c.texte)}</p>
-        <p class="muted small">${piege ? 'Retenez le coup marqué « ? » : c’est le réflexe à ne pas avoir.' : 'Retenez la suite après le coup fautif « ? » : c’est elle qui le punit.'}</p>`;
+      body = `<p class="drill-done">${L('✔ Séquence jouée jusqu’au bout.', '✔ Sequence played to the end.')}</p><p>${esc(c.texte)}</p>
+        <p class="muted small">${piege ? L('Retenez le coup marqué « ? » : c’est le réflexe à ne pas avoir.', 'Remember the move marked “?”: it’s the reflex to avoid.') : L('Retenez la suite après le coup fautif « ? » : c’est elle qui le punit.', 'Remember the continuation after the faulty move “?”: it’s what punishes it.')}</p>`;
     } else {
       const next = d.i === c.marked
-        ? (piege ? `C’est le coup fautif : jouez <strong>${esc(this.drillLabel(d.i))}</strong> pour voir pourquoi il perd.` : `L’adversaire commet l’erreur : jouez <strong>${esc(this.drillLabel(d.i))}</strong> pour lui.`)
+        ? (piege ? L(`C’est le coup fautif : jouez <strong>${esc(this.drillLabel(d.i))}</strong> pour voir pourquoi il perd.`, `This is the faulty move: play <strong>${esc(this.drillLabel(d.i))}</strong> to see why it loses.`) : L(`L’adversaire commet l’erreur : jouez <strong>${esc(this.drillLabel(d.i))}</strong> pour lui.`, `Your opponent makes the mistake: play <strong>${esc(this.drillLabel(d.i))}</strong> for them.`))
         : d.i > c.marked
-          ? `${piege ? 'La sanction' : 'La punition'} : jouez <strong>${esc(this.drillLabel(d.i))}</strong>.`
-          : `Mise en place : jouez <strong>${esc(this.drillLabel(d.i))}</strong>.`;
-      body = `<p>Trait ${side}. ${next}</p>${d.msg ? `<p class="drill-msg" role="status">${esc(d.msg)}</p>` : ''}`;
+          ? L(`${piege ? 'La sanction' : 'La punition'} : jouez <strong>${esc(this.drillLabel(d.i))}</strong>.`, `${piege ? 'The sanction' : 'The punishment'}: play <strong>${esc(this.drillLabel(d.i))}</strong>.`)
+          : L(`Mise en place : jouez <strong>${esc(this.drillLabel(d.i))}</strong>.`, `Setup: play <strong>${esc(this.drillLabel(d.i))}</strong>.`);
+      body = `<p>${L(`Trait ${side}.`, `${chess.turn() === 'w' ? 'White' : 'Black'} to move.`)} ${next}</p>${d.msg ? `<p class="drill-msg" role="status">${esc(d.msg)}</p>` : ''}`;
     }
     const under = this.el.querySelector('[data-under]');
     under.innerHTML = `<div class="card lesson-step lesson-drill" data-drill-card="${d.kind}">
-      <p class="muted small">${piege ? '⚠ Le piège, à jouer vous-même' : '🎯 La punition, à jouer vous-même'} · coup ${Math.min(d.i + 1, total)} / ${total}</p>
+      <p class="muted small">${piege ? L('⚠ Le piège, à jouer vous-même', '⚠ The trap, to play yourself') : L('🎯 La punition, à jouer vous-même', '🎯 The punishment, to play yourself')} · ${L('coup', 'move')} ${Math.min(d.i + 1, total)} / ${total}</p>
       ${body}
       <p class="moves-annot small">${moves}</p>
       <div class="actions">
-        ${done ? '' : '<button type="button" class="small-btn" data-drill-hint>💡 Indice</button>'}
-        ${!done && d.i < c.marked ? '<button type="button" class="small-btn" data-drill-skip>⏩ Aller à l’erreur</button>' : ''}
-        <button type="button" class="small-btn" data-drill-back ${d.i ? '' : 'disabled'}>◀ Annuler un coup</button>
-        <button type="button" class="small-btn" data-drill-restart>↺ Recommencer</button>
-        <button type="button" class="small-btn" data-drill-quit>Fermer</button>
+        ${done ? '' : `<button type="button" class="small-btn" data-drill-hint>${L('💡 Indice', '💡 Hint')}</button>`}
+        ${!done && d.i < c.marked ? `<button type="button" class="small-btn" data-drill-skip>${L('⏩ Aller à l’erreur', '⏩ Go to the mistake')}</button>` : ''}
+        <button type="button" class="small-btn" data-drill-back ${d.i ? '' : 'disabled'}>${L('◀ Annuler un coup', '◀ Undo a move')}</button>
+        <button type="button" class="small-btn" data-drill-restart>${L('↺ Recommencer', '↺ Restart')}</button>
+        <button type="button" class="small-btn" data-drill-quit>${L('Fermer', 'Close')}</button>
       </div></div>`;
     under.querySelector('[data-drill-hint]')?.addEventListener('click', () => { d.hint = true; this.renderDrill(); });
     under.querySelector('[data-drill-skip]')?.addEventListener('click', () => { d.i = c.marked; d.msg = null; d.hint = false; this.renderDrill(); });
@@ -280,9 +284,9 @@ export class LessonView {
       const fault = d.i === d.c.marked;
       d.i++;
       d.hint = false;
-      d.msg = fault ? (d.kind === 'piege' ? 'Voilà l’erreur. Regardez maintenant la sanction.' : 'Voilà l’erreur adverse. À vous de la punir.') : null;
+      d.msg = fault ? (d.kind === 'piege' ? L('Voilà l’erreur. Regardez maintenant la sanction.', 'There’s the mistake. Now watch the sanction.') : L('Voilà l’erreur adverse. À vous de la punir.', 'There’s your opponent’s mistake. Your turn to punish it.')) : null;
     } else {
-      d.msg = `Ce n’est pas le coup de la séquence : ici, on joue ${this.drillLabel(d.i)}.`;
+      d.msg = L(`Ce n’est pas le coup de la séquence : ici, on joue ${this.drillLabel(d.i)}.`, `That’s not the sequence’s move: here, the move is ${this.drillLabel(d.i)}.`);
       const chess = new Chess();
       for (const u of d.c.uci.slice(0, d.i)) chess.move(toObj(u));
       const why = raisonErreur({ fen: chess.fen(), uci: played, expectedSan: d.c.san[d.i] });
@@ -297,16 +301,16 @@ export class LessonView {
   // Panneau « Comparer avec ma partie » : choix de la partie, vue théorie / ma partie, 2 lignes de coups.
   cmpPanelHtml() {
     if (!this.mesParties.length) return '';
-    const res = { victoire: 'gagnée', défaite: 'perdue', nulle: 'nulle' };
+    const res = L({ victoire: 'gagnée', défaite: 'perdue', nulle: 'nulle' }, { victoire: 'won', défaite: 'lost', nulle: 'draw' });
     const p = this.partie();
     const lbl = (i, m) => `${i % 2 === 0 ? `${i / 2 + 1}. ` : ''}${sanFr(m)}`;
     const lblComplet = (i, m) => coupNo(i, m);
     return `<div class="lesson-cmp" data-cmp>
-      <h3>🎮 Comparer avec ma partie</h3>
-      <select data-cmp-select aria-label="Ma partie à comparer"><option value="">— Choisir une de mes parties —</option>${this.mesParties.map((r, i) => `<option value="${i}" ${this.cmp?.idx === i ? 'selected' : ''}>${esc(r.date ? new Date(r.date).toLocaleDateString('fr-FR') : '')}${r.opp ? ` · contre ${esc(r.opp)}` : ''} · ${res[r.outcome] || ''}</option>`).join('')}</select>
-      ${p ? `<div class="chips"><button type="button" class="chip" data-cmp-vue="theorie" aria-pressed="${this.cmp.vue === 'theorie'}">📖 Théorie</button><button type="button" class="chip" data-cmp-vue="partie" aria-pressed="${this.cmp.vue === 'partie'}">🎮 Ma partie</button></div>
-        <p class="small">${p.ecart == null ? '✅ Ta partie suit la théorie sur toute la ligne.' : `Ta partie quitte la théorie au coup <strong>${esc(lblComplet(p.ecart, p.san[p.ecart] || '…'))}</strong>${p.san[p.ecart] ? ` (théorie : <strong>${esc(sanFr(this.steps[p.ecart].san))}</strong>)` : ''} — ${(p.ecart % 2 === 0 ? 'w' : 'b') === this.color ? 'c’est toi qui en sors' : 'c’est l’adversaire qui en sort'}.`}</p>
-        <p class="small muted">Ma partie :</p>
+      <h3>${L('🎮 Comparer avec ma partie', '🎮 Compare with my game')}</h3>
+      <select data-cmp-select aria-label="${L('Ma partie à comparer', 'My game to compare')}"><option value="">${L('— Choisir une de mes parties —', '— Choose one of my games —')}</option>${this.mesParties.map((r, i) => `<option value="${i}" ${this.cmp?.idx === i ? 'selected' : ''}>${esc(r.date ? new Date(r.date).toLocaleDateString(L('fr-FR', 'en-GB')) : '')}${r.opp ? L(` · contre ${esc(r.opp)}`, ` · vs ${esc(r.opp)}`) : ''} · ${res[r.outcome] || ''}</option>`).join('')}</select>
+      ${p ? `<div class="chips"><button type="button" class="chip" data-cmp-vue="theorie" aria-pressed="${this.cmp.vue === 'theorie'}">${L('📖 Théorie', '📖 Theory')}</button><button type="button" class="chip" data-cmp-vue="partie" aria-pressed="${this.cmp.vue === 'partie'}">${L('🎮 Ma partie', '🎮 My game')}</button></div>
+        <p class="small">${p.ecart == null ? L('✅ Ta partie suit la théorie sur toute la ligne.', '✅ Your game follows theory for the whole line.') : `${L('Ta partie quitte la théorie au coup ', 'Your game leaves theory at move ')}<strong>${esc(lblComplet(p.ecart, p.san[p.ecart] || '…'))}</strong>${p.san[p.ecart] ? `${L(' (théorie : ', ' (theory: ')}<strong>${esc(sanFr(this.steps[p.ecart].san))}</strong>)` : ''} — ${(p.ecart % 2 === 0 ? 'w' : 'b') === this.color ? L('c’est toi qui en sors', 'you are the one who leaves it') : L('c’est l’adversaire qui en sort', 'your opponent is the one who leaves it')}.`}</p>
+        <p class="small muted">${L('Ma partie :', 'My game:')}</p>
         <p class="moves-annot">${p.san.map((m, i) => `<button type="button" class="m ${i === p.ecart ? 'ecart' : ''} ${p.ecart != null && i > p.ecart ? 'apres' : ''} ${i === this.ply ? 'current' : ''}" data-ply="${i}">${esc(lbl(i, m))}</button>`).join(' ')}</p>` : ''}
     </div>`;
   }
@@ -317,9 +321,9 @@ export class LessonView {
     if (!p) return '';
     const t = this.steps[this.ply]?.san;
     const m = p.san[this.ply];
-    if (!m) return '<p class="cmp-ligne small muted">Ma partie s’arrête avant ce coup.</p>';
+    if (!m) return L('<p class="cmp-ligne small muted">Ma partie s’arrête avant ce coup.</p>', '<p class="cmp-ligne small muted">My game stops before this move.</p>');
     const meme = m === t;
-    return `<p class="cmp-ligne small ${meme ? 'same' : 'diff'}">${meme ? '✔ Même coup dans ma partie' : `✘ Ma partie : <strong>${esc(sanFr(m))}</strong> · théorie : <strong>${esc(sanFr(t))}</strong>`}${this.ply === p.ecart ? ' — <strong>c’est ici que ta partie quitte la théorie</strong>' : ''}</p>`;
+    return `<p class="cmp-ligne small ${meme ? 'same' : 'diff'}">${meme ? L('✔ Même coup dans ma partie', '✔ Same move in my game') : L(`✘ Ma partie : <strong>${esc(sanFr(m))}</strong> · théorie : <strong>${esc(sanFr(t))}</strong>`, `✘ My game: <strong>${esc(sanFr(m))}</strong> · theory: <strong>${esc(sanFr(t))}</strong>`)}${this.ply === p.ecart ? L(' — <strong>c’est ici que ta partie quitte la théorie</strong>', ' — <strong>this is where your game leaves theory</strong>') : ''}</p>`;
   }
 
   stop() { clearInterval(this.timer); this.timer = null; }

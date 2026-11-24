@@ -3,6 +3,10 @@
 import { Chess } from '../vendor/chess.js';
 import { sanFr } from './analysis.js';
 import { piecesEnDanger } from './explain-free.js';
+import { langue } from './i18n.js';
+
+// Phrases en français ou en anglais selon la langue de l'interface.
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 const mover = (i) => (i % 2 === 0 ? 'w' : 'b');
 
@@ -56,26 +60,28 @@ export function seuilAutreCoup(entry, color) {
 }
 
 const ART = { p: 'votre pion', n: 'votre Cavalier', b: 'votre Fou', r: 'votre Tour', q: 'votre Dame' };
+const ART_EN = { p: 'your pawn', n: 'your knight', b: 'your bishop', r: 'your rook', q: 'your queen' };
 
 // Raison affichée dans la bulle d'un coup refusé. Uniquement des faits : le piège de la fiche
 // (ligne vérifiée par Stockfish) ou une pièce laissée en prise selon chess.js ; sinon, le simple
 // rappel du coup de la ligne. Aucune évaluation inventée.
 export function raisonErreur({ fen, uci, expectedSan = null, trap = null }) {
-  if (trap && trap.uci === uci) return `Erreur ! C’est le piège de la fiche : ${trap.texte}`;
+  if (trap && trap.uci === uci) return L(`Erreur ! C’est le piège de la fiche : ${trap.texte}`, `Mistake! This is the line’s trap: ${trap.texte}`);
   const c = new Chess(fen);
   let mv;
-  try { mv = c.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] }); } catch { return 'Coup impossible ici.'; }
+  try { mv = c.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] }); } catch { return L('Coup impossible ici.', 'Impossible move here.'); }
   if (c.isCheckmate()) return null;
   const before = new Set(piecesEnDanger(fen, mv.color).map((p) => p.square));
   const after = piecesEnDanger(c.fen(), mv.color);
   const moved = after.find((p) => p.square === mv.to);
   const fresh = moved || after.find((p) => !before.has(p.square));
-  const attendu = expectedSan ? ` Ici, on joue ${sanFr(expectedSan)}.` : '';
+  const attendu = expectedSan ? L(` Ici, on joue ${sanFr(expectedSan)}.`, ` Here, the move is ${sanFr(expectedSan)}.`) : '';
   if (fresh) {
-    const qui = ART[fresh.type] || 'une pièce';
-    return `Erreur ! Après ${sanFr(mv.san)}, ${qui} en ${fresh.square} ${fresh.defended ? 'peut être pris avec gain de matériel' : 'peut être pris sans contrepartie'}.${attendu}`;
+    const qui = L(ART[fresh.type] || 'une pièce', ART_EN[fresh.type] || 'a piece');
+    return L(`Erreur ! Après ${sanFr(mv.san)}, ${qui} en ${fresh.square} ${fresh.defended ? 'peut être pris avec gain de matériel' : 'peut être pris sans contrepartie'}.${attendu}`,
+      `Mistake! After ${sanFr(mv.san)}, ${qui} on ${fresh.square} ${fresh.defended ? 'can be taken with a material gain' : 'can be taken for nothing'}.${attendu}`);
   }
-  return `Ce n’est pas le coup de la ligne.${attendu}`;
+  return L(`Ce n’est pas le coup de la ligne.${attendu}`, `That’s not the line’s move.${attendu}`);
 }
 
 // Série de réussites du premier coup (remise à zéro à la première erreur).
