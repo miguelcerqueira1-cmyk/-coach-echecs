@@ -346,6 +346,12 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   « Quitter le brouillon » / toute navigation dans la partie / changement de la partie le ferment.
   Jamais enregistré (mémoire seulement) ; `Game` jamais modifié. La nulle/l'abandon sur la page
   Moteur ont été écartés par l'utilisateur (pas d'adversaire réel).
+- **Statistiques de visite (2026-11-24, `stats.js`)** : Cloudflare Web Analytics (compte Cloudflare
+  de l'utilisateur, sans cookies) ; jeton public `analyticsToken` + `analyticsHost` dans config.json
+  (build.mjs, variables `ANALYTICS_TOKEN` / `ANALYTICS_HOST` ; à changer lors du passage à un nom de
+  domaine). Script chargé seulement sur ce nom d'hôte, jamais en local, sous Playwright
+  (`navigator.webdriver`) ni avec Do-Not-Track / GPC. FAQ « Où sont enregistrées mes données ? »
+  mentionne le compteur. Tableau de bord : Cloudflare → Web Analytics.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes

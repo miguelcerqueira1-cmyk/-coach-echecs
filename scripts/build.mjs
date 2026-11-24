@@ -18,6 +18,10 @@ const config = {
   paymentUrl: process.env.PAYMENT_URL || '',
   // Adresse de support (Aide → contact, « Signaler un problème ») ; vide = message à copier.
   supportEmail: process.env.SUPPORT_EMAIL || 'blitzrefute@gmail.com',
+  // Statistiques de visite anonymes (Cloudflare Web Analytics, sans cookies) : jeton public du
+  // compte Cloudflare de l'utilisateur, compté seulement sur ce nom d'hôte (site publié).
+  analyticsToken: process.env.ANALYTICS_TOKEN ?? '8cf6de5a2d1147faa7c7fab3c21876fb',
+  analyticsHost: process.env.ANALYTICS_HOST ?? 'miguelcerqueira1-cmyk.github.io',
   build: process.env.GITHUB_SHA ? process.env.GITHUB_SHA.slice(0, 7) : 'local',
   builtAt: new Date().toISOString(),
 };

@@ -7,6 +7,7 @@ import { ChoixPage } from './choix.js';
 import './pwa.js'; // service worker, bandeau de mise à jour
 import { demarrer as demarrerInstallation, sauvegarder } from './installation.js';
 import { demarrerSync } from './sync.js';
+import { demarrerStats } from './stats.js';
 import { initLangue, langue, choisirLangue } from './i18n.js';
 import { Game, parseMoveText } from './game.js';
 import { Variante } from './variante-core.js';
@@ -133,6 +134,7 @@ async function init() {
     const cfg = await (await fetch('./config.json', { cache: 'no-cache' })).json();
     state.config = { ...state.config, ...cfg };
   } catch { /* pas de config publiée : pas d'API Claude */ }
+  demarrerStats(state.config); // compteur de visites anonyme, site publié seulement
   setPaymentUrl(state.config.paymentUrl);
   bindPaywall();
   renderPlan();
