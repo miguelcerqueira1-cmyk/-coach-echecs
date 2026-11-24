@@ -330,7 +330,12 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   2 Mo max, version → 409 si périmée), limite `SYNC_PER_HOUR` par IP ; migration `v2` dans
   wrangler.toml. Client : état `coach-echecs:sync-v1` (version, empreinte, auto), décision au
   démarrage (rien/envoyer/recevoir/conflit), envoi au passage en arrière-plan, bandeau de conflit.
-  **Inactif tant que le Worker n'est pas déployé** (apiUrl vide → la section le dit).
+  **Active depuis le 2026-11-24** : Worker déployé sur le compte Cloudflare de l'utilisateur
+  (`https://coach-echecs-api.blitzrefute.workers.dev`, sous-domaine `blitzrefute.workers.dev`) par
+  deploy.yml avec les seuls secrets GitHub CLOUDFLARE_API_TOKEN (modèle « Modifier Cloudflare
+  Workers », sans expiration, renouvelé une fois car affiché dans une capture) et
+  CLOUDFLARE_ACCOUNT_ID ; ANTHROPIC_API_KEY / COACH_ACCESS_CODE absents → explications Claude
+  désactivées (503), choix de l'utilisateur. Contrôle « Serveur en ligne » après publication.
 - **Version anglaise (2026-11-23, `i18n.js` / `i18n-en.js`)** : `coach-echecs:langue` ('fr' par
   défaut ; bouton EN/FR dans l'en-tête, ⚙ « Langue / Language »). En anglais : traduction à
   l'affichage (MutationObserver sur les textes et placeholder/aria-label/title ; `EXACT` ≈ 640
