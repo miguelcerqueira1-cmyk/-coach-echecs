@@ -79,6 +79,13 @@ export function sauvegarder(now = new Date()) {
   return dump;
 }
 
+// Copie de « Mes données » dans le presse-papiers (sans les secrets) : sur iPhone, l'appli
+// installée n'a pas la même mémoire que le navigateur ; on colle ensuite dans l'appli.
+export async function copierDonnees() {
+  const texte = JSON.stringify(exportData());
+  try { await navigator.clipboard.writeText(texte); return { ok: true, texte }; } catch { return { ok: false, texte }; }
+}
+
 // ---------- Icônes des étapes (dessinées ici, aucune image de marque) ----------
 const ICONE = {
   partager: `<svg viewBox="0 0 24 24" width="22" height="22" aria-label="${L('bouton Partager', 'Share button')}" role="img"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H6v10h12V10h-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
@@ -147,12 +154,21 @@ export function ouvrirGuide() {
   const p = plat();
   const autres = Object.entries(ETAPES).filter(([k]) => k !== p);
   const etat = lire();
+  const emporter = p.startsWith('ios') && !installee() && aDesDonnees()
+    ? `<div class="inst-alerte"><p><strong>⚠ ${L('Avant d’installer : emporte tes données', 'Before installing: take your data with you')}</strong><br>${L('Sur iPhone, l’appli installée <strong>ne voit pas</strong> ce que tu as fait dans le navigateur : elle démarre vide.', 'On iPhone, the installed app <strong>cannot see</strong> what you did in the browser: it starts empty.')}</p>
+      <ol class="inst-etapes">
+        ${etape(1, '📋', L('Touche <strong>« Copier mes données »</strong> ci-dessous.', 'Tap <strong>“Copy my data”</strong> below.'))}
+        ${etape(2, ICONE.ajouter, L('Installe l’appli (étapes plus bas).', 'Install the app (steps below).'))}
+        ${etape(3, '📥', L('Ouvre l’appli depuis son icône → ⚙ Réglages → Mes données → <strong>« Coller des données »</strong>.', 'Open the app from its icon → ⚙ Settings → My data → <strong>“Paste data”</strong>.'))}
+      </ol>
+      <p><button type="button" class="primary" data-install-copier-donnees>📋 ${L('Copier mes données', 'Copy my data')}</button> <span class="muted small" data-install-copie-donnees role="status"></span></p></div>`
+    : '';
   const deja = installee()
     ? `<p class="inst-ok">${L('✔ L’appli est installée sur cet appareil : tes données y sont mieux protégées.', '✔ The app is installed on this device: your data is better protected here.')}</p>`
     : `<h3>${esc(ETAPES[p].titre)}</h3>${ETAPES[p].html}`;
   dlg.querySelector('[data-installer-corps]').innerHTML = `
     <p>${L('L’appli s’ouvre en plein écran depuis son icône, marche <strong>hors connexion</strong> (échiquier, moteur, leçons) et <strong>garde mieux tes données</strong> : sur iPhone, Safari peut effacer les données d’un site non installé après quelques semaines sans visite.', 'The app opens full screen from its icon, works <strong>offline</strong> (board, engine, lessons) and <strong>keeps your data safer</strong>: on iPhone, Safari may erase the data of a site that is not installed after a few weeks without a visit.')}</p>
-    ${deja}
+    ${emporter}${deja}
     <details class="inst-autres"><summary>${L('Autre appareil', 'Other device')}</summary>${autres.map(([, e]) => `<h4>${esc(e.titre)}</h4>${e.html}`).join('')}</details>
     <h3>💾 ${L('Sauvegarder mes données', 'Back up my data')}</h3>
     <p class="muted small">${L('Tout est enregistré uniquement sur cet appareil. Un fichier de sauvegarde (sans tes codes secrets) te permet de tout récupérer, ou de passer sur un autre appareil : ⚙ Réglages → Mes données → Importer.', 'Everything is saved only on this device. A backup file (without your secret codes) lets you recover everything, or move to another device: ⚙ Settings → My data → Import.')}</p>
@@ -164,6 +180,14 @@ export function ouvrirGuide() {
     b.onclick = async () => {
       const out = b.parentElement.querySelector('[data-install-copie]');
       try { await navigator.clipboard.writeText(location.href.split('#')[0]); out.textContent = L('Adresse copiée : colle-la dans Safari.', 'Address copied: paste it into Safari.'); } catch { out.textContent = location.href.split('#')[0]; }
+    };
+  });
+  dlg.querySelectorAll('[data-install-copier-donnees]').forEach((b) => {
+    b.onclick = async () => {
+      const r = await copierDonnees();
+      b.parentElement.querySelector('[data-install-copie-donnees]').textContent = r.ok
+        ? L('✔ Copié. Installe l’appli puis colle dans ⚙ Réglages → Mes données.', '✔ Copied. Install the app, then paste in ⚙ Settings → My data.')
+        : L('Copie impossible ici : utilise plutôt « Sauvegarder maintenant » (fichier), puis « Importer un fichier » dans l’appli.', 'Copy not possible here: use “Back up now” (file) instead, then “Import a file” in the app.');
     };
   });
   dlg.querySelector('[data-install-sauver]').onclick = () => {
@@ -223,6 +247,29 @@ export function montrerBandeau(now = new Date()) {
   return null;
 }
 
+// Mémorisé pour la session seulement : écrire une clé coach-echecs:* ferait passer le
+// visiteur pour un utilisateur existant (mon-repertoire.initChoix).
+const RECUP_VU = 'blitzrefute-recup-proposee';
+export function proposerRecuperation() {
+  try { if (sessionStorage.getItem(RECUP_VU)) return null; } catch { /* stockage bloqué */ }
+  if (document.querySelector('.inst-bandeau, dialog[open]')) return null;
+  const vu = () => { try { sessionStorage.setItem(RECUP_VU, '1'); } catch { /* stockage bloqué */ } };
+  return bandeau(
+    `<p><strong>${L('📥 Tu utilisais BlitzRefute dans ton navigateur ?', '📥 Were you using BlitzRefute in your browser?')}</strong><br><span class="small">${L('L’appli installée démarre vide : tes données sont restées dans le navigateur. Copie-les là-bas (⚙ Réglages → Mes données → « Copier mes données » ou « Exporter »), puis colle-les ici.', 'The installed app starts empty: your data stayed in the browser. Copy it there (⚙ Settings → My data → “Copy my data” or “Export”), then paste it here.')}</span></p>`,
+    [
+      { label: L('Non, je commence', 'No, I’m new'), run: vu },
+      { label: L('Récupérer mes données', 'Recover my data'), primary: true, run: () => {
+        vu();
+        $('btn-settings')?.click();
+        setTimeout(() => {
+          $('data-paste-box')?.classList.remove('hidden');
+          $('data-titre')?.scrollIntoView({ block: 'start' });
+        }, 200);
+      } },
+    ],
+  );
+}
+
 // ---------- Réglages : section « Application sur l'écran d'accueil » + date de sauvegarde ----------
 const HORS_LIGNE = L('Après une première visite en ligne, le moteur, les fiches du répertoire et l’entraînement fonctionnent hors connexion.', 'After a first online visit, the engine, the repertoire lines and training work offline.');
 
@@ -257,7 +304,13 @@ function sectionReglages() {
 export function demarrer({ delai = 4000, now = new Date() } = {}) {
   sectionReglages();
   // Pas encore d'ouvertures choisies (page d'accueil) : rien n'est écrit, la 1re visite reste une 1re visite.
-  try { if (!localStorage.getItem('coach-echecs:mon-repertoire')) return; } catch { return; }
+  // Appli installée qui s'ouvre vide : les données sont peut-être restées dans le navigateur.
+  try {
+    if (!localStorage.getItem('coach-echecs:mon-repertoire')) {
+      if (installee()) setTimeout(proposerRecuperation, Math.min(delai, 1500));
+      return;
+    }
+  } catch { return; }
   ecrire(noterVisite(lire(), { now, donnees: aDesDonnees() }));
   if (installee()) demanderPersistance();
   setTimeout(() => montrerBandeau(now), delai);

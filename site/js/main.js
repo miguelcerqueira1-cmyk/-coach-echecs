@@ -5,7 +5,7 @@ import { initChoix, choisis, resume } from './mon-repertoire.js';
 import { AccueilPage } from './accueil.js';
 import { ChoixPage } from './choix.js';
 import './pwa.js'; // service worker, bandeau de mise à jour
-import { demarrer as demarrerInstallation, sauvegarder } from './installation.js';
+import { demarrer as demarrerInstallation, sauvegarder, copierDonnees } from './installation.js';
 import { demarrerSync } from './sync.js';
 import { demarrerStats } from './stats.js';
 import { initLangue, langue, choisirLangue } from './i18n.js';
@@ -31,7 +31,7 @@ import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
 import { YouTubeClient } from './youtube.js';
 import { THEMES, BOARDS, applyAppearance } from './theme.js';
-import { importData, exportData, describe } from './transfer.js';
+import { importData, describe } from './transfer.js';
 import { TrainingPage } from './training.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
@@ -1318,11 +1318,10 @@ function bindUi() {
   // Copier / coller : contourne la fenêtre de fichiers de l'iPhone (navigateur → appli installée,
   // qui n'ont pas la même mémoire).
   $('data-copy').onclick = async () => {
-    const texte = JSON.stringify(exportData());
-    try {
-      await navigator.clipboard.writeText(texte);
+    const { ok, texte } = await copierDonnees();
+    if (ok) {
       $('data-msg').textContent = L('Données copiées. Ouvre l’appli installée → ⚙ Réglages → Mes données → « Coller des données ».', 'Data copied. Open the installed app → ⚙ Settings → My data → “Paste data”.');
-    } catch {
+    } else {
       $('data-paste-box').classList.remove('hidden');
       $('data-paste-text').value = texte;
       $('data-paste-text').select();

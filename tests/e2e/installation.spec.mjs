@@ -90,3 +90,40 @@ test('rappel de sauvegarde (ordinateur) et Réglages : guide, date de la derniè
   await page.click('#pwa-guide-btn');
   await expect(page.locator('#dlg-installer')).toContainText('Ordinateur');
 });
+
+test('iPhone avec des données : le guide explique comment emporter ses données dans l’appli @mobile', async ({ browser }) => {
+  const ctx = await browser.newContext({ ...devices['iPhone 14'], baseURL: test.info().project.use.baseURL });
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+  const page = await ctx.newPage();
+  await setup(page, { jours: [hier], premiereDonnee: hier }, { 'coach-echecs:progression-v1': JSON.stringify({ lignes: { 'gd-orthodoxe': { ok: 1, ko: 0 } }, drills: {}, jours: [], sorties: [], cours: {} }) });
+  await page.goto('./#/repertoire');
+  await page.click('#btn-settings');
+  await page.click('#pwa-guide-btn');
+  const dlg = page.locator('#dlg-installer');
+  await expect(dlg.locator('.inst-alerte')).toContainText('emporte tes données');
+  await expect(dlg.locator('.inst-alerte')).toContainText('Coller des données');
+  await dlg.locator('[data-install-copier-donnees]').click();
+  await expect(dlg.locator('[data-install-copie-donnees]')).not.toBeEmpty();
+  await ctx.close();
+});
+
+test('appli installée qui s’ouvre vide : proposition de récupérer les données du navigateur @mobile', async ({ browser }) => {
+  const ctx = await browser.newContext({ ...devices['iPhone 14'], baseURL: test.info().project.use.baseURL });
+  const page = await ctx.newPage();
+  await page.route(/https:\/\/(lichess\.org|explorer\.lichess\.org|raw\.githubusercontent\.com)\//, (r) => r.abort());
+  await page.addInitScript(() => { Object.defineProperty(navigator, 'standalone', { get: () => true }); });
+  await page.goto('./');
+  const bandeau = page.locator('.inst-bandeau');
+  await expect(bandeau).toContainText('Tu utilisais BlitzRefute dans ton navigateur', { timeout: 8000 });
+  await bandeau.getByRole('button', { name: 'Récupérer mes données' }).click();
+  await expect(page.locator('#dlg-settings')).toBeVisible();
+  await expect(page.locator('#data-paste-box')).toBeVisible();
+  // Rien d'écrit par la proposition (la partie vide créée au démarrage ne compte pas comme
+  // « utilisateur existant ») : la première visite reste une première visite.
+  expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('coach-echecs:') && k !== 'coach-echecs:partie:v1'))).toEqual([]);
+  await page.keyboard.press('Escape');
+  await page.reload();
+  await page.waitForTimeout(3000);
+  await expect(bandeau).toHaveCount(0);
+  await ctx.close();
+});

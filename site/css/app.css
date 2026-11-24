@@ -843,6 +843,8 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .inst-num { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); font-weight: 700; font-size: .85rem; }
 .inst-ico { display: inline-grid; place-items: center; color: var(--accent); font-size: 1.2rem; }
 .inst-ok { color: var(--accent); font-weight: 600; }
+.inst-alerte { border: 1px solid var(--warn); background: var(--warn-bg); border-radius: var(--radius); padding: .6rem .8rem; margin: .6rem 0; }
+.inst-alerte p { margin: .3rem 0; }
 .inst-autres { margin: .3rem 0 .6rem; }
 .inst-autres summary { cursor: pointer; font-weight: 600; }
 .inst-autres h4 { margin: .6rem 0 .2rem; }

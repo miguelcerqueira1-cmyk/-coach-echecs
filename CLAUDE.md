@@ -300,6 +300,15 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   `beforeinstallprompt`), ordinateur ; « Sauvegarder maintenant ». `navigator.storage.persist()`
   demandé si installée, après installation et à chaque sauvegarde. Fichier `blitzrefute-donnees-
   AAAA-MM-JJ.json` ; date de la dernière sauvegarde dans ⚙ Mes données.
+- **iPhone : appli installée ≠ navigateur (2026-11-24, vécu par l'utilisateur)** : l'appli ajoutée à
+  l'écran d'accueil a sa propre mémoire et démarre vide. Corrections : import sans filtre `accept`
+  (le fichier téléchargé par Chrome était grisé) ; « 📋 Copier mes données » / « 📥 Coller des
+  données » dans ⚙ Mes données (`copierDonnees` d'installation.js, zone de collage si le
+  presse-papiers est refusé) ; guide iPhone avec encadré « Avant d'installer : emporte tes données »
+  (si données, non installée) ; appli installée ouverte sans ouvertures choisies → bandeau
+  « Tu utilisais BlitzRefute dans ton navigateur ? » (mémorisé en sessionStorage seulement, pour ne
+  pas créer de clé `coach-echecs:*`). deploy.yml : second essai de deploy-pages après 30 s
+  (« No artifacts named github-pages » deux fois le 2026-11-24).
 - **Problèmes par thème (2026-11-23, `problemes-core.js`, carte « 🧩 5. » de l'Entraînement)** : 26
   thèmes Lichess (`angle` de /api/puzzle/next ; mix, pièce en prise et mat en 1 gratuits), joués
   avec PuzzleRunner (`onResultat`, `difficulty` fonction, `vus`). Classement propre à l'appli
