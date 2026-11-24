@@ -326,11 +326,18 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   défaut ; bouton EN/FR dans l'en-tête, ⚙ « Langue / Language »). En anglais : traduction à
   l'affichage (MutationObserver sur les textes et placeholder/aria-label/title ; `EXACT` ≈ 640
   textes + `MOTIFS` regex ; `[data-no-i18n]` pour exclure), `window.confirm` traduit, `sanFr` rend
-  la notation anglaise, `nomFr` le nom ECO anglais. **Le contenu des fiches (plans, structures,
-  textes des pièges/punitions, noms de fiches), les commentaires des leçons, l'explication gratuite
-  et une partie des messages dynamiques restent en français** : à traduire par lots (ajouter des
-  entrées à EXACT/MOTIFS ou des champs `en` dans les fiches). La langue ne compte pas comme
-  « utilisateur existant » ; une partie vide et les caches non plus (correctif du même jour).
+  la notation anglaise, `nomFr` le nom ECO anglais. **Site entièrement bilingue (2026-11-24)** :
+  textes des 269 fiches dans `site/data/repertoires/en/<id>.js` (famille, nom, plan, structure,
+  cases, echanger, conserver, punition/piege = texte ; notation anglaise), contrôlés par
+  `node scripts/verifie-en.mjs` (à lancer après tout ajout de fiche : une fiche sans traduction
+  reste affichée en français), joints par repertoire.mjs (champ `en`) et appliqués par
+  `donnees-langue.js` (filtrerData, accueil, choix, games) ; titres des répertoires et groupes :
+  bloc EN de meta.js ; finales : champ `en` ; modules JS : `const L = (fr, en) => …` partout
+  (texte français identique en 1er argument : les tests vérifient le français) ; formats de date
+  'en-GB'/'en-US'. En anglais, la page est masquée jusqu'à la traduction (classe `i18n-attente`,
+  sécurité 2,5 s). Restent en français volontairement : diagnostic envoyé au support, en-têtes
+  PGN, payload de l'API Claude, chapitres de vidéos. La langue ne compte pas comme
+  « utilisateur existant » ; une partie vide et les caches non plus.
 - **Révision espacée** : carte = position du répertoire où c'est à nous de jouer ; réussie 1 j, 3 j,
   puis × facilité ; ratée → 10 min. Maîtrise d'une fiche = 70 % positions révisées + 30 % exercices.
 - **Rapport de partie** (sans IA) : erreurs classées par perte (≥ 0,5 / 1,2 / 3 pions), variantes
@@ -469,8 +476,9 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
 - FAIT (2026-11-23, branche de travail, PAS publié) : problèmes par thème (classement propre),
   partie contre Stockfish (10 niveaux), synchronisation chiffrée (serveur à déployer), version
   anglaise de l'interface (contenu des fiches encore en français).
-- Ensuite : traduire le contenu des fiches en anglais ; déployer le Worker (synchro) ; vidéos des
-  nouveaux répertoires — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
+- FAIT (2026-11-24, branche de travail, PAS publié) : tout le site en anglais (fiches, leçons,
+  explications, rapports, messages).
+- Ensuite : déployer le Worker (synchro) ; vidéos des nouveaux répertoires — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
   chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
   partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
   anonymes sans cookies.
