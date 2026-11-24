@@ -35,6 +35,7 @@ import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
 
 const $ = (id) => document.getElementById(id);
+const L = (fr, en) => (langue() === 'en' ? en : fr);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const state = {
@@ -74,7 +75,7 @@ const optimal = new OptimalPanel({
   onPlay: (uci) => {
     if (state.viewPly !== null) return;
     const mv = state.game.legalMoves().find((m) => m.lan === uci);
-    if (mv && window.confirm(`Enregistrer ${sanFr(mv.san)} comme coup réellement joué ?`)) playMove(uci, 'explorer');
+    if (mv && window.confirm(L(`Enregistrer ${sanFr(mv.san)} comme coup réellement joué ?`, `Record ${sanFr(mv.san)} as the move actually played?`))) playMove(uci, 'explorer');
   },
 });
 let repertoirePage = null;
@@ -87,8 +88,8 @@ let gamesPage = null;
 const currentFilter = () => ({ ...DEFAULT_FILTER, ...(state.settings.explorerFilter || {}) });
 function filterLabel() {
   const f = currentFilter();
-  const sp = f.speeds.length ? f.speeds.map((x) => SPEED_LABELS[x]).join(', ') : 'toutes cadences';
-  const r = f.ratings.length ? f.ratings.map(bucketLabel).join(', ') : 'tous classements';
+  const sp = f.speeds.length ? f.speeds.map((x) => SPEED_LABELS[x]).join(', ') : L('toutes cadences', 'all time controls');
+  const r = f.ratings.length ? f.ratings.map(bucketLabel).join(', ') : L('tous classements', 'all ratings');
   return `${sp} · ${r}`;
 }
 
@@ -117,7 +118,7 @@ async function init() {
         localStorage.setItem(k, JSON.stringify(mp));
       } catch { /* stockage plein */ }
     }
-    state.authMessage = auth.ok ? `✔ Connecté à Lichess${auth.username ? ` : ${auth.username}` : ''}. Tes parties peuvent être chargées.` : auth.message;
+    state.authMessage = auth.ok ? L(`✔ Connecté à Lichess${auth.username ? ` : ${auth.username}` : ''}. Tes parties peuvent être chargées.`, `✔ Connected to Lichess${auth.username ? `: ${auth.username}` : ''}. Your games can now be loaded.`) : auth.message;
   }
   applyAppearance(state.settings);
   fillSelects();
@@ -197,7 +198,7 @@ function restoreGame() {
       return;
     } catch (e) {
       store.keepCorrupt(rec);
-      flash(`La sauvegarde n’a pas pu être relue (${e.message}). Une nouvelle partie a été créée ; l’ancienne est conservée.`, true);
+      flash(L(`La sauvegarde n’a pas pu être relue (${e.message}). Une nouvelle partie a été créée ; l’ancienne est conservée.`, `The saved game could not be read (${e.message}). A new game has been created; the old one has been kept.`), true);
     }
   } else if (rec?.corrupt) {
     store.keepCorrupt(rec.corrupt);
@@ -330,7 +331,7 @@ function playMove(input, source) {
     renderBoard();
     return false;
   }
-  notationMsg(source === 'notation' ? `Coup joué : ${sanFr(mv.san)}` : '');
+  notationMsg(source === 'notation' ? L(`Coup joué : ${sanFr(mv.san)}`, `Move played: ${sanFr(mv.san)}`) : '');
   // Comparaison avec ce que le moteur avait calculé pour cette position précise.
   state.deviation = null;
   if (before.wasPlayer) {
@@ -443,7 +444,7 @@ function renderGameInfo() {
   const who = (name, elo) => `${esc(name || '?')}${elo ? ` <span class="muted">(${esc(elo)})</span>` : ''}`;
   const year = (h.Date || '').slice(0, 4);
   const extra = [h.Event && !h.Event.startsWith('Test') ? h.Event : '', /^\d{4}$/.test(year) ? year : '', h.Result && h.Result !== '*' ? h.Result : ''].filter(Boolean);
-  const link = /^https:\/\//.test(h.Site || '') ? ` · <a href="${esc(h.Site)}" target="_blank" rel="noopener">partie originale ↗</a>` : '';
+  const link = /^https:\/\//.test(h.Site || '') ? ` · <a href="${esc(h.Site)}" target="_blank" rel="noopener">${L('partie originale ↗', 'original game ↗')}</a>` : '';
   el.innerHTML = `<span class="dot w"></span> ${who(h.White, h.WhiteElo)} – <span class="dot b"></span> ${who(h.Black, h.BlackElo)}${extra.length ? ` <span class="muted">· ${extra.map(esc).join(' · ')}</span>` : ''}${link}`;
   el.classList.remove('hidden');
 }
@@ -455,15 +456,15 @@ function renderTurn() {
   const el = $('turn-banner');
   const turn = st.turn;
   if (st.over) {
-    const reasons = { mat: 'échec et mat', pat: 'pat', materiel: 'matériel insuffisant', quintuple: 'quintuple répétition', '75coups': 'règle des 75 coups' };
+    const reasons = { mat: L('échec et mat', 'checkmate'), pat: L('pat', 'stalemate'), materiel: L('matériel insuffisant', 'insufficient material'), quintuple: L('quintuple répétition', 'fivefold repetition'), '75coups': L('règle des 75 coups', '75-move rule') };
     el.className = 'turn-banner over';
-    el.innerHTML = `<span>Partie terminée : ${esc(st.result)} <span class="sub">(${reasons[st.reason]})</span></span>`;
+    el.innerHTML = `<span>${L('Partie terminée : ', 'Game over: ')}${esc(st.result)} <span class="sub">(${reasons[st.reason]})</span></span>`;
     return;
   }
   const player = turn === g.playerColor;
   el.className = 'turn-banner ' + (player ? 'player' : 'opponent');
-  el.innerHTML = `<span class="dot ${turn}"></span><span>Trait aux ${COLOR_NAMES[turn]}${st.inCheck ? ' — échec !' : ''}<br>
-    <span class="sub">${player ? 'À vous de jouer' : 'Saisissez le coup réellement joué par l’adversaire'}</span></span>`;
+  el.innerHTML = `<span class="dot ${turn}"></span><span>${L(`Trait aux ${COLOR_NAMES[turn]}${st.inCheck ? ' — échec !' : ''}`, `${turn === 'w' ? 'White' : 'Black'} to move${st.inCheck ? ' — check!' : ''}`)}<br>
+    <span class="sub">${player ? L('À vous de jouer', 'Your move') : L('Saisissez le coup réellement joué par l’adversaire', 'Enter the move your opponent actually played')}</span></span>`;
 }
 
 function renderBoard() {
@@ -500,7 +501,7 @@ function renderBoard() {
   }
   board.setArrows(arrows);
   $('view-banner').classList.toggle('hidden', live);
-  if (!live) $('view-text').textContent = ply === 0 ? 'Vous consultez la position de départ.' : `Vous consultez la position après ${moveLabel(ply - 1)}.`;
+  if (!live) $('view-text').textContent = ply === 0 ? L('Vous consultez la position de départ.', 'You are viewing the starting position.') : L(`Vous consultez la position après ${moveLabel(ply - 1)}.`, `You are viewing the position after ${moveLabel(ply - 1)}.`);
 }
 
 // Candidats 2 et 3 : flèches discrètes, dessinées sous la flèche du meilleur coup.
@@ -523,8 +524,8 @@ function renderNav() {
   const g = state.game;
   const cur = state.viewPly ?? g.ply;
   const live = state.viewPly === null;
-  $('nav-label').textContent = cur === 0 ? (g.ply ? 'Position de départ' : 'Aucun coup joué')
-    : `${live ? 'Actuelle · ' : ''}après ${moveLabel(cur - 1)}`;
+  $('nav-label').textContent = cur === 0 ? (g.ply ? L('Position de départ', 'Starting position') : L('Aucun coup joué', 'No moves played'))
+    : L(`${live ? 'Actuelle · ' : ''}après ${moveLabel(cur - 1)}`, `${live ? 'Current · ' : ''}after ${moveLabel(cur - 1)}`);
   $('nav-label').classList.toggle('viewing', !live);
   document.querySelectorAll('[data-nav=start], [data-nav=prev]').forEach((b) => { b.disabled = cur === 0; });
   document.querySelectorAll('[data-nav=next], [data-nav=end]').forEach((b) => { b.disabled = live; });
@@ -550,7 +551,7 @@ function renderMoves() {
     }
     html += '</li>';
   }
-  ol.innerHTML = html || '<li class="muted small" style="grid-column:1/-1">Aucun coup joué.</li>';
+  ol.innerHTML = html || '<li class="muted small" style="grid-column:1/-1">' + L('Aucun coup joué.', 'No moves played.') + '</li>';
   const curBtn = ol.querySelector('.current');
   // Fait défiler la liste des coups elle-même, jamais la page (sinon, sur téléphone,
   // chaque coup ferait descendre l'écran loin de l'échiquier).
@@ -561,9 +562,9 @@ function renderMoves() {
     else if (br.top < lr.top) ol.scrollTop -= lr.top - br.top + 4;
   }
   const notes = [];
-  if (g.record.start.type === 'fen') notes.push('Départ depuis une FEN.');
-  if (g.record.start.type === 'pgn') notes.push('Partie importée depuis un PGN.');
-  if (g.historyUnknown) notes.push('L’historique antérieur à la position de départ est inconnu : les répétitions éventuelles d’avant ne sont pas comptées.');
+  if (g.record.start.type === 'fen') notes.push(L('Départ depuis une FEN.', 'Started from a FEN.'));
+  if (g.record.start.type === 'pgn') notes.push(L('Partie importée depuis un PGN.', 'Game imported from a PGN.'));
+  if (g.historyUnknown) notes.push(L('L’historique antérieur à la position de départ est inconnu : les répétitions éventuelles d’avant ne sont pas comptées.', 'The history before the starting position is unknown: any earlier repetitions are not counted.'));
   $('start-note').textContent = notes.join(' ');
 }
 
@@ -573,21 +574,21 @@ function renderButtons() {
   const over = g.status().over;
   $('btn-undo').disabled = !g.ply;
   $('btn-deeper').disabled = !live || over || engine.state !== 'ready';
-  $('btn-deeper').textContent = state.analysis.status === 'computing' && state.analysis.deeper ? 'Arrêter l’analyse' : 'Analyser davantage';
+  $('btn-deeper').textContent = state.analysis.status === 'computing' && state.analysis.deeper ? L('Arrêter l’analyse', 'Stop analysis') : L('Analyser davantage', 'Analyse deeper');
   $('btn-explain').disabled = !live || over || state.analysis.status !== 'ready';
   $('notation-input').disabled = !live || over;
   renderAutoplay();
 }
 
-const pct = (permille) => (permille / 10).toFixed(1).replace('.', ',') + ' %';
+const pct = (permille) => L((permille / 10).toFixed(1).replace('.', ',') + ' %', (permille / 10).toFixed(1) + '%');
 
 function evalBlock(adv) {
   const wdl = adv.wdlPlayer;
   const wdlHtml = wdl ? `
-    <dt>Estimation V/N/D</dt><dd>victoire ${pct(wdl.win)} · nulle ${pct(wdl.draw)} · défaite ${pct(wdl.loss)} <span class="muted">(pour vous)</span>
+    ${L(`<dt>Estimation V/N/D</dt><dd>victoire ${pct(wdl.win)} · nulle ${pct(wdl.draw)} · défaite ${pct(wdl.loss)} <span class="muted">(pour vous)</span>`, `<dt>W/D/L estimate</dt><dd>win ${pct(wdl.win)} · draw ${pct(wdl.draw)} · loss ${pct(wdl.loss)} <span class="muted">(for you)</span>`)}
     <div class="wdl-bar" aria-hidden="true"><span style="width:${wdl.win / 10}%"></span><span style="width:${wdl.draw / 10}%"></span><span style="width:${wdl.loss / 10}%"></span></div>
-    <span class="muted small">Estimation issue du modèle interne du moteur (jeu de niveau moteur des deux côtés), pas une probabilité garantie contre votre adversaire.</span></dd>` : '';
-  return `<dt>Évaluation</dt><dd><strong>${esc(adv.scoreText)}</strong> <span class="muted">(point de vue des Blancs${adv.scoreWhite?.type === 'cp' ? ', en pions' : ''})</span><br><span class="small">${esc(adv.verdict)}</span></dd>${wdlHtml}`;
+    <span class="muted small">${L('Estimation issue du modèle interne du moteur (jeu de niveau moteur des deux côtés), pas une probabilité garantie contre votre adversaire.', 'Estimate from the engine’s internal model (engine-level play on both sides), not a guaranteed probability against your opponent.')}</span></dd>` : '';
+  return `<dt>${L('Évaluation', 'Evaluation')}</dt><dd><strong>${esc(adv.scoreText)}</strong> <span class="muted">${L(`(point de vue des Blancs${adv.scoreWhite?.type === 'cp' ? ', en pions' : ''})`, `(from White’s point of view${adv.scoreWhite?.type === 'cp' ? ', in pawns' : ''})`)}</span><br><span class="small">${esc(adv.verdict)}</span></dd>${wdlHtml}`;
 }
 
 // Comparaison des meilleurs coups (MultiPV) : écart avec le premier, du point de vue du camp au trait.
@@ -596,25 +597,25 @@ function candidatesBlock(adv) {
   if (cands.length < 2) return '';
   const who = COLOR_NAMES[adv.turn];
   const rows = cands.map((c) => `<li class="cand cand-${c.rank}">
-      <span class="cand-head"><strong class="cand-move">${esc(sanFr(c.san))}</strong> <span class="eval">${esc(c.scoreText)}</span>${c.rank > 1 && c.gap != null ? ` <span class="muted small">(${esc(formatGap(c.gap))} pour les ${who})</span>` : ''}</span>
+      <span class="cand-head"><strong class="cand-move">${esc(sanFr(c.san))}</strong> <span class="eval">${esc(c.scoreText)}</span>${c.rank > 1 && c.gap != null ? ` <span class="muted small">${L(`(${esc(formatGap(c.gap))} pour les ${who})`, `(${esc(formatGap(c.gap))} for ${adv.turn === 'w' ? 'White' : 'Black'})`)}</span>` : ''}</span>
       <span class="line small">${esc(c.lineText)}</span></li>`).join('');
-  return `<details class="candidates" open><summary>Comparer les ${cands.length} meilleurs coups</summary>
+  return `<details class="candidates" open><summary>${L(`Comparer les ${cands.length} meilleurs coups`, `Compare the ${cands.length} best moves`)}</summary>
     <ol class="cand-list">${rows}</ol>
-    <p class="muted tiny">Calcul Stockfish en parallèle (MultiPV ${CANDIDATES}) : évaluations du point de vue des Blancs, écart en pions avec le premier coup. À temps égal, chaque ligne est un peu moins approfondie qu’un calcul d’un seul coup.</p>
+    <p class="muted tiny">${L(`Calcul Stockfish en parallèle (MultiPV ${CANDIDATES}) : évaluations du point de vue des Blancs, écart en pions avec le premier coup. À temps égal, chaque ligne est un peu moins approfondie qu’un calcul d’un seul coup.`, `Parallel Stockfish calculation (MultiPV ${CANDIDATES}): evaluations from White’s point of view, gap in pawns from the first move. With the same time, each line is searched slightly less deeply than a single-move calculation.`)}</p>
   </details>`;
 }
 
 function techDetails(adv, a) {
-  const nps = adv.nps ? `${Math.round(adv.nps / 1000)} k nœuds/s` : '—';
-  return `<details><summary>Détails du calcul</summary>
+  const nps = adv.nps ? L(`${Math.round(adv.nps / 1000)} k nœuds/s`, `${Math.round(adv.nps / 1000)} k nodes/s`) : '—';
+  return `<details><summary>${L('Détails du calcul', 'Calculation details')}</summary>
     <dl>
-      <dt>Moteur</dt><dd>${esc(adv.engine || 'Stockfish')} (version « lite », monothread, pleine force)</dd>
-      <dt>Profondeur</dt><dd>${adv.depth ?? '—'} (sélective ${adv.seldepth ?? '—'})</dd>
-      <dt>Temps</dt><dd>${((adv.timeMs || 0) / 1000).toFixed(1).replace('.', ',')} s sur ${((a.movetime || adv.movetime) / 1000).toFixed(0)} s prévues</dd>
-      <dt>Nœuds</dt><dd>${adv.nodes?.toLocaleString('fr-FR') ?? '—'} · ${nps}</dd>
-      <dt>Variante (UCI)</dt><dd class="line">${esc(adv.line.map((m) => m.lan).join(' '))}${adv.lineTruncated ? ' <span class="muted">(tronquée : coup invalide écarté)</span>' : ''}</dd>
+      <dt>${L('Moteur', 'Engine')}</dt><dd>${esc(adv.engine || 'Stockfish')} ${L('(version « lite », monothread, pleine force)', '(“lite” version, single-threaded, full strength)')}</dd>
+      <dt>${L('Profondeur', 'Depth')}</dt><dd>${adv.depth ?? '—'} (${L('sélective', 'selective')} ${adv.seldepth ?? '—'})</dd>
+      <dt>${L('Temps', 'Time')}</dt><dd>${L(`${((adv.timeMs || 0) / 1000).toFixed(1).replace('.', ',')} s sur ${((a.movetime || adv.movetime) / 1000).toFixed(0)} s prévues`, `${((adv.timeMs || 0) / 1000).toFixed(1)} s of ${((a.movetime || adv.movetime) / 1000).toFixed(0)} s planned`)}</dd>
+      <dt>${L('Nœuds', 'Nodes')}</dt><dd>${adv.nodes?.toLocaleString(L('fr-FR', 'en-US')) ?? '—'} · ${nps}</dd>
+      <dt>${L('Variante (UCI)', 'Line (UCI)')}</dt><dd class="line">${esc(adv.line.map((m) => m.lan).join(' '))}${adv.lineTruncated ? L(' <span class="muted">(tronquée : coup invalide écarté)</span>', ' <span class="muted">(truncated: invalid move discarded)</span>') : ''}</dd>
     </dl>
-    <p class="muted small">La profondeur atteinte dépend de la puissance de l’appareil et du budget choisi ; elle n’est pas garantie.</p>
+    <p class="muted small">${L('La profondeur atteinte dépend de la puissance de l’appareil et du budget choisi ; elle n’est pas garantie.', 'The depth reached depends on your device’s power and the chosen budget; it is not guaranteed.')}</p>
   </details>`;
 }
 
@@ -622,9 +623,9 @@ function deviationNote() {
   const d = state.deviation;
   if (!d) return '';
   if (d.who === 'opponent') {
-    return `<p class="note">L’adversaire a joué <strong>${esc(sanFr(d.played))}</strong> ; la meilleure réponse calculée était ${esc(sanFr(d.expected))}. L’ancienne ligne est abandonnée : nouveau calcul à partir du coup réel.</p>`;
+    return `<p class="note">${L(`L’adversaire a joué <strong>${esc(sanFr(d.played))}</strong> ; la meilleure réponse calculée était ${esc(sanFr(d.expected))}. L’ancienne ligne est abandonnée : nouveau calcul à partir du coup réel.`, `Your opponent played <strong>${esc(sanFr(d.played))}</strong>; the best calculated reply was ${esc(sanFr(d.expected))}. The old line is dropped: new calculation from the actual move.`)}</p>`;
   }
-  return `<p class="note">Vous avez joué <strong>${esc(sanFr(d.played))}</strong> au lieu du coup conseillé ${esc(sanFr(d.expected))}. L’analyse repart de votre coup réel.</p>`;
+  return `<p class="note">${L(`Vous avez joué <strong>${esc(sanFr(d.played))}</strong> au lieu du coup conseillé ${esc(sanFr(d.expected))}. L’analyse repart de votre coup réel.`, `You played <strong>${esc(sanFr(d.played))}</strong> instead of the recommended move ${esc(sanFr(d.expected))}. The analysis restarts from your actual move.`)}</p>`;
 }
 
 function renderMini() {
@@ -632,16 +633,16 @@ function renderMini() {
   const a = state.analysis;
   const adv = a.advice && state.game.isCurrent(a.advice.token) ? a.advice : null;
   if (a.status === 'over') el.textContent = '';
-  else if (a.status === 'engine-error') el.innerHTML = '<span class="error-text">Moteur indisponible : aucun conseil.</span>';
-  else if (!adv) el.innerHTML = '<span class="muted">Stockfish calcule…</span>';
+  else if (a.status === 'engine-error') el.innerHTML = `<span class="error-text">${L('Moteur indisponible : aucun conseil.', 'Engine unavailable: no advice.')}</span>`;
+  else if (!adv) el.innerHTML = `<span class="muted">${L('Stockfish calcule…', 'Stockfish is calculating…')}</span>`;
   else if (state.viewPly !== null) {
     const v = state.view;
     el.innerHTML = v?.status === 'ready'
-      ? `Position consultée — meilleur coup : <strong class="best">${esc(sanFr(v.advice.best.san))}</strong> <span class="muted">(${esc(v.advice.scoreText)})</span>`
-      : '<span class="muted">Position consultée — Stockfish analyse…</span>';
-  } else if (adv.isPlayerTurn && moveHidden()) el.innerHTML = '<span class="muted">Mode indice : à vous de trouver le coup.</span>';
-  else if (adv.isPlayerTurn) el.innerHTML = `Conseil : <strong class="best">${esc(sanFr(adv.best.san))}</strong> — ${esc(adv.bestDescription)} <span class="muted">(${esc(adv.scoreText)})</span>`;
-  else el.innerHTML = `Meilleure réponse adverse calculée : <strong class="reply">${esc(sanFr(adv.best.san))}</strong> <span class="muted">— saisissez le coup réel</span>`;
+      ? `${L('Position consultée — meilleur coup : ', 'Viewed position — best move: ')}<strong class="best">${esc(sanFr(v.advice.best.san))}</strong> <span class="muted">(${esc(v.advice.scoreText)})</span>`
+      : `<span class="muted">${L('Position consultée — Stockfish analyse…', 'Viewed position — Stockfish is analysing…')}</span>`;
+  } else if (adv.isPlayerTurn && moveHidden()) el.innerHTML = `<span class="muted">${L('Mode indice : à vous de trouver le coup.', 'Hint mode: find the move yourself.')}</span>`;
+  else if (adv.isPlayerTurn) el.innerHTML = `${L('Conseil : ', 'Advice: ')}<strong class="best">${esc(sanFr(adv.best.san))}</strong> — ${esc(adv.bestDescription)} <span class="muted">(${esc(adv.scoreText)})</span>`;
+  else el.innerHTML = `${L('Meilleure réponse adverse calculée : ', 'Best calculated reply for your opponent: ')}<strong class="reply">${esc(sanFr(adv.best.san))}</strong> <span class="muted">${L('— saisissez le coup réel', '— enter the actual move')}</span>`;
 }
 
 function renderAdvice() {
@@ -657,71 +658,71 @@ function renderAdvice() {
   renderButtons();
   if (a.status === 'over') {
     const st = g.status();
-    el.innerHTML = `<p class="label">Partie terminée</p><p class="move-big">${esc(st.result)}</p><p class="desc">Plus aucun calcul n’est lancé. Exportez la partie ou commencez-en une nouvelle.</p>`;
+    el.innerHTML = `<p class="label">${L('Partie terminée', 'Game over')}</p><p class="move-big">${esc(st.result)}</p><p class="desc">${L('Plus aucun calcul n’est lancé. Exportez la partie ou commencez-en une nouvelle.', 'No more calculations are run. Export the game or start a new one.')}</p>`;
     return;
   }
   if (a.status === 'waiting-engine') {
-    el.innerHTML = `<div class="state"><span class="spinner"></span><span>Chargement du moteur Stockfish…</span></div>`;
+    el.innerHTML = `<div class="state"><span class="spinner"></span><span>${L('Chargement du moteur Stockfish…', 'Loading the Stockfish engine…')}</span></div>`;
     return;
   }
   if (a.status === 'engine-error') {
-    el.innerHTML = `<p><span class="badge err">Erreur</span></p><div class="errbox"><strong>Moteur indisponible.</strong> ${esc(a.error || engine.lastError || '')}<br>Aucun conseil n’est affiché tant que le moteur ne fonctionne pas.</div>
-      <div class="actions"><button type="button" id="btn-restart-engine">Redémarrer le moteur</button></div>`;
+    el.innerHTML = `<p><span class="badge err">${L('Erreur', 'Error')}</span></p><div class="errbox"><strong>${L('Moteur indisponible.', 'Engine unavailable.')}</strong> ${esc(a.error || engine.lastError || '')}<br>${L('Aucun conseil n’est affiché tant que le moteur ne fonctionne pas.', 'No advice is shown until the engine is working.')}</div>
+      <div class="actions"><button type="button" id="btn-restart-engine">${L('Redémarrer le moteur', 'Restart the engine')}</button></div>`;
     $('btn-restart-engine').onclick = async () => {
       try { await engine.restart(); onPositionChanged('restart'); } catch { renderAdvice(); }
     };
     return;
   }
   if (a.status === 'error') {
-    el.innerHTML = `<p><span class="badge err">Erreur</span></p><div class="errbox">${esc(a.error)}</div>`;
+    el.innerHTML = `<p><span class="badge err">${L('Erreur', 'Error')}</span></p><div class="errbox">${esc(a.error)}</div>`;
     return;
   }
   const claim = g.status().claimable;
   const claimNote = claim.length
-    ? `<p class="note">Nulle réclamable (${claim.map((c) => (c === 'triple' ? 'triple répétition' : 'règle des 50 coups')).join(', ')}). La partie continue tant que personne ne la réclame.</p>` : '';
+    ? `<p class="note">${L(`Nulle réclamable (${claim.map((c) => (c === 'triple' ? 'triple répétition' : 'règle des 50 coups')).join(', ')}). La partie continue tant que personne ne la réclame.`, `Draw can be claimed (${claim.map((c) => (c === 'triple' ? 'threefold repetition' : '50-move rule')).join(', ')}). The game continues as long as nobody claims it.`)}</p>` : '';
   const adv = a.advice && g.isCurrent(a.advice.token) ? a.advice : null;
   const computing = a.status === 'computing';
   const badge = computing
-    ? `<span class="badge calc">${a.deeper ? 'Analyse approfondie en cours' : 'Calcul en cours'}</span>`
-    : '<span class="badge done">Résultat disponible</span>';
+    ? `<span class="badge calc">${a.deeper ? L('Analyse approfondie en cours', 'Deep analysis in progress') : L('Calcul en cours', 'Calculating')}</span>`
+    : `<span class="badge done">${L('Résultat disponible', 'Result available')}</span>`;
   let body = '';
   if (!adv) {
-    body = `<div class="state"><span class="spinner"></span><span id="live-text">Stockfish calcule…</span></div>`;
+    body = `<div class="state"><span class="spinner"></span><span id="live-text">${L('Stockfish calcule…', 'Stockfish is calculating…')}</span></div>`;
   } else if (adv.isPlayerTurn && moveHidden()) {
     const r = state.reveal || 0;
     const th = state.hintThreat && state.game.isCurrent(state.hintThreat.token) ? state.hintThreat.threat : null;
     const hints = [];
     if (r >= 1) hints.push(...indicesNiveau1(adv, th, state.game.playerColor));
     if (r >= 2) hints.push(indiceNiveau2(adv));
-    body = `<p class="label">À vous de trouver le meilleur coup</p>
-      ${hints.length ? `<ul class="hints">${hints.map((h) => `<li>${h}</li>`).join('')}</ul>` : '<p class="desc">Réfléchissez, puis demandez de l’aide si besoin.</p>'}
+    body = `<p class="label">${L('À vous de trouver le meilleur coup', 'Find the best move yourself')}</p>
+      ${hints.length ? `<ul class="hints">${hints.map((h) => `<li>${h}</li>`).join('')}</ul>` : `<p class="desc">${L('Réfléchissez, puis demandez de l’aide si besoin.', 'Think it over, then ask for help if needed.')}</p>`}
       <dl>${evalBlock(adv)}</dl>
       <div class="actions hint-actions">
-        <button type="button" id="btn-hint1" ${r >= 1 ? 'disabled' : ''}>💡 Indice</button>
-        <button type="button" id="btn-hint2" ${r >= 2 ? 'disabled' : ''}>📖 Explication</button>
-        <button type="button" class="primary" id="btn-hint3">👁 Montrer le coup</button>
+        <button type="button" id="btn-hint1" ${r >= 1 ? 'disabled' : ''}>${L('💡 Indice', '💡 Hint')}</button>
+        <button type="button" id="btn-hint2" ${r >= 2 ? 'disabled' : ''}>${L('📖 Explication', '📖 Explanation')}</button>
+        <button type="button" class="primary" id="btn-hint3">${L('👁 Montrer le coup', '👁 Show the move')}</button>
       </div>
-      <p class="muted small">Jouez votre coup directement sur l’échiquier quand vous l’avez trouvé : il sera comparé au calcul du moteur.</p>`;
+      <p class="muted small">${L('Jouez votre coup directement sur l’échiquier quand vous l’avez trouvé : il sera comparé au calcul du moteur.', 'Play your move directly on the board once you have found it: it will be compared with the engine’s calculation.')}</p>`;
   } else if (adv.isPlayerTurn) {
-    body = `<p class="label">Coup conseillé par le moteur</p>
+    body = `<p class="label">${L('Coup conseillé par le moteur', 'Move recommended by the engine')}</p>
       <p class="move-big best">${esc(sanFr(adv.best.san))}</p>
       <p class="desc">${esc(adv.bestDescription)}</p>
       <dl>
         ${evalBlock(adv)}
-        <dt>Réponse adverse principale</dt><dd>${adv.reply ? `${esc(sanFr(adv.reply.san))} <span class="muted">— calculée, pas une prédiction du choix humain</span>` : '—'}</dd>
-        <dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd>
+        <dt>${L('Réponse adverse principale', 'Main opponent reply')}</dt><dd>${adv.reply ? `${esc(sanFr(adv.reply.san))} <span class="muted">${L('— calculée, pas une prédiction du choix humain', '— calculated, not a prediction of a human choice')}</span>` : '—'}</dd>
+        <dt>${L('Suite calculée', 'Calculated line')}</dt><dd class="line">${esc(adv.lineText)}</dd>
       </dl>
       ${candidatesBlock(adv)}
       <div class="actions">
-        <button type="button" class="primary" id="btn-play-best">Confirmer : je joue ${esc(sanFr(adv.best.san))}</button>
+        <button type="button" class="primary" id="btn-play-best">${L(`Confirmer : je joue ${esc(sanFr(adv.best.san))}`, `Confirm: I play ${esc(sanFr(adv.best.san))}`)}</button>
       </div>
-      <p class="muted small">Le coup n’est enregistré qu’après confirmation. Vous pouvez aussi jouer un autre coup sur l’échiquier.</p>`;
+      <p class="muted small">${L('Le coup n’est enregistré qu’après confirmation. Vous pouvez aussi jouer un autre coup sur l’échiquier.', 'The move is only recorded after confirmation. You can also play another move on the board.')}</p>`;
   } else {
-    body = `<p class="label">Meilleure réponse adverse calculée</p>
+    body = `<p class="label">${L('Meilleure réponse adverse calculée', 'Best calculated reply for your opponent')}</p>
       <p class="move-big reply">${esc(sanFr(adv.best.san))}</p>
       <p class="desc">${esc(adv.bestDescription)}</p>
-      <p class="small muted">Le moteur indique le coup le plus fort pour l’adversaire ; un humain peut jouer autre chose. Saisissez le coup qu’il a réellement joué.</p>
-      <dl>${evalBlock(adv)}<dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd></dl>
+      <p class="small muted">${L('Le moteur indique le coup le plus fort pour l’adversaire ; un humain peut jouer autre chose. Saisissez le coup qu’il a réellement joué.', 'The engine shows the strongest move for your opponent; a human may play something else. Enter the move they actually played.')}</p>
+      <dl>${evalBlock(adv)}<dt>${L('Suite calculée', 'Calculated line')}</dt><dd class="line">${esc(adv.lineText)}</dd></dl>
       ${candidatesBlock(adv)}`;
   }
   const liveLine = computing && adv ? `<p class="small muted" id="live-text"></p>` : '';
@@ -731,7 +732,7 @@ function renderAdvice() {
   $('btn-hint3')?.addEventListener('click', () => setReveal(3));
   const modeLink = document.createElement('p');
   modeLink.className = 'small';
-  modeLink.innerHTML = `<button type="button" class="link-btn" id="btn-toggle-help">${hintMode() ? 'Passer en conseil direct' : 'Passer en mode « Indice d’abord »'}</button>`;
+  modeLink.innerHTML = `<button type="button" class="link-btn" id="btn-toggle-help">${hintMode() ? L('Passer en conseil direct', 'Switch to direct advice') : L('Passer en mode « Indice d’abord »', 'Switch to “Hint first” mode')}</button>`;
   if (adv && adv.isPlayerTurn) el.appendChild(modeLink);
   $('btn-toggle-help')?.addEventListener('click', () => {
     state.settings.helpMode = hintMode() ? 'direct' : 'indice';
@@ -751,10 +752,11 @@ function renderLive() {
   const a = state.analysis;
   if (!el || a.status !== 'computing') return;
   const i = a.live;
-  const elapsed = ((performance.now() - (a.started || performance.now())) / 1000).toFixed(1).replace('.', ',');
-  if (!i) { el.textContent = 'Stockfish calcule…'; return; }
+  const elapsedRaw = ((performance.now() - (a.started || performance.now())) / 1000).toFixed(1);
+  const elapsed = L(elapsedRaw.replace('.', ','), elapsedRaw);
+  if (!i) { el.textContent = L('Stockfish calcule…', 'Stockfish is calculating…'); return; }
   const sc = i.score ? formatScore({ type: i.score.type, value: i.score.value * (state.game.turn() === 'w' ? 1 : -1) }) : '';
-  el.textContent = `Stockfish calcule… profondeur ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · éval. provisoire ' + sc : ''}`;
+  el.textContent = L(`Stockfish calcule… profondeur ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · éval. provisoire ' + sc : ''}`, `Stockfish is calculating… depth ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · provisional eval ' + sc : ''}`);
 }
 
 // ---------- Mode « Indice d'abord » ----------
@@ -792,43 +794,43 @@ function renderCoach() {
   const el = $('coach');
   const c = state.coach;
   const missing = coach.missing();
-  const head = missing ? '<h2>Explication <span class="badge">calculée · gratuite</span></h2>' : '<h2>Explication de l’entraîneur (Claude)</h2>';
+  const head = missing ? L('<h2>Explication <span class="badge">calculée · gratuite</span></h2>', '<h2>Explanation <span class="badge">calculated · free</span></h2>') : L('<h2>Explication de l’entraîneur (Claude)</h2>', '<h2>Coach’s explanation (Claude)</h2>');
   if (c.status === 'loading' && c.mode === 'free') {
-    el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>Stockfish cherche la menace adverse…</span></div>`;
+    el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>${L('Stockfish cherche la menace adverse…', 'Stockfish is looking for your opponent’s threat…')}</span></div>`;
     return;
   }
   if (moveHidden() && c.token && state.game.isCurrent(c.token) && c.status !== 'loading') {
     el.innerHTML = state.reveal >= 2 && c.htmlMasked
-      ? `<h2>Explication <span class="badge">sans le coup</span></h2><div class="text">${c.htmlMasked}</div><p class="muted small">Le coup conseillé reste caché jusqu’à « Montrer le coup ».</p>`
-      : '<h2>Explication</h2><p class="muted small">Mode « Indice d’abord » : l’explication s’affiche au 2e niveau d’aide.</p>';
+      ? `<h2>${L('Explication', 'Explanation')} <span class="badge">${L('sans le coup', 'without the move')}</span></h2><div class="text">${c.htmlMasked}</div><p class="muted small">${L('Le coup conseillé reste caché jusqu’à « Montrer le coup ».', 'The recommended move stays hidden until “Show the move”.')}</p>`
+      : L('<h2>Explication</h2><p class="muted small">Mode « Indice d’abord » : l’explication s’affiche au 2e niveau d’aide.</p>', '<h2>Explanation</h2><p class="muted small">“Hint first” mode: the explanation appears at the 2nd help level.</p>');
     return;
   }
   if (c.status === 'ready' && c.mode === 'free' && c.token && state.game.isCurrent(c.token)) {
     el.innerHTML = `${head}<div class="text">${c.html}</div>
-      <p class="muted small">Construite uniquement à partir des calculs de Stockfish (profondeur ${c.meta?.depth ?? '—'}) et des règles du jeu, sans IA. Flèche rouge pointillée (si présente) : une menace sérieuse de l’adversaire. Pour un texte rédigé par Claude, activez l’API (⚙ Réglages).</p>`;
+      <p class="muted small">${L(`Construite uniquement à partir des calculs de Stockfish (profondeur ${c.meta?.depth ?? '—'}) et des règles du jeu, sans IA. Flèche rouge pointillée (si présente) : une menace sérieuse de l’adversaire. Pour un texte rédigé par Claude, activez l’API (⚙ Réglages).`, `Built only from Stockfish’s calculations (depth ${c.meta?.depth ?? '—'}) and the rules of the game, without AI. Dotted red arrow (if shown): a serious threat from your opponent. For a text written by Claude, enable the API (⚙ Settings).`)}</p>`;
     return;
   }
   if (c.status === 'loading') {
-    el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>Claude rédige une explication à partir des calculs du moteur…</span></div>`;
+    el.innerHTML = `${head}<div class="state"><span class="spinner"></span><span>${L('Claude rédige une explication à partir des calculs du moteur…', 'Claude is writing an explanation from the engine’s calculations…')}</span></div>`;
     return;
   }
   if (c.status === 'ready' && c.token && state.game.isCurrent(c.token)) {
     const m = c.meta || {};
     const warn = m.unverified?.length
-      ? `<p class="note">Coup(s) cité(s) non vérifié(s) par le moteur : ${m.unverified.map(esc).join(', ')}. À prendre avec prudence.</p>` : '';
+      ? `<p class="note">${L(`Coup(s) cité(s) non vérifié(s) par le moteur : ${m.unverified.map(esc).join(', ')}. À prendre avec prudence.`, `Quoted move(s) not verified by the engine: ${m.unverified.map(esc).join(', ')}. Treat with caution.`)}</p>` : '';
     el.innerHTML = `${head}<div class="text">${c.html}</div>${warn}
-      <p class="muted small">Explication fondée sur l’analyse Stockfish (profondeur ${m.depth ?? '—'}). Les coups surlignés en vert figurent dans les variantes calculées. ${m.model ? 'Modèle : ' + esc(m.model) + '.' : ''}${m.remaining != null ? ` Appels restants aujourd’hui : ${m.remaining}.` : ''}</p>`;
+      <p class="muted small">${L(`Explication fondée sur l’analyse Stockfish (profondeur ${m.depth ?? '—'}). Les coups surlignés en vert figurent dans les variantes calculées. ${m.model ? 'Modèle : ' + esc(m.model) + '.' : ''}${m.remaining != null ? ` Appels restants aujourd’hui : ${m.remaining}.` : ''}`, `Explanation based on Stockfish analysis (depth ${m.depth ?? '—'}). Moves highlighted in green appear in the calculated lines. ${m.model ? 'Model: ' + esc(m.model) + '.' : ''}${m.remaining != null ? ` Calls left today: ${m.remaining}.` : ''}`)}</p>`;
     return;
   }
   if (c.status === 'error') {
-    el.innerHTML = `${head}<div class="errbox">Explication indisponible : ${esc(c.error)}</div><p class="muted small">Les calculs du moteur ci-dessus restent valables.</p>`;
+    el.innerHTML = `${head}<div class="errbox">${L('Explication indisponible : ', 'Explanation unavailable: ')}${esc(c.error)}</div><p class="muted small">${L('Les calculs du moteur ci-dessus restent valables.', 'The engine calculations above remain valid.')}</p>`;
     return;
   }
   if (missing) {
-    el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? 'L’explication s’affiche automatiquement quand c’est à vous de jouer.' : 'Touchez « Expliquer » pour une explication du conseil.'} Version gratuite, calculée sans IA.</p>`;
+    el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? L('L’explication s’affiche automatiquement quand c’est à vous de jouer.', 'The explanation appears automatically when it is your move.') : L('Touchez « Expliquer » pour une explication du conseil.', 'Tap “Explain” for an explanation of the advice.')} ${L('Version gratuite, calculée sans IA.', 'Free version, calculated without AI.')}</p>`;
     return;
   }
-  el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? 'L’explication arrive automatiquement quand c’est à vous de jouer.' : 'Touchez « Expliquer » pour une explication du conseil.'}</p>`;
+  el.innerHTML = `${head}<p class="muted small">${state.settings.autoExplain ? L('L’explication arrive automatiquement quand c’est à vous de jouer.', 'The explanation arrives automatically when it is your move.') : L('Touchez « Expliquer » pour une explication du conseil.', 'Tap “Explain” for an explanation of the advice.')}</p>`;
 }
 
 // Moteur en panne (souvent après une mise en arrière-plan sur iPhone) : redémarrage automatique au
@@ -845,16 +847,16 @@ function renderEnginePill(s) {
   const el = $('engine-pill');
   if (s.state === 'loading') {
     el.className = 'pill warn';
-    el.textContent = s.cached ? 'Moteur : depuis le cache…' : `Moteur : chargement ${Math.round((s.progress || 0) * 100)} %`;
-    if (s.total) el.title = `Téléchargement unique de ${(s.total / 1e6).toFixed(1)} Mo, puis conservé sur l’appareil.`;
+    el.textContent = s.cached ? L('Moteur : depuis le cache…', 'Engine: from cache…') : L(`Moteur : chargement ${Math.round((s.progress || 0) * 100)} %`, `Engine: loading ${Math.round((s.progress || 0) * 100)}%`);
+    if (s.total) el.title = L(`Téléchargement unique de ${(s.total / 1e6).toFixed(1)} Mo, puis conservé sur l’appareil.`, `One-time download of ${(s.total / 1e6).toFixed(1)} MB, then kept on the device.`);
   } else if (s.state === 'ready') {
     el.className = 'pill ok';
-    el.textContent = 'Moteur prêt';
+    el.textContent = L('Moteur prêt', 'Engine ready');
     el.title = `${s.name} — ${s.manifest?.engine || ''}`;
-    $('engine-info').textContent = `Moteur : ${s.name} (${s.manifest?.engine}). Réseau NNUE « lite » intégré (${(s.manifest?.wasmBytes / 1e6).toFixed(1)} Mo) : plus léger que le réseau complet, donc un peu moins fort, mais très au-dessus du niveau humain.`;
+    $('engine-info').textContent = L(`Moteur : ${s.name} (${s.manifest?.engine}). Réseau NNUE « lite » intégré (${(s.manifest?.wasmBytes / 1e6).toFixed(1)} Mo) : plus léger que le réseau complet, donc un peu moins fort, mais très au-dessus du niveau humain.`, `Engine: ${s.name} (${s.manifest?.engine}). Built-in “lite” NNUE network (${(s.manifest?.wasmBytes / 1e6).toFixed(1)} MB): lighter than the full network, so slightly weaker, but far above human level.`);
   } else if (s.state === 'error') {
     el.className = 'pill err';
-    el.textContent = 'Moteur en panne';
+    el.textContent = L('Moteur en panne', 'Engine down');
     el.title = s.message;
     engine.lastError = s.message;
     setTimeout(autoRestartEngine, 1500);
@@ -869,23 +871,23 @@ async function refreshCoachPill() {
   const missing = coach.missing();
   if (missing) {
     el.className = 'pill hidden'; // badge discret : masqué tant que Claude n'est pas configuré
-    el.textContent = 'Claude : indisponible';
+    el.textContent = L('Claude : indisponible', 'Claude: unavailable');
     el.title = missing;
     return;
   }
   el.className = 'pill warn';
-  el.textContent = 'Claude : vérification…';
+  el.textContent = L('Claude : vérification…', 'Claude: checking…');
   try {
     const s = await coach.status();
     const hadRelay = state.relay;
     state.relay = !!s.explorerProxy;
     if (state.relay !== hadRelay && state.game) optimal.update(state.game);
     el.className = 'pill ok';
-    el.textContent = 'Claude : prêt';
-    el.title = `Modèle ${s.model} · ${s.usedToday}/${s.dailyLimit} appels aujourd’hui`;
+    el.textContent = L('Claude : prêt', 'Claude: ready');
+    el.title = L(`Modèle ${s.model} · ${s.usedToday}/${s.dailyLimit} appels aujourd’hui`, `Model ${s.model} · ${s.usedToday}/${s.dailyLimit} calls today`);
   } catch (e) {
     el.className = 'pill err';
-    el.textContent = 'Claude : erreur';
+    el.textContent = L('Claude : erreur', 'Claude: error');
     el.title = e.message;
   }
 }
@@ -976,25 +978,25 @@ function renderViewAdvice(el) {
   const g = state.game;
   const v = state.view;
   const ply = state.viewPly;
-  const where = ply === 0 ? 'Position de départ' : `Après ${moveLabel(ply - 1)}`;
+  const where = ply === 0 ? L('Position de départ', 'Starting position') : L(`Après ${moveLabel(ply - 1)}`, `After ${moveLabel(ply - 1)}`);
   const turn = g.fen(ply).split(' ')[1];
   let body;
-  if (!v || v.status === 'computing') body = '<div class="state"><span class="spinner"></span><span>Stockfish analyse cette position…</span></div>';
-  else if (v.status === 'over') body = '<p class="desc">Partie terminée dans cette position.</p>';
-  else if (v.status === 'engine-error' || v.status === 'error') body = `<div class="errbox">${esc(v.error || 'Moteur indisponible')}</div>`;
+  if (!v || v.status === 'computing') body = `<div class="state"><span class="spinner"></span><span>${L('Stockfish analyse cette position…', 'Stockfish is analysing this position…')}</span></div>`;
+  else if (v.status === 'over') body = `<p class="desc">${L('Partie terminée dans cette position.', 'The game is over in this position.')}</p>`;
+  else if (v.status === 'engine-error' || v.status === 'error') body = `<div class="errbox">${esc(v.error || L('Moteur indisponible', 'Engine unavailable'))}</div>`;
   else {
     const adv = v.advice;
     const played = ply < g.ply ? g.verboseMove(ply) : null;
     const same = played && played.lan === adv.best.lan;
-    body = `<p class="label">Meilleur coup selon Stockfish</p>
+    body = `<p class="label">${L('Meilleur coup selon Stockfish', 'Best move according to Stockfish')}</p>
       <p class="move-big ${turn === g.playerColor ? 'best' : 'reply'}">${esc(sanFr(adv.best.san))}</p>
       <p class="desc">${esc(adv.bestDescription)}</p>
-      <dl>${evalBlock(adv)}<dt>Suite calculée</dt><dd class="line">${esc(adv.lineText)}</dd>
-        ${played ? `<dt>Coup réellement joué</dt><dd><strong>${esc(sanFr(played.san))}</strong> ${same ? '<span class="ok">✔ c’était le meilleur coup</span>' : '<span class="muted">(différent du calcul)</span>'}</dd>` : ''}
+      <dl>${evalBlock(adv)}<dt>${L('Suite calculée', 'Calculated line')}</dt><dd class="line">${esc(adv.lineText)}</dd>
+        ${played ? `<dt>${L('Coup réellement joué', 'Move actually played')}</dt><dd><strong>${esc(sanFr(played.san))}</strong> ${same ? `<span class="ok">${L('✔ c’était le meilleur coup', '✔ it was the best move')}</span>` : `<span class="muted">${L('(différent du calcul)', '(different from the calculation)')}</span>`}</dd>` : ''}
       </dl>${candidatesBlock(adv)}${techDetails(adv, { movetime: adv.movetime })}`;
   }
-  el.innerHTML = `<p><span class="badge">Position consultée</span> <strong>${esc(where)}</strong> — trait aux ${COLOR_NAMES[turn]}</p>${body}
-    <p class="muted small">Ce n’est pas la position actuelle de la partie. <button type="button" class="link-btn" id="btn-back-live">Revenir à la position actuelle</button></p>`;
+  el.innerHTML = `<p><span class="badge">${L('Position consultée', 'Viewed position')}</span> <strong>${esc(where)}</strong> — ${L(`trait aux ${COLOR_NAMES[turn]}`, `${turn === 'w' ? 'White' : 'Black'} to move`)}</p>${body}
+    <p class="muted small">${L('Ce n’est pas la position actuelle de la partie.', 'This is not the current position of the game.')} <button type="button" class="link-btn" id="btn-back-live">${L('Revenir à la position actuelle', 'Back to the current position')}</button></p>`;
   $('btn-back-live').onclick = () => viewAt(g.ply);
 }
 
@@ -1017,7 +1019,7 @@ function bindUi() {
     if (!removed) return;
     state.deviation = null;
     state.expectation = null;
-    notationMsg(`Coup annulé : ${sanFr(removed.san)}`);
+    notationMsg(L(`Coup annulé : ${sanFr(removed.san)}`, `Move undone: ${sanFr(removed.san)}`));
     onPositionChanged('undo');
   };
   $('btn-flip').onclick = () => { board.flip(); renderBoard(); };
@@ -1027,7 +1029,7 @@ function bindUi() {
   };
   $('btn-explain').onclick = () => explain();
   $('btn-bilan').onclick = () => openBilan();
-  $('btn-auto').onclick = () => (autoplay.running ? stopAutoplay('Suite automatique arrêtée.') : startAutoplay());
+  $('btn-auto').onclick = () => (autoplay.running ? stopAutoplay(L('Suite automatique arrêtée.', 'Automatic continuation stopped.')) : startAutoplay());
   $('btn-export').onclick = openExport;
   $('btn-settings').onclick = openSettings;
   $('set-ouvertures-btn').addEventListener('click', () => { $('dlg-settings').close(); location.hash = '#/ouvertures'; });
@@ -1061,9 +1063,9 @@ function bindUi() {
     const text = input.value;
     if (!text.trim()) return;
     const cands = parseMoveText(state.game.chessAt(), text);
-    if (!cands.length) { notationMsg(`« ${text} » n’est pas un coup légal pour les ${COLOR_NAMES[state.game.turn()]}.`, true); return; }
+    if (!cands.length) { notationMsg(L(`« ${text} » n’est pas un coup légal pour les ${COLOR_NAMES[state.game.turn()]}.`, `“${text}” is not a legal move for ${state.game.turn() === 'w' ? 'White' : 'Black'}.`), true); return; }
     if (cands.length > 1) {
-      notationMsg(`Saisie ambiguë : ${cands.map((c) => `${sanFr(c.move.san)} (notation ${c.how})`).join(' ou ')}. Précisez, par ex. en notation ${cands[0].move.lan}.`, true);
+      notationMsg(L(`Saisie ambiguë : ${cands.map((c) => `${sanFr(c.move.san)} (notation ${c.how})`).join(' ou ')}. Précisez, par ex. en notation ${cands[0].move.lan}.`, `Ambiguous input: ${cands.map((c) => `${sanFr(c.move.san)} (${c.how} notation)`).join(' or ')}. Be more specific, e.g. in notation ${cands[0].move.lan}.`), true);
       return;
     }
     if (playMove(cands[0].move.lan, 'notation')) input.value = '';
@@ -1078,8 +1080,8 @@ function bindUi() {
   });
 
   // Export
-  $('copy-pgn').onclick = () => copy($('export-pgn').value, 'PGN copié.');
-  $('copy-fen').onclick = () => copy($('export-fen').value, 'FEN copiée.');
+  $('copy-pgn').onclick = () => copy($('export-pgn').value, L('PGN copié.', 'PGN copied.'));
+  $('copy-fen').onclick = () => copy($('export-fen').value, L('FEN copiée.', 'FEN copied.'));
   $('download-pgn').onclick = () => {
     const blob = new Blob([$('export-pgn').value + '\n'], { type: 'application/x-chess-pgn' });
     const a = document.createElement('a');
@@ -1101,7 +1103,7 @@ function bindUi() {
   // Mes données : export / import par fichier (sans les secrets).
   $('data-export').onclick = () => {
     const dump = sauvegarder();
-    $('data-msg').textContent = `Fichier créé : ${describe(dump)}. Range-le en lieu sûr (Fichiers, Drive, e-mail) ; sur l’autre appareil : ⚙ Réglages → Importer.`;
+    $('data-msg').textContent = L(`Fichier créé : ${describe(dump)}. Range-le en lieu sûr (Fichiers, Drive, e-mail) ; sur l’autre appareil : ⚙ Réglages → Importer.`, `File created: ${describe(dump)}. Keep it somewhere safe (Files, Drive, e-mail); on the other device: ⚙ Settings → Import.`);
   };
   $('data-import').onchange = async (ev) => {
     const f = ev.target.files?.[0];
@@ -1109,13 +1111,13 @@ function bindUi() {
     if (!f) return;
     try {
       const dump = JSON.parse(await f.text());
-      if (!window.confirm(`Importer ${describe(dump)} (export du ${new Date(dump.exportedAt).toLocaleString('fr-FR')}) ? Les données actuelles de cet appareil seront remplacées.`)) return;
+      if (!window.confirm(L(`Importer ${describe(dump)} (export du ${new Date(dump.exportedAt).toLocaleString('fr-FR')}) ? Les données actuelles de cet appareil seront remplacées.`, `Import ${describe(dump)} (exported on ${new Date(dump.exportedAt).toLocaleString('en-GB')})? The current data on this device will be replaced.`))) return;
       store.backupGame();
       const n = importData(dump);
-      $('data-msg').textContent = `${n} élément(s) importé(s). Rechargement…`;
+      $('data-msg').textContent = L(`${n} élément(s) importé(s). Rechargement…`, `${n} item(s) imported. Reloading…`);
       setTimeout(() => location.reload(), 600);
     } catch (e) {
-      $('data-msg').textContent = e instanceof SyntaxError ? 'Fichier illisible (JSON attendu).' : e.message;
+      $('data-msg').textContent = e instanceof SyntaxError ? L('Fichier illisible (JSON attendu).', 'Unreadable file (JSON expected).') : e.message;
     }
   };
   $('form-settings').addEventListener('submit', (e) => {
@@ -1130,12 +1132,12 @@ function bindUi() {
     state.settings.apiUrl = api;
     const msg = $('coach-test-msg');
     if (coach.missing()) { msg.textContent = coach.missing(); state.settings.apiUrl = prevApi; return; }
-    msg.textContent = 'Test en cours…';
+    msg.textContent = L('Test en cours…', 'Testing…');
     try {
       const s = await coach.status();
-      msg.textContent = `Connexion réussie. Modèle : ${s.model}. Appels aujourd’hui : ${s.usedToday}/${s.dailyLimit}.`;
+      msg.textContent = L(`Connexion réussie. Modèle : ${s.model}. Appels aujourd’hui : ${s.usedToday}/${s.dailyLimit}.`, `Connection successful. Model: ${s.model}. Calls today: ${s.usedToday}/${s.dailyLimit}.`);
     } catch (err) {
-      msg.textContent = 'Échec : ' + err.message;
+      msg.textContent = L('Échec : ', 'Failed: ') + err.message;
     }
     state.settings.apiUrl = prevApi;
   };
@@ -1143,31 +1145,31 @@ function bindUi() {
   $('clear-lichess').onclick = () => {
     store.setLichessToken('');
     $('set-lichess').value = '';
-    $('coach-test-msg').textContent = 'Jeton Lichess effacé de cet appareil.';
+    $('coach-test-msg').textContent = L('Jeton Lichess effacé de cet appareil.', 'Lichess token removed from this device.');
     optimal.update(state.game);
   };
   $('clear-youtube').onclick = () => {
     store.setYoutubeKey('');
     $('set-youtube').value = '';
-    $('coach-test-msg').textContent = 'Clé YouTube effacée de cet appareil.';
+    $('coach-test-msg').textContent = L('Clé YouTube effacée de cet appareil.', 'YouTube key removed from this device.');
   };
   $('clear-code').onclick = () => {
     store.setAccessCode('');
     $('set-code').value = '';
-    $('coach-test-msg').textContent = 'Code effacé de cet appareil.';
+    $('coach-test-msg').textContent = L('Code effacé de cet appareil.', 'Code removed from this device.');
     refreshCoachPill();
     renderCoach();
   };
   $('restore-backup').onclick = () => {
     const rec = store.loadBackupRecord();
-    if (!rec) { $('coach-test-msg').textContent = 'Aucune partie précédente à restaurer.'; return; }
+    if (!rec) { $('coach-test-msg').textContent = L('Aucune partie précédente à restaurer.', 'No previous game to restore.'); return; }
     try {
       const g = Game.fromRecord(rec);
       store.backupGame();
       setGame(g);
       $('dlg-settings').close();
     } catch (err) {
-      $('coach-test-msg').textContent = 'Restauration impossible : ' + err.message;
+      $('coach-test-msg').textContent = L('Restauration impossible : ', 'Restore failed: ') + err.message;
     }
   };
 }
@@ -1180,7 +1182,7 @@ function syncNewForm() {
 }
 
 function openNew(source) {
-  $('dlg-new-title').textContent = source === 'initial' ? 'Nouvelle partie' : 'Importer une partie ou une position';
+  $('dlg-new-title').textContent = source === 'initial' ? L('Nouvelle partie', 'New game') : L('Importer une partie ou une position', 'Import a game or a position');
   document.querySelector(`#form-new input[name=source][value=${source}]`).checked = true;
   document.querySelector(`#form-new input[name=color][value=${state.game.playerColor}]`).checked = true;
   $('new-level').value = state.game.record.level || state.settings.level;
@@ -1197,11 +1199,11 @@ function createFromForm() {
   try {
     if (src === 'pgn') {
       const txt = $('new-pgn').value.trim();
-      if (!txt) return 'Collez un PGN.';
+      if (!txt) return L('Collez un PGN.', 'Paste a PGN.');
       g = Game.fromPgn(txt, { playerColor: color, level });
     } else if (src === 'fen') {
       const fen = $('new-fen').value.trim();
-      if (!fen) return 'Saisissez une FEN.';
+      if (!fen) return L('Saisissez une FEN.', 'Enter a FEN.');
       g = Game.create({ playerColor: color, fen, level });
     } else {
       g = Game.create({ playerColor: color, level });
@@ -1237,7 +1239,7 @@ async function copy(text, ok) {
     await navigator.clipboard.writeText(text);
     $('export-msg').textContent = ok;
   } catch {
-    $('export-msg').textContent = 'Copie impossible : sélectionnez le texte manuellement.';
+    $('export-msg').textContent = L('Copie impossible : sélectionnez le texte manuellement.', 'Copy failed: select the text manually.');
   }
 }
 
@@ -1248,16 +1250,16 @@ function openSettings() {
   $('set-auto').checked = s.autoExplain;
   $('set-help').value = s.helpMode || 'direct';
   $('set-opp-arrow').checked = s.showOpponentArrow;
-  $('set-ouvertures').textContent = `Votre répertoire : ${resume(choisis())}.`;
+  $('set-ouvertures').textContent = L(`Votre répertoire : ${resume(choisis())}.`, `Your repertoire: ${resume(choisis())}.`);
   $('set-elite-camp').checked = !!s.eliteCamp;
   $('set-api').value = s.apiUrl;
   $('set-code').value = '';
-  $('set-code').placeholder = store.getAccessCode() ? 'Code enregistré sur cet appareil (laisser vide pour le garder)' : 'Saisi une fois, conservé sur cet appareil';
+  $('set-code').placeholder = store.getAccessCode() ? L('Code enregistré sur cet appareil (laisser vide pour le garder)', 'Code saved on this device (leave empty to keep it)') : L('Saisi une fois, conservé sur cet appareil', 'Entered once, kept on this device');
   $('coach-test-msg').textContent = '';
   $('set-lichess').value = '';
-  $('set-lichess').placeholder = store.getLichessToken() ? 'Jeton enregistré sur cet appareil (laisser vide pour le garder)' : 'lip_… (jeton sans aucune permission)';
+  $('set-lichess').placeholder = store.getLichessToken() ? L('Jeton enregistré sur cet appareil (laisser vide pour le garder)', 'Token saved on this device (leave empty to keep it)') : L('lip_… (jeton sans aucune permission)', 'lip_… (token without any permission)');
   $('set-youtube').value = '';
-  $('set-youtube').placeholder = store.getYoutubeKey() ? 'Clé enregistrée sur cet appareil (laisser vide pour la garder)' : 'AIza… (clé restreinte à ce site)';
+  $('set-youtube').placeholder = store.getYoutubeKey() ? L('Clé enregistrée sur cet appareil (laisser vide pour la garder)', 'Key saved on this device (leave empty to keep it)') : L('AIza… (clé restreinte à ce site)', 'AIza… (key restricted to this site)');
   $('set-theme').innerHTML = Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
   $('set-board').innerHTML = Object.entries(BOARDS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
   $('set-theme').value = s.theme || 'neon';
@@ -1315,7 +1317,7 @@ function openSanInBoard(san, color, label, { animate = false, headers = null } =
   const cur = state.game;
   // Pas de confirmation si la partie en cours est vide ou n'est qu'une ligne testée.
   const disposable = !cur.ply || String(cur.record.headers?.Event || '').startsWith('Test');
-  if (!disposable && !window.confirm(`Ouvrir ${label} sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`)) return;
+  if (!disposable && !window.confirm(L(`Ouvrir ${label} sur l’échiquier ? La partie en cours sera remplacée (elle reste récupérable dans ⚙ Réglages → Avancé).`, `Open ${label} on the board? The current game will be replaced (it can still be recovered in ⚙ Settings → Advanced).`))) return;
   if (!disposable) store.backupGame();
   let g;
   try { g = Game.fromPgn(pgn || '*', { playerColor: color, level: state.settings.level }); } catch (e) { notationMsg(e.message, true); return; }
@@ -1343,7 +1345,7 @@ function ensureGamesPage() {
     el: $('page-parties'), engine, client: lichess, getToken: () => store.getLichessToken(),
     setToken: (t) => store.setLichessToken(t), authMessage: state.authMessage || '',
     openLine: (san, color, label) => openSanInBoard(san, color, label),
-    openGame: (g) => openSanInBoard(g.san, g.color, `votre partie contre ${g.color === 'w' ? g.black : g.white}`, {
+    openGame: (g) => openSanInBoard(g.san, g.color, L(`votre partie contre ${g.color === 'w' ? g.black : g.white}`, `your game against ${g.color === 'w' ? g.black : g.white}`), {
       headers: { White: g.white, Black: g.black, WhiteElo: g.whiteElo ? String(g.whiteElo) : '', BlackElo: g.blackElo ? String(g.blackElo) : '', Site: g.url || '', Date: (g.date || '').slice(0, 10).replace(/-/g, '.'), Result: g.result || '' },
     }),
   });
@@ -1353,8 +1355,8 @@ function ensureGamesPage() {
 // Bilan de la partie de l'échiquier : analysée coup par coup sur la page « Mes parties ».
 function openBilan() {
   const g = state.game;
-  if (!g.ply) { notationMsg('Jouez au moins un coup avant de demander un bilan.', true); return; }
-  if (g.record.start.fen !== DEFAULT_POSITION) { notationMsg('Bilan indisponible pour une partie commencée depuis une position (FEN).', true); return; }
+  if (!g.ply) { notationMsg(L('Jouez au moins un coup avant de demander un bilan.', 'Play at least one move before asking for a summary.'), true); return; }
+  if (g.record.start.fen !== DEFAULT_POSITION) { notationMsg(L('Bilan indisponible pour une partie commencée depuis une position (FEN).', 'Summary unavailable for a game started from a position (FEN).'), true); return; }
   stopAutoplay();
   const st = g.status();
   const h = g.record.headers || {};
@@ -1395,8 +1397,8 @@ function stopAutoplay(note = '') {
 function autoplayValid() {
   const g = state.game;
   if (!autoplay.running) return false;
-  if (g !== autoplay.game || g.ply !== autoplay.ply) { stopAutoplay('Suite automatique arrêtée : la partie a changé.'); return false; }
-  if (state.viewPly !== null) { stopAutoplay('Suite automatique en pause (navigation dans les coups).'); return false; }
+  if (g !== autoplay.game || g.ply !== autoplay.ply) { stopAutoplay(L('Suite automatique arrêtée : la partie a changé.', 'Automatic continuation stopped: the game has changed.')); return false; }
+  if (state.viewPly !== null) { stopAutoplay(L('Suite automatique en pause (navigation dans les coups).', 'Automatic continuation paused (browsing moves).')); return false; }
   return true;
 }
 
@@ -1416,7 +1418,7 @@ async function autoStep() {
       if (n >= AUTO_MIN_GAMES && g.legalMoves().some((m) => m.lan === top.uci)) {
         move = top.uci;
         source = 'theorie';
-        autoplay.lastInfo = `théorie des maîtres (${n.toLocaleString('fr-FR')} parties)`;
+        autoplay.lastInfo = L(`théorie des maîtres (${n.toLocaleString('fr-FR')} parties)`, `masters’ theory (${n.toLocaleString('en-US')} games)`);
       } else autoplay.theory = false; // hors théorie : Stockfish jusqu'à la fin
     } catch { autoplay.theory = false; }
   } else autoplay.theory = false;
@@ -1424,7 +1426,7 @@ async function autoStep() {
     const a = state.analysis;
     if (a.status !== 'ready' || !g.isCurrent(a.token)) { autoplay.busy = false; return; } // runAnalysis rappellera autoStep
     move = a.advice.best.lan;
-    autoplay.lastInfo = `Stockfish (${AUTO_MOVETIME / 1000} s par coup)`;
+    autoplay.lastInfo = L(`Stockfish (${AUTO_MOVETIME / 1000} s par coup)`, `Stockfish (${AUTO_MOVETIME / 1000} s per move)`);
   }
   autoplay.timer = setTimeout(() => {
     autoplay.busy = false;
@@ -1438,22 +1440,22 @@ async function autoStep() {
 }
 
 const END_REASONS = {
-  mat: 'échec et mat', pat: 'pat', materiel: 'matériel insuffisant', quintuple: 'quintuple répétition',
-  '75coups': 'règle des 75 coups', triple: 'triple répétition (nulle)', '50coups': 'règle des 50 coups (nulle)',
+  mat: L('échec et mat', 'checkmate'), pat: L('pat', 'stalemate'), materiel: L('matériel insuffisant', 'insufficient material'), quintuple: L('quintuple répétition', 'fivefold repetition'),
+  '75coups': L('règle des 75 coups', '75-move rule'), triple: L('triple répétition (nulle)', 'threefold repetition (draw)'), '50coups': L('règle des 50 coups (nulle)', '50-move rule (draw)'),
 };
 
 function finishAutoplay(st) {
   const why = st.over ? END_REASONS[st.reason] : END_REASONS[st.claimable[0]];
   const result = st.over ? st.result : '1/2-1/2';
-  stopAutoplay(`Fin de partie : ${why} — ${result}. ${autoplay.n.theorie} coup(s) de théorie des maîtres, ${autoplay.n.moteur} de Stockfish.`);
+  stopAutoplay(L(`Fin de partie : ${why} — ${result}. ${autoplay.n.theorie} coup(s) de théorie des maîtres, ${autoplay.n.moteur} de Stockfish.`, `End of game: ${why} — ${result}. ${autoplay.n.theorie} move(s) from masters’ theory, ${autoplay.n.moteur} from Stockfish.`));
 }
 
 function renderAutoplay() {
   const btn = $('btn-auto');
-  btn.textContent = autoplay.running ? '⏸ Arrêter la suite automatique' : '⏩ Jouer la suite jusqu’à la fin';
+  btn.textContent = autoplay.running ? L('⏸ Arrêter la suite automatique', '⏸ Stop automatic continuation') : L('⏩ Jouer la suite jusqu’à la fin', '⏩ Play on to the end');
   btn.disabled = !autoplay.running && (state.game.status().over || engine.state === 'error');
   $('auto-text').textContent = autoplay.running
-    ? `Coup ${Math.floor(state.game.ply / 2) + 1} · ${autoplay.lastInfo || 'calcul…'} · ${autoplay.n.theorie} théorie / ${autoplay.n.moteur} Stockfish`
+    ? L(`Coup ${Math.floor(state.game.ply / 2) + 1} · ${autoplay.lastInfo || 'calcul…'} · ${autoplay.n.theorie} théorie / ${autoplay.n.moteur} Stockfish`, `Move ${Math.floor(state.game.ply / 2) + 1} · ${autoplay.lastInfo || 'calculating…'} · ${autoplay.n.theorie} theory / ${autoplay.n.moteur} Stockfish`)
     : autoplay.note;
 }
 
@@ -1463,13 +1465,13 @@ async function openMasterGame(id, color) {
   try {
     pgn = await lichess.masterPgn(id);
   } catch (e) {
-    notationMsg(`Partie de maître indisponible : ${e.message}`, true);
+    notationMsg(L(`Partie de maître indisponible : ${e.message}`, `Master game unavailable: ${e.message}`), true);
     return;
   }
   let g;
   try { g = Game.fromPgn(pgn, { playerColor: color, level: state.settings.level }); } catch (e) { notationMsg(e.message, true); return; }
   const h = g.record.headers;
-  if (!window.confirm(`Ouvrir ${h.White || '?'} – ${h.Black || '?'} sur l’échiquier ? La partie en cours sera remplacée (récupérable dans ⚙ Réglages → Avancé).`)) return;
+  if (!window.confirm(L(`Ouvrir ${h.White || '?'} – ${h.Black || '?'} sur l’échiquier ? La partie en cours sera remplacée (récupérable dans ⚙ Réglages → Avancé).`, `Open ${h.White || '?'} – ${h.Black || '?'} on the board? The current game will be replaced (recoverable in ⚙ Settings → Advanced).`))) return;
   store.backupGame();
   setGame(g);
   location.hash = '#/moteur';
