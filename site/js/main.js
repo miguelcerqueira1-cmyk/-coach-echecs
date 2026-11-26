@@ -903,6 +903,7 @@ function renderEnginePill(s) {
 
 async function refreshCoachPill() {
   const el = $('coach-pill');
+  coach.serverOff = false; // revérifié à chaque appel (adresse ou code changés)
   const missing = coach.missing();
   if (missing) {
     el.className = 'pill hidden'; // badge discret : masqué tant que Claude n'est pas configuré
@@ -914,6 +915,7 @@ async function refreshCoachPill() {
   el.textContent = L('Claude : vérification…', 'Claude: checking…');
   try {
     const s = await coach.status();
+    if (s.claudeConfigured === false) throw new CoachError('Clé API Anthropic absente.', 'unconfigured');
     const hadRelay = state.relay;
     state.relay = !!s.explorerProxy;
     if (state.relay !== hadRelay && state.game) optimal.update(state.game);
@@ -921,6 +923,16 @@ async function refreshCoachPill() {
     el.textContent = L('Claude : prêt', 'Claude: ready');
     el.title = L(`Modèle ${s.model} · ${s.usedToday}/${s.dailyLimit} appels aujourd’hui`, `Model ${s.model} · ${s.usedToday}/${s.dailyLimit} calls today`);
   } catch (e) {
+    if (e.kind === 'unconfigured') {
+      // Serveur en ligne (synchronisation, statistiques) mais explications Claude non activées :
+      // pas une panne, badge masqué et explication gratuite.
+      coach.serverOff = true;
+      el.className = 'pill hidden';
+      el.textContent = L('Claude : indisponible', 'Claude: unavailable');
+      el.title = e.message;
+      if (state.game && state.coach?.mode === 'claude') explain({ auto: true }); else if (state.game) renderCoach();
+      return;
+    }
     el.className = 'pill err';
     el.textContent = L('Claude : erreur', 'Claude: error');
     el.title = e.message;

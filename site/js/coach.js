@@ -26,6 +26,7 @@ export class Coach {
   missing() {
     if (!this.getApiUrl()) return L('Aucune API Claude n’est configurée pour ce site.', 'No Claude API is configured for this site.');
     if (!this.getCode()) return L('Code d’accès non saisi (Réglages).', 'Access code not entered (Settings).');
+    if (this.serverOff) return L('Les explications Claude ne sont pas activées sur le serveur.', 'Claude explanations are not enabled on the server.');
     return null;
   }
 

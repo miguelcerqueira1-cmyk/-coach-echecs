@@ -511,6 +511,9 @@ du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication
   `CODE_HASHES`), à saisir sur chaque appareil (« J'ai un code d'accès »). Outil ajouté et publié :
   ⚙ Avancé « 🔑 Calculer l'empreinte d'un code » (code jamais enregistré ni envoyé) pour un futur
   nouveau code → l'utilisateur envoie SEULEMENT l'empreinte, à ajouter à `CODE_HASHES`.
+- **Badge « Claude : erreur » (corrigé 2026-11-26)** : un code saisi dans ⚙ « Code Claude » + serveur
+  en ligne sans ACCESS_CODE/ANTHROPIC_API_KEY (503 ou `claudeConfigured: false`) → `coach.serverOff`,
+  badge masqué, explication gratuite (pas une panne).
 - Réponse de Lichess à l'e-mail de l'utilisateur sur l'usage commercial (à intégrer quand reçue).
 - Bilan de la routine d'échecs de l'utilisateur vers le **2026-12-14** (4 semaines).
 

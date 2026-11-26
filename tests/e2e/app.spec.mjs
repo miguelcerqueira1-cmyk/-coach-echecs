@@ -562,3 +562,17 @@ test('réglages : empreinte d’un nouveau code Pro, sans enregistrer le code', 
   const tout = await page.evaluate(() => Object.keys(localStorage).map((k) => localStorage.getItem(k)).join('|'));
   expect(tout).not.toContain('exemple-de-code');
 });
+
+test('serveur en ligne sans Claude activé (503) : pas de badge « erreur », explication gratuite', async ({ page }) => {
+  await setup(page, { apiUrl: 'https://api.test' }, 'un-code-quelconque');
+  await page.route('https://api.test/**', (route) => {
+    const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    return route.fulfill({ status: 503, headers: cors, json: { error: 'Serveur mal configuré : code d’accès absent.' } });
+  });
+  await page.goto('./');
+  await waitAdvice(page);
+  await expect(page.locator('#coach-pill')).toHaveClass(/hidden/);
+  await expect(page.locator('#coach-pill')).not.toHaveText('Claude : erreur');
+  await expect(page.locator('#coach')).toContainText('calculée · gratuite');
+});
