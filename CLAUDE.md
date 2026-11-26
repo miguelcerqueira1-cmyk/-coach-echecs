@@ -507,23 +507,21 @@ du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication
   (payantes ; il faudrait ANTHROPIC_API_KEY + COACH_ACCESS_CODE dans les secrets GitHub).
 
 **En attente / à régler :**
-- **Code Pro de l'utilisateur** : seule l'empreinte SHA-256 est dans pro.js (`CODE_HASHES`, code
-  créé le 2026-10-25, introuvable ici). Le drapeau Pro est propre à l'appareil et jamais exporté :
-  en passant de Chrome à l'appli installée, l'utilisateur a perdu Pro. Solution proposée (« solution
-  2 ») : ajouter dans ⚙ Avancé « Calculer l'empreinte d'un code » ; l'utilisateur tape un nouveau
-  code, envoie SEULEMENT l'empreinte ; l'ajouter à `CODE_HASHES`, publier. Ne jamais demander le code.
+- **Code Pro : réglé (2026-11-26)** : l'utilisateur a retrouvé son code (empreinte déjà dans
+  `CODE_HASHES`), à saisir sur chaque appareil (« J'ai un code d'accès »). Outil ajouté et publié :
+  ⚙ Avancé « 🔑 Calculer l'empreinte d'un code » (code jamais enregistré ni envoyé) pour un futur
+  nouveau code → l'utilisateur envoie SEULEMENT l'empreinte, à ajouter à `CODE_HASHES`.
 - Réponse de Lichess à l'e-mail de l'utilisateur sur l'usage commercial (à intégrer quand reçue).
 - Bilan de la routine d'échecs de l'utilisateur vers le **2026-12-14** (4 semaines).
 
 **Prochaines étapes proposées (ordre conseillé) :**
-1. Code Pro (ci-dessus).
-2. « Les plus jouées d'abord » dans les cours pour toutes les ouvertures : relancer
+1. « Les plus jouées d'abord » dans les cours pour toutes les ouvertures : relancer
    `node scripts/frequences.mjs` sur les nouvelles données Élite (aujourd'hui gd, ck, gdr-noirs).
-3. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
-4. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).
-5. Plus de fiches pour les petits répertoires (Hollandaise, Bogo, Philidor, Contre l'Anglaise : 5) et
+2. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
+3. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).
+4. Plus de fiches pour les petits répertoires (Hollandaise, Bogo, Philidor, Contre l'Anglaise : 5) et
    commentaires coup par coup dans les leçons.
-6. Vente : déménagement sur Cloudflare Pages + dépôt privé, vrai verrou Pro (licences Lemon Squeezy
+5. Vente : déménagement sur Cloudflare Pages + dépôt privé, vrai verrou Pro (licences Lemon Squeezy
    via le Worker ; branche `licences-pro` écrite avant le grand public, à adapter aux 29 répertoires),
    achat test. Idées plus tard : statistiques par fiche, Android (TWA) si les ventes suivent.
 
