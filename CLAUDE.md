@@ -1,4 +1,4 @@
-# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-11-23)
+# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-11-26)
 
 À lire en premier dans toute nouvelle session. Le code complet est dans le dépôt : ce fichier
 explique le but, l'organisation, les choix et les règles. Ne pas y recopier de code.
@@ -49,7 +49,7 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
 | `#/accueil` | Page publique (1re visite, logo) : marque, fonctions, ouvertures (fiches publiées / « bientôt »), formules Gratuit / Pro 29 €, « Choisir mes ouvertures ». |
 | `#/ouvertures` | Choix en 4 étapes (Blancs, contre 1.e4, contre 1.d4, contre 1.c4 / 1.Cf3 — groupe `autres`), plusieurs ou aucun par étape, au moins un au total ; enregistré puis rechargement sur `#/repertoire`. Aussi depuis ⚙ « Mes ouvertures ». |
 | `#/moteur` | Échiquier ; conseil Stockfish après chaque coup réellement joué (confirmer pour l'enregistrer) ; panneau « Coup optimal » (Stockfish local, Lichess Cloud Eval, meilleur % de victoire à mon niveau, coup des maîtres, coup de l'Élite) ; navigation ⏮◀▶⏭ et analyse des positions passées ; explication gratuite sans IA (ou Claude si configuré) ; mode « Indice d'abord » ; noms/Elo des joueurs au-dessus de l'échiquier ; « Jouer la suite jusqu'à la fin » (théorie des maîtres puis Stockfish) ; « Bilan de la partie » ; import/export PGN/FEN. |
-| `#/repertoire` | Fiches des ouvertures choisies (168 au total) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
+| `#/repertoire` | Fiches des ouvertures choisies (269 au total) : ECO + nom, séquence, évaluation (Cloud Eval + vérif Stockfish), statistiques (mon niveau / maîtres / Élite), plan & structure, punition, piège, cases clés, vidéos. Filtres rapides, recherche (nom, coup FR/EN « 3…Fg4 », code ECO, **nom de joueur** → ses parties), « Classer » (plus jouées, meilleur score, meilleure éval), section « Anti-trash Blitz », « ▶ Tester cette ligne », arbre des coups (niveau/maîtres/Élite), « 🔴 Nouvelles parties du top », export PGN (étude Lichess / Chess.com). |
 | `#/entrainement` | Accueil en parcours : **📖 1. Apprendre** (cours par fiche : présentation → coups un par un avec le nom officiel atteint et des commentaires factuels → à retenir, piège et punition **jouables coup par coup** sur l'échiquier → pratique guidée avec indices), **📚 2. S'entraîner** (lignes en répétition espacée : l'app joue l'adversaire, erreur → plan + bon coup, position remise en boucle), **⏱ 3. Réflexes anti-trash** (punition chronométrée 10/20/30 s ; un autre coup gagnant vérifié par Stockfish est accepté), **🎯 Positions de mes parties** (ex-« Mes vraies erreurs » : sorties de répertoire et punitions manquées de mes parties Lichess/Chess.com, à rejouer jusqu'à validation), **📊 progression** par variante, repliée (maîtrise %, série 🔥, sorties réelles ⚠). Point d'entrée : **📅 Ma routine du jour** en haut (a remplacé « Séance du jour »). « Autres modes » : partie contre l'adversaire (coups tirés de Lichess), positions isolées. |
 | `#/progression` | « Ma progression » (hors onglets, liens depuis Entraînement et Mes parties) : courbes Lichess, classements Chess.com, routine sur 4 semaines, chiffres de l'entraînement. |
 | `#/parties` | Import des dernières parties Lichess/Chess.com (automatique à l'ouverture si pseudos enregistrés, badge « Nouveau »), sortie du répertoire, analyse Stockfish coup par coup, courbe, bilan, **rapport détaillé écrit** (note, déroulement, bons coups, erreurs expliquées avec la suite du moteur, occasions manquées, à retenir, exercices). |
@@ -468,8 +468,8 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   terminé**, à condition que `npm test` et tous les tests Playwright soient au vert : travailler sur
   la branche de travail, puis pousser sur `main` (avance rapide), vérifier une fois le résultat de
   deploy.yml et le dire à l'utilisateur. Rien de non testé ou d'à moitié fini sur `main`.
-  Publications : 2026-11-24 f4bad37 (29 répertoires, 269 fiches, bilingue, problèmes par thème,
-  partie contre Stockfish ; synchro inactive sans Worker), puis d31bf4c (brouillon d'analyse). Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
+  Publications du 2026-11-24 : site bilingue 29 répertoires, brouillon d'analyse, vidéos,
+  statistiques, corrections iPhone, serveur Cloudflare (synchro), pages vues, Élite toutes ouvertures. Le nom « BlitzRefute » changera quand l'utilisateur aura déposé son nom
   officiel (création de la micro-entreprise).
 - Messages de commit en français, terminés par les deux lignes d'attribution demandées par la
   session ; ne jamais écrire de nom ou d'identifiant de modèle ailleurs dans le dépôt.
@@ -486,57 +486,70 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   français, et économiser les tokens (pas de surveillance CI continue inutile, agents parallèles
   seulement pour les gros chantiers).
 
-## 8 bis. Où on en est (2026-11-23) et prochaines étapes
+## 8 bis. Où on en est (2026-11-26) et prochaines étapes
 
-Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) :
-- FAIT : 1. Se connecter avec Lichess · 2. Routine pour chacun (3 questions) · 3. Visite guidée ·
-  4. Aide / FAQ / contact (blitzrefute@gmail.com) · 5. Pièces « Celtic » (MIT) + icônes refaites ·
-  6. E-mail à Lichess rédigé et ENVOYÉ par l'utilisateur (réponse attendue → l'ajouter ici) ·
-  7. Mentions « application indépendante » · 8. Finales essentielles · 9. 4 nouvelles ouvertures
-  (168 fiches) · 10. Ma progression. Aussi : gestion du temps (Mes parties), problèmes Lichess dans
-  l'appli (niveau, chrono), révision « relire puis jouer », Mes variantes apprises, check-up complet.
-- DÉCISION (2026-11-23, proposée par l'utilisateur après avis de Gemini, approuvée) : **rester en
-  site web installable (PWA), pas d'App Store / Google Play pour l'instant** (pas de frais ni de
-  commission de 15 %, paiement libre, mises à jour immédiates). Android (TWA, 25 $) plus tard si les
-  ventes suivent ; iPhone seulement en cas de forte demande.
-- FAIT (2026-11-23) : 11. Guide d'installation + protection des données (voir § 5,
-  « Installation et sauvegardes »). Reste : synchronisation entre appareils (plus tard, serveur).
-- FAIT (2026-11-23, branche de travail, PAS publié) : lot 1 de nouvelles ouvertures — Pirc (7 fiches),
-  Alekhine (8), Catalane (8) ; 191 fiches. Lignes tactiques : Pirc 6.Fxh6?? (Byrne), Alekhine
-  5…Cd7? Cxf7 (piège), 9…e6? Dxf7# (piège Alburt), 4.Fxf7+?? (punition), Catalane 6…Fb7? Fxb7.
-  Traductions ajoutées dans nomFr (Ouverture catalane, Attaque autrichienne, quatre pions…).
-- FAIT (2026-11-23, branche de travail, PAS publié) : lot 2 — Grünfeld (8), Najdorf (7), Dragon (7),
-  Contre l'Anglaise 1.c4 e5 (5), Contre 1.Cf3 d5 (6), Écossaise +5, Contre le Londres +4 ; 233 fiches.
-  Nouveau groupe de choix `autres` (« Contre 1.c4 / 1.Cf3 », 4e étape). Lignes tactiques : Grünfeld
-  9.Dxd5? (punition), 5…Cb4? et 6…Dxd4? (pièges) ; Najdorf 7.Cf5? et 7.Cd5? (punitions), 7…Cxe4?
-  (piège Sozin) ; Dragon 7…Cg4? contre Fe2 (piège), 7.Fe3? contre Fc4 (punition), 8…Cg4? Levenfish
-  (piège) ; Anglaise 6.Fxb7?? ; Écossaise 3…f6 4…fxe5? (punition). nomFr : ~50 noms ajoutés.
-- FAIT (2026-11-23, branche de travail, PAS publié) : lot 3 — Benoni / Benko (6), Bogo-indienne (5),
-  Philidor (5), Viennoise (6, Blancs), Smith-Morra (6, Blancs), Italienne +2, Espagnole +3, Londres
-  +3 ; 269 fiches. Tactique : Bogo …Df6? (Dxe4), Philidor 4…Fe7? (Dd5) et mat de Légal, Viennoise
-  …Cxb5? Dxf7# et 5…Dxf2+?, Smith-Morra piège sibérien (h3? …Cd4, Dh2#) et 7…Dd6? (d5, Fb5+),
-  Espagnole arche de Noé (8.Dxd4?). Feuille de route des ouvertures TERMINÉE (demande de
-  l'utilisateur : « après c'est bon »).
-- FAIT (2026-11-23, branche de travail, PAS publié) : problèmes par thème (classement propre),
-  partie contre Stockfish (10 niveaux), synchronisation chiffrée (serveur à déployer), version
-  anglaise de l'interface (contenu des fiches encore en français).
-- FAIT (2026-11-24, branche de travail, PAS publié) : tout le site en anglais (fiches, leçons,
-  explications, rapports, messages).
-- Ensuite : déployer le Worker (synchro) ; vidéos des nouveaux répertoires — l'utilisateur veut l'appli d'entraînement la plus complète possible, moins
-  chère que les grands sites, avec des options en plus ; problèmes par thème avec classement propre ;
-  partie contre Stockfish à niveau réglable ; synchronisation ; version anglaise ; statistiques
-  anonymes sans cookies.
-- CÔTÉ UTILISATEUR (en attente) : création de la micro-entreprise (pas encore faite), nom de domaine,
-  comptes Cloudflare et Lemon Squeezy ; ensuite : déménagement vers Cloudflare Pages + dépôt privé,
-  vrai verrou Pro (licences Lemon Squeezy via le Worker), pages légales, achat test.
-- Coaching de l'utilisateur : routine depuis le 2026-11-16 ; après 1 semaine, rapide > 90 % de
-  précision et presque toutes gagnées ; problème = Blitz perdus au temps (conseils donnés : budget de
-  temps, simplifier quand on est mieux, essayer le 5+3). Bilan prévu vers le 2026-12-14.
-- Leçons de session : un fichier de test a été vidé par erreur en le lisant et l'écrivant dans la
-  même instruction Python (`open(p,'w').write(open(p).read()…)` tronque le fichier avant la lecture) —
-  toujours lire dans une variable d'abord. L'environnement redémarre parfois sans node_modules :
-  `npm ci` (+ `cd worker && npm ci`) et recréer le lien PLAYWRIGHT_BROWSERS_PATH (chromium 1194 →
-  chrome-headless-shell 1243) pour les tests ; scripts Node hors tests : require('playwright') global.
+**Tout est publié sur `main`** (site en ligne à jour au 2026-11-24 ; branche de travail de la session
+du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication ».
+
+**Fait et en ligne :**
+- Contenu : 29 répertoires, 269 fiches vérifiées par Stockfish (profondeur 18), site bilingue FR/EN.
+  Vidéos ≈ 210 fiches (160 ajoutées le 24/11, confirmées oEmbed) ; ≈ 50 fiches sans vidéo.
+- Données Élite pour les 29 ouvertures (13 153 parties, deux camps pour la règle de couleur).
+- Entraînement : routine du jour (profil 3 questions), leçons, S'entraîner (révision espacée),
+  anti-trash, problèmes par thème (classement propre), partie contre Stockfish (10 niveaux), finales,
+  positions de mes parties, Ma progression, Mes variantes apprises.
+- Moteur : conseils Stockfish, 3 candidats, coup optimal, brouillon d'analyse, bilan, import/export.
+- Appli installable (PWA, pas d'App Store pour l'instant), guide d'installation + encadré iPhone
+  « emporte tes données », copier/coller des données, sauvegardes, visite guidée, aide/FAQ.
+- Serveur Cloudflare (compte de l'utilisateur) : synchronisation chiffrée entre appareils (active ;
+  l'utilisateur n'a qu'un appareil et ne s'en sert pas), compteur de pages vues. Statistiques :
+  Cloudflare Web Analytics + ⚙ Avancé « Visites par page ». Explications Claude NON activées
+  (payantes ; il faudrait ANTHROPIC_API_KEY + COACH_ACCESS_CODE dans les secrets GitHub).
+
+**En attente / à régler :**
+- **Code Pro de l'utilisateur** : seule l'empreinte SHA-256 est dans pro.js (`CODE_HASHES`, code
+  créé le 2026-10-25, introuvable ici). Le drapeau Pro est propre à l'appareil et jamais exporté :
+  en passant de Chrome à l'appli installée, l'utilisateur a perdu Pro. Solution proposée (« solution
+  2 ») : ajouter dans ⚙ Avancé « Calculer l'empreinte d'un code » ; l'utilisateur tape un nouveau
+  code, envoie SEULEMENT l'empreinte ; l'ajouter à `CODE_HASHES`, publier. Ne jamais demander le code.
+- Réponse de Lichess à l'e-mail de l'utilisateur sur l'usage commercial (à intégrer quand reçue).
+- Bilan de la routine d'échecs de l'utilisateur vers le **2026-12-14** (4 semaines).
+
+**Prochaines étapes proposées (ordre conseillé) :**
+1. Code Pro (ci-dessus).
+2. « Les plus jouées d'abord » dans les cours pour toutes les ouvertures : relancer
+   `node scripts/frequences.mjs` sur les nouvelles données Élite (aujourd'hui gd, ck, gdr-noirs).
+3. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
+4. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).
+5. Plus de fiches pour les petits répertoires (Hollandaise, Bogo, Philidor, Contre l'Anglaise : 5) et
+   commentaires coup par coup dans les leçons.
+6. Vente : déménagement sur Cloudflare Pages + dépôt privé, vrai verrou Pro (licences Lemon Squeezy
+   via le Worker ; branche `licences-pro` écrite avant le grand public, à adapter aux 29 répertoires),
+   achat test. Idées plus tard : statistiques par fiche, Android (TWA) si les ventes suivent.
+
+**Côté utilisateur :** micro-entreprise (pas encore créée), nom officiel (« BlitzRefute » changera),
+nom de domaine, compte Lemon Squeezy. Comptes déjà créés : Cloudflare (blitzrefute@gmail.com,
+sous-domaine blitzrefute.workers.dev), GitHub miguelcerqueira1-cmyk (mot de passe à retrouver /
+noter : l'utilisateur ne s'en souvenait plus le 24/11).
+
+**Coaching de l'utilisateur :** routine depuis le 2026-11-16 ; Lichess Blitz ~1040, Chess.com rapide
+~750 ; rapide > 90 % de précision ; problème principal = Blitz perdus au temps (conseils : budget de
+temps, simplifier quand on est mieux, essayer le 5+3).
+
+**Leçons de session :**
+- Lire un fichier dans une variable avant de le réécrire (un fichier de test a été vidé par
+  `open(p,'w').write(open(p).read()…)`).
+- L'environnement redémarre parfois sans node_modules : `npm ci` (+ `cd worker && npm ci`) et
+  recréer le lien PLAYWRIGHT_BROWSERS_PATH (chromium 1194 → chrome-headless-shell 1243) ; le
+  serveur local de test (`scripts/serve.mjs`) s'arrête parfois : 83 échecs d'un coup = le relancer.
+- Tests WebKit/iPhone seulement en CI : pas de `grantPermissions` presse-papiers (casse WebKit) ;
+  les tests « Android » doivent créer un contexte Android explicite.
+- deploy-pages échoue parfois (« No artifacts named github-pages ») : second essai automatique.
+- iPhone : appli installée et navigateur n'ont PAS la même mémoire ; navigateur intégré de l'appli
+  Claude ≠ Chrome (pas connecté à GitHub) : faire ouvrir les liens dans Chrome.
+- Ne jamais marquer `verifie: true` une vidéo non contrôlée par oEmbed (refusé à juste titre).
+- Jeton Cloudflare affiché par erreur dans une capture → renouvelé ; rappeler de ne pas photographier
+  les secrets.
 
 ## 9. Reste à faire / idées
 
@@ -550,11 +563,11 @@ Feuille de route grand public (fichier texte envoyé à l'utilisateur, à jour) 
   l'Espagnole ?).
 - **À vérifier par l'utilisateur** : installation sur iPhone (icône, hors connexion après une
   visite), bouton d'installation sur Android.
-- **Explications Claude** : inactives tant que les 4 secrets GitHub (ANTHROPIC_API_KEY,
-  CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, COACH_ACCESS_CODE) ne sont pas créés — payant à
-  l'usage, décision de l'utilisateur ; l'explication gratuite fonctionne sans.
+- **Explications Claude** : inactives tant que ANTHROPIC_API_KEY et COACH_ACCESS_CODE ne sont pas
+  ajoutés aux secrets GitHub (les secrets Cloudflare existent déjà) — payant à l'usage, décision de
+  l'utilisateur ; l'explication gratuite fonctionne sans.
 - Élite : le workflow planifié est désactivé par GitHub après 60 jours sans commit sur `main`.
-- Plus de fiches (168 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
+- Plus de fiches (269 aujourd'hui) ; commentaires de coups rédigés et vérifiés pour les cours.
 - **Vidéos des nouveaux répertoires (2026-11-24)** : 160 fiches de 27 répertoires complétées par
   recherche web (`scripts/ajout-videos-2026-11-24.mjs`, vidéos de présentation par ouverture + vidéos
   ciblées par famille), confirmées par oEmbed en CI (workflow « Chapitres » lancé sur la branche,
