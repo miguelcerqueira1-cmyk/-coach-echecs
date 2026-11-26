@@ -191,3 +191,20 @@ export function planTheorie(board, cours = {}, { n = 3, peut = () => true } = {}
   const choisies = apprises.filter((f) => ids.includes(f.id));
   return { ids, apprises: apprises.length, rapide: !!ids.length && choisies.every((f) => f.pct >= SEUIL_RAPIDE) };
 }
+
+// État d'une fiche pour la page Répertoire : 'revoir' (sortie ou punition ratée en partie,
+// positions dues, < 40 % des points), 'maitrisee' (≥ 80 %), 'encours' (leçon suivie ou positions
+// vues), 'nouvelle'. bilan = bilanFiches(p)[id] (facultatif).
+export function etatFiche(entry, color, states, p, bilan = null, now = Date.now()) {
+  const m = mastery(entry, color, states || {}, p, now);
+  const sorties = (p.sorties || []).some((x) => x.ficheId === entry.id && x.kind !== 'punition' && !x.corrige);
+  let etat = 'nouvelle';
+  if (sorties || m.due > 0 || bilan?.etat === 'revoir') etat = 'revoir';
+  else if (m.pct >= 80) etat = 'maitrisee';
+  else if ((p.cours || {})[entry.id] || m.seen > 0) etat = 'encours';
+  return { etat, pct: m.pct, due: m.due, cours: !!(p.cours || {})[entry.id] };
+}
+
+export function chargerRevision(storage = globalThis.localStorage) {
+  try { return JSON.parse(storage.getItem('coach-echecs:revision-v1') || '{}') || {}; } catch { return {}; }
+}

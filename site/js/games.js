@@ -3,7 +3,9 @@
 import { Chess } from '../vendor/chess.js';
 import { localiserData } from './donnees-langue.js';
 import { Board } from './board.js';
-import { loadProgress, saveProgress, recordSortie, recordPartie } from './progress.js';
+import { loadProgress, saveProgress, recordSortie, recordPartie, vraiesErreurs } from './progress.js';
+import { demanderEntrainement } from './demande-entrainement.js';
+import { isPro, openPaywall } from './pro.js';
 import { loadPgnTolerant } from './game.js';
 import { choisis, REPERTOIRES } from './mon-repertoire.js';
 import { sanFr, formatScore } from './analysis.js';
@@ -474,6 +476,7 @@ export class GamesPage {
     const list = this.filtered();
     if (!this.games.length) return '';
     if (!list.length) return `<p class="muted pad">${L('Aucune partie pour cette cadence.', 'No games for this time control.')}</p>`;
+    const aCorriger = new Set(vraiesErreurs(loadProgress()).map((x) => x.gameId));
     return `${this.tempsResumeHtml(list)}<div class="games-list">${list.map((g) => {
       const opp = g.color === 'w' ? `${g.black} (${g.blackElo ?? '?'})` : `${g.white} (${g.whiteElo ?? '?'})`;
       const done = this.cache[g.id];
@@ -485,7 +488,8 @@ export class GamesPage {
         <p class="small muted">${esc(g.opening)}</p>
         <p class="small">${this.deviationText(g)}</p>
         <div class="actions">
-          <button type="button" class="${done ? '' : 'primary'}" data-analyse="${esc(g.id)}">${done ? L('Voir l’analyse', 'See the analysis') : L('Analyser', 'Analyse')}</button>
+          ${aCorriger.has(g.id) ? `<button type="button" class="primary" data-travailler="${esc(g.id)}">${L('🎯 Travailler mon erreur', '🎯 Work on my mistake')}</button>` : ''}
+          <button type="button" class="${done || aCorriger.has(g.id) ? '' : 'primary'}" data-analyse="${esc(g.id)}">${done ? L('Voir l’analyse', 'See the analysis') : L('Analyser', 'Analyse')}</button>
           <button type="button" data-open="${esc(g.id)}">${L('Ouvrir sur l’échiquier', 'Open on the board')}</button>
           ${/^https:\/\//.test(g.url || "") ? `<a class="btn-link" href="${esc(g.url)}" target="_blank" rel="noopener">${L('Sur', 'On')} ${esc(g.site)}</a>` : ''}
         </div>
@@ -656,6 +660,10 @@ export class GamesPage {
       save(PREFS, this.prefs);
       this.importAll();
     });
+    this.el.querySelectorAll('[data-travailler]').forEach((b) => b.addEventListener('click', () => {
+      if (!isPro()) { openPaywall({ reason: L('« Positions de mes parties »', '“Positions from my games”') }); return; }
+      demanderEntrainement({ type: 'reelle', gameId: b.dataset.travailler });
+    }));
     this.el.querySelectorAll('[data-analyse]').forEach((b) => b.addEventListener('click', () => {
       const g = this.games.find((x) => x.id === b.dataset.analyse);
       if (!g) return;

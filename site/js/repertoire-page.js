@@ -16,6 +16,8 @@ import { datalistHtml, playersSectionHtml, bindPlayers } from './joueurs-ui.js';
 import { loadElite, lookupElite, eliteSummary, absentText, splitText, eliteHeaders, recentInfo, ago, NOCAMP_TEXT, CAMP_LABEL } from './elite.js';
 import { loadSettings } from './storage.js';
 import { canOpenFiche, openPaywall } from './pro.js';
+import { loadProgress, bilanFiches, etatFiche, chargerRevision } from './progress.js';
+import { demanderEntrainement } from './demande-entrainement.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
 import { langue } from './i18n.js';
@@ -115,6 +117,8 @@ export class RepertoirePage {
     el.addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-unlock]');
       if (b) openPaywall({ reason: b.dataset.unlock });
+      const t = ev.target.closest('[data-entrainer]');
+      if (t) demanderEntrainement({ type: 'fiche', id: t.dataset.entrainer });
     });
     this.client = client;
     this.getFilter = getFilter;
@@ -243,7 +247,30 @@ export class RepertoirePage {
   // Répertoire affiché (onglet), ou le premier répertoire choisi si l'onglet est « Anti-trash ».
   repVue() { return this.view !== 'trash' && this.data.choisis.includes(this.view) ? this.view : this.data.choisis[0]; }
 
+  // État d'avancement des fiches (progression locale), recalculé à chaque affichage.
+  etat(e) {
+    if (!this._etats) {
+      const p = loadProgress();
+      this._etats = { p, rev: chargerRevision(), bilan: bilanFiches(p), cache: new Map() };
+    }
+    const c = this._etats;
+    if (!c.cache.has(e.id)) c.cache.set(e.id, etatFiche(e, this.data.repertoires[e.rep].couleur, c.rev[e.rep], c.p, c.bilan[e.id]));
+    return c.cache.get(e.id);
+  }
+
+  etatHtml(e) {
+    const st = this.etat(e);
+    const lab = {
+      revoir: L('⚠ À revoir', '⚠ To review'),
+      maitrisee: L('✅ Maîtrisée', '✅ Mastered'),
+      encours: L(`📈 En cours · ${st.pct} %`, `📈 In progress · ${st.pct}%`),
+      nouvelle: L('🆕 Nouvelle', '🆕 New'),
+    }[st.etat];
+    return `<span class="badge etat-${st.etat}" title="${L('Maîtrise', 'Mastery')} ${st.pct} %">${lab}</span>`;
+  }
+
   render() {
+    this._etats = null;
     const d = this.data;
     if (this.view !== 'trash') this.view = this.repVue();
     const f = this.getFilter();
@@ -377,8 +404,10 @@ export class RepertoirePage {
         <span class="badge eco">${esc(e.eco)}</span> <button type="button" class="badge badge-btn ${BADGE_CLASS[e.badge]}" data-badge-filter="${e.badge}" title="${L('Afficher toutes les fiches de ce type', 'Show all lines of this type')}">${esc(BADGE_LABEL[e.badge])}</button>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
+        <div class="etat-fiche">${this.etatHtml(e)}</div>
         <div class="row-actions">
-          <button type="button" class="primary small-btn" data-test="${e.id}">▶ ${L('Tester cette ligne', 'Test this line')}</button>
+          <button type="button" class="primary small-btn" data-entrainer="${e.id}">${this.etat(e).cours ? L('🎯 S’entraîner', '🎯 Practise') : L('📖 Apprendre', '📖 Learn')}</button>
+          <button type="button" class="small-btn" data-test="${e.id}">▶ ${L('Tester cette ligne', 'Test this line')}</button>
           <button type="button" class="link-btn" data-tree="${e.id}">${L('Arbre des coups joués', 'Tree of played moves')}</button>
         </div>
       </td>

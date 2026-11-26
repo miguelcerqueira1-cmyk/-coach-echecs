@@ -880,3 +880,12 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 
 /* Choix de la langue (en-tête) */
 .lang-btn { border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 999px; padding: .25rem .6rem; font: inherit; font-size: .8rem; font-weight: 650; cursor: pointer; }
+
+/* État d'avancement des fiches (Répertoire) et bouton « Continuer » (Entraînement). */
+.etat-fiche { margin: .3rem 0; }
+.badge.etat-revoir { background: color-mix(in srgb, #ff6b6b 22%, transparent); }
+.badge.etat-maitrisee { background: color-mix(in srgb, #3ecf8e 22%, transparent); }
+.badge.etat-encours { background: color-mix(in srgb, var(--accent) 20%, transparent); }
+.continuer { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
+.continuer .pro-cta { font-size: 1.05rem; padding: .7rem 1.2rem; min-height: 48px; }
+.continuer p { margin: 0; }

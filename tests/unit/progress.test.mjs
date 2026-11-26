@@ -82,3 +82,20 @@ test('drill : seuil d’un autre coup calé sur la punition vérifiée', () => {
   assert.equal(seuilAutreCoup(mk(3, 'mate'), 'w'), 150);
   assert.equal(seuilAutreCoup({}, 'w'), 150);
 });
+
+test('état d’une fiche (page Répertoire) : nouvelle, en cours, maîtrisée, à revoir', async () => {
+  const { etatFiche, recordLesson } = await import('../../site/js/progress.js');
+  const e = data.entries.find((x) => x.id === 'gd-orthodoxe');
+  const keys = ficheKeys(e, 'w');
+  const p = emptyProgress();
+  assert.equal(etatFiche(e, 'w', {}, p, null, t0).etat, 'nouvelle');
+  recordLesson(p, e.id, t0);
+  assert.equal(etatFiche(e, 'w', {}, p, null, t0).etat, 'encours');
+  const all = Object.fromEntries(keys.map((k) => [k, { reps: 3, due: t0 + DAY, lapses: 0 }]));
+  assert.equal(etatFiche(e, 'w', all, p, null, t0).etat, 'maitrisee');
+  const due = { ...all, [keys[0]]: { reps: 3, due: t0 - 1, lapses: 0 } };
+  assert.equal(etatFiche(e, 'w', due, p, null, t0).etat, 'revoir');
+  assert.equal(etatFiche(e, 'w', all, p, { etat: 'revoir' }, t0).etat, 'revoir');
+  recordSortie(p, { gameId: 'g9', ficheId: e.id, rep: 'gd', ply: 6 });
+  assert.equal(etatFiche(e, 'w', all, p, null, t0).etat, 'revoir');
+});

@@ -523,3 +523,22 @@ test('Partie contre Stockfish : niveau 1, Stockfish répond, reprise du coup, ab
   await page.click('#page-entrainement [data-quit]');
   await expect(page.locator('[data-stockfish]')).toContainText('niv. 1 : 0-0-1');
 });
+
+test('1 clic : état et « Apprendre » depuis le Répertoire, bouton « Continuer » de l’Entraînement', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/repertoire');
+  const row = page.locator('tr[data-id="gd-orthodoxe"]');
+  await expect(row.locator('.etat-fiche')).toContainText('Nouvelle');
+  await row.locator('[data-entrainer]').click();
+  await expect(page).toHaveURL(/#\/entrainement/);
+  await expect(page.locator('[data-panel]')).toContainText('Nom officiel');
+  // Accueil de l'Entraînement : « Continuer » indique et lance la prochaine étape.
+  await page.goto('./#/repertoire');
+  await page.goto('./#/entrainement');
+  await page.reload();
+  const suite = page.locator('.continuer');
+  await expect(suite).toContainText('Prochaine étape');
+  await expect(suite).toContainText('Apprendre');
+  await suite.locator('[data-continuer]').click();
+  await expect(page.locator('[data-panel]')).toContainText('Nom officiel');
+});

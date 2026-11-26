@@ -524,8 +524,11 @@ du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication
 A (sans entreprise) : 1. Réglages simplifiés ✅ ; 2. Gratuit vs Pro clair ✅ (`comparatif()` /
 `comparatifHtml()` de pro.js, à garder fidèles aux verrous réels ; accueil + fenêtre Pro ; `teaser(e)` des
 fiches verrouillées : piège/punition/leçon/vidéo/fréquence sans la solution ; offre unique 29 € à vie) ; 3. « 1 clic » et état
-visible (Répertoire : état + « S'entraîner sur cette variante » ; Mes parties : « Travailler mon erreur » ;
-Entraînement : bouton « Continuer ») ; 4. mode « Rush réfutations » (pièges/loufoques du répertoire, 3 vies,
+visible ✅ (`demande-entrainement.js` : demande {fiche|reelle|continuer} déposée puis prise par
+TrainingPage.show / `executerDemande` ; `etatFiche` de progress.js → badge Nouvelle / En cours / ✅ Maîtrisée /
+⚠ À revoir + « 📖 Apprendre » / « 🎯 S'entraîner » sur chaque fiche ; Mes parties « 🎯 Travailler mon
+erreur » (Pro) ; Entraînement : carte « ▶ Continuer » en tête, `prochaineAction` = positions de mes
+parties → positions dues → prochaine leçon → variantes faibles → Pro) ; 4. mode « Rush réfutations » (pièges/loufoques du répertoire, 3 vies,
 chrono, record) ; 5. brouillons pages légales + FAQ acheteur. B (avec entreprise) : 6. Cloudflare Pages +
 domaine + dépôt privé + licences ; 7. Lemon Squeezy + clé de licence + verrou serveur (mode test) ;
 8. achat test, lancement. C (après) : choix du niveau au 1er lancement, contenus, Claude bonus Pro à quota,

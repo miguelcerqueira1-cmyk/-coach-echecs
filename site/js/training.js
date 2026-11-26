@@ -12,6 +12,7 @@ import {
 import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
+import { prendreDemande } from './demande-entrainement.js';
 import { PuzzleRunner } from './puzzles.js';
 import { FinaleRunner, chargerFinales } from './finales.js';
 import FINALES_FR from '../data/finales.js';
@@ -69,6 +70,8 @@ export class TrainingPage {
     this.prefs = loadPrefs();
     this.revision = loadRevision();
     this.sessionNo = 0;
+    // Demande « 1 clic » arrivée alors que la page Entraînement est déjà affichée.
+    window.addEventListener('demande-entrainement', () => { if (this.data) this.executerDemande(prendreDemande()); });
   }
 
   async show() {
@@ -81,7 +84,70 @@ export class TrainingPage {
         return;
       }
     }
+    const d = prendreDemande();
+    if (d) { this.executerDemande(d); return; }
     if (!this.s && !this.drill && !this.lesson) this.renderSetup();
+  }
+
+  // Arrête proprement l'exercice ou la leçon en cours (minuteries comprises).
+  arreterEnCours() {
+    const c = this.drill?.cur;
+    if (c) { clearInterval(c.moveTimer); clearInterval(c.timer); }
+    if (this.drill) this.drill.alive = false;
+    if (this.lesson) this.lesson.alive = false;
+    this.drill = null;
+    this.lesson = null;
+    this.s = null;
+    this.view = null;
+  }
+
+  // Demande venue du Répertoire, de Mes parties ou du bouton « Continuer ».
+  executerDemande(d) {
+    if (!d) return;
+    this.arreterEnCours();
+    this.progress = loadProgress();
+    if (d.type === 'fiche') {
+      const e = this.data.entries.find((x) => x.id === d.id);
+      if (!e) { this.renderSetup(); return; }
+      if (!canOpenFiche(e.id)) { this.renderSetup(); openPaywall({ reason: L(`La fiche « ${e.nom} »`, `The line “${e.nom}”`) }); return; }
+      // Leçon pas encore suivie (ou formule gratuite) : la leçon ; sinon révision de la variante.
+      if (!this.progress.cours?.[e.id] || !isPro()) this.openLesson(e.id);
+      else this.runDrill('lignes', [e.id], { preset: { complet: '0', lTemps: 0, lRepet: 1 } });
+    } else if (d.type === 'reelle') {
+      if (!isPro()) { this.renderSetup(); openPaywall({ reason: L('« Positions de mes parties »', '“Positions from my games”') }); return; }
+      this.runReelles({ gameId: d.gameId });
+    } else if (d.type === 'continuer') {
+      this.prochaineAction().run();
+    } else this.renderSetup();
+    window.scrollTo(0, 0);
+  }
+
+  // « Continuer » : la chose la plus utile du moment, dans cet ordre : positions ratées de mes
+  // parties, positions dues en révision espacée, prochaine leçon, révision des variantes faibles.
+  prochaineAction() {
+    const p = this.progress || loadProgress();
+    const board = dashboard(this.data, this.revision, p);
+    const actifs = this.actifs();
+    const pro = isPro();
+    const reelles = vraiesErreurs(p);
+    if (pro && reelles.length) {
+      return { label: L(`Corriger ${reelles.length} position(s) de mes parties`, `Fix ${reelles.length} position(s) from my games`), run: () => this.runReelles() };
+    }
+    const dues = board.fiches.filter((f) => f.due > 0 && actifs.includes(f.rep) && canOpenFiche(f.id));
+    if (pro && dues.length) {
+      const ids = dues.sort((a, b) => b.due - a.due).slice(0, 3).map((f) => f.id);
+      const n = dues.reduce((a, f) => a + f.due, 0);
+      return { label: L(`Réviser ${n} position(s) à revoir`, `Review ${n} position(s) due`), run: () => this.runDrill('lignes', ids, { preset: { complet: '0', lTemps: 0, lRepet: 1 } }) };
+    }
+    for (const rep of actifs) {
+      const e = this.ordreCours(rep).list.find((x) => !p.cours?.[x.id] && canOpenFiche(x.id));
+      if (e) return { label: L(`Apprendre : ${e.nom}`, `Learn: ${e.nom}`), run: () => this.openLesson(e.id) };
+    }
+    if (pro) {
+      const ids = pickFiches({ fiches: board.fiches.filter((f) => actifs.includes(f.rep)) }, { n: 3 });
+      if (ids.length) return { label: L('Réviser mes variantes les plus faibles', 'Review my weakest lines'), run: () => this.runDrill('lignes', ids, { preset: { complet: '0', lTemps: 0, lRepet: 1 } }) };
+    }
+    return { label: L('Débloquer toutes les variantes avec Pro', 'Unlock every line with Pro'), run: () => { this.renderSetup(); openPaywall(); } };
   }
 
   // ---------- Écran de départ ----------
@@ -111,7 +177,12 @@ export class TrainingPage {
     const reelles = vraiesErreurs(this.progress);
     const lock = isPro() ? '' : ' <span class="lock-badge">🔒 Pro</span>';
     const nSort = reelles.filter((x) => x.kind === 'sortie').length;
+    const suite = this.prochaineAction();
     this.el.innerHTML = `<div class="train-hub">
+      <section class="card continuer">
+        <button type="button" class="pro-cta" data-continuer>${L('▶ Continuer', '▶ Continue')}</button>
+        <p class="small"><span class="muted">${L('Prochaine étape :', 'Next step:')}</span> <strong>${esc(suite.label)}</strong></p>
+      </section>
       ${this.routineHtml(board, next, seen)}
       <section class="card hub-head">
         <div class="hub-stats">
@@ -216,6 +287,7 @@ export class TrainingPage {
       const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
       this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '0', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
+    this.el.querySelector('[data-continuer]')?.addEventListener('click', () => this.executerDemande({ type: 'continuer' }));
     this.el.querySelector('[data-start]').addEventListener('click', need(L('Ce mode d’entraînement', 'This training mode'), () => this.start()));
     this.el.querySelectorAll('[data-finale-id]').forEach((b) => b.addEventListener('click', () => {
       const f = FINALES.find((x) => x.id === b.dataset.finaleId);
@@ -745,8 +817,9 @@ export class TrainingPage {
   }
 
   // « Positions de mes parties » : positions de vos parties réelles (Mes parties) à corriger.
-  runReelles() {
-    const list = vraiesErreurs(loadProgress());
+  runReelles({ gameId = null } = {}) {
+    const toutes = vraiesErreurs(loadProgress());
+    const list = gameId && toutes.some((x) => x.gameId === gameId) ? toutes.filter((x) => x.gameId === gameId) : toutes;
     if (!list.length) { this.renderSetup(); return; }
     this.s = null;
     const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));

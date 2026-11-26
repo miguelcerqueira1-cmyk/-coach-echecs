@@ -86,6 +86,12 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await expect(page.locator('#page-moteur')).toBeVisible();
   const g = await page.evaluate(() => ({ n: window.__coach.state.game.ply, c: window.__coach.state.game.playerColor }));
   expect(g).toEqual({ n: 10, c: 'b' });
+  // 1 clic depuis Mes parties : « Travailler mon erreur » ouvre la position ratée dans l'Entraînement.
+  await page.goto('./#/parties');
+  await page.locator('.game-card').filter({ hasText: 'Adversaire1' }).locator('[data-travailler]').click();
+  await expect(page).toHaveURL(/#\/entrainement/);
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('sorti du répertoire');
+  await page.click('#page-entrainement [data-quit]');
   // Entraînement : la sortie réelle (2.Cf3 au lieu de 2.c4) devient une position à corriger.
   await page.goto('./#/entrainement');
   const card = page.locator('[data-reelles]');
