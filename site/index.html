@@ -282,6 +282,16 @@
         <summary>Avancé</summary>
         <p><button type="button" id="btn-vues">📊 Visites par page (30 derniers jours)</button></p>
         <div id="vues-resultat" class="small" role="status"></div>
+        <fieldset class="empreinte-code">
+          <legend>🔑 Calculer l’empreinte d’un code</legend>
+          <p class="muted small">Tape un nouveau code Pro (au moins 8 caractères). Seule son empreinte s’affiche : c’est elle, et jamais le code, qu’il faut envoyer. Le code n’est ni enregistré ni envoyé.</p>
+          <input id="empreinte-code" type="password" autocomplete="new-password" spellcheck="false" aria-label="Nouveau code" placeholder="Nouveau code">
+          <div class="dlg-actions left">
+            <button type="button" id="btn-empreinte">Calculer</button>
+            <button type="button" id="btn-empreinte-copier" class="hidden">📋 Copier l’empreinte</button>
+          </div>
+          <p id="empreinte-resultat" class="small" role="status" data-no-i18n style="word-break:break-all"></p>
+        </fieldset>
         <label>Adresse de l’API (laisser vide pour la valeur publiée)
           <input id="set-api" type="url" placeholder="https://….workers.dev" spellcheck="false">
         </label>

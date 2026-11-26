@@ -1,6 +1,6 @@
 // Contrôleur principal. Principe : l'état de partie (game.js) est la source de vérité ;
 // Stockfish calcule ; chess.js valide ; Claude explique les résultats calculés.
-import { bindPaywall, renderPlan, openPaywall, setPaymentUrl } from './pro.js';
+import { bindPaywall, renderPlan, openPaywall, setPaymentUrl, sha256Hex } from './pro.js';
 import { initChoix, choisis, resume } from './mon-repertoire.js';
 import { AccueilPage } from './accueil.js';
 import { ChoixPage } from './choix.js';
@@ -1262,6 +1262,25 @@ function bindUi() {
     } catch (e) {
       out.textContent = L(`Serveur injoignable (${e.message}).`, `Server unreachable (${e.message}).`);
     }
+  };
+  // Empreinte d'un nouveau code Pro : calculée sur l'appareil, code jamais enregistré ni envoyé.
+  const calculerEmpreinte = async () => {
+    const champ = $('empreinte-code'), out = $('empreinte-resultat'), copier = $('btn-empreinte-copier');
+    const code = champ.value.trim();
+    copier.classList.add('hidden');
+    if (code.length < 8) { out.textContent = L('Le code doit faire au moins 8 caractères.', 'The code must be at least 8 characters long.'); return; }
+    const h = await sha256Hex(code);
+    champ.value = '';
+    out.textContent = h;
+    copier.classList.remove('hidden');
+  };
+  $('btn-empreinte').onclick = calculerEmpreinte;
+  $('empreinte-code').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); calculerEmpreinte(); } });
+  $('btn-empreinte-copier').onclick = async () => {
+    const h = $('empreinte-resultat').textContent;
+    try { await navigator.clipboard.writeText(h); $('btn-empreinte-copier').textContent = L('✔ Empreinte copiée', '✔ Fingerprint copied'); }
+    catch { $('btn-empreinte-copier').textContent = L('Copie refusée : appui long sur l’empreinte', 'Copy refused: long-press the fingerprint'); }
+    setTimeout(() => { $('btn-empreinte-copier').textContent = L('📋 Copier l’empreinte', '📋 Copy the fingerprint'); }, 2500);
   };
   $('btn-quitter-brouillon').onclick = () => { if (state.variante) viewAt(state.variante.base); };
   $('btn-brouillon').onclick = () => ouvrirVariante();

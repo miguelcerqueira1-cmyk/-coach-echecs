@@ -544,3 +544,21 @@ test('réglages : visites par page indisponibles sans serveur (site local)', asy
   await page.click('#btn-vues');
   await expect(page.locator('#vues-resultat')).toContainText('Serveur non configuré');
 });
+
+test('réglages : empreinte d’un nouveau code Pro, sans enregistrer le code', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await page.click('#btn-settings');
+  await page.locator('#form-settings details summary', { hasText: 'Avancé' }).click();
+  await page.fill('#empreinte-code', 'court');
+  await page.click('#btn-empreinte');
+  await expect(page.locator('#empreinte-resultat')).toContainText('au moins 8');
+  await page.fill('#empreinte-code', 'exemple-de-code');
+  await page.press('#empreinte-code', 'Enter');
+  const attendu = await page.evaluate(async () => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('exemple-de-code')))].map((b) => b.toString(16).padStart(2, '0')).join(''));
+  await expect(page.locator('#empreinte-resultat')).toHaveText(attendu);
+  await expect(page.locator('#empreinte-code')).toHaveValue('');
+  await expect(page.locator('#dlg-settings')).toBeVisible();
+  const tout = await page.evaluate(() => Object.keys(localStorage).map((k) => localStorage.getItem(k)).join('|'));
+  expect(tout).not.toContain('exemple-de-code');
+});
