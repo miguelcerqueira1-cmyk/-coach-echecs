@@ -521,8 +521,9 @@ du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication
 - Bilan de la routine d'échecs de l'utilisateur vers le **2026-12-14** (4 semaines).
 
 **Plan V1 vendable validé par l'utilisateur (2026-11-26), une étape à la fois, attendre son feu vert :**
-A (sans entreprise) : 1. Réglages simplifiés ✅ ; 2. Gratuit vs Pro clair (tableau comparatif accueil +
-fenêtre Pro, 🔒 cohérent, aperçu des fiches verrouillées, offre unique 29 € à vie) ; 3. « 1 clic » et état
+A (sans entreprise) : 1. Réglages simplifiés ✅ ; 2. Gratuit vs Pro clair ✅ (`comparatif()` /
+`comparatifHtml()` de pro.js, à garder fidèles aux verrous réels ; accueil + fenêtre Pro ; `teaser(e)` des
+fiches verrouillées : piège/punition/leçon/vidéo/fréquence sans la solution ; offre unique 29 € à vie) ; 3. « 1 clic » et état
 visible (Répertoire : état + « S'entraîner sur cette variante » ; Mes parties : « Travailler mon erreur » ;
 Entraînement : bouton « Continuer ») ; 4. mode « Rush réfutations » (pièges/loufoques du répertoire, 3 vies,
 chrono, record) ; 5. brouillons pages légales + FAQ acheteur. B (avec entreprise) : 6. Cloudflare Pages +

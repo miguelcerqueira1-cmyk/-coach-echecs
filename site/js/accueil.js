@@ -4,6 +4,7 @@
 import { localiserData } from './donnees-langue.js';
 import { GROUPES, REPERTOIRES, parGroupe, aChoisi } from './mon-repertoire.js';
 import { langue } from './i18n.js';
+import { comparatifHtml, getPaymentUrl } from './pro.js';
 const L = (fr, en) => (langue() === 'en' ? en : fr);
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -76,18 +77,10 @@ export class AccueilPage {
         </ol>
       </section>
 
-      <section class="acc-pricing" aria-label="${L('Formules', 'Plans')}">
-        <article class="card acc-plan">
-          <h3>${L('Gratuit', 'Free')}</h3>
-          <p class="acc-price">0 €</p>
-          <ul class="small"><li>${L('Moteur d’analyse Stockfish', 'Stockfish analysis engine')}</li><li>${L('Mes parties : import et analyse', 'My games: import and analysis')}</li><li>${L('Une variante de base par ouverture (fiche et leçon)', 'One basic line per opening (line and lesson)')}</li></ul>
-        </article>
-        <article class="card acc-plan pro">
-          <h3>Pro</h3>
-          <p class="acc-price">29 € <span class="small muted">${L('accès à vie', 'lifetime access')}</span></p>
-          <ul class="small"><li>${L('Toutes les variantes de vos ouvertures', 'All the lines of your openings')}</li><li>${L('Réflexes anti-trash et répétition espacée', 'Anti-trash reflexes and spaced repetition')}</li><li>${L('Positions de mes parties, tous les cours', 'Positions from my games, all the lessons')}</li></ul>
-          <p class="pro-soon small">${L('Le paiement en ligne ouvre bientôt.', 'Online payment opens soon.')}</p>
-        </article>
+      <section class="card acc-pricing" aria-label="${L('Formules', 'Plans')}">
+        <h2>${L('Gratuit ou Pro', 'Free or Pro')}</h2>
+        ${comparatifHtml()}
+        ${getPaymentUrl() ? `<p><a class="pro-cta" href="${esc(getPaymentUrl())}" target="_blank" rel="noopener">${L('⚡ Passer Pro — accès à vie', '⚡ Go Pro — lifetime access')}</a></p>` : `<p class="pro-soon small">${L('Le paiement en ligne ouvre bientôt.', 'Online payment opens soon.')}</p>`}
       </section>
 
       <p class="acc-bottom"><a class="pro-cta acc-main" href="#/ouvertures">${cta} →</a></p>

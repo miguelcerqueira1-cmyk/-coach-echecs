@@ -28,6 +28,36 @@ export const PRO_FEATURES = [
   ['♚', L('Toutes les finales essentielles', 'All the essential endgames'), L('Lucena, Philidor, opposition, règle du carré : jouées contre Stockfish', 'Lucena, Philidor, opposition, rule of the square: played against Stockfish')],
 ];
 
+// Comparatif Gratuit / Pro (accueil et fenêtre Pro) : reflète exactement les verrous de l'appli
+// (FREE_FICHES, finales.gratuit, problemes-core gratuit, niveaux Stockfish 1–4, modules `need`).
+export function comparatif() {
+  const n = FREE_FICHES.length;
+  return [
+    [L('Moteur d’analyse Stockfish', 'Stockfish analysis engine'), '✔', '✔'],
+    [L('Mes parties : import, analyse, rapport', 'My games: import, analysis, report'), '✔', '✔'],
+    [L('Variantes de mes ouvertures (fiches)', 'Lines of my openings'), L(`1 par ouverture (${n})`, `1 per opening (${n})`), L('Toutes, et les nouvelles', 'All, and new ones')],
+    [L('Leçons pas à pas', 'Step-by-step lessons'), L('1 par ouverture', '1 per opening'), L('Toutes', 'All')],
+    [L('S’entraîner (répétition espacée)', 'Practice (spaced repetition)'), '—', '✔'],
+    [L('Réflexes anti-trash chronométrés', 'Timed anti-trash reflexes'), '—', '✔'],
+    [L('Positions ratées de mes parties', 'Missed positions from my games'), '—', '✔'],
+    [L('Problèmes par thème', 'Puzzles by theme'), L('3 thèmes', '3 themes'), L('26 thèmes', '26 themes')],
+    [L('Finales essentielles', 'Essential endgames'), '3', '8'],
+    [L('Partie contre Stockfish', 'Game against Stockfish'), L('niveaux 1 à 4', 'levels 1 to 4'), L('10 niveaux', '10 levels')],
+  ];
+}
+
+export function comparatifHtml() {
+  const cell = (v) => (v === '✔' ? '<span class="ok-text" aria-label="oui">✔</span>' : v === '—' ? '<span class="muted" aria-label="non">—</span>' : esc(v));
+  return `<table class="pro-compare">
+    <thead><tr><th scope="col"></th><th scope="col">${L('Gratuit', 'Free')}</th><th scope="col" class="pro-col">Pro</th></tr></thead>
+    <tbody>${comparatif().map(([f, g, p]) => `<tr><th scope="row">${esc(f)}</th><td>${cell(g)}</td><td class="pro-col">${cell(p)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><th scope="row">${L('Prix', 'Price')}</th><td>0 €</td><td class="pro-col"><strong>29 €</strong></td></tr></tfoot>
+  </table>
+  <p class="pro-price-note small">${L('<strong>29 € une seule fois</strong> : accès à vie, sans abonnement, mises à jour et nouvelles variantes comprises.', '<strong>€29 one-off</strong>: lifetime access, no subscription, updates and new lines included.')}</p>`;
+}
+
+export function getPaymentUrl() { return PAYMENT_URL; }
+
 export function isPro() {
   try { return !!JSON.parse(localStorage.getItem(KEY) || 'null')?.pro; } catch { return false; }
 }
@@ -66,6 +96,7 @@ export function openPaywall({ reason = '', paymentUrl = PAYMENT_URL } = {}) {
   if (!dlg) return;
   dlg.querySelector('[data-pro-reason]').innerHTML = reason
     ? `<span class="pro-lock">🔒</span> <strong>${esc(reason)}</strong> ${L('fait partie de BlitzRefute Pro.', 'is part of BlitzRefute Pro.')}` : '';
+  dlg.querySelector('[data-pro-compare]').innerHTML = comparatifHtml();
   dlg.querySelector('[data-pro-list]').innerHTML = PRO_FEATURES.map(([i, t, d]) => `<li><span class="pro-ico" aria-hidden="true">${i}</span><span><strong>${esc(t)}</strong><br><span class="muted small">${esc(d)}</span></span></li>`).join('');
   const buy = dlg.querySelector('[data-pro-buy]');
   const soon = dlg.querySelector('[data-pro-soon]');

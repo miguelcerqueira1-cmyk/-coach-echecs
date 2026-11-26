@@ -340,13 +340,26 @@ export class RepertoirePage {
   }
 
   // Fiche réservée à BlitzRefute Pro : nom, code ECO et premiers coups visibles, le reste flouté.
+  // Ce que contient une fiche verrouillée, sans en dévoiler la solution (aperçu avant achat).
+  teaser(e) {
+    const t = [
+      e.piege && L('🪤 Un piège à connaître', '🪤 A trap to know'),
+      e.punition && L('⚔ Une punition vérifiée par Stockfish', '⚔ A Stockfish-verified punishment'),
+      L('📖 Leçon pas à pas', '📖 Step-by-step lesson'),
+      e.video && L('🎬 Vidéo', '🎬 Video'),
+      e.freq && L(`📊 ${e.freq.n} partie(s) du top`, `📊 ${e.freq.n} top game(s)`),
+    ].filter(Boolean);
+    return `<div class="locked-teaser">${t.map((x) => `<span class="badge">${esc(x)}</span>`).join('')}</div>`;
+  }
+
   lockedRow(e) {
     return `<tr data-id="${e.id}" data-locked class="locked-card">
       <td data-label="ECO · Nom" data-l="${L('ECO · Nom', 'ECO · Name')}">
         <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span>
         <div class="rep-name">${esc(e.nom)}</div>
         <div class="muted tiny">${esc(e.ecoNom)}</div>
-        <button type="button" class="primary small-btn unlock-btn" data-unlock="La fiche « ${esc(e.nom)} »">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
+        ${this.teaser(e)}
+        <button type="button" class="primary small-btn unlock-btn" data-unlock="${L(`La fiche « ${esc(e.nom)} »`, `The line “${esc(e.nom)}”`)}">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
       </td>
       <td data-label="Séquence" data-l="${L('Séquence', 'Moves')}" class="line">${esc(sanLine(e.san.slice(0, 4)))} …</td>
       <td data-label="Contenu Pro" data-l="${L('Contenu Pro', 'Pro content')}" colspan="7"><p class="small locked-blur" aria-hidden="true">${esc(e.plan)}</p>
@@ -459,7 +472,8 @@ export class RepertoirePage {
     const lockedCard = (e) => `<article class="card trash-card locked-card">
         <div class="trash-top"><span class="badge">${esc(reps[e.rep].titre)}</span> <span class="badge eco">${esc(e.eco)}</span> <span class="lock-badge">🔒 Pro</span></div>
         <h3>${esc(e.nom)}</h3>
-        <button type="button" class="primary small-btn" data-unlock="La réfutation « ${esc(e.nom)} »">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
+        ${this.teaser(e)}
+        <button type="button" class="primary small-btn" data-unlock="${L(`La réfutation « ${esc(e.nom)} »`, `The refutation “${esc(e.nom)}”`)}">${L('Débloquer avec Pro', 'Unlock with Pro')}</button>
       </article>`;
     const card = (e, kind) => {
       if (!canOpenFiche(e.id)) return lockedCard(e);

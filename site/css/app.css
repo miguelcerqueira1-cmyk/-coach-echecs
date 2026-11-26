@@ -729,7 +729,20 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .acc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
 .acc-opening { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem .6rem; border-radius: 10px; background: var(--surface-2); }
 .acc-steps ol { margin: .4rem 0 0; padding-left: 1.2rem; display: grid; gap: .35rem; }
-.acc-pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: .75rem; }
+.acc-pricing h2 { margin-top: 0; }
+/* Comparatif Gratuit / Pro (accueil, fenêtre Pro) : 3 colonnes étroites, lisible sur téléphone. */
+.pro-compare { width: 100%; border-collapse: collapse; font-size: .9rem; margin: .6rem 0 .3rem; table-layout: fixed; }
+.pro-compare th, .pro-compare td { padding: .42rem .25rem; border-bottom: 1px solid var(--border, rgba(255,255,255,.08)); text-align: center; }
+.pro-compare th[scope="row"] { text-align: left; font-weight: 500; }
+.pro-compare thead th:first-child { width: 44%; }
+.pro-compare td { font-size: .82rem; }
+.pro-compare thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.pro-compare .pro-col { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.pro-compare thead .pro-col { color: var(--accent); }
+.pro-compare tfoot th, .pro-compare tfoot td { border-bottom: 0; font-size: 1rem; }
+.pro-price-note { margin: .3rem 0 .6rem; }
+.pro-details { margin: .3rem 0; }
+.locked-teaser { display: flex; flex-wrap: wrap; gap: .3rem; margin: .35rem 0; }
 .acc-plan.pro { box-shadow: inset 0 0 0 2px var(--accent); }
 .acc-price { font-size: 1.6rem; font-weight: 700; margin: .2rem 0 .4rem; }
 .acc-plan ul { padding-left: 1.1rem; margin: 0 0 .5rem; }

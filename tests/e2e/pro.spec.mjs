@@ -33,7 +33,7 @@ test('formule gratuite : marque, 3 variantes ouvertes, contenu Pro verrouillé, 
   await expect(dlg).toContainText('Réflexes anti-trash');
   await expect(dlg.locator('[data-pro-soon]')).toContainText('Le paiement en ligne ouvre bientôt');
   // Code d'accès inconnu : refusé, rien n'est débloqué.
-  await dlg.locator('summary').click();
+  await dlg.locator('.pro-code summary').click();
   await dlg.locator('[data-pro-code]').fill('MAUVAIS');
   await dlg.locator('[data-pro-form] button').click();
   await expect(dlg.locator('[data-pro-msg]')).toHaveText('Code non reconnu.');
@@ -57,4 +57,25 @@ test('formule Pro : badge Pro, bouton d’achat masqué, toutes les fiches ouver
   await expect(page.locator('#btn-pro')).toBeHidden();
   await expect(page.locator('tr[data-locked]')).toHaveCount(0);
   await expect(page.locator('[data-test="gd-echange"]')).toBeVisible();
+});
+
+test('formule gratuite : comparatif Gratuit / Pro dans la fenêtre Pro et aperçu des fiches verrouillées', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/repertoire');
+  const locked = page.locator('tr.locked-card').first();
+  await expect(locked).toBeVisible();
+  await expect(locked.locator('.locked-teaser')).toContainText('Leçon pas à pas');
+  await locked.locator('.unlock-btn').click();
+  const dlg = page.locator('#dlg-pro');
+  await expect(dlg).toBeVisible();
+  await expect(dlg.locator('.pro-compare')).toContainText('Réflexes anti-trash chronométrés');
+  await expect(dlg.locator('.pro-compare tfoot')).toContainText('29 €');
+  await expect(dlg).toContainText('sans abonnement');
+});
+
+test('accueil : comparatif Gratuit / Pro', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/accueil');
+  await expect(page.locator('.acc-pricing .pro-compare')).toContainText('Partie contre Stockfish');
+  await expect(page.locator('.acc-pricing')).toContainText('accès à vie');
 });
