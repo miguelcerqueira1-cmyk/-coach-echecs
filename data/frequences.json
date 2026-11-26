@@ -1,48 +1,75 @@
 {
  "source": "Élite (parties blitz/rapide du top Lichess et Chess.com, tournois retransmis)",
- "date": "2026-11-11",
+ "date": "2026-11-26",
  "parties": {
-  "total": 2237,
-  "li": 1093,
-  "cc": 907,
-  "bc": 237,
-  "gd": 1448,
-  "ck": 789,
-  "camp": 1395
+  "li": 5791,
+  "cc": 5942,
+  "bc": 1358,
+  "gd": 1145,
+  "italienne": 430,
+  "espagnole": 629,
+  "londres": 1223,
+  "ecossaise": 175,
+  "catalane": 340,
+  "viennoise": 128,
+  "smith-morra": 47,
+  "anglaise": 456,
+  "ck": 911,
+  "e5-noirs": 455,
+  "sicilienne": 1472,
+  "francaise": 717,
+  "scandinave": 222,
+  "pirc": 247,
+  "alekhine": 104,
+  "philidor": 136,
+  "najdorf": 839,
+  "dragon": 91,
+  "indienne-roi": 549,
+  "gdr-noirs": 429,
+  "contre-londres": 200,
+  "grunfeld": 3,
+  "benoni": 78,
+  "bogo": 197,
+  "hollandaise": 72,
+  "nimzo-qid": 975,
+  "contre-anglaise": 223,
+  "contre-reti": 598,
+  "total": 13091,
+  "camp": 13091
  },
  "entries": {
   "gd-orthodoxe": {
-   "n": 6,
+   "n": 4,
    "ply": 11,
    "coup": "Nbd7",
    "rep": "gd"
   },
   "gd-ff4": {
-   "n": 105,
+   "n": 116,
    "ply": 7,
    "coup": "Be7",
    "rep": "gd"
   },
   "gd-echange": {
-   "n": 180,
+   "n": 222,
    "ply": 6,
    "coup": "cxd5",
    "rep": "gd"
   },
   "gd-tarrasch": {
-   "n": 28,
+   "n": 26,
    "ply": 5,
    "coup": "c5",
    "rep": "gd"
   },
   "gd-gda-central": {
-   "n": 2,
+   "n": 6,
    "ply": 5,
    "coup": "e5",
    "rep": "gd"
   },
   "gd-gda-classique": {
-   "n": 38,
+   "n": 55,
    "ply": 4,
    "coup": "Nf3",
    "rep": "gd"
@@ -54,274 +81,1330 @@
    "rep": "gd"
   },
   "gd-slave": {
-   "n": 18,
+   "n": 27,
    "ply": 7,
    "coup": "dxc4",
    "rep": "gd"
   },
   "gd-slave-echange": {
-   "n": 26,
+   "n": 28,
    "ply": 4,
    "coup": "cxd5",
    "rep": "gd"
   },
   "gd-meran": {
-   "n": 43,
+   "n": 42,
    "ply": 8,
    "coup": "e3",
    "rep": "gd"
   },
   "gd-moscou": {
-   "n": 45,
+   "n": 49,
    "ply": 8,
    "coup": "Bg5",
    "rep": "gd"
   },
   "gd-albin": {
-   "n": 12,
+   "n": 15,
    "ply": 3,
    "coup": "e5",
    "rep": "gd"
   },
   "gd-chigorine": {
-   "n": 9,
+   "n": 6,
    "ply": 3,
    "coup": "Nc6",
    "rep": "gd"
   },
   "gd-marshall": {
-   "n": 7,
+   "n": 10,
    "ply": 3,
    "coup": "Nf6",
    "rep": "gd"
   },
   "gd-autrichienne": {
-   "n": 9,
+   "n": 8,
    "ply": 3,
    "coup": "c5",
    "rep": "gd"
   },
   "gd-englund": {
-   "n": 10,
+   "n": 3,
    "ply": 3,
    "coup": "Nc6",
    "rep": "gd"
   },
+  "gd-g5": {
+   "n": 1,
+   "ply": 1,
+   "coup": "g5",
+   "rep": "gd"
+  },
   "gd-ragozine": {
-   "n": 95,
+   "n": 88,
    "ply": 7,
    "coup": "Bb4",
    "rep": "gd"
   },
   "gd-semi-tarrasch": {
-   "n": 26,
+   "n": 42,
    "ply": 7,
    "coup": "c5",
    "rep": "gd"
   },
   "gd-lasker": {
-   "n": 11,
+   "n": 14,
    "ply": 11,
    "coup": "h6",
    "rep": "gd"
   },
   "gd-gda-cf6": {
-   "n": 6,
+   "n": 8,
    "ply": 5,
    "coup": "Nf6",
    "rep": "gd"
   },
   "gd-tchebanenko": {
-   "n": 23,
+   "n": 32,
    "ply": 7,
    "coup": "a6",
    "rep": "gd"
   },
   "gd-marshall-gambit": {
-   "n": 29,
+   "n": 27,
    "ply": 5,
    "coup": "c6",
    "rep": "gd"
   },
+  "gd-polonaise": {
+   "n": 3,
+   "ply": 1,
+   "coup": "b5",
+   "rep": "gd"
+  },
+  "ita-pianissimo": {
+   "n": 72,
+   "ply": 6,
+   "coup": "d3",
+   "rep": "italienne"
+  },
+  "ita-evans": {
+   "n": 9,
+   "ply": 6,
+   "coup": "b4",
+   "rep": "italienne"
+  },
+  "ita-deux-cavaliers-cg5": {
+   "n": 33,
+   "ply": 7,
+   "coup": "d5",
+   "rep": "italienne"
+  },
+  "ita-deux-cavaliers-d4": {
+   "n": 9,
+   "ply": 6,
+   "coup": "d4",
+   "rep": "italienne"
+  },
+  "ita-deux-cavaliers-d3": {
+   "n": 149,
+   "ply": 6,
+   "coup": "d3",
+   "rep": "italienne"
+  },
+  "ita-hongroise": {
+   "n": 3,
+   "ply": 5,
+   "coup": "Be7",
+   "rep": "italienne"
+  },
+  "ita-legal": {
+   "n": 15,
+   "ply": 5,
+   "coup": "d6",
+   "rep": "italienne"
+  },
+  "ita-traxler": {
+   "n": 1,
+   "ply": 7,
+   "coup": "Bc5",
+   "rep": "italienne"
+  },
+  "esp-fermee": {
+   "n": 18,
+   "ply": 13,
+   "coup": "d6",
+   "rep": "espagnole"
+  },
+  "esp-ouverte": {
+   "n": 18,
+   "ply": 9,
+   "coup": "Nxe4",
+   "rep": "espagnole"
+  },
+  "esp-berlinoise": {
+   "n": 92,
+   "ply": 7,
+   "coup": "Nxe4",
+   "rep": "espagnole"
+  },
+  "esp-echange": {
+   "n": 34,
+   "ply": 6,
+   "coup": "Bxc6",
+   "rep": "espagnole"
+  },
+  "esp-steinitz": {
+   "n": 1,
+   "ply": 5,
+   "coup": "d6",
+   "rep": "espagnole"
+  },
+  "esp-cordel": {
+   "n": 25,
+   "ply": 5,
+   "coup": "Bc5",
+   "rep": "espagnole"
+  },
+  "esp-schliemann": {
+   "n": 21,
+   "ply": 5,
+   "coup": "f5",
+   "rep": "espagnole"
+  },
+  "esp-marshall": {
+   "n": 9,
+   "ply": 14,
+   "coup": "c3",
+   "rep": "espagnole"
+  },
+  "esp-anti-marshall": {
+   "n": 22,
+   "ply": 14,
+   "coup": "a4",
+   "rep": "espagnole"
+  },
+  "lon-classique": {
+   "n": 45,
+   "ply": 3,
+   "coup": "Nf6",
+   "rep": "londres"
+  },
+  "lon-db6": {
+   "n": 22,
+   "ply": 3,
+   "coup": "c5",
+   "rep": "londres"
+  },
+  "lon-cf6-b6": {
+   "n": 7,
+   "ply": 3,
+   "coup": "e6",
+   "rep": "londres"
+  },
+  "lon-indienne-roi": {
+   "n": 20,
+   "ply": 3,
+   "coup": "g6",
+   "rep": "londres"
+  },
+  "lon-slave-db6": {
+   "n": 4,
+   "ply": 3,
+   "coup": "c6",
+   "rep": "londres"
+  },
+  "lon-englund": {
+   "n": 16,
+   "ply": 1,
+   "coup": "e5",
+   "rep": "londres"
+  },
+  "lon-cc6-e5": {
+   "n": 14,
+   "ply": 1,
+   "coup": "Nc6",
+   "rep": "londres"
+  },
+  "lon-hollandaise": {
+   "n": 59,
+   "ply": 1,
+   "coup": "f5",
+   "rep": "londres"
+  },
+  "lon-benoni": {
+   "n": 48,
+   "ply": 1,
+   "coup": "c5",
+   "rep": "londres"
+  },
+  "lon-db6-tb1": {
+   "n": 11,
+   "ply": 3,
+   "coup": "c5",
+   "rep": "londres"
+  },
+  "eco-fc5": {
+   "n": 4,
+   "ply": 8,
+   "coup": "Be3",
+   "rep": "ecossaise"
+  },
+  "eco-cf6": {
+   "n": 46,
+   "ply": 8,
+   "coup": "Nxc6",
+   "rep": "ecossaise"
+  },
+  "eco-dh4": {
+   "n": 1,
+   "ply": 7,
+   "coup": "Qh4",
+   "rep": "ecossaise"
+  },
+  "eco-gambit": {
+   "n": 11,
+   "ply": 6,
+   "coup": "Bc4",
+   "rep": "ecossaise"
+  },
+  "eco-cb3": {
+   "n": 9,
+   "ply": 8,
+   "coup": "Nb3",
+   "rep": "ecossaise"
+  },
+  "eco-cxc6-fc5": {
+   "n": 2,
+   "ply": 8,
+   "coup": "Nxc6",
+   "rep": "ecossaise"
+  },
+  "eco-4cav": {
+   "n": 1,
+   "ply": 8,
+   "coup": "Nc3",
+   "rep": "ecossaise"
+  },
+  "eco-f6": {
+   "n": 1,
+   "ply": 5,
+   "coup": "f6",
+   "rep": "ecossaise"
+  },
+  "cat-fermee": {
+   "n": 11,
+   "ply": 11,
+   "coup": "Nbd7",
+   "rep": "catalane"
+  },
+  "cat-ouverte-dc2": {
+   "n": 82,
+   "ply": 11,
+   "coup": "dxc4",
+   "rep": "catalane"
+  },
+  "cat-ouverte-c5": {
+   "n": 24,
+   "ply": 9,
+   "coup": "c5",
+   "rep": "catalane"
+  },
+  "cat-b5": {
+   "n": 1,
+   "ply": 9,
+   "coup": "b5",
+   "rep": "catalane"
+  },
+  "cat-da4": {
+   "n": 2,
+   "ply": 8,
+   "coup": "Qa4+",
+   "rep": "catalane"
+  },
+  "cat-fb4": {
+   "n": 12,
+   "ply": 5,
+   "coup": "Bb4+",
+   "rep": "catalane"
+  },
+  "cat-c5": {
+   "n": 16,
+   "ply": 5,
+   "coup": "c5",
+   "rep": "catalane"
+  },
+  "vie-gambit": {
+   "n": 10,
+   "ply": 4,
+   "coup": "f4",
+   "rep": "viennoise"
+  },
+  "vie-fc4-cxe4": {
+   "n": 6,
+   "ply": 5,
+   "coup": "Nxe4",
+   "rep": "viennoise"
+  },
+  "vie-dg4": {
+   "n": 28,
+   "ply": 3,
+   "coup": "Nc6",
+   "rep": "viennoise"
+  },
+  "vie-cf6-cc6": {
+   "n": 10,
+   "ply": 5,
+   "coup": "Nc6",
+   "rep": "viennoise"
+  },
+  "vie-g3": {
+   "n": 10,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "viennoise"
+  },
+  "sm-cf6": {
+   "n": 7,
+   "ply": 5,
+   "coup": "Nf6",
+   "rep": "smith-morra"
+  },
+  "sm-d5": {
+   "n": 1,
+   "ply": 5,
+   "coup": "d5",
+   "rep": "smith-morra"
+  },
+  "sm-d3": {
+   "n": 4,
+   "ply": 5,
+   "coup": "d3",
+   "rep": "smith-morra"
+  },
+  "ang-sicilienne-inversee": {
+   "n": 17,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "anglaise"
+  },
+  "ang-quatre-cavaliers": {
+   "n": 67,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "anglaise"
+  },
+  "ang-symetrique": {
+   "n": 51,
+   "ply": 1,
+   "coup": "c5",
+   "rep": "anglaise"
+  },
+  "ang-cf6-g6": {
+   "n": 26,
+   "ply": 3,
+   "coup": "g6",
+   "rep": "anglaise"
+  },
+  "ang-gd": {
+   "n": 20,
+   "ply": 3,
+   "coup": "e6",
+   "rep": "anglaise"
+  },
+  "ang-e6-echange": {
+   "n": 213,
+   "ply": 1,
+   "coup": "e6",
+   "rep": "anglaise"
+  },
+  "ang-d5": {
+   "n": 1,
+   "ply": 1,
+   "coup": "d5",
+   "rep": "anglaise"
+  },
   "ck-avance-short": {
-   "n": 57,
+   "n": 64,
    "ply": 6,
    "coup": "Nf3",
    "rep": "ck"
   },
   "ck-avance-tal": {
-   "n": 72,
+   "n": 81,
    "ply": 6,
    "coup": "h4",
    "rep": "ck"
   },
   "ck-avance-cc3": {
-   "n": 11,
+   "n": 8,
    "ply": 6,
    "coup": "Nc3",
    "rep": "ck"
   },
   "ck-avance-fd3": {
-   "n": 19,
+   "n": 12,
    "ply": 6,
    "coup": "Bd3",
    "rep": "ck"
   },
   "ck-echange": {
-   "n": 51,
+   "n": 69,
    "ply": 6,
    "coup": "Bd3",
    "rep": "ck"
   },
   "ck-panov": {
-   "n": 5,
+   "n": 7,
    "ply": 9,
    "coup": "e6",
    "rep": "ck"
   },
   "ck-classique": {
-   "n": 39,
+   "n": 46,
    "ply": 8,
    "coup": "Ng3",
    "rep": "ck"
   },
   "ck-karpov": {
-   "n": 11,
+   "n": 9,
    "ply": 8,
    "coup": "Nf3",
    "rep": "ck"
   },
   "ck-tartakower": {
-   "n": 78,
+   "n": 83,
    "ply": 7,
    "coup": "Nf6",
    "rep": "ck"
   },
   "ck-fantaisie": {
-   "n": 27,
+   "n": 25,
    "ply": 4,
    "coup": "f3",
    "rep": "ck"
   },
   "ck-deux-cavaliers": {
-   "n": 41,
+   "n": 49,
    "ply": 5,
    "coup": "Bg4",
    "rep": "ck"
   },
   "ck-panov-acceleree": {
-   "n": 16,
+   "n": 23,
    "ply": 2,
    "coup": "c4",
    "rep": "ck"
   },
   "ck-kia": {
-   "n": 12,
+   "n": 18,
    "ply": 2,
    "coup": "d3",
    "rep": "ck"
   },
   "ck-fd3": {
-   "n": 7,
+   "n": 8,
    "ply": 4,
    "coup": "Bd3",
    "rep": "ck"
   },
   "ck-gambit-f3": {
-   "n": 2,
+   "n": 3,
    "ply": 6,
    "coup": "f3",
    "rep": "ck"
   },
   "ck-fc4": {
-   "n": 2,
+   "n": 3,
    "ply": 2,
    "coup": "Bc4",
    "rep": "ck"
   },
   "ck-avance-fe3": {
-   "n": 2,
+   "n": 3,
    "ply": 6,
    "coup": "Be3",
    "rep": "ck"
   },
   "ck-avance-c5": {
-   "n": 64,
+   "n": 69,
    "ply": 5,
    "coup": "c5",
    "rep": "ck"
   },
   "ck-panov-cc6": {
-   "n": 15,
+   "n": 10,
    "ply": 9,
    "coup": "Nc6",
    "rep": "ck"
   },
+  "ck-classique-cc5": {
+   "n": 5,
+   "ply": 8,
+   "coup": "Nc5",
+   "rep": "ck"
+  },
   "ck-deux-cavaliers-cf6": {
-   "n": 21,
+   "n": 37,
    "ply": 5,
    "coup": "dxe4",
    "rep": "ck"
   },
   "ck-cd2": {
-   "n": 42,
+   "n": 38,
    "ply": 4,
    "coup": "Nd2",
    "rep": "ck"
   },
-  "ck-cg5-ce6": {
+  "ck-gambit-fc4": {
    "n": 2,
-   "ply": 8,
-   "coup": "Ng5",
+   "ply": 6,
+   "coup": "Bc4",
    "rep": "ck"
   },
-  "ck-df3": {
-   "n": 1,
+  "e5-italienne": {
+   "n": 208,
+   "ply": 5,
+   "coup": "Bc5",
+   "rep": "e5-noirs"
+  },
+  "e5-deux-cavaliers": {
+   "n": 199,
+   "ply": 5,
+   "coup": "Nf6",
+   "rep": "e5-noirs"
+  },
+  "e5-berlin": {
+   "n": 173,
+   "ply": 5,
+   "coup": "Nf6",
+   "rep": "e5-noirs"
+  },
+  "e5-espagnole-fermee": {
+   "n": 393,
+   "ply": 5,
+   "coup": "a6",
+   "rep": "e5-noirs"
+  },
+  "e5-ecossaise": {
+   "n": 108,
+   "ply": 4,
+   "coup": "d4",
+   "rep": "e5-noirs"
+  },
+  "e5-viennoise": {
+   "n": 79,
    "ply": 2,
-   "coup": "Qf3",
-   "rep": "ck"
+   "coup": "Nc3",
+   "rep": "e5-noirs"
+  },
+  "e5-gambit-roi": {
+   "n": 45,
+   "ply": 2,
+   "coup": "f4",
+   "rep": "e5-noirs"
+  },
+  "e5-dh5": {
+   "n": 3,
+   "ply": 2,
+   "coup": "Qh5",
+   "rep": "e5-noirs"
+  },
+  "sic-taimanov": {
+   "n": 5,
+   "ply": 10,
+   "coup": "Be2",
+   "rep": "sicilienne"
+  },
+  "sic-taimanov-anglaise": {
+   "n": 29,
+   "ply": 10,
+   "coup": "Be3",
+   "rep": "sicilienne"
+  },
+  "sic-taimanov-cb5": {
+   "n": 6,
+   "ply": 8,
+   "coup": "Nb5",
+   "rep": "sicilienne"
+  },
+  "sic-alapin": {
+   "n": 136,
+   "ply": 2,
+   "coup": "c3",
+   "rep": "sicilienne"
+  },
+  "sic-morra": {
+   "n": 65,
+   "ply": 2,
+   "coup": "d4",
+   "rep": "sicilienne"
+  },
+  "sic-grand-prix": {
+   "n": 196,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "sicilienne"
+  },
+  "sic-wing": {
+   "n": 5,
+   "ply": 2,
+   "coup": "b4",
+   "rep": "sicilienne"
+  },
+  "sic-est-indienne": {
+   "n": 24,
+   "ply": 4,
+   "coup": "d3",
+   "rep": "sicilienne"
+  },
+  "sic-bowdler": {
+   "n": 9,
+   "ply": 2,
+   "coup": "Bc4",
+   "rep": "sicilienne"
+  },
+  "fr-avance": {
+   "n": 122,
+   "ply": 4,
+   "coup": "e5",
+   "rep": "francaise"
+  },
+  "fr-echange": {
+   "n": 110,
+   "ply": 4,
+   "coup": "exd5",
+   "rep": "francaise"
+  },
+  "fr-tarrasch": {
+   "n": 84,
+   "ply": 4,
+   "coup": "Nd2",
+   "rep": "francaise"
+  },
+  "fr-steinitz": {
+   "n": 75,
+   "ply": 6,
+   "coup": "e5",
+   "rep": "francaise"
+  },
+  "fr-fg5": {
+   "n": 41,
+   "ply": 6,
+   "coup": "Bg5",
+   "rep": "francaise"
+  },
+  "fr-fd3": {
+   "n": 11,
+   "ply": 4,
+   "coup": "Bd3",
+   "rep": "francaise"
+  },
+  "fr-est-indienne": {
+   "n": 25,
+   "ply": 2,
+   "coup": "d3",
+   "rep": "francaise"
+  },
+  "fr-dame-e2": {
+   "n": 23,
+   "ply": 2,
+   "coup": "Qe2",
+   "rep": "francaise"
+  },
+  "scan-da5": {
+   "n": 59,
+   "ply": 6,
+   "coup": "d4",
+   "rep": "scandinave"
+  },
+  "scan-da5-fc4": {
+   "n": 12,
+   "ply": 6,
+   "coup": "Bc4",
+   "rep": "scandinave"
+  },
+  "scan-dd6": {
+   "n": 12,
+   "ply": 5,
+   "coup": "Qd6",
+   "rep": "scandinave"
+  },
+  "scan-cf3": {
+   "n": 10,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "scandinave"
+  },
+  "scan-cf6": {
+   "n": 8,
+   "ply": 4,
+   "coup": "d4",
+   "rep": "scandinave"
+  },
+  "scan-cf6-c4": {
+   "n": 2,
+   "ply": 4,
+   "coup": "c4",
+   "rep": "scandinave"
+  },
+  "scan-e5": {
+   "n": 3,
+   "ply": 2,
+   "coup": "e5",
+   "rep": "scandinave"
+  },
+  "scan-cc3": {
+   "n": 13,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "scandinave"
+  },
+  "pirc-classique": {
+   "n": 23,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "pirc"
+  },
+  "pirc-autrichienne": {
+   "n": 8,
+   "ply": 6,
+   "coup": "f4",
+   "rep": "pirc"
+  },
+  "pirc-150": {
+   "n": 10,
+   "ply": 6,
+   "coup": "Be3",
+   "rep": "pirc"
+  },
+  "pirc-byrne": {
+   "n": 6,
+   "ply": 6,
+   "coup": "Bg5",
+   "rep": "pirc"
+  },
+  "pirc-fc4": {
+   "n": 1,
+   "ply": 6,
+   "coup": "Bc4",
+   "rep": "pirc"
+  },
+  "pirc-cd2": {
+   "n": 1,
+   "ply": 4,
+   "coup": "Nd2",
+   "rep": "pirc"
+  },
+  "ale-moderne": {
+   "n": 6,
+   "ply": 7,
+   "coup": "Bg4",
+   "rep": "alekhine"
+  },
+  "ale-larsen": {
+   "n": 14,
+   "ply": 7,
+   "coup": "dxe5",
+   "rep": "alekhine"
+  },
+  "ale-alburt": {
+   "n": 6,
+   "ply": 7,
+   "coup": "g6",
+   "rep": "alekhine"
+  },
+  "ale-echange": {
+   "n": 8,
+   "ply": 8,
+   "coup": "exd6",
+   "rep": "alekhine"
+  },
+  "ale-4pions": {
+   "n": 19,
+   "ply": 8,
+   "coup": "f4",
+   "rep": "alekhine"
+  },
+  "ale-cc3": {
+   "n": 4,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "alekhine"
+  },
+  "ale-fc4": {
+   "n": 1,
+   "ply": 4,
+   "coup": "Bc4",
+   "rep": "alekhine"
+  },
+  "ale-2cc3": {
+   "n": 25,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "alekhine"
+  },
+  "phi-exd4": {
+   "n": 23,
+   "ply": 5,
+   "coup": "exd4",
+   "rep": "philidor"
+  },
+  "phi-fc4": {
+   "n": 8,
+   "ply": 4,
+   "coup": "Bc4",
+   "rep": "philidor"
+  },
+  "phi-cc3": {
+   "n": 7,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "philidor"
+  },
+  "naj-anglaise": {
+   "n": 72,
+   "ply": 10,
+   "coup": "Be3",
+   "rep": "najdorf"
+  },
+  "naj-fg5": {
+   "n": 86,
+   "ply": 10,
+   "coup": "Bg5",
+   "rep": "najdorf"
+  },
+  "naj-fe2": {
+   "n": 55,
+   "ply": 10,
+   "coup": "Be2",
+   "rep": "najdorf"
+  },
+  "naj-sozin": {
+   "n": 24,
+   "ply": 10,
+   "coup": "Bc4",
+   "rep": "najdorf"
+  },
+  "naj-h3": {
+   "n": 34,
+   "ply": 10,
+   "coup": "h3",
+   "rep": "najdorf"
+  },
+  "naj-f4": {
+   "n": 12,
+   "ply": 10,
+   "coup": "f4",
+   "rep": "najdorf"
+  },
+  "naj-moscou": {
+   "n": 145,
+   "ply": 4,
+   "coup": "Bb5+",
+   "rep": "najdorf"
+  },
+  "dragon-yougoslave": {
+   "n": 1,
+   "ply": 16,
+   "coup": "Bc4",
+   "rep": "dragon"
+  },
+  "dragon-9ooo": {
+   "n": 30,
+   "ply": 16,
+   "coup": "O-O-O",
+   "rep": "dragon"
+  },
+  "dragon-9g4": {
+   "n": 5,
+   "ply": 16,
+   "coup": "g4",
+   "rep": "dragon"
+  },
+  "dragon-classique": {
+   "n": 3,
+   "ply": 10,
+   "coup": "Be2",
+   "rep": "dragon"
+  },
+  "dragon-fc4": {
+   "n": 5,
+   "ply": 10,
+   "coup": "Bc4",
+   "rep": "dragon"
+  },
+  "dragon-g3": {
+   "n": 3,
+   "ply": 10,
+   "coup": "g3",
+   "rep": "dragon"
+  },
+  "kid-classique": {
+   "n": 17,
+   "ply": 14,
+   "coup": "d5",
+   "rep": "indienne-roi"
+  },
+  "kid-echange": {
+   "n": 5,
+   "ply": 12,
+   "coup": "dxe5",
+   "rep": "indienne-roi"
+  },
+  "kid-samisch": {
+   "n": 12,
+   "ply": 8,
+   "coup": "f3",
+   "rep": "indienne-roi"
+  },
+  "kid-quatre-pions": {
+   "n": 8,
+   "ply": 8,
+   "coup": "f4",
+   "rep": "indienne-roi"
+  },
+  "kid-averbakh": {
+   "n": 64,
+   "ply": 8,
+   "coup": "Be2",
+   "rep": "indienne-roi"
+  },
+  "kid-fianchetto": {
+   "n": 38,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "indienne-roi"
+  },
+  "kid-cxe4": {
+   "n": 157,
+   "ply": 7,
+   "coup": "d6",
+   "rep": "indienne-roi"
   },
   "gdrn-orthodoxe": {
-   "n": 11,
+   "n": 14,
    "ply": 11,
    "coup": "h6",
    "rep": "gdr-noirs"
   },
-  "gdrn-cambridge": {
-   "n": 2,
-   "ply": 8,
-   "coup": "e3",
-   "rep": "gdr-noirs"
-  },
-  "gdrn-elephant": {
-   "n": 2,
-   "ply": 8,
-   "coup": "cxd5",
-   "rep": "gdr-noirs"
-  },
   "gdrn-echange": {
-   "n": 180,
+   "n": 222,
    "ply": 6,
    "coup": "cxd5",
    "rep": "gdr-noirs"
   },
   "gdrn-dc2-c5": {
-   "n": 6,
+   "n": 4,
    "ply": 11,
    "coup": "Nbd7",
    "rep": "gdr-noirs"
   },
   "gdrn-slave": {
-   "n": 114,
+   "n": 149,
    "ply": 4,
    "coup": "Nf3",
    "rep": "gdr-noirs"
   },
   "gdrn-slave-echange": {
-   "n": 26,
+   "n": 28,
    "ply": 4,
    "coup": "cxd5",
    "rep": "gdr-noirs"
+  },
+  "gdrn-londres": {
+   "n": 92,
+   "ply": 2,
+   "coup": "Bf4",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-colle": {
+   "n": 334,
+   "ply": 2,
+   "coup": "Nf3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-bdg": {
+   "n": 10,
+   "ply": 2,
+   "coup": "e4",
+   "rep": "gdr-noirs"
+  },
+  "cl-classique": {
+   "n": 12,
+   "ply": 5,
+   "coup": "e6",
+   "rep": "contre-londres"
+  },
+  "cl-ff5": {
+   "n": 7,
+   "ply": 3,
+   "coup": "Bf5",
+   "rep": "contre-londres"
+  },
+  "cl-dxc5": {
+   "n": 1,
+   "ply": 4,
+   "coup": "dxc5",
+   "rep": "contre-londres"
+  },
+  "cl-cd2": {
+   "n": 36,
+   "ply": 5,
+   "coup": "c5",
+   "rep": "contre-londres"
+  },
+  "grun-echange": {
+   "n": 20,
+   "ply": 12,
+   "coup": "Nf3",
+   "rep": "grunfeld"
+  },
+  "grun-echange-fc4": {
+   "n": 13,
+   "ply": 12,
+   "coup": "Bc4",
+   "rep": "grunfeld"
+  },
+  "grun-russe": {
+   "n": 21,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "grunfeld"
+  },
+  "grun-ff4": {
+   "n": 2,
+   "ply": 6,
+   "coup": "Bf4",
+   "rep": "grunfeld"
+  },
+  "grun-fg5": {
+   "n": 8,
+   "ply": 6,
+   "coup": "Bg5",
+   "rep": "grunfeld"
+  },
+  "grun-f3": {
+   "n": 13,
+   "ply": 4,
+   "coup": "f3",
+   "rep": "grunfeld"
+  },
+  "grun-g3": {
+   "n": 21,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "grunfeld"
+  },
+  "ben-moderne": {
+   "n": 3,
+   "ply": 12,
+   "coup": "Nf3",
+   "rep": "benoni"
+  },
+  "ben-fianchetto": {
+   "n": 9,
+   "ply": 10,
+   "coup": "Nf3",
+   "rep": "benoni"
+  },
+  "ben-taimanov": {
+   "n": 7,
+   "ply": 12,
+   "coup": "f4",
+   "rep": "benoni"
+  },
+  "ben-cf3": {
+   "n": 5,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "benoni"
+  },
+  "benko-accepte": {
+   "n": 9,
+   "ply": 8,
+   "coup": "bxa6",
+   "rep": "benoni"
+  },
+  "benko-refuse": {
+   "n": 11,
+   "ply": 8,
+   "coup": "e3",
+   "rep": "benoni"
+  },
+  "bogo-de7": {
+   "n": 32,
+   "ply": 7,
+   "coup": "Qe7",
+   "rep": "bogo"
+  },
+  "bogo-fxd2": {
+   "n": 6,
+   "ply": 7,
+   "coup": "Bxd2+",
+   "rep": "bogo"
+  },
+  "bogo-a5": {
+   "n": 13,
+   "ply": 7,
+   "coup": "a5",
+   "rep": "bogo"
+  },
+  "bogo-cbd2": {
+   "n": 40,
+   "ply": 6,
+   "coup": "Nbd2",
+   "rep": "bogo"
+  },
+  "bogo-fe7": {
+   "n": 8,
+   "ply": 7,
+   "coup": "Be7",
+   "rep": "bogo"
+  },
+  "hol-leningrad": {
+   "n": 7,
+   "ply": 2,
+   "coup": "g3",
+   "rep": "hollandaise"
+  },
+  "hol-stonewall": {
+   "n": 19,
+   "ply": 2,
+   "coup": "c4",
+   "rep": "hollandaise"
+  },
+  "hol-staunton": {
+   "n": 4,
+   "ply": 2,
+   "coup": "e4",
+   "rep": "hollandaise"
+  },
+  "hol-fg5": {
+   "n": 4,
+   "ply": 2,
+   "coup": "Bg5",
+   "rep": "hollandaise"
+  },
+  "hol-cc3": {
+   "n": 9,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "hollandaise"
+  },
+  "nimzo-rubinstein": {
+   "n": 153,
+   "ply": 6,
+   "coup": "e3",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-classique": {
+   "n": 79,
+   "ply": 6,
+   "coup": "Qc2",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-samisch": {
+   "n": 31,
+   "ply": 6,
+   "coup": "a3",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-leningrad": {
+   "n": 6,
+   "ply": 6,
+   "coup": "Bg5",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-cf3": {
+   "n": 40,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "nimzo-qid"
+  },
+  "qid-principale": {
+   "n": 79,
+   "ply": 6,
+   "coup": "g3",
+   "rep": "nimzo-qid"
+  },
+  "qid-petrossian": {
+   "n": 42,
+   "ply": 6,
+   "coup": "a3",
+   "rep": "nimzo-qid"
+  },
+  "cat-ouverte": {
+   "n": 95,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "nimzo-qid"
+  },
+  "ca-dragon-inverse": {
+   "n": 17,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "contre-anglaise"
+  },
+  "ca-fermee": {
+   "n": 7,
+   "ply": 3,
+   "coup": "Nc6",
+   "rep": "contre-anglaise"
+  },
+  "ca-4cav": {
+   "n": 67,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "contre-anglaise"
+  },
+  "ca-g3": {
+   "n": 53,
+   "ply": 2,
+   "coup": "g3",
+   "rep": "contre-anglaise"
+  },
+  "ca-cf3": {
+   "n": 9,
+   "ply": 2,
+   "coup": "Nf3",
+   "rep": "contre-anglaise"
+  },
+  "cr-kia": {
+   "n": 250,
+   "ply": 2,
+   "coup": "g3",
+   "rep": "contre-reti"
+  },
+  "cr-reti-b3": {
+   "n": 2,
+   "ply": 4,
+   "coup": "b3",
+   "rep": "contre-reti"
+  },
+  "cr-echange": {
+   "n": 1,
+   "ply": 4,
+   "coup": "cxd5",
+   "rep": "contre-reti"
+  },
+  "cr-e3": {
+   "n": 17,
+   "ply": 4,
+   "coup": "e3",
+   "rep": "contre-reti"
+  },
+  "cr-d4": {
+   "n": 73,
+   "ply": 2,
+   "coup": "d4",
+   "rep": "contre-reti"
+  },
+  "cr-b3": {
+   "n": 66,
+   "ply": 2,
+   "coup": "b3",
+   "rep": "contre-reti"
   }
  }
 }

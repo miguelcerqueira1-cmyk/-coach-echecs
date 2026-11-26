@@ -185,8 +185,9 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
   ou modification de fiches.
 - **Cours « les plus jouées d'abord »** : `scripts/frequences.mjs` → `data/frequences.json` (nombre
   de parties Élite où le coup qui définit la fiche a été joué) → `entry.freq` ; ordre par défaut
-  quand le répertoire a des données (gd, ck, gdr-noirs), bascule « Ordre conseillé ». Données
-  figées : relancer `node scripts/frequences.mjs` pour les rafraîchir.
+  quand le répertoire a des données, bascule « Ordre conseillé ». **Toutes les ouvertures depuis le
+  2026-11-26** (228 fiches / 269 ont une fréquence ; données Élite du 26/11, 13 091 parties).
+  Données figées : relancer `node scripts/frequences.mjs` pour les rafraîchir.
 - **Ma routine du jour** (`routine-core.js`, carte en haut de l'Entraînement) : 6 blocs lun–sam
   (tactique anti-tunnel sur thèmes Lichess « Pièce en prise » / « Coup défensif » en alternance,
   Puzzle Rush, théorie lancée en ligne complète 5 s/coup, 1 partie rapide 10 min, analyse moteur
@@ -515,16 +516,15 @@ du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication
   en ligne sans ACCESS_CODE/ANTHROPIC_API_KEY (503 ou `claudeConfigured: false`) → `coach.serverOff`,
   badge masqué, explication gratuite (pas une panne).
 - Réponse de Lichess à l'e-mail de l'utilisateur sur l'usage commercial (à intégrer quand reçue).
+- « Les plus jouées d'abord » : publié pour toutes les ouvertures (2026-11-26).
 - Bilan de la routine d'échecs de l'utilisateur vers le **2026-12-14** (4 semaines).
 
 **Prochaines étapes proposées (ordre conseillé) :**
-1. « Les plus jouées d'abord » dans les cours pour toutes les ouvertures : relancer
-   `node scripts/frequences.mjs` sur les nouvelles données Élite (aujourd'hui gd, ck, gdr-noirs).
-2. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
-3. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).
-4. Plus de fiches pour les petits répertoires (Hollandaise, Bogo, Philidor, Contre l'Anglaise : 5) et
+1. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
+2. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).
+3. Plus de fiches pour les petits répertoires (Hollandaise, Bogo, Philidor, Contre l'Anglaise : 5) et
    commentaires coup par coup dans les leçons.
-5. Vente : déménagement sur Cloudflare Pages + dépôt privé, vrai verrou Pro (licences Lemon Squeezy
+4. Vente : déménagement sur Cloudflare Pages + dépôt privé, vrai verrou Pro (licences Lemon Squeezy
    via le Worker ; branche `licences-pro` écrite avant le grand public, à adapter aux 29 répertoires),
    achat test. Idées plus tard : statistiques par fiche, Android (TWA) si les ventes suivent.
 
