@@ -33,6 +33,7 @@ import { YouTubeClient } from './youtube.js';
 import { THEMES, BOARDS, applyAppearance } from './theme.js';
 import { importData, describe } from './transfer.js';
 import { TrainingPage } from './training.js';
+import { LegalPage } from './legal.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
 
@@ -84,6 +85,7 @@ const optimal = new OptimalPanel({
   },
 });
 let repertoirePage = null;
+let legalPage = null;
 let trainingPage = null;
 let accueilPage = null;
 let progressionPage = null;
@@ -166,6 +168,7 @@ async function init() {
       }
       if (page === 'parties') ensureGamesPage().show();
       if (page === 'accueil') { accueilPage ??= new AccueilPage({ el: $('page-accueil') }); accueilPage.show(); }
+      if (page === 'legal') { legalPage ??= new LegalPage({ el: $('page-legal') }); legalPage.show(); }
       if (page === 'progression') { progressionPage ??= new ProgressionPage({ el: $('page-progression'), client: lichess }); progressionPage.show(); }
       if (page === 'ouvertures') {
         // Choix enregistré : rechargement, pour que toutes les pages suivent les nouvelles ouvertures.

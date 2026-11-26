@@ -891,3 +891,9 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .continuer p { margin: 0; }
 .rush-head { display: flex; flex-wrap: wrap; gap: .3rem .6rem; align-items: center; margin: 0 0 .3rem; font-size: 1rem; }
 .rush-vies { letter-spacing: .1em; }
+.legal { max-width: 760px; margin: 0 auto; }
+.legal-texte h2 { margin-top: 0; }
+.legal-texte h3 { margin: 1.1rem 0 .3rem; font-size: 1rem; }
+.legal-texte p { line-height: 1.55; }
+.legal-brouillon { padding: .5rem .7rem; border-radius: 10px; background: var(--surface-2); }
+a.chip { display: inline-flex; align-items: center; text-decoration: none; color: inherit; }

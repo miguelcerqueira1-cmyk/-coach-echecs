@@ -79,3 +79,16 @@ test('accueil : comparatif Gratuit / Pro', async ({ page }) => {
   await expect(page.locator('.acc-pricing .pro-compare')).toContainText('Partie contre Stockfish');
   await expect(page.locator('.acc-pricing')).toContainText('accès à vie');
 });
+
+test('pages légales : mentions, conditions de vente, confidentialité (brouillon tant que pas de SIRET)', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/moteur');
+  await page.locator('footer a[href="#/legal/cgv"]').click();
+  await expect(page.locator('#page-legal')).toContainText('Conditions générales de vente');
+  await expect(page.locator('#page-legal')).toContainText('Lemon Squeezy');
+  await expect(page.locator('#page-legal')).toContainText('Version provisoire');
+  await page.locator('#page-legal a[href="#/legal/confidentialite"]').click();
+  await expect(page.locator('#page-legal')).toContainText('Politique de confidentialité');
+  await page.locator('#page-legal a[href="#/legal/mentions"]').click();
+  await expect(page.locator('#page-legal')).toContainText('Hébergement');
+});

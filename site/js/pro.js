@@ -114,6 +114,7 @@ export function bindPaywall() {
   if (!dlg || dlg.dataset.bound) return;
   dlg.dataset.bound = '1';
   dlg.querySelector('[data-pro-close]').addEventListener('click', () => dlg.close());
+  dlg.querySelectorAll('[data-pro-cgv]').forEach((a) => a.addEventListener('click', () => dlg.close()));
   dlg.querySelector('[data-pro-form]').addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const msg = dlg.querySelector('[data-pro-msg]');

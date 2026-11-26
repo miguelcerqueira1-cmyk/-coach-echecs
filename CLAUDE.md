@@ -531,7 +531,12 @@ erreur » (Pro) ; Entraînement : carte « ▶ Continuer » en tête, `prochaine
 parties → positions dues → prochaine leçon → variantes faibles → Pro) ; 4. « Rush réfutations » ✅ (`rush-core.js` : record `coach-echecs:rush-v1`,
 chrono 20 s − 1 s par réussite, 8 s min ; DrillRunner `rush` (kind trash) : 3 vies, positions mélangées
 sans fin, réussite → suivante, erreur → punition montrée ; carte « ⚡ Rush » de l'Entraînement ; gratuit
-sur les punitions des fiches gratuites, Pro sur toutes ; ligne dans le comparatif) ; 5. brouillons pages légales + FAQ acheteur. B (avec entreprise) : 6. Cloudflare Pages +
+sur les punitions des fiches gratuites, Pro sur toutes ; ligne dans le comparatif) ; 5. pages légales + FAQ acheteur ✅ (page `#/legal/{mentions|cgv|confidentialite}`,
+`legal.js` ; infos éditeur dans `site/data/legal.js` : editeur, siret, adresse, mediateur VIDES → bandeau
+« Version provisoire » tant que pas de SIRET ; rembourse14j: true = garantie 14 jours, à confirmer par
+l'utilisateur ; liens en pied de page et fenêtre Pro ; FAQ 13 questions dont abonnement, remboursement,
+changement de téléphone, paiement sécurisé). À FAIRE RELIRE avant la vente. Après création de l'entreprise :
+remplir data/legal.js, choisir un médiateur de la consommation. B (avec entreprise) : 6. Cloudflare Pages +
 domaine + dépôt privé + licences ; 7. Lemon Squeezy + clé de licence + verrou serveur (mode test) ;
 8. achat test, lancement. C (après) : choix du niveau au 1er lancement, contenus, Claude bonus Pro à quota,
 langues. Écartés d'un commun accord : refonte i18n (tant que 2 langues), packs, contenu grand débutant

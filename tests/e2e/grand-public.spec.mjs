@@ -148,7 +148,7 @@ test('Aide : questions fréquentes, signaler un problème (message préparé, di
   await page.click('#set-aide-btn');
   const dlg = page.locator('#dlg-aide');
   await expect(dlg).toBeVisible();
-  await expect(dlg.locator('.faq')).toHaveCount(9);
+  await expect(dlg.locator('.faq')).toHaveCount(13);
   await expect(dlg).toContainText('application indépendante');
   await dlg.locator('.faq summary', { hasText: 'installer' }).click();
   await expect(dlg).toContainText('Sur l’écran d’accueil');
