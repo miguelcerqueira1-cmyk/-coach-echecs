@@ -445,7 +445,7 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
-`youtube-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `problemes-v1`, `stockfish-v1`, `langue`, `sync-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`, `sync-cle`.
+`youtube-v1`, `rush-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `problemes-v1`, `stockfish-v1`, `langue`, `sync-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`, `sync-cle`.
 
 ## 7. Commandes
 
@@ -528,8 +528,10 @@ visible ✅ (`demande-entrainement.js` : demande {fiche|reelle|continuer} dépos
 TrainingPage.show / `executerDemande` ; `etatFiche` de progress.js → badge Nouvelle / En cours / ✅ Maîtrisée /
 ⚠ À revoir + « 📖 Apprendre » / « 🎯 S'entraîner » sur chaque fiche ; Mes parties « 🎯 Travailler mon
 erreur » (Pro) ; Entraînement : carte « ▶ Continuer » en tête, `prochaineAction` = positions de mes
-parties → positions dues → prochaine leçon → variantes faibles → Pro) ; 4. mode « Rush réfutations » (pièges/loufoques du répertoire, 3 vies,
-chrono, record) ; 5. brouillons pages légales + FAQ acheteur. B (avec entreprise) : 6. Cloudflare Pages +
+parties → positions dues → prochaine leçon → variantes faibles → Pro) ; 4. « Rush réfutations » ✅ (`rush-core.js` : record `coach-echecs:rush-v1`,
+chrono 20 s − 1 s par réussite, 8 s min ; DrillRunner `rush` (kind trash) : 3 vies, positions mélangées
+sans fin, réussite → suivante, erreur → punition montrée ; carte « ⚡ Rush » de l'Entraînement ; gratuit
+sur les punitions des fiches gratuites, Pro sur toutes ; ligne dans le comparatif) ; 5. brouillons pages légales + FAQ acheteur. B (avec entreprise) : 6. Cloudflare Pages +
 domaine + dépôt privé + licences ; 7. Lemon Squeezy + clé de licence + verrou serveur (mode test) ;
 8. achat test, lancement. C (après) : choix du niveau au 1er lancement, contenus, Claude bonus Pro à quota,
 langues. Écartés d'un commun accord : refonte i18n (tant que 2 langues), packs, contenu grand débutant

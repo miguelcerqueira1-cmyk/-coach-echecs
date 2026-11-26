@@ -17,6 +17,7 @@ import { lineSteps, trashDrill, seuilAutreCoup, raisonErreur, nextStreak, bilanT
 import { lineText } from './games-core.js';
 import { recordLine, recordDrill, saveProgress } from './progress.js';
 import { langue } from './i18n.js';
+import { VIES, tempsRush, melanger, charger as chargerRush } from './rush-core.js';
 
 // Phrases en français ou en anglais selon la langue de l'interface.
 const L = (fr, en) => (langue() === 'en' ? en : fr);
@@ -31,7 +32,10 @@ export class DrillRunner {
   // complet : lignes prolongées par la suite Stockfish ; tempsCoup : secondes par coup (0 = libre,
   // « rythme Blitz » : trop lent = position ratée) ; repeter : refaire une ligne jusqu'à N fois
   // d'affilée sans faute.
-  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone, complet = false, tempsCoup = 0, repeter = 1, apercu = false }) {
+  constructor({ el, data, kind, ids, tree, progress, gradePos, timeLimit = 10, guided = false, engine = null, positions = [], onValidated = null, onDone, complet = false, tempsCoup = 0, repeter = 1, apercu = false, rush = false }) {
+    // rush : Rush réfutations (punitions enchaînées sans fin, 3 vies, chrono qui raccourcit).
+    this.rush = rush && kind === 'trash' ? { vies: VIES, score: 0 } : null;
+    this.rushBest = this.rush ? chargerRush().best : 0;
     this.complet = complet;
     this.apercu = apercu; // relire la ligne (coups animés) avant de la jouer
     this.apercuVu = new Set();
@@ -55,6 +59,7 @@ export class DrillRunner {
     this.items = kind === 'trash'
       ? this.entries.map((e) => ({ e, d: trashDrill(e, this.colorOf(e)) })).filter((x) => x.d)
       : this.entries.map((e) => ({ e }));
+    if (this.rush) this.items = melanger(this.items);
     this.idx = -1;
     this.results = [];
     this.missed = []; // positions ratées (révision ciblée en fin de séance)
@@ -70,9 +75,10 @@ export class DrillRunner {
   colorOf(e) { return this.data.repertoires[e.rep].couleur; }
 
   layout() {
-    const title = { trash: L('⏱ Drill anti-trash', '⏱ Anti-trash drill'), reelles: L('🎯 Positions de mes parties', '🎯 Positions from my games') }[this.kind] || (this.guided ? L('📖 À vous : pratique guidée', '📖 Your turn: guided practice') : L('📚 Lignes du répertoire', '📚 Repertoire lines'));
+    const title = this.rush ? L('⚡ Rush réfutations', '⚡ Refutation rush') : { trash: L('⏱ Drill anti-trash', '⏱ Anti-trash drill'), reelles: L('🎯 Positions de mes parties', '🎯 Positions from my games') }[this.kind] || (this.guided ? L('📖 À vous : pratique guidée', '📖 Your turn: guided practice') : L('📚 Lignes du répertoire', '📚 Repertoire lines'));
     this.el.innerHTML = `<div class="train-layout drill" data-drill="${this.kind}">
       <section>
+        ${this.rush ? '<div data-rush-top></div>' : ''}
         <div class="train-status" data-status></div>
         <p class="drill-streak"><span class="streak" data-streak hidden></span></p>
         ${this.kind === 'trash' || this.tempsCoup ? '<div class="drill-timer" data-timer><span></span></div>' : ''}
@@ -139,12 +145,32 @@ export class DrillRunner {
     this.feedback('');
     this.board.hideBubble();
     this.idx++;
+    if (this.rush && this.idx >= this.items.length) { this.items = melanger(this.items, this.items.at(-1)); this.idx = 0; }
     if (this.idx >= this.items.length) { this.finish(); return; }
     const it = this.items[this.idx];
     this.cur = { ...it, color: this.colorOf(it.e), errors: 0, i: 0 };
     this.board.setOrientation(this.cur.color);
+    if (this.rush) {
+      this.timeLimit = tempsRush(this.rush.score);
+      this.majRush(it.e);
+      this.startTrash();
+      return;
+    }
     this.$('[data-head]').innerHTML = `<p><strong>${this.idx + 1} / ${this.items.length}</strong> ${L(`— fiche « ${esc(it.e.nom)} »`, `— line “${esc(it.e.nom)}”`)} <span class="badge eco">${esc(it.e.eco)}</span></p>`;
     if (this.kind === 'trash') this.startTrash(); else this.startLine();
+  }
+
+  // Vies et score : au-dessus de l'échiquier (visible sur téléphone) ; nom de la fiche dans le panneau.
+  majRush(e) {
+    this.$('[data-rush-top]').innerHTML = this.rushHead(null);
+    this.$('[data-head]').innerHTML = `<p class="small muted">${esc(e.nom)} <span class="badge eco">${esc(e.eco)}</span></p>`;
+  }
+
+  rushHead(e) {
+    const r = this.rush;
+    const coeurs = '❤️'.repeat(r.vies) + '🤍'.repeat(Math.max(0, VIES - r.vies));
+    return `<p class="rush-head"><span class="rush-vies" aria-label="${L(`${r.vies} vie(s)`, `${r.vies} life/lives`)}">${coeurs}</span> <strong>${L(`Score : ${r.score}`, `Score: ${r.score}`)}</strong> <span class="muted">· ${L(`Record : ${this.rushBest}`, `Best: ${this.rushBest}`)} · ${this.timeLimit} s</span></p>
+      ${e ? `<p class="small muted">${esc(e.nom)} <span class="badge eco">${esc(e.eco)}</span></p>` : ''}`;
   }
 
   // ---------- Module Lignes ----------
@@ -634,6 +660,7 @@ export class DrillRunner {
       else this.noteMissed({ kind: 'trash', e: c.e, color: c.color });
     }
     if (!ok) this.bumpStreak(false);
+    if (this.rush) { this.endRush(c, ok, why); return; }
     const fenAt = (() => { const x = new Chess(); for (const u of c.d.setup) x.move(toObj(u)); x.move(toObj(c.d.bad.uci)); return x.fen(); })();
     const seq = lineText(fenAt, c.steps.map((s) => s.san));
     const best = this.progress.drills[c.e.id]?.best;
@@ -659,11 +686,35 @@ export class DrillRunner {
     });
   }
 
+  // Rush : réussite → +1 et position suivante aussitôt ; erreur → une vie de moins et la punition
+  // montrée (on apprend), puis on continue ; plus de vie → fin de partie.
+  endRush(c, ok, why) {
+    const r = this.rush;
+    if (ok) r.score++; else r.vies--;
+    this.majRush(c.e);
+    if (ok) {
+      this.status(L(`✔ +1 — score ${r.score}`, `✔ +1 — score ${r.score}`), 'player');
+      this.draw();
+      this.later(() => this.next(), 700);
+      return;
+    }
+    const fenAt = (() => { const x = new Chess(); for (const u of c.d.setup) x.move(toObj(u)); x.move(toObj(c.d.bad.uci)); return x.fen(); })();
+    const seq = lineText(fenAt, c.steps.map((s) => s.san));
+    const step = c.steps[c.i];
+    this.status(L(`✘ ${esc(why)} — ${r.vies} vie(s)`, `✘ ${esc(why)} — ${r.vies} life/lives left`), 'opponent');
+    this.draw({ arrows: step ? [{ from: step.uci.slice(0, 2), to: step.uci.slice(2, 4), kind: 'best' }] : [] });
+    const fin = r.vies <= 0;
+    this.feedback(`<div class="drill-fb ko"><p>✘ ${esc(why)}.</p><p><strong>${L('La punition :', 'The punishment:')}</strong> <span class="line">${esc(seq)}</span></p>
+      <div class="actions"><button type="button" class="primary" data-continue>${fin ? L('Voir mon score', 'See my score') : L('Continuer', 'Continue')}</button></div></div>`);
+    this.$('[data-continue]').addEventListener('click', () => (fin ? this.done() : this.next()));
+  }
+
   // ---------- Fin ----------
 
   // Fin de la série d'exercices (ou « Terminer ») : bilan avec révision ciblée s'il y a des erreurs.
   finish() {
     if (!this.alive) return;
+    if (this.rush) { this.done(); return; }
     if (!this.recapDone && !this.reviewing && (this.missed.length || (this.tempsCoup && this.times.length))) { this.showRecap(); return; }
     this.done();
   }
@@ -676,6 +727,6 @@ export class DrillRunner {
     this.stopMoveClock();
     const ok = this.results.filter((r) => r.ok).length;
     const times = this.results.filter((r) => r.ok && r.ms).map((r) => r.ms);
-    this.onDone?.({ kind: this.kind, ok, total: this.results.length, best: times.length ? Math.min(...times) : null });
+    this.onDone?.({ kind: this.kind, ok, total: this.results.length, best: times.length ? Math.min(...times) : null, rush: this.rush ? { score: this.rush.score } : null });
   }
 }

@@ -13,6 +13,7 @@ import { DrillRunner } from './drills.js';
 import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { prendreDemande } from './demande-entrainement.js';
+import { charger as chargerRush, enregistrer as enregistrerRush } from './rush-core.js';
 import { PuzzleRunner } from './puzzles.js';
 import { FinaleRunner, chargerFinales } from './finales.js';
 import FINALES_FR from '../data/finales.js';
@@ -222,6 +223,12 @@ export class TrainingPage {
           <label class="row">${L('Répétitions', 'Repetitions')} ${opt('lRepet', [1, 3], p.lRepet, (v) => (Number(v) > 1 ? L(`Jusqu’à ${v} fois d’affilée sans faute`, `Up to ${v} times in a row without a mistake`) : L('1 fois', 'Once')))}</label>
           </details>
         </section>
+        <section class="card hub-card hub-rush">
+          <h2>${L('⚡ Rush réfutations', '⚡ Refutation rush')}</h2>
+          <p class="small">${L('Les coups douteux de tes ouvertures s’enchaînent : punis-les avant la fin du chrono, qui raccourcit à chaque réussite. 3 vies. Bats ton record !', 'Dubious moves from your openings come one after another: punish them before the clock runs out; it gets shorter with every success. 3 lives. Beat your best!')}</p>
+          <p class="small"><strong>${L(`🏆 Record : ${chargerRush().best}`, `🏆 Best: ${chargerRush().best}`)}</strong> <span class="muted">· ${L(`${this.idsRush().length} réfutation(s) disponibles`, `${this.idsRush().length} refutation(s) available`)}</span></p>
+          <div class="actions"><button type="button" class="primary" data-rush>${L('⚡ Jouer', '⚡ Play')}</button></div>
+        </section>
         <section class="card hub-card">
           <h2>${L('⏱ 3. Réflexes anti-trash', '⏱ 3. Anti-trash reflexes')}${lock}</h2>
           <p class="small">${L(`Un coup douteux de blitz est joué : enchaînez la punition avant la fin du chrono. ${nTrash} exercices.`, `A dubious blitz move is played: find the punishment before the clock runs out. ${nTrash} exercises.`)}</p>
@@ -287,6 +294,7 @@ export class TrainingPage {
       const plan = planTheorie(board, this.progress.cours, { peut: canOpenFiche });
       this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '0', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
+    this.el.querySelector('[data-rush]')?.addEventListener('click', () => this.lancerRush());
     this.el.querySelector('[data-continuer]')?.addEventListener('click', () => this.executerDemande({ type: 'continuer' }));
     this.el.querySelector('[data-start]').addEventListener('click', need(L('Ce mode d’entraînement', 'This training mode'), () => this.start()));
     this.el.querySelectorAll('[data-finale-id]').forEach((b) => b.addEventListener('click', () => {
@@ -440,16 +448,41 @@ export class TrainingPage {
     });
   }
 
+  // ---------- Rush réfutations ----------
+
+  // Positions du Rush : punitions des fiches ouvertes (formule gratuite : variantes gratuites).
+  idsRush() {
+    return this.data.entries.filter((e) => this.actifs().includes(e.rep) && canOpenFiche(e.id) && trashDrill(e, this.data.repertoires[e.rep].couleur)).map((e) => e.id);
+  }
+
+  lancerRush() {
+    const ids = this.idsRush();
+    if (!ids.length) { openPaywall({ reason: L('Le Rush réfutations sur tes ouvertures', 'The refutation rush on your openings') }); return; }
+    this.runDrill('trash', ids, { rush: true });
+    window.scrollTo(0, 0);
+  }
+
+  finRush(score) {
+    const r = enregistrerRush(score);
+    this.renderSetup();
+    const plus = isPro() ? '' : L(' Avec Pro : toutes les réfutations de tes ouvertures dans le Rush.', ' With Pro: every refutation of your openings in the rush.');
+    const msg = r.record
+      ? L(`⚡ Rush : ${score} — nouveau record 🏆 (avant : ${r.avant}).`, `⚡ Rush: ${score} — new personal best 🏆 (before: ${r.avant}).`)
+      : L(`⚡ Rush : ${score} (record : ${r.best}).`, `⚡ Rush: ${score} (best: ${r.best}).`);
+    this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<p class="hub-result">${esc(msg + plus)} <button type="button" class="small-btn" data-rush-encore>${L('Rejouer', 'Play again')}</button></p>`);
+    this.el.querySelector('[data-rush-encore]')?.addEventListener('click', () => this.lancerRush());
+  }
+
   // ---------- Modules Lignes / Anti-trash ----------
 
   // preset : réglages imposés pour cette séance seulement (ex. routine du jour).
-  runDrill(kind, ids, { timeLimit = 10, then = null, guided = false, preset = null } = {}) {
+  runDrill(kind, ids, { timeLimit = 10, then = null, guided = false, preset = null, rush = false } = {}) {
     if (!ids.length) { this.renderSetup(); return; }
     this.s = null;
     const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));
     const p = { ...this.prefs, ...preset };
     this.drill = new DrillRunner({
-      el: this.el, data: this.data, kind, ids, tree, timeLimit, guided, engine: this.engine,
+      el: this.el, data: this.data, kind, ids, tree, timeLimit, guided, engine: this.engine, rush,
       complet: p.complet !== '0',
       tempsCoup: kind === 'lignes' && !guided ? Number(p.lTemps) || 0 : 0,
       repeter: kind === 'lignes' && !guided ? Number(p.lRepet) || 1 : 1,
@@ -461,6 +494,7 @@ export class TrainingPage {
         if (then && r.total) { then(); return; }
         this.lastResult = r;
         this.view = null;
+        if (r.rush) { this.finRush(r.rush.score); return; }
         this.renderSetup();
         const msg = r.kind === 'trash'
           ? L(`Drill terminé : ${r.ok} / ${r.total} punition(s) réussie(s)${r.best ? `, meilleur temps ${(r.best / 1000).toFixed(1).replace('.', ',')} s` : ''}.`, `Drill finished: ${r.ok} / ${r.total} punishment(s) found${r.best ? `, best time ${(r.best / 1000).toFixed(1)} s` : ''}.`)

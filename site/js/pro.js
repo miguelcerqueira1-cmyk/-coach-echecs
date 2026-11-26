@@ -39,6 +39,7 @@ export function comparatif() {
     [L('Leçons pas à pas', 'Step-by-step lessons'), L('1 par ouverture', '1 per opening'), L('Toutes', 'All')],
     [L('S’entraîner (répétition espacée)', 'Practice (spaced repetition)'), '—', '✔'],
     [L('Réflexes anti-trash chronométrés', 'Timed anti-trash reflexes'), '—', '✔'],
+    [L('⚡ Rush réfutations', '⚡ Refutation rush'), L('variantes gratuites', 'free lines'), L('toutes mes ouvertures', 'all my openings')],
     [L('Positions ratées de mes parties', 'Missed positions from my games'), '—', '✔'],
     [L('Problèmes par thème', 'Puzzles by theme'), L('3 thèmes', '3 themes'), L('26 thèmes', '26 themes')],
     [L('Finales essentielles', 'Essential endgames'), '3', '8'],

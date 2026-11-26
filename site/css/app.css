@@ -889,3 +889,5 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .continuer { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
 .continuer .pro-cta { font-size: 1.05rem; padding: .7rem 1.2rem; min-height: 48px; }
 .continuer p { margin: 0; }
+.rush-head { display: flex; flex-wrap: wrap; gap: .3rem .6rem; align-items: center; margin: 0 0 .3rem; font-size: 1rem; }
+.rush-vies { letter-spacing: .1em; }

@@ -542,3 +542,37 @@ test('1 clic : état et « Apprendre » depuis le Répertoire, bouton « Continu
   await suite.locator('[data-continuer]').click();
   await expect(page.locator('[data-panel]')).toContainText('Nom officiel');
 });
+
+test('Rush réfutations : 3 vies, score, fin de partie et record', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  const carte = page.locator('.hub-rush');
+  await expect(carte).toContainText('Record : 0');
+  await carte.locator('[data-rush]').click();
+  await expect(page.locator('#page-entrainement .rush-head')).toContainText('Score : 0');
+  await expect(page.locator('#page-entrainement .rush-vies')).toHaveText('❤️❤️❤️');
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('punissez', { timeout: 10000 });
+  const sq = (s) => page.locator(`#page-entrainement [data-sq="${s}"]`);
+  // Réussite : la punition de la fiche, coup par coup → +1 et position suivante.
+  const jouerPunition = async () => {
+    for (;;) {
+      const st = await page.evaluate(() => { const c = window.__coach.training.drill.cur; return { over: c.over, i: c.i, steps: c.steps }; });
+      if (st.over || st.i >= st.steps.length) return;
+      const step = st.steps[st.i];
+      if (!step.ours) { await page.waitForTimeout(150); continue; }
+      await sq(step.uci.slice(0, 2)).click(); await sq(step.uci.slice(2, 4)).click();
+      await page.waitForTimeout(100);
+    }
+  };
+  await jouerPunition();
+  await expect(page.locator('#page-entrainement .rush-head')).toContainText('Score : 1');
+  // Erreur : temps écoulé simulé → une vie de moins, punition montrée.
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('punissez', { timeout: 10000 });
+  await page.evaluate(() => window.__coach.training.drill.endTrash(false, 'test'));
+  await expect(page.locator('#page-entrainement .rush-vies')).toHaveText('❤️❤️🤍');
+  await expect(page.locator('#page-entrainement [data-feedback]')).toContainText('La punition');
+  await page.click('#page-entrainement [data-quit]');
+  await expect(page.locator('.hub-result')).toContainText('nouveau record');
+  const d = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:rush-v1')));
+  expect(d.parties.length).toBe(1);
+});
