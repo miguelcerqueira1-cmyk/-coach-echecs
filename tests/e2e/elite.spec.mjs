@@ -144,6 +144,7 @@ test('Élite : règle de couleur (⚙) — seulement les parties où le joueur d
   const block = page.locator('#optimal .elite-block');
   await expect(block).toContainText(`${tous.total} parties`);
   await page.click('#btn-settings');
+  await page.locator('#set-avance summary').click();
   await page.check('#set-elite-camp');
   await page.click('#form-settings button[value=ok]');
   await expect(block).toContainText('mon camp seulement');

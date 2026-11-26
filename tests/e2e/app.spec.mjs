@@ -576,3 +576,13 @@ test('serveur en ligne sans Claude activé (503) : pas de badge « erreur », ex
   await expect(page.locator('#coach-pill')).not.toHaveText('Claude : erreur');
   await expect(page.locator('#coach')).toContainText('calculée · gratuite');
 });
+
+test('réglages simplifiés : l’essentiel en haut, le technique replié dans « Avancé »', async ({ page }) => {
+  await setup(page);
+  await page.goto('./');
+  await page.click('#btn-settings');
+  for (const id of ['#set-langue', '#set-ouvertures-btn', '#set-level', '#set-help', '#connect-lichess', '#set-theme', '#data-export']) await expect(page.locator(id)).toBeVisible();
+  for (const id of ['#set-budget', '#set-code', '#set-lichess', '#set-youtube', '#set-auto', '#set-api']) await expect(page.locator(id)).toBeHidden();
+  await page.locator('#set-avance summary').click();
+  for (const id of ['#set-budget', '#set-code', '#set-lichess', '#set-youtube']) await expect(page.locator(id)).toBeVisible();
+});

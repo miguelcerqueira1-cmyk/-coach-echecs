@@ -200,10 +200,10 @@
         <select id="set-langue"><option value="fr">Français</option><option value="en">English</option></select>
       </label>
       <div class="dlg-actions left"><button type="button" id="set-aide-btn">❓ Aide, questions fréquentes et contact</button></div>
-      <label class="row">Budget de calcul
-        <select id="set-budget"></select>
-      </label>
-      <p class="muted small">Le moteur joue toujours à pleine force ; le budget fixe seulement le temps de réflexion. La profondeur atteinte dépend de l’appareil.</p>
+      <h3>Mes ouvertures</h3>
+      <p class="small" id="set-ouvertures"></p>
+      <div class="dlg-actions left"><button type="button" id="set-ouvertures-btn">Modifier mes ouvertures</button> <button type="button" id="set-visite-btn">Revoir la visite guidée</button></div>
+      <h3>Conseils sur l’échiquier</h3>
       <label class="row">Niveau des explications
         <select id="set-level"></select>
       </label>
@@ -213,12 +213,9 @@
           <option value="indice">Indice d’abord (Indice → Explication → Montrer le coup)</option>
         </select>
       </label>
-      <label class="check"><input type="checkbox" id="set-auto"> Explication Claude automatique à mon tour</label>
-      <label class="check"><input type="checkbox" id="set-opp-arrow"> Montrer la meilleure réponse adverse calculée sur l’échiquier</label>
-      <label class="check"><input type="checkbox" id="set-elite-camp"> Élite : seulement les parties où le joueur du top a mon camp (Blancs au Gambit Dame, Noirs en Caro-Kann)</label>
-      <h3>Mes ouvertures</h3>
-      <p class="small" id="set-ouvertures"></p>
-      <div class="dlg-actions left"><button type="button" id="set-ouvertures-btn">Modifier mes ouvertures</button> <button type="button" id="set-visite-btn">Revoir la visite guidée</button></div>
+      <h3>Lichess (mes parties, Opening Explorer)</h3>
+      <div class="dlg-actions left"><button type="button" class="primary" id="connect-lichess">♞ Se connecter avec Lichess</button></div>
+      <p class="muted small">Pour importer tes parties : connexion officielle sur lichess.org, ton mot de passe n’est jamais vu par l’appli.</p>
       <h3>Apparence</h3>
       <label class="row">Thème
         <select id="set-theme"></select>
@@ -232,35 +229,8 @@
         <button type="button" id="reset-accent">Couleur du thème</button>
       </div>
       <p class="muted small">Aperçu immédiat ; « Fermer sans enregistrer » rétablit l’apparence précédente.</p>
-      <h3>Explications Claude</h3>
-      <label>Code d’accès personnel
-        <input id="set-code" type="password" autocomplete="off" placeholder="Saisi une fois, conservé sur cet appareil">
-      </label>
-      <div class="dlg-actions left">
-        <button type="button" id="test-coach">Tester la connexion</button>
-        <button type="button" id="clear-code">Effacer le code de cet appareil</button>
-      </div>
-      <p id="coach-test-msg" class="muted small" role="status"></p>
-      <h3>Lichess (mes parties, Opening Explorer)</h3>
-      <div class="dlg-actions left"><button type="button" class="primary" id="connect-lichess">♞ Se connecter avec Lichess</button></div>
-      <p class="muted small">Le plus simple : connexion officielle sur lichess.org, ton mot de passe n’est jamais vu par l’appli. Sinon, colle un jeton ci-dessous.</p>
-      <label>Jeton Lichess personnel
-        <input id="set-lichess" type="password" autocomplete="off" spellcheck="false">
-      </label>
-      <p class="muted small">Créez-le sur lichess.org → Préférences → Jetons d’accès API, <strong>sans cocher aucune permission</strong>. Il reste sur cet appareil. Inutile si le relais Cloudflare est configuré.</p>
-      <div class="dlg-actions left">
-        <button type="button" id="clear-lichess">Effacer le jeton de cet appareil</button>
-      </div>
-      <h3>Vidéos YouTube (facultatif)</h3>
-      <label>Clé API YouTube Data v3
-        <input id="set-youtube" type="password" autocomplete="off" spellcheck="false">
-      </label>
-      <p class="muted small">Gratuite (≈ 100 recherches par jour). console.cloud.google.com → créer un projet → « API et services » → activer <strong>YouTube Data API v3</strong> → Identifiants → Créer une clé API → restreindre la clé aux <strong>référents HTTP</strong> <code>https://miguelcerqueira1-cmyk.github.io/*</code> et à l’API YouTube. Elle reste sur cet appareil. Sans clé, l’application propose des liens de recherche YouTube par langue.</p>
-      <div class="dlg-actions left">
-        <button type="button" id="clear-youtube">Effacer la clé de cet appareil</button>
-      </div>
       <h3 id="data-titre">Mes données (sauvegarde, changer d’appareil)</h3>
-      <p class="muted small">Exportez votre progression, vos révisions, vos réglages et vos analyses dans un fichier, puis importez-le sur votre autre appareil (téléphone ↔ ordinateur). Le jeton Lichess, le code d’accès et la clé YouTube ne sont jamais exportés : ressaisissez-les ici.</p>
+      <p class="muted small">Exportez votre progression, vos révisions, vos réglages et vos analyses dans un fichier, puis importez-le sur votre autre appareil (téléphone ↔ ordinateur). Le jeton Lichess, le code d’accès et la clé YouTube ne sont jamais exportés : ressaisissez-les dans « Avancé ».</p>
       <div class="dlg-actions left">
         <button type="button" id="data-export">⤓ Exporter mes données</button>
         <label class="file-btn"><input type="file" id="data-import" hidden>⤒ Importer un fichier</label>
@@ -278,8 +248,43 @@
       </div>
       <p id="data-last" class="muted small"></p>
       <p id="data-msg" class="muted small" role="status"></p>
-      <details>
+      <details id="set-avance">
         <summary>Avancé</summary>
+        <p class="muted small">Réglages techniques, facultatifs : la plupart des joueurs n’en ont pas besoin.</p>
+        <h3>Moteur et statistiques</h3>
+        <label class="row">Budget de calcul
+          <select id="set-budget"></select>
+        </label>
+        <p class="muted small">Le moteur joue toujours à pleine force ; le budget fixe seulement le temps de réflexion. La profondeur atteinte dépend de l’appareil.</p>
+        <label class="check"><input type="checkbox" id="set-opp-arrow"> Montrer la meilleure réponse adverse calculée sur l’échiquier</label>
+        <label class="check"><input type="checkbox" id="set-elite-camp"> Élite : seulement les parties où le joueur du top joue ma couleur</label>
+        <h3>Jeton Lichess (sans le bouton de connexion)</h3>
+        <label>Jeton Lichess personnel
+          <input id="set-lichess" type="password" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="muted small">Créez-le sur lichess.org → Préférences → Jetons d’accès API, <strong>sans cocher aucune permission</strong>. Il reste sur cet appareil. Inutile si le relais Cloudflare est configuré.</p>
+        <div class="dlg-actions left">
+          <button type="button" id="clear-lichess">Effacer le jeton de cet appareil</button>
+        </div>
+        <h3>Vidéos YouTube (facultatif)</h3>
+        <label>Clé API YouTube Data v3
+          <input id="set-youtube" type="password" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="muted small">Gratuite (≈ 100 recherches par jour). console.cloud.google.com → créer un projet → « API et services » → activer <strong>YouTube Data API v3</strong> → Identifiants → Créer une clé API → restreindre la clé aux <strong>référents HTTP</strong> <code>https://miguelcerqueira1-cmyk.github.io/*</code> et à l’API YouTube. Elle reste sur cet appareil. Sans clé, l’application propose des liens de recherche YouTube par langue.</p>
+        <div class="dlg-actions left">
+          <button type="button" id="clear-youtube">Effacer la clé de cet appareil</button>
+        </div>
+        <h3>Explications Claude</h3>
+        <p class="muted small">Facultatif et inutile pour la plupart : à remplir seulement si on t’a donné un code. Sans code, l’explication gratuite calculée par Stockfish s’affiche.</p>
+        <label>Code d’accès personnel
+          <input id="set-code" type="password" autocomplete="off" placeholder="Saisi une fois, conservé sur cet appareil">
+        </label>
+        <div class="dlg-actions left">
+          <button type="button" id="test-coach">Tester la connexion</button>
+          <button type="button" id="clear-code">Effacer le code de cet appareil</button>
+        </div>
+        <p id="coach-test-msg" class="muted small" role="status"></p>
+        <label class="check"><input type="checkbox" id="set-auto"> Explication Claude automatique à mon tour</label>
         <p><button type="button" id="btn-vues">📊 Visites par page (30 derniers jours)</button></p>
         <div id="vues-resultat" class="small" role="status"></div>
         <fieldset class="empreinte-code">

@@ -54,9 +54,10 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
 | `#/progression` | « Ma progression » (hors onglets, liens depuis Entraînement et Mes parties) : courbes Lichess, classements Chess.com, routine sur 4 semaines, chiffres de l'entraînement. |
 | `#/parties` | Import des dernières parties Lichess/Chess.com (automatique à l'ouverture si pseudos enregistrés, badge « Nouveau »), sortie du répertoire, analyse Stockfish coup par coup, courbe, bilan, **rapport détaillé écrit** (note, déroulement, bons coups, erreurs expliquées avec la suite du moteur, occasions manquées, à retenir, exercices). |
 
-⚙ Réglages : budget moteur, niveau des explications, mode d'aide, **apparence** (thème, échiquier,
-couleur principale, aperçu direct), code Claude, jeton Lichess, clé YouTube, **Mes données**
-(exporter/importer un fichier entre appareils), installation de l'appli, avancé.
+⚙ Réglages (simplifiés le 2026-11-26, étape 1 du plan V1) : en haut langue, aide, mes ouvertures,
+conseils (niveau, mode d'aide), connexion Lichess, apparence, Mes données / synchro / installation ;
+replié dans `#set-avance` « Avancé » : budget moteur, flèche adverse, règle de couleur Élite, jeton
+Lichess, clé YouTube, code Claude (+ explication auto), visites, empreinte de code, API, restauration.
 
 ## 3. Arborescence
 
@@ -519,7 +520,18 @@ du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication
 - « Les plus jouées d'abord » : publié pour toutes les ouvertures (2026-11-26).
 - Bilan de la routine d'échecs de l'utilisateur vers le **2026-12-14** (4 semaines).
 
-**Prochaines étapes proposées (ordre conseillé) :**
+**Plan V1 vendable validé par l'utilisateur (2026-11-26), une étape à la fois, attendre son feu vert :**
+A (sans entreprise) : 1. Réglages simplifiés ✅ ; 2. Gratuit vs Pro clair (tableau comparatif accueil +
+fenêtre Pro, 🔒 cohérent, aperçu des fiches verrouillées, offre unique 29 € à vie) ; 3. « 1 clic » et état
+visible (Répertoire : état + « S'entraîner sur cette variante » ; Mes parties : « Travailler mon erreur » ;
+Entraînement : bouton « Continuer ») ; 4. mode « Rush réfutations » (pièges/loufoques du répertoire, 3 vies,
+chrono, record) ; 5. brouillons pages légales + FAQ acheteur. B (avec entreprise) : 6. Cloudflare Pages +
+domaine + dépôt privé + licences ; 7. Lemon Squeezy + clé de licence + verrou serveur (mode test) ;
+8. achat test, lancement. C (après) : choix du niveau au 1er lancement, contenus, Claude bonus Pro à quota,
+langues. Écartés d'un commun accord : refonte i18n (tant que 2 langues), packs, contenu grand débutant
+(cible ≈ 800 Elo et plus), Claude en V1.
+
+**Anciennes prochaines étapes (intégrées au plan ci-dessus) :**
 1. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
 2. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).
 3. Plus de fiches pour les petits répertoires (Hollandaise, Bogo, Philidor, Contre l'Anglaise : 5) et
