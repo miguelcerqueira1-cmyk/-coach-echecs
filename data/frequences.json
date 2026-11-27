@@ -267,9 +267,9 @@
    "rep": "espagnole"
   },
   "lon-classique": {
-   "n": 39,
-   "ply": 3,
-   "coup": "Nf6",
+   "n": 11,
+   "ply": 11,
+   "coup": "Bd6",
    "rep": "londres"
   },
   "lon-db6": {
@@ -324,6 +324,60 @@
    "n": 9,
    "ply": 3,
    "coup": "c5",
+   "rep": "londres"
+  },
+  "lon-e6": {
+   "n": 227,
+   "ply": 1,
+   "coup": "e6",
+   "rep": "londres"
+  },
+  "lon-moderne": {
+   "n": 170,
+   "ply": 1,
+   "coup": "g6",
+   "rep": "londres"
+  },
+  "lon-d6": {
+   "n": 118,
+   "ply": 1,
+   "coup": "d6",
+   "rep": "londres"
+  },
+  "lon-c6": {
+   "n": 73,
+   "ply": 1,
+   "coup": "c6",
+   "rep": "londres"
+  },
+  "lon-b6": {
+   "n": 21,
+   "ply": 1,
+   "coup": "b6",
+   "rep": "londres"
+  },
+  "lon-c5-direct": {
+   "n": 36,
+   "ply": 5,
+   "coup": "c5",
+   "rep": "londres"
+  },
+  "lon-fd6": {
+   "n": 25,
+   "ply": 7,
+   "coup": "Bd6",
+   "rep": "londres"
+  },
+  "lon-ch5": {
+   "n": 7,
+   "ply": 11,
+   "coup": "Nh5",
+   "rep": "londres"
+  },
+  "lon-cxd4": {
+   "n": 7,
+   "ply": 11,
+   "coup": "cxd4",
    "rep": "londres"
   },
   "eco-fc5": {

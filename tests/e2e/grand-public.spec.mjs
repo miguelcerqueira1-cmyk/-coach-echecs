@@ -80,8 +80,8 @@ test('première visite : accueil, choix en 4 étapes (Londres, Sicilienne, Indie
   await expect(rep.locator('tr[data-id="lon-classique"]:not([data-locked])')).toBeVisible();
   await expect(rep.locator('[data-view]')).toHaveCount(4); // 3 ouvertures + Anti-trash
   await expect(rep.locator('[data-view="gd"]')).toHaveCount(0);
-  await expect(rep.locator('tr[data-id]')).toHaveCount(12);
-  await expect(rep.locator('tr[data-id][data-locked]')).toHaveCount(11);
+  await expect(rep.locator('tr[data-id]')).toHaveCount(21);
+  await expect(rep.locator('tr[data-id][data-locked]')).toHaveCount(20);
   // Tous les répertoires ont désormais des fiches : l'Indienne du Roi a été vidée dans les données
   // servies à ce test (voir plus haut) pour garder la couverture de l'affichage « bientôt ».
   await rep.locator('[data-view="indienne-roi"]').click();
