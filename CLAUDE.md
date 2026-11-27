@@ -573,6 +573,17 @@ Rappels par notification (Web Push) REPORTÉS : clés VAPID secrètes + tâche p
 seulement appli installée — à faire avec le déménagement Cloudflare. Test e2e « Élite : bloc du Coup
 optimal » parfois instable en suite complète locale (passe seul ; la CI relance une fois).
 
+**« 💡 Pourquoi ce coup ? » (2026-11-27, essai Caro-Kann validé par l'utilisateur)** : explication courte (FR + EN)
+de chaque coup des fiches, rédigée une fois (aucun coût à la lecture). Méthode : `node scripts/pourquoi-faits.mjs
+<rep> > faits.json` (faits chess.js + Stockfish profondeur 16 : meilleur coup, écart ; un coup partagé par
+plusieurs fiches = une seule clé `cleCoup(fen, uci)`), rédaction à partir de ces faits et du plan de la fiche,
+fichier `site/data/pourquoi/<rep>.json` ({ clé: [fr, en] }), contrôle `node scripts/verifie-pourquoi.mjs` (en CI :
+clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, coups de pièce cités légaux avant/après ou
+présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
+Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
+Fait : **ck 242 / 242**. À faire si l'utilisatrice valide le ton : les 28 autres répertoires (≈ 2 200 coups),
+des plus jouées aux moins jouées.
+
 **Anciennes prochaines étapes (intégrées au plan ci-dessus) :**
 1. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
 2. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).

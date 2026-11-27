@@ -45,6 +45,8 @@ jobs:
         run: node scripts/verify-repertoire.mjs --all --dry
       - name: Finales essentielles vérifiées par Stockfish (fichier à jour)
         run: node scripts/verify-finales.mjs --check
+      - name: Explications « Pourquoi ce coup ? » contrôlées (coups cités légaux, aucune évaluation inventée)
+        run: node scripts/verifie-pourquoi.mjs
       - name: Tests du Worker (auth, CORS, limites) avec Claude simulé
         run: npm test
         working-directory: worker

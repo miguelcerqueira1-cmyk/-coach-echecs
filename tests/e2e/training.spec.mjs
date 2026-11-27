@@ -624,3 +624,15 @@ test('Test de départ : 5 positions, un essai chacune, bilan avec les variantes 
   await expect(page.locator('[data-xp-objectif]')).toContainText(`${d.ok * 5} / 50 XP`);
   await expect(page.locator('.continuer')).not.toContainText('Test de départ');
 });
+
+test('Leçon Caro-Kann : « 💡 Pourquoi ce coup ? » sous l’échiquier, coup par coup', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'ck', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  await page.click('[data-course="ck"]');
+  await page.click('[data-lesson="ck-classique"]');
+  await page.click('[data-panel] [data-next]');
+  await page.click('[data-step]'); // 1.e4
+  await expect(page.locator('[data-pourquoi]')).toContainText('Pourquoi ce coup');
+  await page.click('[data-step]'); // 1…c6
+  await expect(page.locator('[data-pourquoi]')).toContainText('prépare …d5');
+});
