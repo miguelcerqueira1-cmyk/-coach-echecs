@@ -291,9 +291,9 @@
    "rep": "espagnole"
   },
   "esp-echange": {
-   "n": 36,
-   "ply": 6,
-   "coup": "Bxc6",
+   "n": 2,
+   "ply": 9,
+   "coup": "f6",
    "rep": "espagnole"
   },
   "esp-cordel": {
@@ -315,9 +315,87 @@
    "rep": "espagnole"
   },
   "esp-anti-marshall": {
-   "n": 22,
-   "ply": 14,
-   "coup": "a4",
+   "n": 7,
+   "ply": 15,
+   "coup": "Bb7",
+   "rep": "espagnole"
+  },
+  "esp-petrov": {
+   "n": 131,
+   "ply": 3,
+   "coup": "Nf6",
+   "rep": "espagnole"
+  },
+  "esp-philidor": {
+   "n": 45,
+   "ply": 3,
+   "coup": "d6",
+   "rep": "espagnole"
+  },
+  "esp-elephant": {
+   "n": 23,
+   "ply": 3,
+   "coup": "d5",
+   "rep": "espagnole"
+  },
+  "esp-letton": {
+   "n": 12,
+   "ply": 3,
+   "coup": "f5",
+   "rep": "espagnole"
+  },
+  "esp-arkhangelsk": {
+   "n": 30,
+   "ply": 9,
+   "coup": "b5",
+   "rep": "espagnole"
+  },
+  "esp-moller": {
+   "n": 26,
+   "ply": 9,
+   "coup": "Bc5",
+   "rep": "espagnole"
+  },
+  "esp-cozio-differee": {
+   "n": 17,
+   "ply": 7,
+   "coup": "Nge7",
+   "rep": "espagnole"
+  },
+  "esp-d6-fg4": {
+   "n": 15,
+   "ply": 9,
+   "coup": "d6",
+   "rep": "espagnole"
+  },
+  "esp-echange-df6": {
+   "n": 14,
+   "ply": 9,
+   "coup": "Qf6",
+   "rep": "espagnole"
+  },
+  "esp-anti-marshall-b4": {
+   "n": 8,
+   "ply": 15,
+   "coup": "b4",
+   "rep": "espagnole"
+  },
+  "esp-norvegienne": {
+   "n": 8,
+   "ply": 7,
+   "coup": "b5",
+   "rep": "espagnole"
+  },
+  "esp-smyslov": {
+   "n": 7,
+   "ply": 5,
+   "coup": "g6",
+   "rep": "espagnole"
+  },
+  "esp-cozio": {
+   "n": 7,
+   "ply": 5,
+   "coup": "Nge7",
    "rep": "espagnole"
   },
   "lon-classique": {
