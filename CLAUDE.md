@@ -140,6 +140,11 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 - **3 coups candidats** (page Moteur) : MultiPV 3 sur le budget habituel (1 pendant la suite
   automatique, menaces et analyses de parties) ; lignes rejouées par chess.js, meilleur coup en tête,
   écart en pions ; flèches discrètes (`alt`) ; masqués en mode « Indice d'abord ».
+- **Affichage progressif (2026-11-27)** : pendant le calcul (page Moteur), dès la profondeur 8 la ligne
+  principale de Stockfish (multipv 1, hors bornes) est validée par `buildAdvice` → `state.analysis.provisoire`
+  → flèche du meilleur coup provisoire + texte « meilleur coup provisoire X » ; le conseil final remplace.
+  Budget par défaut inchangé (Standard 3 s) ; Rapide 1 s dans ⚙ Avancé. Multithread possible plus tard
+  sur Cloudflare Pages (en-têtes COOP/COEP).
 - **Jetons** `{gameId, branchId, revision, ply}` pour ignorer les résultats périmés ; moteur partagé
   entre pages (une page peut interrompre le calcul d'une autre, la page Moteur relance au retour).
 - Fins de partie FIDE : triple répétition / 50 coups = nulles réclamables ; fins automatiques :

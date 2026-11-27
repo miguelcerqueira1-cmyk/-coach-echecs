@@ -271,6 +271,15 @@ async function runAnalysis(movetime, { deeper = false } = {}) {
       onInfo: (info) => {
         if (!g.isCurrent(token) || state.analysis.jobId !== jobId) return;
         state.analysis.live = info;
+        // Affichage progressif : dès la profondeur 8, la flèche du meilleur coup provisoire
+        // (ligne principale de Stockfish, validée par chess.js) ; elle s'affine jusqu'au résultat.
+        if ((info.multipv ?? 1) === 1 && info.depth >= 8 && info.pv?.length && !info.bound) {
+          const prov = buildAdvice(g, { bestmove: info.pv[0], info: { ...info, pv: info.pv.slice() }, token });
+          if (prov.ok && prov.best.lan !== state.analysis.provisoire?.best.lan) {
+            state.analysis.provisoire = prov;
+            renderBoard();
+          } else if (prov.ok) state.analysis.provisoire = prov;
+        }
         renderLive();
       },
     });
@@ -503,6 +512,10 @@ function renderBoard() {
     else if (state.settings.showOpponentArrow) arrows.push({ from: a.advice.best.from, to: a.advice.best.to, kind: 'reply' });
     const th = state.coach.meta?.threat;
     if (th && state.coach.token && g.isCurrent(state.coach.token)) arrows.push({ from: th.move.from, to: th.move.to, kind: 'threat' });
+  } else if (live && a.status === 'computing' && a.provisoire && g.isCurrent(a.provisoire.token) && !hide) {
+    // Calcul en cours : meilleur coup provisoire (même couleurs que le conseil final).
+    if (a.provisoire.isPlayerTurn) arrows.push({ from: a.provisoire.best.from, to: a.provisoire.best.to, kind: 'best' });
+    else if (state.settings.showOpponentArrow) arrows.push({ from: a.provisoire.best.from, to: a.provisoire.best.to, kind: 'reply' });
   }
   if (live && !hide) {
     const stat = optimal.statArrow((t) => optimal.game?.isCurrent(t));
@@ -795,7 +808,8 @@ function renderLive() {
   const elapsed = L(elapsedRaw.replace('.', ','), elapsedRaw);
   if (!i) { el.textContent = L('Stockfish calcule…', 'Stockfish is calculating…'); return; }
   const sc = i.score ? formatScore({ type: i.score.type, value: i.score.value * (state.game.turn() === 'w' ? 1 : -1) }) : '';
-  el.textContent = L(`Stockfish calcule… profondeur ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · éval. provisoire ' + sc : ''}`, `Stockfish is calculating… depth ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · provisional eval ' + sc : ''}`);
+  const pv = a.provisoire && state.game.isCurrent(a.provisoire.token) && !moveHidden() ? sanFr(a.provisoire.best.san) : '';
+  el.textContent = L(`Stockfish calcule… ${pv ? `meilleur coup provisoire ${pv} · ` : ''}profondeur ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · éval. provisoire ' + sc : ''}`, `Stockfish is calculating… ${pv ? `provisional best move ${pv} · ` : ''}depth ${i.depth ?? '—'} · ${elapsed} s${sc ? ' · provisional eval ' + sc : ''}`);
 }
 
 // ---------- Mode « Indice d'abord » ----------

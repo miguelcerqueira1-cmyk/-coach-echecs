@@ -604,3 +604,13 @@ test('téléphone : fiches du Répertoire repliées, détail d’un toucher ; r�
   await page.click('#form-settings button[value=ok]');
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:reglages:v1')).sons)).toBe(false);
 });
+
+test('Moteur : meilleur coup provisoire fléché pendant le calcul, avant le résultat final', async ({ page }) => {
+  await setup(page, { budget: 'approfondi' });
+  await page.goto('./');
+  const t0 = Date.now();
+  await expect(page.locator('#live-text')).toContainText('meilleur coup provisoire', { timeout: 8000 });
+  await expect(page.locator('.board-arrows line').first()).toBeAttached();
+  expect(Date.now() - t0).toBeLessThan(9000); // bien avant la fin du calcul de 10 s
+  expect(await page.evaluate(() => window.__coach.state.analysis.status)).toBe('computing');
+});
