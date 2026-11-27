@@ -7,12 +7,12 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 
 - **Chantier en cours** : compléter les fiches puis écrire les « 💡 Pourquoi ce coup ? », une ouverture à la fois,
   des plus jouées aux moins jouées. Faites : Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la
-  Dame, Najdorf, Italienne, Espagnole, 1…e5 (9 / 29). **Prochaine étape exacte : Française (francaise,
-  8 fiches)**, puis GD refusé / Slave… L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
+  Dame, Najdorf, Italienne, Espagnole, 1…e5, Française (10 / 29). **Prochaine étape exacte : GD refusé / Slave
+  (gdr-noirs, 10 fiches)**, puis les suivants par fréquence… L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
   publication sans attendre sa validation de la liste (résumé ensuite) ; elle donne son « continue » entre deux
   ouvertures.
-- **Publication** : tout est sur `main` ; dernière publication : 1…e5 côté Noirs (14 fiches ajoutées, 256 « Pourquoi »),
-  run deploy.yml à vérifier une fois. L'Espagnole (run 46034446587) est en ligne.
+- **Publication** : tout est sur `main` ; dernière publication : Française (13 fiches ajoutées, 211 « Pourquoi »), juste après
+  1…e5 côté Noirs (14 fiches, 256 « Pourquoi ») ; runs deploy.yml vérifiés une fois (voir le résumé de session).
 - **En attente de l'utilisatrice** : décision sur la fiche Smith-Morra (sic-morra 6…Dc7, voir plus bas) — « on
   attend de voir » ; micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
@@ -25,7 +25,7 @@ Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Vienno
 Anglaise), contre 1.e4 (Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Philidor,
 Najdorf, Dragon), contre 1.c4 / 1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4
 (+ Grünfeld, Benoni / Benko, Bogo-indienne) (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **348 fiches** (2026-11-27) : Gambit Dame 31,
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **361 fiches** (2026-11-27) : Gambit Dame 31,
 Caro-Kann 27 (répertoire historique du créateur), Italienne 21 (9 ajoutées le 2026-11-27 : Petrov, Philidor,
 éléphant, letton — avant la racine 3.Fc4 —, 4.d3 Fc5, 4.d3 h6, Pianissimo …a5, 6.Fb5+ Fd7, 4.c3 d6), Espagnole 26 (13 ajoutées le 2026-11-27 : Petrov, Philidor, éléphant, letton
 — reprises de l'Italienne —, Arkhangelsk, Møller, Cozio différée, 5…d6 6.c3 Fg4, échange …Df6, anti-Marshall …b4,
@@ -34,7 +34,8 @@ norvégienne, Smyslov, Cozio), Londres 21 (9 ajoutées le 2026-11-27 :
 Anglaise 8, 1…e5 22 (14 ajoutées le 2026-11-27 : quatre Cavaliers 4.Fb5 et 4.d4, Deux Cavaliers 4.d3,
 Italienne 4.d3 et 5.d4, partie du Fou, Berlinoise 4.d3 et 5.Te1, échange 4.Fxc6, 6.d3, partie du centre, viennoise 3.Fc4,
 gambit écossais, Göring), Sicilienne 20 (système Taimanov ; 11 fiches ajoutées le 2026-11-27 d'après les coups adverses
-les plus fréquents des données Élite), Française 8, Scandinave 8, Indienne du Roi 8,
+les plus fréquents des données Élite), Française 21 (13 ajoutées le 2026-11-27 : 2.Cf3 (3 suites), 2.Cc3, échange 4.Fd3 / 4.c4, Tarrasch 4.Cgf3,
+Steinitz 5.Cce2 / 6.dxc5, avance 6.Fe2, Alekhine-Chatard 6.h4, 2.b3, 2.d3 d5 3.De2), Scandinave 8, Indienne du Roi 8,
 GD refusé / Slave 10, Contre le Londres 8, Hollandaise 5, Nimzo / Indienne de la Dame 20 (12 ajoutées le 2026-11-27 : sans 2.c4 —
 Trompowsky, Londres, Torre, Jobava, Colle — et 4.f3, 5.Fd2, 6.a3, 5.e4, Catalane 8.a4 / 7.Da4 / 7.Ce5), Pirc 7, Alekhine 8, Catalane 8, Grünfeld 8, Najdorf 18 (11 ajoutées le 2026-11-27 : Grand Prix, fermée,
 Alapin, Morra refusé, 3.Cc3, 3.c3, 4.Dxd4, 3.Fc4, 6.f3, 6.g3, 6.Fe3 e5 7.Cf3),
@@ -152,7 +153,7 @@ clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, co
 présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
 Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
 Fait : **ck 242 / 242** (ton validé), **gd 283 / 283**, **sicilienne 208 / 208**, **londres 209 / 209**, **nimzo-qid 220 / 220**, **najdorf 170 / 170**, **italienne 185 / 185**, **espagnole 224 / 224** (2026-11-27 ; 42 textes repris de
-l'Italienne pour les coups communs), **e5-noirs 256 / 256** (81 textes repris de l'Italienne / Espagnole). À faire : les 20 autres répertoires (suivant : francaise). Des fiches peuvent commencer
+l'Italienne pour les coups communs), **e5-noirs 256 / 256** (81 textes repris de l'Italienne / Espagnole), **francaise 211 / 211**. À faire : les 19 autres répertoires (suivant : gdr-noirs). Des fiches peuvent commencer
 avant la racine du répertoire (ex. ita-petrov : 2…Cf6) : accepté par l'appli et les contrôles.
 **Autorisation de l'utilisatrice (2026-11-27)** : pour ce chantier « fiches + Pourquoi », enchaîner liste des trous →
 fiches → Pourquoi → tests → publication SANS attendre sa validation de la liste (lui résumer ensuite). Identifiants : repertoire.mjs

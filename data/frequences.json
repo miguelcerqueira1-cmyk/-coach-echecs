@@ -1077,33 +1077,33 @@
    "rep": "sicilienne"
   },
   "fr-avance": {
-   "n": 120,
-   "ply": 4,
-   "coup": "e5",
+   "n": 5,
+   "ply": 10,
+   "coup": "a3",
    "rep": "francaise"
   },
   "fr-echange": {
-   "n": 118,
-   "ply": 4,
-   "coup": "exd5",
+   "n": 82,
+   "ply": 6,
+   "coup": "Nf3",
    "rep": "francaise"
   },
   "fr-tarrasch": {
-   "n": 90,
-   "ply": 4,
-   "coup": "Nd2",
+   "n": 13,
+   "ply": 6,
+   "coup": "exd5",
    "rep": "francaise"
   },
   "fr-steinitz": {
-   "n": 78,
-   "ply": 6,
-   "coup": "e5",
+   "n": 56,
+   "ply": 10,
+   "coup": "Nf3",
    "rep": "francaise"
   },
   "fr-fg5": {
-   "n": 45,
-   "ply": 6,
-   "coup": "Bg5",
+   "n": 6,
+   "ply": 10,
+   "coup": "Bxe7",
    "rep": "francaise"
   },
   "fr-fd3": {
@@ -1113,15 +1113,93 @@
    "rep": "francaise"
   },
   "fr-est-indienne": {
-   "n": 26,
-   "ply": 2,
-   "coup": "d3",
+   "n": 13,
+   "ply": 4,
+   "coup": "Nd2",
    "rep": "francaise"
   },
   "fr-dame-e2": {
    "n": 23,
    "ply": 2,
    "coup": "Qe2",
+   "rep": "francaise"
+  },
+  "fr-cf3": {
+   "n": 19,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "francaise"
+  },
+  "fr-cf3-e5": {
+   "n": 12,
+   "ply": 4,
+   "coup": "e5",
+   "rep": "francaise"
+  },
+  "fr-cf3-echange": {
+   "n": 17,
+   "ply": 4,
+   "coup": "exd5",
+   "rep": "francaise"
+  },
+  "fr-cc3": {
+   "n": 16,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "francaise"
+  },
+  "fr-echange-fd3": {
+   "n": 18,
+   "ply": 6,
+   "coup": "Bd3",
+   "rep": "francaise"
+  },
+  "fr-echange-c4": {
+   "n": 6,
+   "ply": 6,
+   "coup": "c4",
+   "rep": "francaise"
+  },
+  "fr-tarrasch-cgf3": {
+   "n": 17,
+   "ply": 6,
+   "coup": "Ngf3",
+   "rep": "francaise"
+  },
+  "fr-steinitz-ce2": {
+   "n": 13,
+   "ply": 8,
+   "coup": "Nce2",
+   "rep": "francaise"
+  },
+  "fr-avance-fe2": {
+   "n": 10,
+   "ply": 10,
+   "coup": "Be2",
+   "rep": "francaise"
+  },
+  "fr-fg5-h4": {
+   "n": 6,
+   "ply": 10,
+   "coup": "h4",
+   "rep": "francaise"
+  },
+  "fr-b3": {
+   "n": 10,
+   "ply": 2,
+   "coup": "b3",
+   "rep": "francaise"
+  },
+  "fr-d3-de2": {
+   "n": 6,
+   "ply": 4,
+   "coup": "Qe2",
+   "rep": "francaise"
+  },
+  "fr-steinitz-dxc5": {
+   "n": 5,
+   "ply": 10,
+   "coup": "dxc5",
    "rep": "francaise"
   },
   "scan-da5": {
