@@ -14,6 +14,9 @@ import { trashDrill } from './drills-core.js';
 import { isPro, canOpenFiche, openPaywall } from './pro.js';
 import { prendreDemande } from './demande-entrainement.js';
 import { charger as chargerRush, enregistrer as enregistrerRush } from './rush-core.js';
+import { initialiser as initXp, enregistrer as enregistrerXp, niveau, xpDuJour, verifierBadges, BADGES, OBJECTIFS } from './succes-core.js';
+import { sons } from './sons.js';
+import { positionsDepart, bilanDepart, charger as chargerDepart, enregistrer as enregistrerDepart } from './depart-core.js';
 import { PuzzleRunner } from './puzzles.js';
 import { FinaleRunner, chargerFinales } from './finales.js';
 import FINALES_FR from '../data/finales.js';
@@ -53,6 +56,17 @@ function loadRevision() {
   for (const id of Object.keys(REPERTOIRES)) r[id] ??= {};
   return r;
 }
+// Petit message passager en bas de l'écran (badge gagné, objectif atteint).
+function toast(texte) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.setAttribute('role', 'status');
+  t.textContent = texte;
+  document.body.append(t);
+  setTimeout(() => t.classList.add('out'), 3600);
+  setTimeout(() => t.remove(), 4200);
+}
+
 // Libellé d'un répertoire avec le camp joué : « ♙ Gambit Dame (Blancs) ».
 const repLabel = (id, { camp = true } = {}) => `${couleurDe(id) === 'w' ? '♙' : '♟'} ${REPERTOIRES[id]?.titre || id}${camp ? ` <span class="muted small">(${couleurDe(id) === 'w' ? L('Blancs', 'White') : L('Noirs', 'Black')})</span>` : ''}`;
 const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
@@ -71,6 +85,12 @@ export class TrainingPage {
     this.prefs = loadPrefs();
     this.revision = loadRevision();
     this.sessionNo = 0;
+    // Objectif du jour atteint pendant un exercice : petit message (une fois par jour).
+    window.addEventListener('xp', (ev) => {
+      const d = initXp(loadProgress());
+      const avant = ev.detail.jour - ev.detail.points;
+      if (avant < d.objectif && ev.detail.jour >= d.objectif) toast(L(`🎯 Objectif du jour atteint : ${ev.detail.jour} XP !`, `🎯 Daily goal reached: ${ev.detail.jour} XP!`));
+    });
     // Demande « 1 clic » arrivée alors que la page Entraînement est déjà affichée.
     window.addEventListener('demande-entrainement', () => { if (this.data) this.executerDemande(prendreDemande()); });
   }
@@ -140,6 +160,10 @@ export class TrainingPage {
     const actifs = this.actifs();
     const pro = isPro();
     const reelles = vraiesErreurs(p);
+    // Nouveau venu (aucune leçon, test jamais fait) : le test de départ d'abord.
+    if (!chargerDepart() && !Object.keys(p.cours || {}).length && positionsDepart(this.data.entries, actifs).length) {
+      return { label: L('Test de départ (2 min) : ce que tu sais déjà de tes ouvertures', 'Starting test (2 min): what you already know about your openings'), run: () => this.lancerDepart() };
+    }
     if (pro && reelles.length) {
       return { label: L(`Corriger ${reelles.length} position(s) de mes parties`, `Fix ${reelles.length} position(s) from my games`), run: () => this.runReelles() };
     }
@@ -188,6 +212,26 @@ export class TrainingPage {
     const lock = isPro() ? '' : ' <span class="lock-badge">🔒 Pro</span>';
     const nSort = reelles.filter((x) => x.kind === 'sortie').length;
     const suite = this.prochaineAction();
+    const xp = initXp(this.progress);
+    const nv = niveau(xp.total);
+    const duJour = xpDuJour(xp);
+    const ctxBadges = {
+      lecons: Object.keys(this.progress.cours || {}).length,
+      maitrisees: board.fiches.filter((f) => f.pct >= 80).length,
+      serie: board.streak,
+      rush: chargerRush().best,
+      corrigees: (this.progress.sorties || []).filter((x) => x.corrige).length,
+      problemes: Object.values(lireProblemes().themes || {}).reduce((a, t) => a + (t.ok || 0), 0),
+      finales: Object.values(chargerFinales()).filter((f) => f.ok).length,
+      finalesTotal: FINALES.length,
+    };
+    const nouveaux = verifierBadges(xp, ctxBadges);
+    if (nouveaux.length) {
+      enregistrerXp(xp);
+      const b = BADGES.find(([id]) => id === nouveaux[0]);
+      setTimeout(() => { sons.reussite(); toast(L(`🏅 Nouveau badge : ${b[1]} ${b[2][0]}${nouveaux.length > 1 ? ` (+${nouveaux.length - 1})` : ''}`, `🏅 New badge: ${b[1]} ${b[2][1]}${nouveaux.length > 1 ? ` (+${nouveaux.length - 1})` : ''}`)); }, 300);
+    }
+    const nbBadges = Object.keys(xp.badges).length;
     const zone = ['apprendre', 'entrainer', 'reflexes', 'plus'].includes(p.zone) ? p.zone : 'apprendre';
     const tuile = (id, ico, t, sous) => `<button type="button" class="tuile" data-tuile="${id}" aria-pressed="${zone === id}"><span class="tuile-ico" aria-hidden="true">${ico}</span><strong>${t}</strong><span class="small muted">${sous}</span></button>`;
     this.el.innerHTML = `<div class="train-hub" data-zone-actif="${zone}">
@@ -197,6 +241,18 @@ export class TrainingPage {
       </section>
       ${this.routineHtml(board, next, seen)}
       <section class="card hub-head">
+        <div class="xp-row">
+          <div class="xp-box" data-xp-niveau><strong>${L(`⭐ Niveau ${nv.n}`, `⭐ Level ${nv.n}`)}</strong> <span class="muted small">${xp.total} XP</span>
+            <div class="xp-bar"><span style="width:${nv.pct}%"></span></div>
+            <span class="tiny muted">${L(`encore ${nv.haut - xp.total} XP pour le niveau ${nv.n + 1}`, `${nv.haut - xp.total} XP to level ${nv.n + 1}`)}</span></div>
+          <div class="xp-box" data-xp-objectif><strong>${L('🎯 Objectif du jour', '🎯 Daily goal')}</strong> <span class="small ${duJour >= xp.objectif ? 'ok-text' : 'muted'}">${duJour} / ${xp.objectif} XP${duJour >= xp.objectif ? ' ✔' : ''}</span>
+            <div class="xp-bar obj"><span style="width:${Math.min(100, Math.round((100 * duJour) / xp.objectif))}%"></span></div>
+            <label class="tiny muted">${L('Objectif', 'Goal')} <select data-objectif>${OBJECTIFS.map((o) => `<option value="${o}" ${o === xp.objectif ? 'selected' : ''}>${o} XP</option>`).join('')}</select></label></div>
+        </div>
+        <details class="badges" data-badges><summary class="small"><strong>${L(`🏅 Mes badges (${nbBadges} / ${BADGES.length})`, `🏅 My badges (${nbBadges} / ${BADGES.length})`)}</strong></summary>
+          <div class="badges-grid">${BADGES.map(([id, ico, nom]) => `<div class="badge-item ${xp.badges[id] ? 'obtenu' : ''}" title="${esc(L(nom[0], nom[1]))}"><span class="badge-ico">${xp.badges[id] ? ico : '🔒'}</span><span class="tiny">${esc(L(nom[0], nom[1]))}</span></div>`).join('')}</div>
+          <p class="tiny muted">${L('Les points (XP) se gagnent en s’entraînant : ligne réussie 10, punition trouvée 10, leçon 20, erreur de partie corrigée 15, problème 5, finale 15.', 'Points (XP) are earned by training: line passed 10, punishment found 10, lesson 20, game mistake fixed 15, puzzle 5, endgame 15.')}</p>
+        </details>
         <div class="hub-stats">
           <div><span class="hub-big">🔥 ${board.streak}</span><span class="muted small">${L('jour(s) d’affilée', 'day(s) in a row')}</span></div>
           ${actifs.map((id) => `<div><span class="hub-big">${board.byRep[id].pct} %</span><span class="muted small">${esc(REPERTOIRES[id].titre)}</span></div>`).join('')}
@@ -257,6 +313,11 @@ export class TrainingPage {
         </section>
       </div>
       <div data-zone="plus">
+      <section class="card hub-card" data-depart>
+        <h2>${L('🎯 Test de départ', '🎯 Starting test')}</h2>
+        <p class="small">${(() => { const d = chargerDepart(); return d ? L(`Dernier résultat : <strong>${d.ok} / ${d.total}</strong> (${esc(new Date(d.date).toLocaleDateString(LOC))}).`, `Last result: <strong>${d.ok} / ${d.total}</strong> (${esc(new Date(d.date).toLocaleDateString(LOC))}).`) : L('5 positions de tes ouvertures, un essai chacune : découvre ce que tu sais déjà.', '5 positions from your openings, one try each: find out what you already know.'); })()}</p>
+        <div class="actions"><button type="button" data-depart-go>${chargerDepart() ? L('Refaire le test', 'Take the test again') : L('Faire le test', 'Take the test')}</button></div>
+      </section>
       ${this.problemesHtml()}
       ${this.finalesHtml()}
       ${this.stockfishHtml()}
@@ -313,6 +374,13 @@ export class TrainingPage {
       this.runDrill('lignes', plan.ids, { preset: plan.rapide ? { complet: '0', lTemps: 5, lRepet: 1 } : { complet: '0', lTemps: 0, lRepet: 1, apercu: true } });
     }));
     this.el.querySelector('[data-rush]')?.addEventListener('click', () => this.lancerRush());
+    this.el.querySelector('[data-objectif]')?.addEventListener('change', (ev) => {
+      const d = initXp(this.progress);
+      d.objectif = Number(ev.target.value) || 50;
+      enregistrerXp(d);
+      this.renderSetup();
+    });
+    this.el.querySelector('[data-depart-go]')?.addEventListener('click', () => this.lancerDepart());
     // Tuiles : une seule section affichée à la fois (choix mémorisé).
     this.el.querySelectorAll('[data-tuile]').forEach((b) => b.addEventListener('click', () => this.montrerZone(b.dataset.tuile)));
     this.el.querySelector('[data-continuer]')?.addEventListener('click', () => this.executerDemande({ type: 'continuer' }));
@@ -466,6 +534,35 @@ export class TrainingPage {
         },
       }),
     });
+  }
+
+  // ---------- Test de départ ----------
+
+  lancerDepart() {
+    const positions = positionsDepart(this.data.entries, this.actifs());
+    if (!positions.length) { this.renderSetup(); return; }
+    this.s = null;
+    const tree = Object.fromEntries(this.actifs().map((r) => [r, buildTree(this.data.entries, r)]));
+    this.drill = new DrillRunner({
+      el: this.el, data: this.data, kind: 'examen', ids: [], tree, engine: this.engine, positions,
+      progress: loadProgress(),
+      gradePos: (rep, k, ok) => this.gradePos(rep, k, ok),
+      onDone: (r) => { this.drill = null; this.view = null; this.finDepart(r.results || []); },
+    });
+    window.scrollTo(0, 0);
+  }
+
+  finDepart(resultats) {
+    if (!resultats.length) { this.renderSetup(); return; }
+    const b = bilanDepart(resultats);
+    enregistrerDepart({ date: new Date().toISOString(), ...b });
+    this.renderSetup();
+    const fiches = b.ratees.map((id) => this.data.entries.find((e) => e.id === id)).filter(Boolean);
+    const msg = b.ok === b.total
+      ? L(`🎯 Test de départ : ${b.ok} / ${b.total} — tu connais déjà bien tes ouvertures ! Passe aux variantes suivantes.`, `🎯 Starting test: ${b.ok} / ${b.total} — you already know your openings well! Move on to the next lines.`)
+      : L(`🎯 Test de départ : ${b.ok} / ${b.total}. À apprendre en priorité :`, `🎯 Starting test: ${b.ok} / ${b.total}. To learn first:`);
+    this.el.querySelector('.hub-head')?.insertAdjacentHTML('afterbegin', `<div class="hub-result depart-result"><p>${esc(msg)}</p>${fiches.length ? `<ul class="small">${fiches.map((e) => `<li>${esc(e.nom)} <button type="button" class="small-btn" data-depart-lecon="${e.id}">${canOpenFiche(e.id) ? L('📖 Apprendre', '📖 Learn') : '🔒 Pro'}</button></li>`).join('')}</ul>` : ''}</div>`);
+    this.el.querySelectorAll('[data-depart-lecon]').forEach((x) => x.addEventListener('click', () => this.openLesson(x.dataset.departLecon)));
   }
 
   // ---------- Rush réfutations ----------

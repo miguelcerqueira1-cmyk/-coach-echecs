@@ -6,6 +6,7 @@
 // La maîtrise d'une fiche combine la révision espacée de ses positions (70 %) et la
 // réussite aux exercices de cette fiche (30 %) ; sans exercice, seules les positions comptent.
 import { key } from './training-core.js';
+import { gagner, GAINS } from './succes-core.js';
 
 export const PROGRESS_KEY = 'coach-echecs:progression-v1';
 const DAY = 86400000;
@@ -16,6 +17,7 @@ export function emptyProgress() {
 
 // Leçon suivie jusqu'au bout (module « Apprendre »).
 export function recordLesson(p, id, now = Date.now()) {
+  if (!(p.cours || {})[id]) gagner(GAINS.lecon, { now });
   p.cours = { ...(p.cours || {}), [id]: { vue: now, n: ((p.cours || {})[id]?.n || 0) + 1 } };
   return touchDay(p, now);
 }
@@ -48,6 +50,7 @@ export function streak(p, now = Date.now()) {
 export function recordLine(p, id, ok, now = Date.now()) {
   const r = p.lignes[id] || { ok: 0, ko: 0 };
   p.lignes[id] = { ...r, ok: r.ok + (ok ? 1 : 0), ko: r.ko + (ok ? 0 : 1), last: now };
+  gagner(ok ? GAINS.ligneOk : GAINS.ligneKo, { now });
   return touchDay(p, now);
 }
 
@@ -55,6 +58,7 @@ export function recordDrill(p, id, ok, ms = null, now = Date.now()) {
   const r = p.drills[id] || { ok: 0, ko: 0, best: null };
   const best = ok && ms != null ? (r.best == null ? ms : Math.min(r.best, ms)) : r.best;
   p.drills[id] = { ok: r.ok + (ok ? 1 : 0), ko: r.ko + (ok ? 0 : 1), best, last: now };
+  gagner(ok ? GAINS.drillOk : GAINS.drillKo, { now });
   return touchDay(p, now);
 }
 
@@ -111,6 +115,7 @@ export function vraiesErreurs(p) {
 }
 
 export function markCorrige(p, gameId, now = Date.now()) {
+  if (p.sorties.some((x) => x.gameId === gameId && !x.corrige)) gagner(GAINS.corrige, { now });
   p.sorties = p.sorties.map((x) => (x.gameId === gameId ? { ...x, corrige: new Date(now).toISOString() } : x));
   return p;
 }

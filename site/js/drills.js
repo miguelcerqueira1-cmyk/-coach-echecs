@@ -19,6 +19,7 @@ import { recordLine, recordDrill, saveProgress } from './progress.js';
 import { langue } from './i18n.js';
 import { VIES, tempsRush, melanger, charger as chargerRush } from './rush-core.js';
 import { sons } from './sons.js';
+import { gagner, GAINS } from './succes-core.js';
 
 // Phrases en français ou en anglais selon la langue de l'interface.
 const L = (fr, en) => (langue() === 'en' ? en : fr);
@@ -69,14 +70,14 @@ export class DrillRunner {
     this.reviewing = false;
     this.alive = true;
     this.layout();
-    if (kind === 'reelles') { this.startReview(positions.map((x) => ({ ...x, kind: 'pos' }))); return; }
+    if (kind === 'reelles' || kind === 'examen') { this.startReview(positions.map((x) => ({ ...x, kind: 'pos' }))); return; }
     this.next();
   }
 
   colorOf(e) { return this.data.repertoires[e.rep].couleur; }
 
   layout() {
-    const title = this.rush ? L('⚡ Rush réfutations', '⚡ Refutation rush') : { trash: L('⏱ Drill anti-trash', '⏱ Anti-trash drill'), reelles: L('🎯 Positions de mes parties', '🎯 Positions from my games') }[this.kind] || (this.guided ? L('📖 À vous : pratique guidée', '📖 Your turn: guided practice') : L('📚 Lignes du répertoire', '📚 Repertoire lines'));
+    const title = this.rush ? L('⚡ Rush réfutations', '⚡ Refutation rush') : { examen: L('🎯 Test de départ', '🎯 Starting test'), trash: L('⏱ Drill anti-trash', '⏱ Anti-trash drill'), reelles: L('🎯 Positions de mes parties', '🎯 Positions from my games') }[this.kind] || (this.guided ? L('📖 À vous : pratique guidée', '📖 Your turn: guided practice') : L('📚 Lignes du répertoire', '📚 Repertoire lines'));
     this.el.innerHTML = `<div class="train-layout drill" data-drill="${this.kind}">
       <section>
         ${this.rush ? '<div data-rush-top></div>' : ''}
@@ -435,7 +436,9 @@ export class DrillRunner {
     this.reviewing = true;
     this.queue = queue;
     this.$('[data-log]').innerHTML = '';
-    this.log(this.kind === 'reelles'
+    this.log(this.kind === 'examen'
+      ? L('🎯 Test de départ : à chaque position, joue le coup de ton répertoire. Un seul essai, pas de chrono.', '🎯 Starting test: in each position, play your repertoire move. One try, no clock.')
+      : this.kind === 'reelles'
       ? L('🎯 Positions de vos vraies parties : retrouvez le coup de votre répertoire. Une position ratée repasse en fin de liste.', '🎯 Positions from your real games: find your repertoire move. A missed position goes back to the end of the list.')
       : L('🎯 Révision ciblée : seulement les positions ratées, jusqu’à ce qu’elles soient toutes validées.', '🎯 Targeted review: only the missed positions, until they are all solved.'), 'muted');
     this.nextReview();
@@ -445,6 +448,7 @@ export class DrillRunner {
     this.feedback('');
     this.board.hideBubble();
     this.board.setHint(null);
+    if (!this.queue.length && this.kind === 'examen') { this.cur = null; this.done(); return; }
     if (!this.queue.length) {
       this.cur = null;
       this.status(L('Toutes vos erreurs sont corrigées ✔', 'All your mistakes are fixed ✔'), 'player');
@@ -478,6 +482,13 @@ export class DrillRunner {
     this.cur = { pos: true, review: m, color: m.color };
     const quand = m.date ? new Date(m.date).toLocaleDateString(L('fr-FR', 'en-GB')) : '';
     this.$('[data-head]').innerHTML = `<p><strong>${L(`Encore ${this.queue.length} position(s)`, `${this.queue.length} position(s) left`)}</strong>${L(' — partie', ' — game')}${quand ? L(` du ${esc(quand)}`, ` of ${esc(quand)}`) : ''}${m.opp ? L(` contre ${esc(m.opp)}`, ` vs ${esc(m.opp)}`) : ''}${m.url ? ` <a class="tiny" href="${esc(m.url)}" target="_blank" rel="noopener">↗</a>` : ''}${m.ficheNom ? L(` · fiche « ${esc(m.ficheNom)} »`, ` · line “${esc(m.ficheNom)}”`) : ''}</p>`;
+    if (m.examen) {
+      const fait = this.results.length;
+      this.$('[data-head]').innerHTML = `<p><strong>${L(`Position ${fait + 1} / ${fait + this.queue.length}`, `Position ${fait + 1} / ${fait + this.queue.length}`)}</strong> · ${esc(this.data.repertoires[m.rep]?.titre || '')}</p>`;
+      this.status(L(`À toi : quel coup joues-tu ici avec les ${m.color === 'w' ? 'Blancs' : 'Noirs'} ?`, `Your turn: what do you play here with ${m.color === 'w' ? 'White' : 'Black'}?`), 'player');
+      this.draw({ interactive: true });
+      return;
+    }
     const vous = m.played ? L(`vous aviez joué <strong>${esc(sanFr(m.played))}</strong>`, `you played <strong>${esc(sanFr(m.played))}</strong>`) : L('la partie s’est arrêtée là', 'the game stopped there');
     this.status(m.kind === 'punition'
       ? L(`L’adversaire vient de faire l’erreur prévue par la fiche (${vous}) : punissez-la !`, `Your opponent has just made the mistake covered by the line (${vous}): punish it!`)
@@ -494,6 +505,7 @@ export class DrillRunner {
     const k = key(m.moves);
     const inTree = this.tree[rep]?.ours.has(k);
     const bestSan = new Chess(this.chess.fen()).move(toObj(m.expected[0])).san;
+    if (m.examen) { this.onExamenMove(m, mv, bestSan, inTree, rep, k); return; }
     if (m.expected.includes(mv.lan)) {
       this.queue.shift();
       if (inTree) this.gradePos(rep, k, true);
@@ -520,6 +532,33 @@ export class DrillRunner {
       ${m.texte ? `<p class="small">${esc(m.texte)}</p>` : ''}
       <p class="small muted">${L('La position repasse en fin de liste.', 'The position goes back to the end of the list.')}</p>
       <div class="actions"><button type="button" class="primary" data-continue>${L('Continuer', 'Continue')}</button></div></div>`);
+    this.$('[data-continue]').addEventListener('click', () => this.nextReview());
+  }
+
+  // Test de départ : un seul essai par position ; bonne réponse → suivante, sinon le bon coup montré.
+  onExamenMove(m, mv, bestSan, inTree, rep, k) {
+    const c = this.cur;
+    const ok = m.expected.includes(mv.lan);
+    this.queue.shift();
+    if (inTree) this.gradePos(rep, k, ok);
+    this.results.push({ id: m.ficheId, ok });
+    c.wait = true;
+    if (ok) {
+      this.bumpStreak(true);
+      gagner(GAINS.depart);
+      this.chess.move(toObj(mv.lan));
+      this.log(L(`✔ ${esc(sanFr(mv.san))} — « ${esc(m.ficheNom)} »`, `✔ ${esc(sanFr(mv.san))} — “${esc(m.ficheNom)}”`), 'ok');
+      this.draw();
+      this.board.showBubble(L('✔ Bien joué !', '✔ Well played!'), 'ok');
+      this.later(() => this.nextReview(), 900);
+      return;
+    }
+    this.bumpStreak(false);
+    this.board.flashError(mv.to, L(`Ici, ton répertoire joue ${sanFr(bestSan)}.`, `Here, your repertoire plays ${sanFr(bestSan)}.`));
+    this.log(L(`✘ ${esc(sanFr(mv.san))} — ton répertoire : ${esc(sanFr(bestSan))} (« ${esc(m.ficheNom)} »)`, `✘ ${esc(sanFr(mv.san))} — your repertoire: ${esc(sanFr(bestSan))} (“${esc(m.ficheNom)}”)`), 'ko');
+    this.draw({ arrows: [{ from: m.expected[0].slice(0, 2), to: m.expected[0].slice(2, 4), kind: 'best' }] });
+    this.feedback(`<div class="drill-fb ko"><p>${L(`Le coup de ton répertoire est <strong>${esc(sanFr(bestSan))}</strong> (flèche verte), variante « ${esc(m.ficheNom)} ». Tu l’apprendras dans sa leçon.`, `Your repertoire move is <strong>${esc(sanFr(bestSan))}</strong> (green arrow), line “${esc(m.ficheNom)}”. You will learn it in its lesson.`)}</p>
+      <div class="actions"><button type="button" class="primary" data-continue>${L('Position suivante', 'Next position')}</button></div></div>`);
     this.$('[data-continue]').addEventListener('click', () => this.nextReview());
   }
 
@@ -730,6 +769,6 @@ export class DrillRunner {
     this.stopMoveClock();
     const ok = this.results.filter((r) => r.ok).length;
     const times = this.results.filter((r) => r.ok && r.ms).map((r) => r.ms);
-    this.onDone?.({ kind: this.kind, ok, total: this.results.length, best: times.length ? Math.min(...times) : null, rush: this.rush ? { score: this.rush.score } : null });
+    this.onDone?.({ kind: this.kind, ok, total: this.results.length, best: times.length ? Math.min(...times) : null, rush: this.rush ? { score: this.rush.score } : null, results: this.results });
   }
 }

@@ -450,7 +450,7 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 
 `partie:v1`, `partie-precedente:v1`, `reglages:v1` (dont theme/board/accent, eliteCamp), `entrainement`,
 `revision-v1`, `progression-v1`, `mes-parties`, `analyses-v1`, `videos-perso`, `lichess-cache-v1`,
-`youtube-v1`, `rush-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `problemes-v1`, `stockfish-v1`, `langue`, `sync-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`, `sync-cle`.
+`youtube-v1`, `rush-v1`, `xp-v1`, `depart-v1`, `pro` (formule, propre à l'appareil), `installation-v1` (propre à l'appareil), `problemes-v1`, `stockfish-v1`, `langue`, `sync-v1` (propre à l'appareil), `mon-repertoire` (ouvertures choisies) ; **secrets** (jamais exportés) : `jeton-lichess`, `code-acces`, `cle-youtube`, `sync-cle`.
 
 ## 7. Commandes
 
@@ -560,6 +560,18 @@ flashError ; réussite : ligne, anti-trash, Rush, problème, finale ; ⚙ `sons`
 objectif quotidien, notifications de rappel (Web Push via Worker), test de départ en 2 min, « pourquoi ce
 coup ? » rédigé une fois par coup, variantes perso, coups adverses non couverts, accueil avec captures,
 pages publiques par ouverture (SEO).
+
+**Priorité 2 (2026-11-27)** ✅ : **Test de départ** (`depart-core.js` : 5 positions « à nous de jouer » tirées
+des fiches théorie les plus jouées (`entry.freq`), réparties entre ouvertures, autour du coup qui définit
+la variante ; DrillRunner kind `examen` (un essai, bon coup montré) ; `coach-echecs:depart-v1` ; proposé
+par « Continuer » tant qu'aucune leçon n'est suivie ; carte dans la tuile Plus ; bilan avec « 📖 Apprendre »
+des variantes ratées). **XP / niveaux / objectif / badges** (`succes-core.js`, `coach-echecs:xp-v1` :
+gains dans progress.js (ligne 10/2, drill 10/2, 1re leçon 20, erreur corrigée 15), problème 5, finale 15,
+test 5 ; niveau n dès 50 × (n − 1)² XP ; objectif du jour 30/50/100 ; 15 badges calculés sur les vraies
+données ; points de départ des anciens utilisateurs calculés une fois ; message passager `toast`).
+Rappels par notification (Web Push) REPORTÉS : clés VAPID secrètes + tâche planifiée du Worker, iPhone
+seulement appli installée — à faire avec le déménagement Cloudflare. Test e2e « Élite : bloc du Coup
+optimal » parfois instable en suite complète locale (passe seul ; la CI relance une fois).
 
 **Anciennes prochaines étapes (intégrées au plan ci-dessus) :**
 1. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.

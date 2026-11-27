@@ -548,9 +548,10 @@ test('1 clic : état et « Apprendre » depuis le Répertoire, bouton « Continu
   await page.reload();
   const suite = page.locator('.continuer');
   await expect(suite).toContainText('Prochaine étape');
-  await expect(suite).toContainText('Apprendre');
+  // Nouveau venu (aucune leçon terminée) : « Continuer » propose d'abord le test de départ.
+  await expect(suite).toContainText('Test de départ');
   await suite.locator('[data-continuer]').click();
-  await expect(page.locator('[data-panel]')).toContainText('Nom officiel');
+  await expect(page.locator('#page-entrainement [data-drill="examen"]')).toBeVisible();
 });
 
 test('Rush réfutations : 3 vies, score, fin de partie et record', async ({ page }) => {
@@ -586,4 +587,40 @@ test('Rush réfutations : 3 vies, score, fin de partie et record', async ({ page
   await expect(page.locator('.hub-result')).toContainText('nouveau record');
   const d = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:rush-v1')));
   expect(d.parties.length).toBe(1);
+});
+
+test('Test de départ : 5 positions, un essai chacune, bilan avec les variantes à apprendre ; points et niveau', async ({ page }) => {
+  await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
+  await page.goto('./#/entrainement');
+  const suite = page.locator('.continuer');
+  await expect(suite).toContainText('Test de départ');
+  await expect(page.locator('[data-xp-niveau]')).toContainText('Niveau 1');
+  await suite.locator('[data-continuer]').click();
+  await expect(page.locator('#page-entrainement [data-drill="examen"]')).toBeVisible();
+  const sq = (s) => page.locator(`#page-entrainement [data-sq="${s}"]`);
+  for (let i = 0; i < 5; i++) {
+    // Position i affichée et prête (la précédente est terminée).
+    await expect.poll(() => page.evaluate((n) => { const d = window.__coach.training.drill; return !!d && d.results.length === n && !!d.cur && !d.cur.wait; }, i), { timeout: 10000 }).toBe(true);
+    const m = await page.evaluate(() => window.__coach.training.drill.queue[0]);
+    if (i === 0) {
+      // Première position ratée exprès : coup d'un pion du bord.
+      const faux = m.color === 'w' ? ['h2', 'h3'] : ['h7', 'h6'];
+      const legal = await page.evaluate(([f, t]) => window.__coach.training.drill.chess.moves({ verbose: true }).some((x) => x.from === f && x.to === t), faux);
+      if (legal && !m.expected.includes(faux[0] + faux[1])) {
+        await sq(faux[0]).click(); await sq(faux[1]).click();
+        await page.click('#page-entrainement [data-continue]');
+        continue;
+      }
+    }
+    await sq(m.expected[0].slice(0, 2)).click(); await sq(m.expected[0].slice(2, 4)).click();
+  }
+  const res = page.locator('.depart-result');
+  await expect(res).toContainText('Test de départ');
+  await expect(res).toContainText('/ 5');
+  const d = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:depart-v1')));
+  expect(d.total).toBe(5);
+  expect(d.ok).toBeGreaterThanOrEqual(4);
+  // Points gagnés (5 par bonne réponse) : visibles dans l'objectif du jour.
+  await expect(page.locator('[data-xp-objectif]')).toContainText(`${d.ok * 5} / 50 XP`);
+  await expect(page.locator('.continuer')).not.toContainText('Test de départ');
 });

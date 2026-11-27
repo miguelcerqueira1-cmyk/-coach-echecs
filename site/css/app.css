@@ -914,3 +914,19 @@ a.chip { display: inline-flex; align-items: center; text-decoration: none; color
 .train-hub[data-zone-actif="entrainer"] [data-zone]:not([data-zone="entrainer"]),
 .train-hub[data-zone-actif="reflexes"] [data-zone]:not([data-zone="reflexes"]),
 .train-hub[data-zone-actif="plus"] [data-zone]:not([data-zone="plus"]) { display: none; }
+/* Niveau, objectif du jour, badges, message passager */
+.xp-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: .6rem; margin-bottom: .6rem; }
+.xp-box { display: grid; gap: .25rem; padding: .55rem .7rem; border-radius: 12px; background: var(--surface-2); }
+.xp-bar { height: 8px; border-radius: 99px; background: var(--border); overflow: hidden; }
+.xp-bar span { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s; }
+.xp-bar.obj span { background: #3ecf8e; }
+.badges { margin-bottom: .6rem; }
+.badges summary { cursor: pointer; }
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .45rem; margin: .5rem 0; }
+.badge-item { display: grid; justify-items: center; text-align: center; gap: .15rem; padding: .45rem .3rem; border-radius: 10px; background: var(--surface-2); opacity: .45; }
+.badge-item.obtenu { opacity: 1; box-shadow: inset 0 0 0 1px var(--accent); }
+.badge-ico { font-size: 1.4rem; }
+.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 1000; max-width: calc(100% - 32px); padding: .7rem 1rem; border-radius: 14px; background: var(--surface); color: var(--text); border: 1px solid var(--accent); box-shadow: var(--shadow); font-weight: 600; transition: opacity .5s, transform .5s; }
+.toast.out { opacity: 0; transform: translate(-50%, 10px); }
+.xp-box label { display: flex; align-items: center; gap: .4rem; }
+.xp-box select { width: auto; min-height: 30px; padding: .1rem .4rem; font-size: .8rem; }
