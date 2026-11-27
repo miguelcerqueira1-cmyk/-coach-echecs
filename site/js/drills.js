@@ -1,6 +1,6 @@
 // Modules d'exercices de la page Entraînement :
 // - « Lignes » : l'application joue les coups adverses d'une fiche, vous jouez les vôtres ;
-//   une erreur affiche le plan et le bon coup ;
+//   une erreur affiche le bon coup et « Pourquoi ce coup ? » (à défaut, le plan) ;
 // - « Anti-trash » : un coup douteux adverse est joué, vous devez enchaîner la punition
 //   de la fiche avant la fin du chronomètre.
 // Coup refusé : case rouge, secousse et bulle (raison tirée de chess.js ou du piège de la fiche).

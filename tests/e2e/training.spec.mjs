@@ -150,7 +150,9 @@ test('Lignes : l’application joue l’adversaire, erreur refusée et expliqué
   await expect(streak).toHaveText('🔥 Série : 0');
   const fb = page.locator('#page-entrainement [data-feedback]');
   await expect(fb).toContainText('Le bon coup : c4');
-  await expect(fb).toContainText('Plan de la fiche');
+  // Le Gambit Dame a ses « 💡 Pourquoi ce coup ? » : l'explication du coup remplace le plan.
+  await expect(fb).toContainText('💡 Pourquoi c4 ?');
+  await expect(fb).toContainText('détourner ce défenseur du centre');
   await page.click('[data-continue]');
   for (let i = 4; i < line.length; i += 2) await ours(page, line[i]);
   await expect(log).toContainText('Ligne terminée');

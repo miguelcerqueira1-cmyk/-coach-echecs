@@ -505,7 +505,7 @@ peaufinage (Entraînement en 4 tuiles, fiches repliées, sons/vibrations, bouton
 provisoire pendant le calcul ; test de départ ; XP / niveaux / objectif du jour / badges ; « 💡 Pourquoi ce
 coup ? » Caro-Kann (ton et longueur VALIDÉS par l'utilisatrice le 2026-11-27 : « très propre »).
 
-**Prochaine étape convenue** : étendre « 💡 Pourquoi ce coup ? » aux 28 autres répertoires (≈ 2 200 coups),
+**Prochaine étape convenue** : étendre « 💡 Pourquoi ce coup ? » aux 27 répertoires restants (gd fait le 2026-11-27),
 par lots, des plus jouées aux moins jouées (ordre conseillé : gd, sicilienne, londres, nimzo-qid, najdorf,
 italienne, espagnole, e5-noirs, francaise, gdr-noirs…), même méthode que ck (voir le paragraphe dédié),
 un répertoire = un fichier `site/data/pourquoi/<rep>.json`, contrôle `verifie-pourquoi.mjs`, tests, publication.
@@ -595,8 +595,9 @@ fichier `site/data/pourquoi/<rep>.json` ({ clé: [fr, en] }), contrôle `node sc
 clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, coups de pièce cités légaux avant/après ou
 présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
 Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
-Fait : **ck 242 / 242** (ton validé). À faire : les 28 autres répertoires (≈ 2 200 coups), des plus jouées aux
-moins jouées. Conseils de rédaction : 1 phrase courte, le « pourquoi » (centre, développement, gain de temps,
+Fait : **ck 242 / 242** (ton validé), **gd 283 / 283** (2026-11-27). À faire : les 27 autres répertoires (≈ 1 900 coups),
+des plus jouées aux moins jouées (suivant : sicilienne). Le Gambit Dame ayant ses textes, le test e2e « Lignes » attend
+« 💡 Pourquoi c4 ? » (et non plus le plan) après l'erreur volontaire. Conseils de rédaction : 1 phrase courte, le « pourquoi » (centre, développement, gain de temps,
 clouage, rupture, plan de la fiche), jamais de chiffre ; vérifier chaque affirmation (une case « défendue »,
 une pièce « attaquée ») sur la position ; le contrôle refuse les coups cités impossibles.
 
