@@ -1491,9 +1491,9 @@
    "rep": "dragon"
   },
   "kid-classique": {
-   "n": 19,
-   "ply": 14,
-   "coup": "d5",
+   "n": 2,
+   "ply": 16,
+   "coup": "Ne1",
    "rep": "indienne-roi"
   },
   "kid-echange": {
@@ -1503,9 +1503,9 @@
    "rep": "indienne-roi"
   },
   "kid-samisch": {
-   "n": 12,
-   "ply": 8,
-   "coup": "f3",
+   "n": 4,
+   "ply": 10,
+   "coup": "Be3",
    "rep": "indienne-roi"
   },
   "kid-quatre-pions": {
@@ -1515,21 +1515,123 @@
    "rep": "indienne-roi"
   },
   "kid-averbakh": {
-   "n": 69,
-   "ply": 8,
-   "coup": "Be2",
+   "n": 11,
+   "ply": 10,
+   "coup": "Bg5",
    "rep": "indienne-roi"
   },
   "kid-fianchetto": {
-   "n": 37,
-   "ply": 4,
-   "coup": "Nf3",
+   "n": 21,
+   "ply": 10,
+   "coup": "O-O",
    "rep": "indienne-roi"
   },
   "kid-cxe4": {
    "n": 161,
    "ply": 7,
    "coup": "d6",
+   "rep": "indienne-roi"
+  },
+  "kid-cf3-cc3": {
+   "n": 57,
+   "ply": 6,
+   "coup": "Nc3",
+   "rep": "indienne-roi"
+  },
+  "kid-makogonov": {
+   "n": 43,
+   "ply": 8,
+   "coup": "h3",
+   "rep": "indienne-roi"
+  },
+  "kid-averbakh-cf3": {
+   "n": 37,
+   "ply": 10,
+   "coup": "Nf3",
+   "rep": "indienne-roi"
+  },
+  "kid-be2-fe3": {
+   "n": 26,
+   "ply": 10,
+   "coup": "Be3",
+   "rep": "indienne-roi"
+  },
+  "kid-g3": {
+   "n": 18,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "indienne-roi"
+  },
+  "kid-h3-cf3": {
+   "n": 18,
+   "ply": 10,
+   "coup": "h3",
+   "rep": "indienne-roi"
+  },
+  "kid-gligoric-direct": {
+   "n": 17,
+   "ply": 12,
+   "coup": "Be3",
+   "rep": "indienne-roi"
+  },
+  "kid-petrosian": {
+   "n": 16,
+   "ply": 12,
+   "coup": "d5",
+   "rep": "indienne-roi"
+  },
+  "kid-bayonet": {
+   "n": 14,
+   "ply": 16,
+   "coup": "b4",
+   "rep": "indienne-roi"
+  },
+  "kid-f3": {
+   "n": 12,
+   "ply": 4,
+   "coup": "f3",
+   "rep": "indienne-roi"
+  },
+  "kid-fianchetto-cc3": {
+   "n": 12,
+   "ply": 10,
+   "coup": "Nc3",
+   "rep": "indienne-roi"
+  },
+  "kid-samisch-fg5": {
+   "n": 10,
+   "ply": 10,
+   "coup": "Bg5",
+   "rep": "indienne-roi"
+  },
+  "kid-cf3-c4": {
+   "n": 49,
+   "ply": 4,
+   "coup": "c4",
+   "rep": "indienne-roi"
+  },
+  "kid-londres": {
+   "n": 31,
+   "ply": 4,
+   "coup": "Bf4",
+   "rep": "indienne-roi"
+  },
+  "kid-cf3-g3": {
+   "n": 20,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "indienne-roi"
+  },
+  "kid-trompowsky": {
+   "n": 215,
+   "ply": 2,
+   "coup": "Bg5",
+   "rep": "indienne-roi"
+  },
+  "kid-150": {
+   "n": 80,
+   "ply": 2,
+   "coup": "Bf4",
    "rep": "indienne-roi"
   },
   "gdrn-orthodoxe": {
