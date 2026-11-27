@@ -3,6 +3,7 @@
 // l'ouverture atteint à chaque étape et des commentaires factuels ; 3. à retenir (cases,
 // échanges, piège, punition — séquences jouables coup par coup sur l'échiquier —, vidéos) ;
 // 4. à vous : pratique guidée (indices, puis le coup).
+import { chargerPourquoi, pourquoi } from './pourquoi.js';
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
@@ -36,6 +37,8 @@ export class LessonView {
     this.ply = -1; // -1 = position de départ
     this.timer = null;
     this.alive = true;
+    this.pq = null; // explications « Pourquoi ce coup ? » du répertoire (chargées à part)
+    chargerPourquoi(entry.rep).then((t) => { if (t && this.alive) { this.pq = t; if (this.stage === 1) this.render(); } });
     this.layout();
     // Ouverture directe depuis « Mes parties dans cette variante » : étape « Les coups », sur l'écart.
     const i = cmpGameId ? this.mesParties.findIndex((r) => r.gameId === cmpGameId) : -1;
@@ -159,6 +162,7 @@ export class LessonView {
           <h2 class="lesson-move ${s.ours ? 'ours' : 'theirs'}">${esc(s.label)}</h2>
           ${s.nom ? `<p class="lesson-newname">${L('📛 Vous entrez dans : ', '📛 You are entering: ')}<strong>${esc(s.nom.fr)}</strong> <span class="muted tiny">(${esc(s.nom.eco)})</span></p>` : ''}
           ${this.cmpLigneHtml()}
+          ${(() => { const q = !s.moteur && pourquoi(this.pq, s.fen, s.uci, langue()); return q ? `<p class="lesson-pourquoi" data-pourquoi><strong>${L('💡 Pourquoi ce coup ?', '💡 Why this move?')}</strong> ${esc(q)}</p>` : ''; })()}
           <ul class="lesson-notes">${s.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>
           ${this.ply === total - 1 ? `<div class="actions"><button type="button" class="primary" data-next>${L('À retenir →', 'Key points →')}</button></div>` : ''}</div>`;
         under.querySelector('[data-next]')?.addEventListener('click', () => this.go(2));

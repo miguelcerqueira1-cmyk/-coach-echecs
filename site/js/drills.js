@@ -19,6 +19,7 @@ import { recordLine, recordDrill, saveProgress } from './progress.js';
 import { langue } from './i18n.js';
 import { VIES, tempsRush, melanger, charger as chargerRush } from './rush-core.js';
 import { sons } from './sons.js';
+import { chargerPourquoi, pourquoi } from './pourquoi.js';
 import { gagner, GAINS } from './succes-core.js';
 
 // Phrases en français ou en anglais selon la langue de l'interface.
@@ -69,6 +70,9 @@ export class DrillRunner {
     this.streak = { cur: 0, best: 0 };
     this.reviewing = false;
     this.alive = true;
+    // Explications « Pourquoi ce coup ? » des répertoires de la séance (chargées à part).
+    this.pq = {};
+    for (const rep of new Set(this.entries.map((e) => e.rep))) chargerPourquoi(rep).then((t) => { if (t) this.pq[rep] = t; });
     this.layout();
     if (kind === 'reelles' || kind === 'examen') { this.startReview(positions.map((x) => ({ ...x, kind: 'pos' }))); return; }
     this.next();
@@ -338,11 +342,13 @@ export class DrillRunner {
     const trap = t.traps.get(k);
     const isTrap = trap?.uci === mv.lan;
     const plan = c.e.plan ? `<p class="small"><strong>${L('Plan de la fiche :', 'Line plan:')}</strong> ${esc(c.e.plan)}</p>` : '';
+    const q = !step.moteur && pourquoi(this.pq?.[c.e.rep], this.chess.fen(), step.uci, langue());
+    const pq = q ? `<p class="small lesson-pourquoi"><strong>${L(`💡 Pourquoi ${esc(good)} ?`, `💡 Why ${esc(good)}?`)}</strong> ${esc(q)}</p>` : '';
     this.feedback(`<div class="drill-fb ko">
       <p>${L(`✘ <strong>${esc(sanFr(mv.san))}</strong> n’est pas le coup de la ligne. Le bon coup : <strong>${esc(good)}</strong> (flèche verte).`, `✘ <strong>${esc(sanFr(mv.san))}</strong> is not the line’s move. The right move: <strong>${esc(good)}</strong> (green arrow).`)}</p>
       ${isTrap ? `<p class="small">${L('⚠ C’est le piège de la fiche : ', '⚠ This is the line’s trap: ')}${esc(trap.texte)}</p>` : ''}
       ${step.moteur ? L('<p class="small muted">🤖 Ce coup fait partie de la suite conseillée par Stockfish, au-delà de la fiche.</p>', '<p class="small muted">🤖 This move is part of the continuation recommended by Stockfish, beyond the line.</p>') : ''}
-      ${plan}
+      ${pq || plan}
       <p class="small muted">${L('Elle sera proposée dans « Refaire mes erreurs de la séance » à la fin.', 'It will come back in “Redo my mistakes from this session” at the end.')}</p>
       <div class="actions"><button type="button" class="primary" data-continue>${L('J’ai compris, continuer', 'Got it, continue')}</button></div>
     </div>`);

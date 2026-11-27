@@ -930,3 +930,4 @@ a.chip { display: inline-flex; align-items: center; text-decoration: none; color
 .toast.out { opacity: 0; transform: translate(-50%, 10px); }
 .xp-box label { display: flex; align-items: center; gap: .4rem; }
 .xp-box select { width: auto; min-height: 30px; padding: .1rem .4rem; font-size: .8rem; }
+.lesson-pourquoi { margin: .5rem 0; padding: .55rem .7rem; border-radius: 10px; background: color-mix(in srgb, var(--accent) 14%, transparent); border-left: 3px solid var(--accent); line-height: 1.45; }
