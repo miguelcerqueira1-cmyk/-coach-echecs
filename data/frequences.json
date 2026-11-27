@@ -669,21 +669,123 @@
    "rep": "anglaise"
   },
   "ang-gd": {
-   "n": 20,
-   "ply": 3,
-   "coup": "e6",
+   "n": 108,
+   "ply": 7,
+   "coup": "Be7",
    "rep": "anglaise"
   },
   "ang-e6-echange": {
-   "n": 204,
-   "ply": 1,
-   "coup": "e6",
+   "n": 200,
+   "ply": 7,
+   "coup": "exd5",
    "rep": "anglaise"
   },
   "ang-d5": {
    "n": 1,
    "ply": 1,
    "coup": "d5",
+   "rep": "anglaise"
+  },
+  "ang-ragozine": {
+   "n": 84,
+   "ply": 7,
+   "coup": "Bb4",
+   "rep": "anglaise"
+  },
+  "ang-semi-slave": {
+   "n": 78,
+   "ply": 7,
+   "coup": "c6",
+   "rep": "anglaise"
+  },
+  "ang-cbd7": {
+   "n": 58,
+   "ply": 7,
+   "coup": "Nbd7",
+   "rep": "anglaise"
+  },
+  "ang-semi-tarrasch": {
+   "n": 40,
+   "ply": 7,
+   "coup": "c5",
+   "rep": "anglaise"
+  },
+  "ang-dxc4": {
+   "n": 32,
+   "ply": 7,
+   "coup": "dxc4",
+   "rep": "anglaise"
+  },
+  "ang-e6-fe7": {
+   "n": 32,
+   "ply": 5,
+   "coup": "Be7",
+   "rep": "anglaise"
+  },
+  "ang-e6-c6": {
+   "n": 26,
+   "ply": 5,
+   "coup": "c6",
+   "rep": "anglaise"
+  },
+  "ang-e6-c5": {
+   "n": 24,
+   "ply": 5,
+   "coup": "c5",
+   "rep": "anglaise"
+  },
+  "ang-e6-a6": {
+   "n": 20,
+   "ply": 5,
+   "coup": "a6",
+   "rep": "anglaise"
+  },
+  "ang-e6-cxd5": {
+   "n": 14,
+   "ply": 7,
+   "coup": "Nxd5",
+   "rep": "anglaise"
+  },
+  "ang-c6": {
+   "n": 66,
+   "ply": 1,
+   "coup": "c6",
+   "rep": "anglaise"
+  },
+  "ang-g6": {
+   "n": 35,
+   "ply": 1,
+   "coup": "g6",
+   "rep": "anglaise"
+  },
+  "ang-e5-fb4": {
+   "n": 27,
+   "ply": 3,
+   "coup": "Bb4",
+   "rep": "anglaise"
+  },
+  "ang-b6": {
+   "n": 22,
+   "ply": 1,
+   "coup": "b6",
+   "rep": "anglaise"
+  },
+  "ang-cf6-e5": {
+   "n": 32,
+   "ply": 3,
+   "coup": "e5",
+   "rep": "anglaise"
+  },
+  "ang-e5-cc6": {
+   "n": 11,
+   "ply": 3,
+   "coup": "Nc6",
+   "rep": "anglaise"
+  },
+  "ang-f5": {
+   "n": 11,
+   "ply": 1,
+   "coup": "f5",
    "rep": "anglaise"
   },
   "ck-avance-short": {
