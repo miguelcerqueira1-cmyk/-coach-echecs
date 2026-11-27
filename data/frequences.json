@@ -171,9 +171,9 @@
    "rep": "gd"
   },
   "ita-pianissimo": {
-   "n": 77,
-   "ply": 6,
-   "coup": "d3",
+   "n": 13,
+   "ply": 11,
+   "coup": "a6",
    "rep": "italienne"
   },
   "ita-evans": {
@@ -183,9 +183,9 @@
    "rep": "italienne"
   },
   "ita-deux-cavaliers-cg5": {
-   "n": 33,
-   "ply": 7,
-   "coup": "d5",
+   "n": 18,
+   "ply": 11,
+   "coup": "c6",
    "rep": "italienne"
   },
   "ita-deux-cavaliers-d4": {
@@ -195,9 +195,9 @@
    "rep": "italienne"
   },
   "ita-deux-cavaliers-d3": {
-   "n": 144,
-   "ply": 6,
-   "coup": "d3",
+   "n": 44,
+   "ply": 7,
+   "coup": "Be7",
    "rep": "italienne"
   },
   "ita-hongroise": {
@@ -216,6 +216,60 @@
    "n": 1,
    "ply": 7,
    "coup": "Bc5",
+   "rep": "italienne"
+  },
+  "ita-petrov": {
+   "n": 131,
+   "ply": 3,
+   "coup": "Nf6",
+   "rep": "italienne"
+  },
+  "ita-philidor": {
+   "n": 45,
+   "ply": 3,
+   "coup": "d6",
+   "rep": "italienne"
+  },
+  "ita-elephant": {
+   "n": 23,
+   "ply": 3,
+   "coup": "d5",
+   "rep": "italienne"
+  },
+  "ita-letton": {
+   "n": 12,
+   "ply": 3,
+   "coup": "f5",
+   "rep": "italienne"
+  },
+  "ita-dc-d3-fc5": {
+   "n": 59,
+   "ply": 7,
+   "coup": "Bc5",
+   "rep": "italienne"
+  },
+  "ita-dc-d3-h6": {
+   "n": 28,
+   "ply": 7,
+   "coup": "h6",
+   "rep": "italienne"
+  },
+  "ita-pianissimo-a5": {
+   "n": 28,
+   "ply": 11,
+   "coup": "a5",
+   "rep": "italienne"
+  },
+  "ita-dc-cg5-fd7": {
+   "n": 8,
+   "ply": 11,
+   "coup": "Bd7",
+   "rep": "italienne"
+  },
+  "ita-giuoco-d6": {
+   "n": 7,
+   "ply": 7,
+   "coup": "d6",
    "rep": "italienne"
   },
   "esp-fermee": {
