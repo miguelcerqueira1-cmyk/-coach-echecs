@@ -1551,9 +1551,9 @@
    "rep": "gdr-noirs"
   },
   "gdrn-slave": {
-   "n": 158,
-   "ply": 4,
-   "coup": "Nf3",
+   "n": 80,
+   "ply": 6,
+   "coup": "Nc3",
    "rep": "gdr-noirs"
   },
   "gdrn-slave-echange": {
@@ -1569,15 +1569,111 @@
    "rep": "gdr-noirs"
   },
   "gdrn-colle": {
-   "n": 353,
-   "ply": 2,
-   "coup": "Nf3",
+   "n": 42,
+   "ply": 4,
+   "coup": "e3",
    "rep": "gdr-noirs"
   },
   "gdrn-bdg": {
    "n": 11,
    "ply": 2,
    "coup": "e4",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-cf3-orthodoxe": {
+   "n": 35,
+   "ply": 8,
+   "coup": "Bg5",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-cf3-cf6": {
+   "n": 206,
+   "ply": 4,
+   "coup": "c4",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-cc3-ff4": {
+   "n": 41,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-cf3-ff4": {
+   "n": 60,
+   "ply": 8,
+   "coup": "Bf4",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-catalane": {
+   "n": 195,
+   "ply": 6,
+   "coup": "g3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-londres-cf3": {
+   "n": 156,
+   "ply": 4,
+   "coup": "Bf4",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-semi-slave": {
+   "n": 69,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-slave-e3": {
+   "n": 46,
+   "ply": 6,
+   "coup": "e3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-jobava": {
+   "n": 59,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-c3": {
+   "n": 38,
+   "ply": 4,
+   "coup": "c3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-slave-g3": {
+   "n": 35,
+   "ply": 6,
+   "coup": "g3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-fg5": {
+   "n": 32,
+   "ply": 2,
+   "coup": "Bg5",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-torre": {
+   "n": 28,
+   "ply": 4,
+   "coup": "Bg5",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-slave-cxd5": {
+   "n": 22,
+   "ply": 6,
+   "coup": "cxd5",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-cf3-g3": {
+   "n": 21,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "gdr-noirs"
+  },
+  "gdrn-slave-dc2": {
+   "n": 14,
+   "ply": 6,
+   "coup": "Qc2",
    "rep": "gdr-noirs"
   },
   "cl-c5-db6": {
