@@ -12961,6 +12961,290 @@
     },
     "pov": "w"
    }
+  },
+  "scan-cf3-da5": {
+   "fp": "21f24421",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 50,
+    "best": "Nh4",
+    "pv": [
+     "Nh4",
+     "Bg4",
+     "f3",
+     "Qh5",
+     "g3",
+     "Bh3"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-g3": {
+   "fp": "e23fddeb",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 0,
+    "best": "d4",
+    "pv": [
+     "d4",
+     "O-O",
+     "Qd3",
+     "Rd8",
+     "Ne4",
+     "Nxe4"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-5fc4": {
+   "fp": "328305ce",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 62,
+    "best": "Ng3",
+    "pv": [
+     "Ng3",
+     "Nbd7",
+     "d5",
+     "Bg6",
+     "Qe2",
+     "cxd5"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-5fd2": {
+   "fp": "215e8601",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 50,
+    "best": "Nh4",
+    "pv": [
+     "Nh4",
+     "Bg4",
+     "f3",
+     "Qh5",
+     "g3",
+     "Bh3"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-6fd2": {
+   "fp": "7d1dfb8d",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 50,
+    "best": "Nh4",
+    "pv": [
+     "Nh4",
+     "Bg4",
+     "f3",
+     "Qh5",
+     "g3",
+     "Bh3"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-ce5": {
+   "fp": "209d435e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 45,
+    "best": "O-O",
+    "pv": [
+     "O-O",
+     "Bf5",
+     "a4",
+     "e6",
+     "Bxf5",
+     "gxf5"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-cf6-fb5": {
+   "fp": "68b2adaa",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 50,
+    "best": "Nge2",
+    "pv": [
+     "Nge2",
+     "Nb6",
+     "b3",
+     "Nfxd5",
+     "Nxd5",
+     "Nxd5"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-dd6-cf3": {
+   "fp": "a307ef9d",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 65,
+    "best": "O-O",
+    "pv": [
+     "O-O",
+     "O-O-O",
+     "h3",
+     "Bxf3",
+     "Qxf3",
+     "Qxd4"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-cf6-cf3": {
+   "fp": "ece404ce",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 72,
+    "best": "a4",
+    "pv": [
+     "a4",
+     "Bg4",
+     "a5",
+     "N6d7",
+     "Be2",
+     "Nc6"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-d3": {
+   "fp": "ca1b0089",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 5,
+    "best": "Bb5",
+    "pv": [
+     "Bb5",
+     "Nf6",
+     "f3",
+     "Bd7",
+     "Nd2",
+     "a6"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-7ce5": {
+   "fp": "a38a682a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -19,
+    "best": "Qf3",
+    "pv": [
+     "Qf3",
+     "Qb6",
+     "Be2",
+     "Qxd4",
+     "Be3",
+     "Qd6"
+    ],
+    "pov": "w"
+   }
+  },
+  "scan-cf6-cc3": {
+   "fp": "9ecb042b",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 50,
+    "best": "O-O",
+    "pv": [
+     "O-O",
+     "Be7",
+     "a4",
+     "O-O",
+     "a5",
+     "Nd7"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 8,
+    "errorSan": "Bxf7+",
+    "final": {
+     "type": "cp",
+     "value": 239,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 233,
+     "best": "Kxf7",
+     "pv": [
+      "Kxf7",
+      "Nf3",
+      "Kg8",
+      "d4",
+      "Bf5",
+      "O-O"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "scan-2cf3": {
+   "fp": "81d08f33",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -213,
+    "best": "Nc3",
+    "pv": [
+     "Nc3",
+     "h6",
+     "Nf3",
+     "e6",
+     "Be3",
+     "Nge7"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 6,
+    "errorSan": "Nxf7",
+    "final": {
+     "type": "cp",
+     "value": 301,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 313,
+     "best": "Kxf7",
+     "pv": [
+      "Kxf7",
+      "g4",
+      "Bg6",
+      "d4",
+      "e6",
+      "Nc3"
+     ]
+    },
+    "pov": "b"
+   }
   }
  }
 }

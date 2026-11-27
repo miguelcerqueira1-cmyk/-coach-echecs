@@ -1365,9 +1365,9 @@
    "rep": "francaise"
   },
   "scan-da5": {
-   "n": 56,
-   "ply": 6,
-   "coup": "d4",
+   "n": 2,
+   "ply": 12,
+   "coup": "Bd2",
    "rep": "scandinave"
   },
   "scan-da5-fc4": {
@@ -1377,9 +1377,9 @@
    "rep": "scandinave"
   },
   "scan-dd6": {
-   "n": 13,
-   "ply": 5,
-   "coup": "Qd6",
+   "n": 8,
+   "ply": 6,
+   "coup": "d4",
    "rep": "scandinave"
   },
   "scan-cf3": {
@@ -1409,6 +1409,84 @@
   "scan-cc3": {
    "n": 16,
    "ply": 2,
+   "coup": "Nc3",
+   "rep": "scandinave"
+  },
+  "scan-cf3-da5": {
+   "n": 13,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "scandinave"
+  },
+  "scan-g3": {
+   "n": 9,
+   "ply": 6,
+   "coup": "g3",
+   "rep": "scandinave"
+  },
+  "scan-5fc4": {
+   "n": 8,
+   "ply": 8,
+   "coup": "Bc4",
+   "rep": "scandinave"
+  },
+  "scan-5fd2": {
+   "n": 8,
+   "ply": 8,
+   "coup": "Bd2",
+   "rep": "scandinave"
+  },
+  "scan-6fd2": {
+   "n": 6,
+   "ply": 10,
+   "coup": "Bd2",
+   "rep": "scandinave"
+  },
+  "scan-ce5": {
+   "n": 5,
+   "ply": 10,
+   "coup": "Ne5",
+   "rep": "scandinave"
+  },
+  "scan-cf6-fb5": {
+   "n": 7,
+   "ply": 4,
+   "coup": "Bb5+",
+   "rep": "scandinave"
+  },
+  "scan-2cf3": {
+   "n": 5,
+   "ply": 2,
+   "coup": "Nf3",
+   "rep": "scandinave"
+  },
+  "scan-dd6-cf3": {
+   "n": 5,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "scandinave"
+  },
+  "scan-cf6-cf3": {
+   "n": 5,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "scandinave"
+  },
+  "scan-d3": {
+   "n": 4,
+   "ply": 2,
+   "coup": "d3",
+   "rep": "scandinave"
+  },
+  "scan-7ce5": {
+   "n": 4,
+   "ply": 12,
+   "coup": "Ne5",
+   "rep": "scandinave"
+  },
+  "scan-cf6-cc3": {
+   "n": 4,
+   "ply": 4,
    "coup": "Nc3",
    "rep": "scandinave"
   },
