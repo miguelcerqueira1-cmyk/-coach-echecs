@@ -1,4 +1,4 @@
-# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-11-26)
+# CLAUDE.md — BlitzRefute, ex-Coach Échecs (synthèse du projet, mise à jour le 2026-11-27)
 
 À lire en premier dans toute nouvelle session. Le code complet est dans le dépôt : ce fichier
 explique le but, l'organisation, les choix et les règles. Ne pas y recopier de code.
@@ -493,10 +493,24 @@ gh workflow run elite.yml -R miguelcerqueira1-cmyk/-coach-echecs --ref main -f m
   français, et économiser les tokens (pas de surveillance CI continue inutile, agents parallèles
   seulement pour les gros chantiers).
 
-## 8 bis. Où on en est (2026-11-26) et prochaines étapes
+## 8 bis. Où on en est (2026-11-27) et prochaines étapes
 
-**Tout est publié sur `main`** (site en ligne à jour au 2026-11-24 ; branche de travail de la session
-du 24/11 : `claude/keen-goodall-97v7qe`). Plus rien « en attente de publication ».
+**Tout est publié sur `main`** (site en ligne à jour au 2026-11-27, dernier deploy.yml réussi ; branche de
+travail de la session des 26–27/11 : `claude/hopeful-davinci-99nq74`). Plus rien « en attente de publication ».
+
+**Résumé de la session des 26–27/11 (tout en ligne)** : outil d'empreinte de code Pro ; badge « Claude :
+erreur » corrigé ; « les plus jouées d'abord » pour toutes les ouvertures ; plan V1 étapes 1 à 5 (réglages
+simplifiés, comparatif Gratuit/Pro, « 1 clic » + Continuer, Rush réfutations, pages légales + FAQ acheteur) ;
+peaufinage (Entraînement en 4 tuiles, fiches repliées, sons/vibrations, bouton Lichess) ; meilleur coup
+provisoire pendant le calcul ; test de départ ; XP / niveaux / objectif du jour / badges ; « 💡 Pourquoi ce
+coup ? » Caro-Kann (ton et longueur VALIDÉS par l'utilisatrice le 2026-11-27 : « très propre »).
+
+**Prochaine étape convenue** : étendre « 💡 Pourquoi ce coup ? » aux 28 autres répertoires (≈ 2 200 coups),
+par lots, des plus jouées aux moins jouées (ordre conseillé : gd, sicilienne, londres, nimzo-qid, najdorf,
+italienne, espagnole, e5-noirs, francaise, gdr-noirs…), même méthode que ck (voir le paragraphe dédié),
+un répertoire = un fichier `site/data/pourquoi/<rep>.json`, contrôle `verifie-pourquoi.mjs`, tests, publication.
+Ensuite au choix de l'utilisatrice : variantes perso, coups adverses non couverts, accueil plus vendeur +
+pages publiques par ouverture (SEO). Puis partie B du plan (après la micro-entreprise).
 
 **Fait et en ligne :**
 - Contenu : 29 répertoires, 269 fiches vérifiées par Stockfish (profondeur 18), site bilingue FR/EN.
@@ -581,8 +595,10 @@ fichier `site/data/pourquoi/<rep>.json` ({ clé: [fr, en] }), contrôle `node sc
 clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, coups de pièce cités légaux avant/après ou
 présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
 Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
-Fait : **ck 242 / 242**. À faire si l'utilisatrice valide le ton : les 28 autres répertoires (≈ 2 200 coups),
-des plus jouées aux moins jouées.
+Fait : **ck 242 / 242** (ton validé). À faire : les 28 autres répertoires (≈ 2 200 coups), des plus jouées aux
+moins jouées. Conseils de rédaction : 1 phrase courte, le « pourquoi » (centre, développement, gain de temps,
+clouage, rupture, plan de la fiche), jamais de chiffre ; vérifier chaque affirmation (une case « défendue »,
+une pièce « attaquée ») sur la position ; le contrôle refuse les coups cités impossibles.
 
 **Anciennes prochaines étapes (intégrées au plan ci-dessus) :**
 1. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
@@ -593,7 +609,10 @@ des plus jouées aux moins jouées.
    via le Worker ; branche `licences-pro` écrite avant le grand public, à adapter aux 29 répertoires),
    achat test. Idées plus tard : statistiques par fiche, Android (TWA) si les ventes suivent.
 
-**Côté utilisateur :** micro-entreprise (pas encore créée), nom officiel (« BlitzRefute » changera),
+**Côté utilisateur :** micro-entreprise (pas encore créée ; guide pas à pas donné le 2026-11-26 :
+formalites.entreprises.gouv.fr, gratuit, micro-entrepreneur ; si une micro-entreprise existe déjà, AJOUTER une
+activité au lieu d'en créer une 2e ; ensuite envoyer nom, SIRET, adresse → `site/data/legal.js`, choisir un
+médiateur de la consommation), nom officiel (« BlitzRefute » changera),
 nom de domaine, compte Lemon Squeezy. Comptes déjà créés : Cloudflare (blitzrefute@gmail.com,
 sous-domaine blitzrefute.workers.dev), GitHub miguelcerqueira1-cmyk (mot de passe à retrouver /
 noter : l'utilisateur ne s'en souvenait plus le 24/11).
