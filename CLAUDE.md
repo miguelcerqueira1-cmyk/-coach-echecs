@@ -15,9 +15,10 @@ Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Vienno
 Anglaise), contre 1.e4 (Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Philidor,
 Najdorf, Dragon), contre 1.c4 / 1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4
 (+ Grünfeld, Benoni / Benko, Bogo-indienne) (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **269 fiches** (2026-11-23) : Gambit Dame 31,
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **280 fiches** (2026-11-27) : Gambit Dame 31,
 Caro-Kann 27 (répertoire historique du créateur), Italienne 12, Espagnole 13, Londres 12, Écossaise 10,
-Anglaise 8, 1…e5 8, Sicilienne 9 (système Taimanov), Française 8, Scandinave 8, Indienne du Roi 8,
+Anglaise 8, 1…e5 8, Sicilienne 20 (système Taimanov ; 11 fiches ajoutées le 2026-11-27 d'après les coups adverses
+les plus fréquents des données Élite), Française 8, Scandinave 8, Indienne du Roi 8,
 GD refusé / Slave 10, Contre le Londres 8, Hollandaise 5, Nimzo / Indienne de la Dame 8, Pirc 7, Alekhine 8, Catalane 8, Grünfeld 8, Najdorf 7,
 Dragon 7, Contre l'Anglaise 5, Contre 1.Cf3 6, Benoni / Benko 6,
 Bogo-indienne 5, Philidor 5, Viennoise 6, Smith-Morra 6 ; toutes
@@ -192,7 +193,7 @@ tests/e2e/                    Playwright, vrai Stockfish : app, lichess, elite, 
 - **Cours « les plus jouées d'abord »** : `scripts/frequences.mjs` → `data/frequences.json` (nombre
   de parties Élite où le coup qui définit la fiche a été joué) → `entry.freq` ; ordre par défaut
   quand le répertoire a des données, bascule « Ordre conseillé ». **Toutes les ouvertures depuis le
-  2026-11-26** (228 fiches / 269 ont une fréquence ; données Élite du 26/11, 13 091 parties).
+  2026-11-26** (237 fiches / 280 ont une fréquence ; données Élite rafraîchies le 27/11).
   Données figées : relancer `node scripts/frequences.mjs` pour les rafraîchir.
 - **Ma routine du jour** (`routine-core.js`, carte en haut de l'Entraînement) : 6 blocs lun–sam
   (tactique anti-tunnel sur thèmes Lichess « Pièce en prise » / « Coup défensif » en alternance,
@@ -505,7 +506,7 @@ peaufinage (Entraînement en 4 tuiles, fiches repliées, sons/vibrations, bouton
 provisoire pendant le calcul ; test de départ ; XP / niveaux / objectif du jour / badges ; « 💡 Pourquoi ce
 coup ? » Caro-Kann (ton et longueur VALIDÉS par l'utilisatrice le 2026-11-27 : « très propre »).
 
-**Prochaine étape convenue** : étendre « 💡 Pourquoi ce coup ? » aux 27 répertoires restants (gd fait le 2026-11-27),
+**Prochaine étape convenue** : compléter les fiches puis « 💡 Pourquoi ce coup ? » des 26 répertoires restants (gd, sicilienne faits le 2026-11-27),
 par lots, des plus jouées aux moins jouées (ordre conseillé : gd, sicilienne, londres, nimzo-qid, najdorf,
 italienne, espagnole, e5-noirs, francaise, gdr-noirs…), même méthode que ck (voir le paragraphe dédié),
 un répertoire = un fichier `site/data/pourquoi/<rep>.json`, contrôle `verifie-pourquoi.mjs`, tests, publication.
@@ -595,8 +596,17 @@ fichier `site/data/pourquoi/<rep>.json` ({ clé: [fr, en] }), contrôle `node sc
 clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, coups de pièce cités légaux avant/après ou
 présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
 Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
-Fait : **ck 242 / 242** (ton validé), **gd 283 / 283** (2026-11-27). À faire : les 27 autres répertoires (≈ 1 900 coups),
-des plus jouées aux moins jouées (suivant : sicilienne). Le Gambit Dame ayant ses textes, le test e2e « Lignes » attend
+Fait : **ck 242 / 242** (ton validé), **gd 283 / 283**, **sicilienne 208 / 208** (2026-11-27). À faire : les 26 autres
+répertoires, des plus jouées aux moins jouées (suivant : londres).
+**Méthode convenue (2026-11-27) : compléter les fiches PUIS écrire les « Pourquoi », une ouverture à la fois.** Trous :
+coups adverses fréquents des données Élite non couverts (script d'analyse de elite.json par position de l'arbre :
+coups adverses absents des fiches, triés par nombre de parties), liste validée par l'utilisatrice avant d'écrire.
+Pour chaque nouvelle fiche : lignes testées par probe-line, chaque coup « à nous » contrôlé (perte < 0,5 pion à
+profondeur 14), pièges/punitions cherchés parmi les prises et échecs « gourmands » puis vérifiés (profondeur 18) ;
+verify-repertoire, repertoire.mjs, verifie-en, prolonge-lignes, frequences (données Élite du jour), pourquoi.
+Le jeton Lichess (statistiques au niveau 1000–1400) n'est pas disponible dans l'environnement cloud.
+**Défaut connu (signalé le 2026-11-27, non corrigé)** : sic-morra 6…Dc7 permet 7.Cb5 ! Db8 8.Ff4 (avantage blanc net
+selon Stockfish) ; 6…a6 est meilleur, mais le piège sibérien de la fiche suppose …Dc7 : à revoir avec l'utilisatrice. Le Gambit Dame ayant ses textes, le test e2e « Lignes » attend
 « 💡 Pourquoi c4 ? » (et non plus le plan) après l'erreur volontaire. Conseils de rédaction : 1 phrase courte, le « pourquoi » (centre, développement, gain de temps,
 clouage, rupture, plan de la fiche), jamais de chiffre ; vérifier chaque affirmation (une case « défendue »,
 une pièce « attaquée ») sur la position ; le contrôle refuse les coups cités impossibles.

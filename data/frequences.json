@@ -1,63 +1,63 @@
 {
  "source": "Élite (parties blitz/rapide du top Lichess et Chess.com, tournois retransmis)",
- "date": "2026-11-26",
+ "date": "2026-11-27",
  "parties": {
-  "li": 5791,
-  "cc": 5942,
-  "bc": 1358,
-  "gd": 1145,
-  "italienne": 430,
-  "espagnole": 629,
-  "londres": 1223,
-  "ecossaise": 175,
-  "catalane": 340,
-  "viennoise": 128,
-  "smith-morra": 47,
-  "anglaise": 456,
-  "ck": 911,
-  "e5-noirs": 455,
-  "sicilienne": 1472,
-  "francaise": 717,
+  "li": 5775,
+  "cc": 5952,
+  "bc": 1368,
+  "gd": 1155,
+  "italienne": 434,
+  "espagnole": 628,
+  "londres": 1220,
+  "ecossaise": 179,
+  "catalane": 342,
+  "viennoise": 132,
+  "smith-morra": 50,
+  "anglaise": 443,
+  "ck": 928,
+  "e5-noirs": 449,
+  "sicilienne": 1436,
+  "francaise": 731,
   "scandinave": 222,
-  "pirc": 247,
-  "alekhine": 104,
-  "philidor": 136,
-  "najdorf": 839,
-  "dragon": 91,
-  "indienne-roi": 549,
-  "gdr-noirs": 429,
-  "contre-londres": 200,
-  "grunfeld": 3,
-  "benoni": 78,
-  "bogo": 197,
-  "hollandaise": 72,
-  "nimzo-qid": 975,
-  "contre-anglaise": 223,
-  "contre-reti": 598,
-  "total": 13091,
-  "camp": 13091
+  "pirc": 220,
+  "alekhine": 100,
+  "philidor": 138,
+  "najdorf": 880,
+  "dragon": 87,
+  "indienne-roi": 555,
+  "gdr-noirs": 435,
+  "contre-londres": 189,
+  "grunfeld": 5,
+  "benoni": 77,
+  "bogo": 184,
+  "hollandaise": 59,
+  "nimzo-qid": 996,
+  "contre-anglaise": 214,
+  "contre-reti": 607,
+  "total": 13095,
+  "camp": 13095
  },
  "entries": {
   "gd-orthodoxe": {
-   "n": 4,
+   "n": 8,
    "ply": 11,
    "coup": "Nbd7",
    "rep": "gd"
   },
   "gd-ff4": {
-   "n": 116,
+   "n": 110,
    "ply": 7,
    "coup": "Be7",
    "rep": "gd"
   },
   "gd-echange": {
-   "n": 222,
+   "n": 219,
    "ply": 6,
    "coup": "cxd5",
    "rep": "gd"
   },
   "gd-tarrasch": {
-   "n": 26,
+   "n": 24,
    "ply": 5,
    "coup": "c5",
    "rep": "gd"
@@ -69,61 +69,55 @@
    "rep": "gd"
   },
   "gd-gda-classique": {
-   "n": 55,
+   "n": 52,
    "ply": 4,
    "coup": "Nf3",
    "rep": "gd"
   },
-  "gd-gda-b5": {
-   "n": 1,
-   "ply": 5,
-   "coup": "b5",
-   "rep": "gd"
-  },
   "gd-slave": {
-   "n": 27,
+   "n": 33,
    "ply": 7,
    "coup": "dxc4",
    "rep": "gd"
   },
   "gd-slave-echange": {
-   "n": 28,
+   "n": 27,
    "ply": 4,
    "coup": "cxd5",
    "rep": "gd"
   },
   "gd-meran": {
-   "n": 42,
+   "n": 47,
    "ply": 8,
    "coup": "e3",
    "rep": "gd"
   },
   "gd-moscou": {
-   "n": 49,
+   "n": 45,
    "ply": 8,
    "coup": "Bg5",
    "rep": "gd"
   },
   "gd-albin": {
-   "n": 15,
+   "n": 21,
    "ply": 3,
    "coup": "e5",
    "rep": "gd"
   },
   "gd-chigorine": {
-   "n": 6,
+   "n": 9,
    "ply": 3,
    "coup": "Nc6",
    "rep": "gd"
   },
   "gd-marshall": {
-   "n": 10,
+   "n": 9,
    "ply": 3,
    "coup": "Nf6",
    "rep": "gd"
   },
   "gd-autrichienne": {
-   "n": 8,
+   "n": 10,
    "ply": 3,
    "coup": "c5",
    "rep": "gd"
@@ -134,38 +128,32 @@
    "coup": "Nc6",
    "rep": "gd"
   },
-  "gd-g5": {
-   "n": 1,
-   "ply": 1,
-   "coup": "g5",
-   "rep": "gd"
-  },
   "gd-ragozine": {
-   "n": 88,
+   "n": 85,
    "ply": 7,
    "coup": "Bb4",
    "rep": "gd"
   },
   "gd-semi-tarrasch": {
-   "n": 42,
+   "n": 40,
    "ply": 7,
    "coup": "c5",
    "rep": "gd"
   },
   "gd-lasker": {
-   "n": 14,
+   "n": 12,
    "ply": 11,
    "coup": "h6",
    "rep": "gd"
   },
   "gd-gda-cf6": {
-   "n": 8,
+   "n": 10,
    "ply": 5,
    "coup": "Nf6",
    "rep": "gd"
   },
   "gd-tchebanenko": {
-   "n": 32,
+   "n": 33,
    "ply": 7,
    "coup": "a6",
    "rep": "gd"
@@ -183,7 +171,7 @@
    "rep": "gd"
   },
   "ita-pianissimo": {
-   "n": 72,
+   "n": 77,
    "ply": 6,
    "coup": "d3",
    "rep": "italienne"
@@ -207,7 +195,7 @@
    "rep": "italienne"
   },
   "ita-deux-cavaliers-d3": {
-   "n": 149,
+   "n": 144,
    "ply": 6,
    "coup": "d3",
    "rep": "italienne"
@@ -219,7 +207,7 @@
    "rep": "italienne"
   },
   "ita-legal": {
-   "n": 15,
+   "n": 18,
    "ply": 5,
    "coup": "d6",
    "rep": "italienne"
@@ -237,37 +225,31 @@
    "rep": "espagnole"
   },
   "esp-ouverte": {
-   "n": 18,
+   "n": 17,
    "ply": 9,
    "coup": "Nxe4",
    "rep": "espagnole"
   },
   "esp-berlinoise": {
-   "n": 92,
+   "n": 93,
    "ply": 7,
    "coup": "Nxe4",
    "rep": "espagnole"
   },
   "esp-echange": {
-   "n": 34,
+   "n": 36,
    "ply": 6,
    "coup": "Bxc6",
    "rep": "espagnole"
   },
-  "esp-steinitz": {
-   "n": 1,
-   "ply": 5,
-   "coup": "d6",
-   "rep": "espagnole"
-  },
   "esp-cordel": {
-   "n": 25,
+   "n": 24,
    "ply": 5,
    "coup": "Bc5",
    "rep": "espagnole"
   },
   "esp-schliemann": {
-   "n": 21,
+   "n": 22,
    "ply": 5,
    "coup": "f5",
    "rep": "espagnole"
@@ -285,25 +267,25 @@
    "rep": "espagnole"
   },
   "lon-classique": {
-   "n": 45,
+   "n": 39,
    "ply": 3,
    "coup": "Nf6",
    "rep": "londres"
   },
   "lon-db6": {
-   "n": 22,
+   "n": 24,
    "ply": 3,
    "coup": "c5",
    "rep": "londres"
   },
   "lon-cf6-b6": {
-   "n": 7,
+   "n": 6,
    "ply": 3,
    "coup": "e6",
    "rep": "londres"
   },
   "lon-indienne-roi": {
-   "n": 20,
+   "n": 19,
    "ply": 3,
    "coup": "g6",
    "rep": "londres"
@@ -321,25 +303,25 @@
    "rep": "londres"
   },
   "lon-cc6-e5": {
-   "n": 14,
+   "n": 15,
    "ply": 1,
    "coup": "Nc6",
    "rep": "londres"
   },
   "lon-hollandaise": {
-   "n": 59,
+   "n": 51,
    "ply": 1,
    "coup": "f5",
    "rep": "londres"
   },
   "lon-benoni": {
-   "n": 48,
+   "n": 49,
    "ply": 1,
    "coup": "c5",
    "rep": "londres"
   },
   "lon-db6-tb1": {
-   "n": 11,
+   "n": 9,
    "ply": 3,
    "coup": "c5",
    "rep": "londres"
@@ -351,7 +333,7 @@
    "rep": "ecossaise"
   },
   "eco-cf6": {
-   "n": 46,
+   "n": 44,
    "ply": 8,
    "coup": "Nxc6",
    "rep": "ecossaise"
@@ -363,7 +345,7 @@
    "rep": "ecossaise"
   },
   "eco-gambit": {
-   "n": 11,
+   "n": 12,
    "ply": 6,
    "coup": "Bc4",
    "rep": "ecossaise"
@@ -399,19 +381,19 @@
    "rep": "catalane"
   },
   "cat-ouverte-dc2": {
-   "n": 82,
+   "n": 81,
    "ply": 11,
    "coup": "dxc4",
    "rep": "catalane"
   },
   "cat-ouverte-c5": {
-   "n": 24,
+   "n": 22,
    "ply": 9,
    "coup": "c5",
    "rep": "catalane"
   },
   "cat-b5": {
-   "n": 1,
+   "n": 2,
    "ply": 9,
    "coup": "b5",
    "rep": "catalane"
@@ -423,7 +405,7 @@
    "rep": "catalane"
   },
   "cat-fb4": {
-   "n": 12,
+   "n": 15,
    "ply": 5,
    "coup": "Bb4+",
    "rep": "catalane"
@@ -447,13 +429,13 @@
    "rep": "viennoise"
   },
   "vie-dg4": {
-   "n": 28,
+   "n": 26,
    "ply": 3,
    "coup": "Nc6",
    "rep": "viennoise"
   },
   "vie-cf6-cc6": {
-   "n": 10,
+   "n": 12,
    "ply": 5,
    "coup": "Nc6",
    "rep": "viennoise"
@@ -465,7 +447,7 @@
    "rep": "viennoise"
   },
   "sm-cf6": {
-   "n": 7,
+   "n": 9,
    "ply": 5,
    "coup": "Nf6",
    "rep": "smith-morra"
@@ -489,19 +471,19 @@
    "rep": "anglaise"
   },
   "ang-quatre-cavaliers": {
-   "n": 67,
+   "n": 68,
    "ply": 4,
    "coup": "Nf3",
    "rep": "anglaise"
   },
   "ang-symetrique": {
-   "n": 51,
+   "n": 53,
    "ply": 1,
    "coup": "c5",
    "rep": "anglaise"
   },
   "ang-cf6-g6": {
-   "n": 26,
+   "n": 27,
    "ply": 3,
    "coup": "g6",
    "rep": "anglaise"
@@ -513,7 +495,7 @@
    "rep": "anglaise"
   },
   "ang-e6-echange": {
-   "n": 213,
+   "n": 202,
    "ply": 1,
    "coup": "e6",
    "rep": "anglaise"
@@ -525,13 +507,13 @@
    "rep": "anglaise"
   },
   "ck-avance-short": {
-   "n": 64,
+   "n": 61,
    "ply": 6,
    "coup": "Nf3",
    "rep": "ck"
   },
   "ck-avance-tal": {
-   "n": 81,
+   "n": 83,
    "ply": 6,
    "coup": "h4",
    "rep": "ck"
@@ -543,7 +525,7 @@
    "rep": "ck"
   },
   "ck-avance-fd3": {
-   "n": 12,
+   "n": 15,
    "ply": 6,
    "coup": "Bd3",
    "rep": "ck"
@@ -561,7 +543,7 @@
    "rep": "ck"
   },
   "ck-classique": {
-   "n": 46,
+   "n": 44,
    "ply": 8,
    "coup": "Ng3",
    "rep": "ck"
@@ -573,31 +555,31 @@
    "rep": "ck"
   },
   "ck-tartakower": {
-   "n": 83,
+   "n": 94,
    "ply": 7,
    "coup": "Nf6",
    "rep": "ck"
   },
   "ck-fantaisie": {
-   "n": 25,
+   "n": 27,
    "ply": 4,
    "coup": "f3",
    "rep": "ck"
   },
   "ck-deux-cavaliers": {
-   "n": 49,
+   "n": 47,
    "ply": 5,
    "coup": "Bg4",
    "rep": "ck"
   },
   "ck-panov-acceleree": {
-   "n": 23,
+   "n": 24,
    "ply": 2,
    "coup": "c4",
    "rep": "ck"
   },
   "ck-kia": {
-   "n": 18,
+   "n": 17,
    "ply": 2,
    "coup": "d3",
    "rep": "ck"
@@ -615,7 +597,7 @@
    "rep": "ck"
   },
   "ck-fc4": {
-   "n": 3,
+   "n": 2,
    "ply": 2,
    "coup": "Bc4",
    "rep": "ck"
@@ -627,25 +609,25 @@
    "rep": "ck"
   },
   "ck-avance-c5": {
-   "n": 69,
+   "n": 70,
    "ply": 5,
    "coup": "c5",
    "rep": "ck"
   },
   "ck-panov-cc6": {
-   "n": 10,
+   "n": 12,
    "ply": 9,
    "coup": "Nc6",
    "rep": "ck"
   },
   "ck-classique-cc5": {
-   "n": 5,
+   "n": 8,
    "ply": 8,
    "coup": "Nc5",
    "rep": "ck"
   },
   "ck-deux-cavaliers-cf6": {
-   "n": 37,
+   "n": 34,
    "ply": 5,
    "coup": "dxe4",
    "rep": "ck"
@@ -663,37 +645,37 @@
    "rep": "ck"
   },
   "e5-italienne": {
-   "n": 208,
+   "n": 214,
    "ply": 5,
    "coup": "Bc5",
    "rep": "e5-noirs"
   },
   "e5-deux-cavaliers": {
-   "n": 199,
+   "n": 194,
    "ply": 5,
    "coup": "Nf6",
    "rep": "e5-noirs"
   },
   "e5-berlin": {
-   "n": 173,
+   "n": 171,
    "ply": 5,
    "coup": "Nf6",
    "rep": "e5-noirs"
   },
   "e5-espagnole-fermee": {
-   "n": 393,
+   "n": 394,
    "ply": 5,
    "coup": "a6",
    "rep": "e5-noirs"
   },
   "e5-ecossaise": {
-   "n": 108,
+   "n": 105,
    "ply": 4,
    "coup": "d4",
    "rep": "e5-noirs"
   },
   "e5-viennoise": {
-   "n": 79,
+   "n": 82,
    "ply": 2,
    "coup": "Nc3",
    "rep": "e5-noirs"
@@ -705,7 +687,7 @@
    "rep": "e5-noirs"
   },
   "e5-dh5": {
-   "n": 3,
+   "n": 1,
    "ply": 2,
    "coup": "Qh5",
    "rep": "e5-noirs"
@@ -717,9 +699,9 @@
    "rep": "sicilienne"
   },
   "sic-taimanov-anglaise": {
-   "n": 29,
-   "ply": 10,
-   "coup": "Be3",
+   "n": 1,
+   "ply": 12,
+   "coup": "Qd2",
    "rep": "sicilienne"
   },
   "sic-taimanov-cb5": {
@@ -729,31 +711,31 @@
    "rep": "sicilienne"
   },
   "sic-alapin": {
-   "n": 136,
-   "ply": 2,
-   "coup": "c3",
-   "rep": "sicilienne"
-  },
-  "sic-morra": {
-   "n": 65,
-   "ply": 2,
+   "n": 26,
+   "ply": 6,
    "coup": "d4",
    "rep": "sicilienne"
   },
+  "sic-morra": {
+   "n": 23,
+   "ply": 4,
+   "coup": "c3",
+   "rep": "sicilienne"
+  },
   "sic-grand-prix": {
-   "n": 196,
-   "ply": 2,
-   "coup": "Nc3",
+   "n": 9,
+   "ply": 4,
+   "coup": "f4",
    "rep": "sicilienne"
   },
   "sic-wing": {
-   "n": 5,
+   "n": 6,
    "ply": 2,
    "coup": "b4",
    "rep": "sicilienne"
   },
   "sic-est-indienne": {
-   "n": 24,
+   "n": 25,
    "ply": 4,
    "coup": "d3",
    "rep": "sicilienne"
@@ -764,32 +746,98 @@
    "coup": "Bc4",
    "rep": "sicilienne"
   },
+  "sic-c3": {
+   "n": 72,
+   "ply": 4,
+   "coup": "c3",
+   "rep": "sicilienne"
+  },
+  "sic-dame": {
+   "n": 37,
+   "ply": 4,
+   "coup": "Qxd4",
+   "rep": "sicilienne"
+  },
+  "sic-fb5": {
+   "n": 25,
+   "ply": 4,
+   "coup": "Bb5",
+   "rep": "sicilienne"
+  },
+  "sic-g3": {
+   "n": 25,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "sicilienne"
+  },
+  "sic-b3": {
+   "n": 20,
+   "ply": 4,
+   "coup": "b3",
+   "rep": "sicilienne"
+  },
+  "sic-fermee": {
+   "n": 9,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "sicilienne"
+  },
+  "sic-alapin-cf3": {
+   "n": 28,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "sicilienne"
+  },
+  "sic-cc3-fb5": {
+   "n": 16,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "sicilienne"
+  },
+  "sic-taimanov-cxc6": {
+   "n": 4,
+   "ply": 8,
+   "coup": "Nxc6",
+   "rep": "sicilienne"
+  },
+  "sic-taimanov-g3": {
+   "n": 4,
+   "ply": 10,
+   "coup": "g3",
+   "rep": "sicilienne"
+  },
+  "sic-taimanov-df3": {
+   "n": 10,
+   "ply": 12,
+   "coup": "Qf3",
+   "rep": "sicilienne"
+  },
   "fr-avance": {
-   "n": 122,
+   "n": 118,
    "ply": 4,
    "coup": "e5",
    "rep": "francaise"
   },
   "fr-echange": {
-   "n": 110,
+   "n": 117,
    "ply": 4,
    "coup": "exd5",
    "rep": "francaise"
   },
   "fr-tarrasch": {
-   "n": 84,
+   "n": 87,
    "ply": 4,
    "coup": "Nd2",
    "rep": "francaise"
   },
   "fr-steinitz": {
-   "n": 75,
+   "n": 78,
    "ply": 6,
    "coup": "e5",
    "rep": "francaise"
   },
   "fr-fg5": {
-   "n": 41,
+   "n": 42,
    "ply": 6,
    "coup": "Bg5",
    "rep": "francaise"
@@ -801,7 +849,7 @@
    "rep": "francaise"
   },
   "fr-est-indienne": {
-   "n": 25,
+   "n": 26,
    "ply": 2,
    "coup": "d3",
    "rep": "francaise"
@@ -825,13 +873,13 @@
    "rep": "scandinave"
   },
   "scan-dd6": {
-   "n": 12,
+   "n": 13,
    "ply": 5,
    "coup": "Qd6",
    "rep": "scandinave"
   },
   "scan-cf3": {
-   "n": 10,
+   "n": 11,
    "ply": 4,
    "coup": "Nf3",
    "rep": "scandinave"
@@ -861,33 +909,27 @@
    "rep": "scandinave"
   },
   "pirc-classique": {
-   "n": 23,
+   "n": 15,
    "ply": 6,
    "coup": "Nf3",
    "rep": "pirc"
   },
   "pirc-autrichienne": {
-   "n": 8,
+   "n": 9,
    "ply": 6,
    "coup": "f4",
    "rep": "pirc"
   },
   "pirc-150": {
-   "n": 10,
+   "n": 6,
    "ply": 6,
    "coup": "Be3",
    "rep": "pirc"
   },
   "pirc-byrne": {
-   "n": 6,
+   "n": 7,
    "ply": 6,
    "coup": "Bg5",
-   "rep": "pirc"
-  },
-  "pirc-fc4": {
-   "n": 1,
-   "ply": 6,
-   "coup": "Bc4",
    "rep": "pirc"
   },
   "pirc-cd2": {
@@ -897,13 +939,13 @@
    "rep": "pirc"
   },
   "ale-moderne": {
-   "n": 6,
+   "n": 5,
    "ply": 7,
    "coup": "Bg4",
    "rep": "alekhine"
   },
   "ale-larsen": {
-   "n": 14,
+   "n": 15,
    "ply": 7,
    "coup": "dxe5",
    "rep": "alekhine"
@@ -921,13 +963,13 @@
    "rep": "alekhine"
   },
   "ale-4pions": {
-   "n": 19,
+   "n": 18,
    "ply": 8,
    "coup": "f4",
    "rep": "alekhine"
   },
   "ale-cc3": {
-   "n": 4,
+   "n": 7,
    "ply": 4,
    "coup": "Nc3",
    "rep": "alekhine"
@@ -939,7 +981,7 @@
    "rep": "alekhine"
   },
   "ale-2cc3": {
-   "n": 25,
+   "n": 23,
    "ply": 2,
    "coup": "Nc3",
    "rep": "alekhine"
@@ -957,31 +999,31 @@
    "rep": "philidor"
   },
   "phi-cc3": {
-   "n": 7,
+   "n": 8,
    "ply": 4,
    "coup": "Nc3",
    "rep": "philidor"
   },
   "naj-anglaise": {
-   "n": 72,
+   "n": 79,
    "ply": 10,
    "coup": "Be3",
    "rep": "najdorf"
   },
   "naj-fg5": {
-   "n": 86,
+   "n": 88,
    "ply": 10,
    "coup": "Bg5",
    "rep": "najdorf"
   },
   "naj-fe2": {
-   "n": 55,
+   "n": 53,
    "ply": 10,
    "coup": "Be2",
    "rep": "najdorf"
   },
   "naj-sozin": {
-   "n": 24,
+   "n": 20,
    "ply": 10,
    "coup": "Bc4",
    "rep": "najdorf"
@@ -993,13 +1035,13 @@
    "rep": "najdorf"
   },
   "naj-f4": {
-   "n": 12,
+   "n": 15,
    "ply": 10,
    "coup": "f4",
    "rep": "najdorf"
   },
   "naj-moscou": {
-   "n": 145,
+   "n": 153,
    "ply": 4,
    "coup": "Bb5+",
    "rep": "najdorf"
@@ -1011,13 +1053,13 @@
    "rep": "dragon"
   },
   "dragon-9ooo": {
-   "n": 30,
+   "n": 29,
    "ply": 16,
    "coup": "O-O-O",
    "rep": "dragon"
   },
   "dragon-9g4": {
-   "n": 5,
+   "n": 2,
    "ply": 16,
    "coup": "g4",
    "rep": "dragon"
@@ -1029,19 +1071,19 @@
    "rep": "dragon"
   },
   "dragon-fc4": {
-   "n": 5,
+   "n": 6,
    "ply": 10,
    "coup": "Bc4",
    "rep": "dragon"
   },
   "dragon-g3": {
-   "n": 3,
+   "n": 2,
    "ply": 10,
    "coup": "g3",
    "rep": "dragon"
   },
   "kid-classique": {
-   "n": 17,
+   "n": 19,
    "ply": 14,
    "coup": "d5",
    "rep": "indienne-roi"
@@ -1053,91 +1095,97 @@
    "rep": "indienne-roi"
   },
   "kid-samisch": {
-   "n": 12,
+   "n": 13,
    "ply": 8,
    "coup": "f3",
    "rep": "indienne-roi"
   },
   "kid-quatre-pions": {
-   "n": 8,
+   "n": 7,
    "ply": 8,
    "coup": "f4",
    "rep": "indienne-roi"
   },
   "kid-averbakh": {
-   "n": 64,
+   "n": 69,
    "ply": 8,
    "coup": "Be2",
    "rep": "indienne-roi"
   },
   "kid-fianchetto": {
-   "n": 38,
+   "n": 36,
    "ply": 4,
    "coup": "Nf3",
    "rep": "indienne-roi"
   },
   "kid-cxe4": {
-   "n": 157,
+   "n": 156,
    "ply": 7,
    "coup": "d6",
    "rep": "indienne-roi"
   },
   "gdrn-orthodoxe": {
-   "n": 14,
+   "n": 12,
    "ply": 11,
    "coup": "h6",
    "rep": "gdr-noirs"
   },
   "gdrn-echange": {
-   "n": 222,
+   "n": 219,
    "ply": 6,
    "coup": "cxd5",
    "rep": "gdr-noirs"
   },
   "gdrn-dc2-c5": {
-   "n": 4,
+   "n": 8,
    "ply": 11,
    "coup": "Nbd7",
    "rep": "gdr-noirs"
   },
   "gdrn-slave": {
-   "n": 149,
+   "n": 158,
    "ply": 4,
    "coup": "Nf3",
    "rep": "gdr-noirs"
   },
   "gdrn-slave-echange": {
-   "n": 28,
+   "n": 27,
    "ply": 4,
    "coup": "cxd5",
    "rep": "gdr-noirs"
   },
   "gdrn-londres": {
-   "n": 92,
+   "n": 86,
    "ply": 2,
    "coup": "Bf4",
    "rep": "gdr-noirs"
   },
   "gdrn-colle": {
-   "n": 334,
+   "n": 354,
    "ply": 2,
    "coup": "Nf3",
    "rep": "gdr-noirs"
   },
   "gdrn-bdg": {
-   "n": 10,
+   "n": 11,
    "ply": 2,
    "coup": "e4",
    "rep": "gdr-noirs"
   },
+  "cl-c5-db6": {
+   "n": 5,
+   "ply": 6,
+   "coup": "c3",
+   "rep": "contre-londres"
+  },
   "cl-classique": {
-   "n": 12,
+   "n": 11,
    "ply": 5,
    "coup": "e6",
    "rep": "contre-londres"
   },
   "cl-ff5": {
-   "n": 7,
+   "n": 6,
    "ply": 3,
    "coup": "Bf5",
    "rep": "contre-londres"
@@ -1146,6 +1194,12 @@
    "n": 1,
    "ply": 4,
    "coup": "dxc5",
+   "rep": "contre-londres"
+  },
+  "cl-fg4": {
+   "n": 2,
+   "ply": 6,
+   "coup": "Nf3",
    "rep": "contre-londres"
   },
   "cl-cd2": {
@@ -1167,7 +1221,7 @@
    "rep": "grunfeld"
   },
   "grun-russe": {
-   "n": 21,
+   "n": 24,
    "ply": 6,
    "coup": "Nf3",
    "rep": "grunfeld"
@@ -1179,13 +1233,13 @@
    "rep": "grunfeld"
   },
   "grun-fg5": {
-   "n": 8,
+   "n": 7,
    "ply": 6,
    "coup": "Bg5",
    "rep": "grunfeld"
   },
   "grun-f3": {
-   "n": 13,
+   "n": 11,
    "ply": 4,
    "coup": "f3",
    "rep": "grunfeld"
@@ -1209,7 +1263,7 @@
    "rep": "benoni"
   },
   "ben-taimanov": {
-   "n": 7,
+   "n": 6,
    "ply": 12,
    "coup": "f4",
    "rep": "benoni"
@@ -1221,19 +1275,19 @@
    "rep": "benoni"
   },
   "benko-accepte": {
-   "n": 9,
+   "n": 10,
    "ply": 8,
    "coup": "bxa6",
    "rep": "benoni"
   },
   "benko-refuse": {
-   "n": 11,
+   "n": 9,
    "ply": 8,
    "coup": "e3",
    "rep": "benoni"
   },
   "bogo-de7": {
-   "n": 32,
+   "n": 30,
    "ply": 7,
    "coup": "Qe7",
    "rep": "bogo"
@@ -1245,7 +1299,7 @@
    "rep": "bogo"
   },
   "bogo-a5": {
-   "n": 13,
+   "n": 11,
    "ply": 7,
    "coup": "a5",
    "rep": "bogo"
@@ -1257,31 +1311,31 @@
    "rep": "bogo"
   },
   "bogo-fe7": {
-   "n": 8,
+   "n": 7,
    "ply": 7,
    "coup": "Be7",
    "rep": "bogo"
   },
   "hol-leningrad": {
-   "n": 7,
+   "n": 6,
    "ply": 2,
    "coup": "g3",
    "rep": "hollandaise"
   },
   "hol-stonewall": {
-   "n": 19,
+   "n": 17,
    "ply": 2,
    "coup": "c4",
    "rep": "hollandaise"
   },
   "hol-staunton": {
-   "n": 4,
+   "n": 3,
    "ply": 2,
    "coup": "e4",
    "rep": "hollandaise"
   },
   "hol-fg5": {
-   "n": 4,
+   "n": 5,
    "ply": 2,
    "coup": "Bg5",
    "rep": "hollandaise"
@@ -1293,13 +1347,13 @@
    "rep": "hollandaise"
   },
   "nimzo-rubinstein": {
-   "n": 153,
+   "n": 162,
    "ply": 6,
    "coup": "e3",
    "rep": "nimzo-qid"
   },
   "nimzo-classique": {
-   "n": 79,
+   "n": 82,
    "ply": 6,
    "coup": "Qc2",
    "rep": "nimzo-qid"
@@ -1311,31 +1365,31 @@
    "rep": "nimzo-qid"
   },
   "nimzo-leningrad": {
-   "n": 6,
+   "n": 10,
    "ply": 6,
    "coup": "Bg5",
    "rep": "nimzo-qid"
   },
   "nimzo-cf3": {
-   "n": 40,
+   "n": 41,
    "ply": 6,
    "coup": "Nf3",
    "rep": "nimzo-qid"
   },
   "qid-principale": {
-   "n": 79,
+   "n": 81,
    "ply": 6,
    "coup": "g3",
    "rep": "nimzo-qid"
   },
   "qid-petrossian": {
-   "n": 42,
+   "n": 44,
    "ply": 6,
    "coup": "a3",
    "rep": "nimzo-qid"
   },
   "cat-ouverte": {
-   "n": 95,
+   "n": 94,
    "ply": 4,
    "coup": "g3",
    "rep": "nimzo-qid"
@@ -1347,19 +1401,19 @@
    "rep": "contre-anglaise"
   },
   "ca-fermee": {
-   "n": 7,
+   "n": 5,
    "ply": 3,
    "coup": "Nc6",
    "rep": "contre-anglaise"
   },
   "ca-4cav": {
-   "n": 67,
+   "n": 68,
    "ply": 4,
    "coup": "Nf3",
    "rep": "contre-anglaise"
   },
   "ca-g3": {
-   "n": 53,
+   "n": 49,
    "ply": 2,
    "coup": "g3",
    "rep": "contre-anglaise"
@@ -1371,7 +1425,7 @@
    "rep": "contre-anglaise"
   },
   "cr-kia": {
-   "n": 250,
+   "n": 246,
    "ply": 2,
    "coup": "g3",
    "rep": "contre-reti"
@@ -1401,7 +1455,7 @@
    "rep": "contre-reti"
   },
   "cr-b3": {
-   "n": 66,
+   "n": 65,
    "ply": 2,
    "coup": "b3",
    "rep": "contre-reti"
