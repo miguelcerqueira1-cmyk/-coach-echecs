@@ -555,15 +555,15 @@
    "rep": "ecossaise"
   },
   "cat-fermee": {
-   "n": 11,
-   "ply": 11,
-   "coup": "Nbd7",
+   "n": 1,
+   "ply": 13,
+   "coup": "c6",
    "rep": "catalane"
   },
   "cat-ouverte-dc2": {
-   "n": 79,
-   "ply": 11,
-   "coup": "dxc4",
+   "n": 33,
+   "ply": 13,
+   "coup": "a6",
    "rep": "catalane"
   },
   "cat-ouverte-c5": {
@@ -593,6 +593,66 @@
   "cat-c5": {
    "n": 16,
    "ply": 5,
+   "coup": "c5",
+   "rep": "catalane"
+  },
+  "cat-c6-fermee": {
+   "n": 22,
+   "ply": 11,
+   "coup": "c6",
+   "rep": "catalane"
+  },
+  "cat-fb4-5": {
+   "n": 16,
+   "ply": 9,
+   "coup": "Bb4+",
+   "rep": "catalane"
+  },
+  "cat-a5": {
+   "n": 12,
+   "ply": 11,
+   "coup": "a5",
+   "rep": "catalane"
+  },
+  "cat-fb4-4": {
+   "n": 11,
+   "ply": 7,
+   "coup": "Bb4+",
+   "rep": "catalane"
+  },
+  "cat-dc2-b5": {
+   "n": 9,
+   "ply": 13,
+   "coup": "b5",
+   "rep": "catalane"
+  },
+  "cat-fd7": {
+   "n": 8,
+   "ply": 9,
+   "coup": "Bd7",
+   "rep": "catalane"
+  },
+  "cat-cc6": {
+   "n": 7,
+   "ply": 9,
+   "coup": "Nc6",
+   "rep": "catalane"
+  },
+  "cat-dc2-a5": {
+   "n": 6,
+   "ply": 13,
+   "coup": "a5",
+   "rep": "catalane"
+  },
+  "cat-cbd7": {
+   "n": 6,
+   "ply": 9,
+   "coup": "Nbd7",
+   "rep": "catalane"
+  },
+  "cat-c5-6": {
+   "n": 5,
+   "ply": 11,
    "coup": "c5",
    "rep": "catalane"
   },
