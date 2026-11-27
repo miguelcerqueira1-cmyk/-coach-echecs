@@ -28,6 +28,9 @@ for (const id of Object.keys(REPERTOIRES)) {
   if (existsSync(f)) Object.assign(EN, (await import(pathToFileURL(f).href)).default);
 }
 
+// Deux fiches ne peuvent pas partager un identifiant (vérification, traduction, progression sont indexées par id).
+const doublons = LIGNES.map((e) => e.id).filter((id, i, t) => t.indexOf(id) !== i);
+if (doublons.length) throw new Error(`Identifiants de fiche en double : ${[...new Set(doublons)].join(', ')}`);
 const entries = LIGNES.map((e) => {
   const main = playLine(e.ligne);
   const eco = classify(index, main.fens);

@@ -8151,6 +8151,572 @@
     },
     "pov": "w"
    }
+  },
+  "nq-trompowsky": {
+   "fp": "caae8821",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 1,
+    "best": "Qd3",
+    "pv": [
+     "Qd3",
+     "O-O",
+     "a3",
+     "Ba5",
+     "f4",
+     "e5"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 5,
+    "errorSan": "Nxe4",
+    "final": {
+     "type": "cp",
+     "value": -533,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -544,
+     "best": "Bxd8",
+     "pv": [
+      "Bxd8",
+      "Kxd8",
+      "c3",
+      "e5",
+      "f3",
+      "Nd6"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-londres": {
+   "fp": "a2e17e7a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 20,
+    "best": "Be2",
+    "pv": [
+     "Be2",
+     "Bd7",
+     "Ngf3",
+     "Be7",
+     "dxc5",
+     "Bxc5"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 10,
+    "errorSan": "Qxd5",
+    "final": {
+     "type": "cp",
+     "value": 569,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 577,
+     "best": "exd5",
+     "pv": [
+      "exd5",
+      "Nd2",
+      "Nc6",
+      "dxc5",
+      "Bxc5",
+      "Ngf3"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-torre": {
+   "fp": "be1cbe77",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 21,
+    "best": "d6",
+    "pv": [
+     "d6",
+     "Qe2",
+     "Nbd7",
+     "O-O",
+     "O-O",
+     "Rfd1"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 8,
+    "errorSan": "dxc5",
+    "final": {
+     "type": "cp",
+     "value": 385,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 377,
+     "best": "hxg5",
+     "pv": [
+      "hxg5",
+      "Nxg5",
+      "Bxc5",
+      "Nd2",
+      "Nc6",
+      "Qf3"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-jobava": {
+   "fp": "55b3a79e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 12,
+    "best": "Nf3",
+    "pv": [
+     "Nf3",
+     "Nc6",
+     "Ne5",
+     "e6",
+     "Nxc6",
+     "bxc6"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 6,
+    "errorSan": "Nxd5",
+    "final": {
+     "type": "cp",
+     "value": 330,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 335,
+     "best": "Nxd5",
+     "pv": [
+      "Nxd5",
+      "Bxb8",
+      "Rxb8",
+      "Nf3",
+      "g6",
+      "dxc5"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-colle": {
+   "fp": "96af6a18",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 16,
+    "best": "Qe2",
+    "pv": [
+     "Qe2",
+     "e5",
+     "b4",
+     "Be7",
+     "b5",
+     "Na5"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 14,
+    "errorSan": "Bxh7+",
+    "final": {
+     "type": "cp",
+     "value": 339,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 339,
+     "best": "Nxh7",
+     "pv": [
+      "Nxh7",
+      "dxc5",
+      "Bxc5",
+      "b4",
+      "Bd6",
+      "Bb2"
+     ]
+    },
+    "pov": "b"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 15,
+    "errorSan": "Bxh2+",
+    "final": {
+     "type": "cp",
+     "value": -363,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -359,
+     "best": "Nxh2",
+     "pv": [
+      "Nxh2",
+      "e5",
+      "e4",
+      "Be6",
+      "Re1",
+      "d4"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nimzo-f3": {
+   "fp": "abc534bb",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 10,
+    "best": "Re8",
+    "pv": [
+     "Re8",
+     "Ne2",
+     "b6",
+     "O-O",
+     "Ba6",
+     "Bxa6"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 9,
+    "errorSan": "dxc4",
+    "final": {
+     "type": "cp",
+     "value": -359,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -360,
+     "best": "axb4",
+     "pv": [
+      "axb4",
+      "b5",
+      "Nxb5",
+      "a5",
+      "Nc3",
+      "Nd5"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nimzo-fd2": {
+   "fp": "6542aa93",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 29,
+    "best": "cxd4",
+    "pv": [
+     "cxd4",
+     "Nxd4",
+     "dxc4",
+     "Bxc4",
+     "Bd7",
+     "O-O"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 18,
+    "errorSan": "cxd5",
+    "final": {
+     "type": "cp",
+     "value": 591,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 573,
+     "best": "Nxd1",
+     "pv": [
+      "Nxd1",
+      "Kxd1",
+      "Kh8",
+      "d6",
+      "cxd4",
+      "h4"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nimzo-rub-a3": {
+   "fp": "a7535fdd",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 1,
+    "best": "Be2",
+    "pv": [
+     "Be2",
+     "b6",
+     "O-O",
+     "Bb7",
+     "Bd3",
+     "Rd8"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 14,
+    "errorSan": "Bxh7+",
+    "final": {
+     "type": "cp",
+     "value": 354,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 351,
+     "best": "Nxh7",
+     "pv": [
+      "Nxh7",
+      "h4",
+      "e5",
+      "h5",
+      "e4",
+      "Qc2"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nimzo-e4": {
+   "fp": "f273cb69",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 2,
+    "best": "Ne2",
+    "pv": [
+     "Ne2",
+     "cxd4",
+     "Nxd4",
+     "Nd7",
+     "Bf4",
+     "Qa5"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 12,
+    "errorSan": "Qxe4",
+    "final": {
+     "type": "cp",
+     "value": 501,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 508,
+     "best": "dxe4",
+     "pv": [
+      "dxe4",
+      "c5",
+      "Nc6",
+      "Be3",
+      "h6",
+      "h4"
+     ]
+    },
+    "pov": "b"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 9,
+    "errorSan": "Nxe4",
+    "final": {
+     "type": "cp",
+     "value": -260,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -258,
+     "best": "Qxe4",
+     "pv": [
+      "Qxe4",
+      "d5",
+      "Qc2",
+      "c5",
+      "a3",
+      "Bxc3+"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-cat-a4": {
+   "fp": "a86f1b57",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 42,
+    "best": "Rae1",
+    "pv": [
+     "Rae1",
+     "Bd6",
+     "Bg5",
+     "h6",
+     "Bxf6",
+     "Qxf6"
+    ],
+    "pov": "w"
+   },
+   "piege": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 17,
+    "errorSan": "Bxa4",
+    "final": {
+     "type": "cp",
+     "value": -382,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": -392,
+     "best": "Qxa4",
+     "pv": [
+      "Qxa4",
+      "Nc6",
+      "Bg5",
+      "Nd7",
+      "Bxe7",
+      "Qxe7"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-cat-da4": {
+   "fp": "f4ad57f2",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 19,
+    "best": "Nc6",
+    "pv": [
+     "Nc6",
+     "Be3",
+     "Rc8",
+     "Nbd2",
+     "Bd5",
+     "Rd1"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 16,
+    "errorSan": "Qxb5",
+    "final": {
+     "type": "cp",
+     "value": 564,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 560,
+     "best": "axb5",
+     "pv": [
+      "axb5",
+      "Bg5",
+      "c6",
+      "Ne5",
+      "Nd5",
+      "Bxe7"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "nq-cat-ce5": {
+   "fp": "9c30fd57",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 18,
+    "best": "Qa4",
+    "pv": [
+     "Qa4",
+     "e5",
+     "dxe5",
+     "Qxe5",
+     "Qxc4",
+     "Be6"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 14,
+    "errorSan": "Nxf7",
+    "final": {
+     "type": "cp",
+     "value": 368,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 343,
+     "best": "Rxf7",
+     "pv": [
+      "Rxf7",
+      "e3",
+      "e5",
+      "Nc3",
+      "Bg4",
+      "Qa4"
+     ]
+    },
+    "pov": "b"
+   }
   }
  }
 }

@@ -1401,15 +1401,15 @@
    "rep": "hollandaise"
   },
   "nimzo-rubinstein": {
-   "n": 162,
-   "ply": 6,
-   "coup": "e3",
+   "n": 5,
+   "ply": 10,
+   "coup": "Nf3",
    "rep": "nimzo-qid"
   },
   "nimzo-classique": {
-   "n": 82,
-   "ply": 6,
-   "coup": "Qc2",
+   "n": 9,
+   "ply": 8,
+   "coup": "a3",
    "rep": "nimzo-qid"
   },
   "nimzo-samisch": {
@@ -1443,9 +1443,81 @@
    "rep": "nimzo-qid"
   },
   "cat-ouverte": {
-   "n": 94,
+   "n": 1,
+   "ply": 14,
+   "coup": "Qxc4",
+   "rep": "nimzo-qid"
+  },
+  "nq-trompowsky": {
+   "n": 213,
+   "ply": 2,
+   "coup": "Bg5",
+   "rep": "nimzo-qid"
+  },
+  "nq-londres": {
+   "n": 77,
+   "ply": 2,
+   "coup": "Bf4",
+   "rep": "nimzo-qid"
+  },
+  "nq-torre": {
+   "n": 53,
    "ply": 4,
-   "coup": "g3",
+   "coup": "Bg5",
+   "rep": "nimzo-qid"
+  },
+  "nq-jobava": {
+   "n": 123,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "nimzo-qid"
+  },
+  "nq-colle": {
+   "n": 15,
+   "ply": 4,
+   "coup": "e3",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-f3": {
+   "n": 35,
+   "ply": 6,
+   "coup": "f3",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-fd2": {
+   "n": 32,
+   "ply": 8,
+   "coup": "Bd2",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-rub-a3": {
+   "n": 20,
+   "ply": 10,
+   "coup": "a3",
+   "rep": "nimzo-qid"
+  },
+  "nq-cat-a4": {
+   "n": 32,
+   "ply": 14,
+   "coup": "a4",
+   "rep": "nimzo-qid"
+  },
+  "nq-cat-da4": {
+   "n": 18,
+   "ply": 12,
+   "coup": "Qa4",
+   "rep": "nimzo-qid"
+  },
+  "nq-cat-ce5": {
+   "n": 14,
+   "ply": 12,
+   "coup": "Ne5",
+   "rep": "nimzo-qid"
+  },
+  "nimzo-e4": {
+   "n": 11,
+   "ply": 8,
+   "coup": "e4",
    "rep": "nimzo-qid"
   },
   "ca-dragon-inverse": {
