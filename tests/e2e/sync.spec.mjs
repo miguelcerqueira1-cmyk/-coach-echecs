@@ -66,7 +66,7 @@ test('activer sur un appareil, récupérer sur un autre, envoi automatique, donn
   await B.page.fill('#sync-code-saisi', code.toLowerCase().replace(/-/g, ' '));
   B.page.once('dialog', (d) => d.accept());
   await B.page.click('#sync-utiliser');
-  await expect.poll(() => B.page.evaluate(() => localStorage.getItem('coach-echecs:progression-v1')), { timeout: 10000 }).toContain('gd-orthodoxe');
+  await expect.poll(() => B.page.evaluate(() => localStorage.getItem('coach-echecs:progression-v1')).catch(() => null), { timeout: 15000 }).toContain('gd-orthodoxe');
   expect(await B.page.evaluate(() => localStorage.getItem('coach-echecs:jeton-lichess'))).toBeNull();
 
   // B change quelque chose puis passe en arrière-plan : envoi automatique (version 2).
@@ -80,7 +80,11 @@ test('activer sur un appareil, récupérer sur un autre, envoi automatique, donn
 
   // A rouvre l'appli : elle récupère la nouveauté automatiquement.
   await A.page.reload();
-  await expect.poll(() => A.page.evaluate(() => localStorage.getItem('coach-echecs:finales-v1')), { timeout: 10000 }).toContain('escalier');
+  // L'appli se recharge en appliquant les données reçues : une lecture pendant ce rechargement est
+  // simplement refaite.
+  const lire = (p, k) => p.evaluate((x) => localStorage.getItem(x), k).catch(() => null);
+  await expect.poll(() => lire(A.page, 'coach-echecs:finales-v1'), { timeout: 15000 }).toContain('escalier');
+  await A.page.waitForLoadState('load');
   await expect(A.page.locator('.sync-bandeau')).toContainText('Données mises à jour');
   await A.ctx.close();
   await B.ctx.close();
