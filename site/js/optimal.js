@@ -6,6 +6,7 @@
 //   4. Élite blitz/rapide (data/elite.json : fréquences chez les meilleurs joueurs en ligne).
 // Un fort % de victoire ne signifie pas que le coup est objectivement le meilleur.
 import { Chess } from '../vendor/chess.js';
+import { boutonLichess } from './lien-lichess.js';
 import {
   RATING_BUCKETS, SPEEDS, SPEED_LABELS, PRESETS, bucketLabel, enrichMoves, bestByWinRate,
 } from './lichess.js';
@@ -209,7 +210,7 @@ export class OptimalPanel {
     const e = this.explorer;
     let body;
     if (e.status === 'loading') body = '<span class="state"><span class="spinner"></span>Opening Explorer…</span>';
-    else if (e.status === 'notoken') body = `<span class="muted">${L('Indisponible : ajoutez un jeton Lichess (⚙ Réglages) ou configurez le relais.', 'Unavailable: add a Lichess token (⚙ Settings) or configure the relay.')}</span>`;
+    else if (e.status === 'notoken') body = boutonLichess();
     else if (e.status === 'error') body = `<span class="error-text">${esc(e.error)}</span>`;
     else if (e.status === 'ok') {
       if (!e.total) body = `<span class="muted">${L('Aucune partie trouvée avec ce filtre.', 'No games found with this filter.')}</span>`;
@@ -227,7 +228,7 @@ export class OptimalPanel {
     const m = this.masters;
     let body;
     if (m.status === 'loading') body = `<span class="state"><span class="spinner"></span>${L('Base des maîtres…', 'Masters database…')}</span>`;
-    else if (m.status === 'notoken') body = `<span class="muted">${L('Jeton Lichess requis (⚙ Réglages).', 'Lichess token required (⚙ Settings).')}</span>`;
+    else if (m.status === 'notoken') body = `<span class="muted">${L('Avec la connexion Lichess (bouton ci-dessus).', 'With the Lichess login (button above).')}</span>`;
     else if (m.status === 'error') body = `<span class="error-text">${esc(m.error)}</span>`;
     else if (m.status === 'ok') {
       if (!m.total || !m.top) body = `<span class="muted">${L('Position jamais atteinte dans les parties de maîtres : vous êtes hors de la théorie.', 'Position never reached in masters’ games: you are out of theory.')}</span>`;

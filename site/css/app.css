@@ -397,6 +397,11 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
   .rep-table, .rep-table tbody, .rep-table tr, .rep-table td { display: block; width: 100%; }
   .rep-table tr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: .8rem; padding: .3rem .2rem; box-shadow: var(--shadow); }
   .rep-table td { border-top: 0; padding: .35rem .6rem; min-width: 0 !important; }
+  /* Fiche repliée : nom, état, boutons et coups ; le détail s'ouvre d'un toucher. */
+  .rep-table tr.replie td:nth-child(n+3) { display: none; }
+  .rep-table .details-btn { display: inline-block; font-weight: 600; }
+  .rep-table .row-actions { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .35rem .6rem; }
+  .rep-table .row-actions .details-btn { flex-basis: 100%; text-align: left; }
   .rep-table td + td::before { content: attr(data-l); display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .15rem; }
 }
 .wdl-bar span.w { background: var(--w-bar); }
@@ -897,3 +902,15 @@ mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; paddi
 .legal-texte p { line-height: 1.55; }
 .legal-brouillon { padding: .5rem .7rem; border-radius: 10px; background: var(--surface-2); }
 a.chip { display: inline-flex; align-items: center; text-decoration: none; color: inherit; }
+.details-btn { display: none; }
+.rep-sources summary { cursor: pointer; }
+/* Entraînement : 4 tuiles, une seule section affichée à la fois. */
+.tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin: .8rem 0; }
+@media (min-width: 821px) { .tuiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tuile { display: grid; justify-items: start; gap: .1rem; text-align: left; padding: .7rem .8rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); min-height: 74px; }
+.tuile .tuile-ico { font-size: 1.35rem; }
+.tuile[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+.train-hub[data-zone-actif="apprendre"] [data-zone]:not([data-zone="apprendre"]),
+.train-hub[data-zone-actif="entrainer"] [data-zone]:not([data-zone="entrainer"]),
+.train-hub[data-zone-actif="reflexes"] [data-zone]:not([data-zone="reflexes"]),
+.train-hub[data-zone-actif="plus"] [data-zone]:not([data-zone="plus"]) { display: none; }

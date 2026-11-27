@@ -34,6 +34,7 @@ import { THEMES, BOARDS, applyAppearance } from './theme.js';
 import { importData, describe } from './transfer.js';
 import { TrainingPage } from './training.js';
 import { LegalPage } from './legal.js';
+import { rechargerReglagesSons } from './sons.js';
 import { GamesPage } from './games.js';
 import { SPEED_LABELS, bucketLabel } from './lichess.js';
 
@@ -1427,6 +1428,8 @@ function bindUi() {
     state.settings.apiUrl = prevApi;
   };
   $('connect-lichess').onclick = () => connecterLichess('#/parties');
+  // Boutons « Se connecter avec Lichess » des statistiques (Moteur, Répertoire) : retour sur la même page.
+  document.addEventListener('click', (ev) => { if (ev.target.closest('[data-lichess-connect]')) connecterLichess(location.hash || '#/moteur'); });
   $('clear-lichess').onclick = () => {
     store.setLichessToken('');
     $('set-lichess').value = '';
@@ -1535,6 +1538,8 @@ function openSettings() {
   $('set-auto').checked = s.autoExplain;
   $('set-help').value = s.helpMode || 'direct';
   $('set-opp-arrow').checked = s.showOpponentArrow;
+  $('set-sons').checked = s.sons !== false;
+  $('set-vibrations').checked = s.vibrations !== false;
   $('set-ouvertures').textContent = L(`Votre répertoire : ${resume(choisis())}.`, `Your repertoire: ${resume(choisis())}.`);
   $('set-elite-camp').checked = !!s.eliteCamp;
   $('set-api').value = s.apiUrl;
@@ -1568,12 +1573,15 @@ function saveSettingsFromForm() {
   optimal.setHidden(moveHidden());
   renderAdvice();
   s.showOpponentArrow = $('set-opp-arrow').checked;
+  s.sons = $('set-sons').checked;
+  s.vibrations = $('set-vibrations').checked;
   const campChanged = !!s.eliteCamp !== $('set-elite-camp').checked;
   s.eliteCamp = $('set-elite-camp').checked;
   s.apiUrl = $('set-api').value.trim();
   Object.assign(s, appearanceFromForm());
   applyAppearance(s);
   store.saveSettings(s);
+  rechargerReglagesSons();
   state.game.setLevel(s.level);
   store.saveGame(state.game.toJSON());
   const code = $('set-code').value.trim();

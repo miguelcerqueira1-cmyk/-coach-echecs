@@ -96,8 +96,7 @@ test('Coup optimal : position absente du cache, explorateur sans jeton, erreur e
   await page.goto('./');
   await waitEngine(page);
   const panel = page.locator('#optimal');
-  await expect(panel).toContainText('absente du cache Lichess');
-  await expect(panel).toContainText('ajoutez un jeton Lichess');
+  await expect(panel.locator('[data-lichess-connect]')).toContainText('Se connecter avec Lichess');
   // Avec un jeton refusé : message d'erreur, aucune statistique inventée.
   await page.evaluate(() => { localStorage.setItem('coach-echecs:jeton-lichess', 'mauvais'); window.__coach.optimal.update(window.__coach.state.game); });
   await expect(panel).toContainText('Jeton Lichess refusé');

@@ -32,6 +32,7 @@ test('Entraînement (fiches) : coup du répertoire validé, erreur détectée pa
   await setup(page, { prefs: { rep: 'gd', source: 'fiches', length: 5 } });
   await page.goto('./#/entrainement');
   await engineReady(page);
+  await page.click('[data-tuile="plus"]');
   await page.evaluate(() => { document.querySelector('[data-other-modes]').open = true; });
   await page.click('[data-start]');
   const log = page.locator('[data-log]');
@@ -69,6 +70,7 @@ test('Entraînement (Lichess) : adversaire tiré des parties réelles, avec sa f
   });
   await page.goto('./#/entrainement');
   await engineReady(page);
+  await page.click('[data-tuile="plus"]');
   await page.evaluate(() => { document.querySelector('[data-other-modes]').open = true; });
   await page.click('[data-start]');
   const log = page.locator('[data-log]');
@@ -85,6 +87,7 @@ test('Révision espacée : position ratée revient, réussie s’espace, compteu
   await page.goto('./#/entrainement');
   await engineReady(page);
   await expect(page.locator('[data-rev-stats]')).toContainText('0 / ');
+  await page.click('[data-tuile="plus"]');
   await page.evaluate(() => { document.querySelector('[data-other-modes]').open = true; });
   await page.click('[data-start]');
   const log = page.locator('[data-log]');
@@ -115,6 +118,8 @@ const openAll = (page) => page.evaluate(() => document.querySelectorAll('.dash-m
 // jusqu'à ce que le bouton voulu soit visible, puis on clique.
 async function cliquerDash(page, sel) {
   await expect(async () => {
+    const tuile = page.locator('[data-tuile="entrainer"]');
+    if (await tuile.isVisible()) await tuile.click();
     await openAll(page);
     await expect(page.locator(sel).first()).toBeVisible({ timeout: 1000 });
   }).toPass({ timeout: 20000 });
@@ -128,6 +133,7 @@ async function ours(page, uci) {
 test('Lignes : l’application joue l’adversaire, erreur refusée et expliquée, série, bilan puis révision ciblée', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
+  await page.click('[data-tuile="entrainer"]');
   await expect(page.locator('[data-dashboard]')).toContainText('Progression par variante');
   const line = 'd2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8 g1f3 b8d7 a1c1 c7c6 f1d3 d5c4 d3c4 f6d5'.split(' ');
   await cliquerDash(page, '[data-dash-line="gd-orthodoxe"]');
@@ -195,6 +201,7 @@ test('Accueil Entraînement sur téléphone @mobile : modules et progression lis
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
   await expect(page.locator('[data-routine]')).toBeVisible();
+  await page.click('[data-tuile="entrainer"]');
   await openAll(page);
   await expect(page.locator('.dash-row').first()).toBeVisible();
   // En cas d'échec, le message liste les éléments qui dépassent (diagnostic Safari).
@@ -441,6 +448,7 @@ test('Finales essentielles : jouer contre Stockfish, indice, verdict, progressio
   await setup(page);
   await page.goto('./#/entrainement');
   await engineReady(page);
+  await page.click('[data-tuile="plus"]');
   const card = page.locator('[data-finales]');
   await expect(card).toContainText('Finales essentielles');
   await expect(card.locator('[data-finale-id]')).toHaveCount(8);
@@ -474,6 +482,7 @@ test('Problèmes par thème : thème choisi, difficulté selon le classement, cl
     r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ ...fx, puzzle: { ...fx.puzzle, id: `th${k}` } }) });
   });
   await page.goto('./#/entrainement');
+  await page.click('[data-tuile="plus"]');
   const card = page.locator('[data-problemes]');
   await expect(card).toContainText('1200');
   await card.locator('[data-pb-theme]').selectOption('fork');
@@ -503,6 +512,7 @@ test('Partie contre Stockfish : niveau 1, Stockfish répond, reprise du coup, ab
   await setup(page);
   await page.goto('./#/entrainement');
   await engineReady(page);
+  await page.click('[data-tuile="plus"]');
   const card = page.locator('[data-stockfish]');
   await card.locator('[data-sf-niveau]').selectOption('1');
   await card.locator('[data-sf-camp]').selectOption('w');
@@ -546,6 +556,7 @@ test('1 clic : état et « Apprendre » depuis le Répertoire, bouton « Continu
 test('Rush réfutations : 3 vies, score, fin de partie et record', async ({ page }) => {
   await setup(page, { prefs: { rep: 'gd', source: 'fiches' } });
   await page.goto('./#/entrainement');
+  await page.click('[data-tuile="reflexes"]');
   const carte = page.locator('.hub-rush');
   await expect(carte).toContainText('Record : 0');
   await carte.locator('[data-rush]').click();

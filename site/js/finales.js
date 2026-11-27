@@ -1,6 +1,7 @@
 // Finales essentielles jouées contre Stockfish (page Entraînement). L'utilisateur joue son camp,
 // Stockfish répond ; après chaque coup, l'évaluation dit si le but tient toujours (finales-core).
 // Indice : flèche du meilleur coup (compté). Échec : explication et coup conseillé.
+import { sons } from './sons.js';
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
@@ -163,6 +164,7 @@ export class FinaleRunner {
       }
     }
     if (!this.alive) return;
+    if (ok) sons.reussite();
     this.$('[data-feedback]').innerHTML = `${conseil}<p>${ok ? (this.indices ? L(`Réussie avec ${this.indices} indice(s). Refais-la sans indice pour la maîtriser.`, `Passed with ${this.indices} hint(s). Do it again without hints to master it.`) : L('Réussie sans indice : bravo !', 'Passed without hints: well done!')) : L('Relis la méthode et recommence.', 'Reread the method and try again.')}</p>
       <div class="actions"><button type="button" class="primary" data-encore>↺ ${L('Recommencer', 'Restart')}</button></div>`;
     this.$('[data-encore]').addEventListener('click', () => this.demarrer());

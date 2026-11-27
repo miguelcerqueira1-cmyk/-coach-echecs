@@ -586,3 +586,21 @@ test('réglages simplifiés : l’essentiel en haut, le technique replié dans �
   await page.locator('#set-avance summary').click();
   for (const id of ['#set-budget', '#set-code', '#set-lichess', '#set-youtube']) await expect(page.locator(id)).toBeVisible();
 });
+
+test('téléphone : fiches du Répertoire repliées, détail d’un toucher ; réglage des sons', async ({ page }) => {
+  await setup(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('./#/repertoire');
+  const row = page.locator('tr[data-id="gd-orthodoxe"]');
+  await expect(row.locator('[data-entrainer]')).toBeVisible();
+  await expect(row.locator('td[data-label="Plan & structure"]')).toBeHidden();
+  await row.locator('[data-deplier]').click();
+  await expect(row.locator('td[data-label="Plan & structure"]')).toBeVisible();
+  await expect(row.locator('[data-deplier]')).toContainText('Replier');
+  // Sons : activés par défaut, désactivables.
+  await page.click('#btn-settings');
+  await expect(page.locator('#set-sons')).toBeChecked();
+  await page.uncheck('#set-sons');
+  await page.click('#form-settings button[value=ok]');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:reglages:v1')).sons)).toBe(false);
+});

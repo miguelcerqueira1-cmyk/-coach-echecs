@@ -2,6 +2,7 @@
 // l'échiquier de BlitzRefute. Le dernier coup adverse est rejoué sous vos yeux (habitude « son coup
 // d'abord ») ; coup faux : la pièce ne bouge pas, bulle d'explication ; « Voir la solution » rejoue
 // la suite de Lichess. Problème réussi = résolu sans erreur ni solution affichée.
+import { sons } from './sons.js';
 import { Chess } from '../vendor/chess.js';
 import { Board } from './board.js';
 import { sanFr } from './analysis.js';
@@ -169,6 +170,7 @@ export class PuzzleRunner {
     const ok = !c.erreurs && !c.vu && !c.horsTemps;
     this.resultats.push({ id: this.p.id, reussi: ok });
     this.annoncer(ok);
+    if (ok) sons.reussite();
     this.status(ok ? L('✔ Résolu du premier coup !', '✔ Solved on the first try!') : c.horsTemps && !c.erreurs ? L('✔ Résolu, mais après le temps : ne compte pas comme réussi.', '✔ Solved, but after the time limit: doesn’t count as a success.') : L('✔ Résolu (après une erreur : ne compte pas comme réussi).', '✔ Solved (after a mistake: doesn’t count as a success).'), ok ? 'ok' : '');
     this.board.showBubble(ok ? L('✔ Résolu !', '✔ Solved!') : L('✔ Résolu', '✔ Solved'), 'ok');
     this.finProbleme();

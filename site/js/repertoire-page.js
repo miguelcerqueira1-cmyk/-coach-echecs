@@ -18,6 +18,7 @@ import { loadSettings } from './storage.js';
 import { canOpenFiche, openPaywall } from './pro.js';
 import { loadProgress, bilanFiches, etatFiche, chargerRevision } from './progress.js';
 import { demanderEntrainement } from './demande-entrainement.js';
+import { boutonLichess } from './lien-lichess.js';
 import { filtrerData, REPERTOIRES } from './mon-repertoire.js';
 import { couleurDe } from '../data/repertoires/meta.js';
 import { langue } from './i18n.js';
@@ -117,6 +118,13 @@ export class RepertoirePage {
     el.addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-unlock]');
       if (b) openPaywall({ reason: b.dataset.unlock });
+      const dep = ev.target.closest('[data-deplier]');
+      if (dep) {
+        const tr = dep.closest('tr');
+        const ouvert = tr.classList.toggle('replie') === false;
+        dep.setAttribute('aria-expanded', String(ouvert));
+        dep.textContent = ouvert ? L('▴ Replier', '▴ Collapse') : L('▾ Plan, piège, punition, vidéos…', '▾ Plan, trap, punishment, videos…');
+      }
       const t = ev.target.closest('[data-entrainer]');
       if (t) demanderEntrainement({ type: 'fiche', id: t.dataset.entrainer });
     });
@@ -219,7 +227,7 @@ export class RepertoirePage {
 
   rankingHtml(list) {
     if (!this.sort || this.view === 'trash') return '';
-    if (!this.client.explorerMode() && this.sort !== 'eval') return `<p class="errbox small">${L('Classement par parties : jeton Lichess requis (⚙ Réglages).', 'Ranking by games: Lichess token required (⚙ Settings).')}</p>`;
+    if (!this.client.explorerMode() && this.sort !== 'eval') return `<p class="small">${L('Classement par parties : il faut les statistiques Lichess.', 'Ranking by games: Lichess statistics are needed.')} ${boutonLichess(L('♞ Se connecter avec Lichess', '♞ Log in with Lichess'))}</p>`;
     const pending = this.sortPending(list);
     if (pending) return `<p class="state small"><span class="spinner"></span> ${L(`Classement : statistiques en cours de chargement (${list.length - pending}/${list.length})…`, `Ranking: loading statistics (${list.length - pending}/${list.length})…`)}</p>`;
     const src = this.sort.endsWith('maitres') ? L('maîtres', 'masters') : L('mon niveau', 'my level');
@@ -307,7 +315,8 @@ export class RepertoirePage {
             </div>
           </details>
         </div>
-        <p class="small muted"><span data-count>${L(`${list.length} fiche(s) affichée(s).`, `${list.length} line(s) shown.`)}</span> ${L(`Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.`, `“My level” statistics: ${esc(filt)} (adjustable in “Best move”); “masters”: titled players 2200+ FIDE; “Elite”: blitz/rapid games of the best Lichess and Chess.com players (observed frequencies, not an evaluation). Verified evaluations: ${esc(d.moteur.nom)}, depth ${d.moteur.profondeur}. ECO codes and names: Lichess chess-openings database (CC0); there is no official FIDE nomenclature of variations.`)}</p>
+        <p class="small muted"><span data-count>${L(`${list.length} fiche(s) affichée(s).`, `${list.length} line(s) shown.`)}</span></p>
+        <details class="rep-sources small muted"><summary>${L('ℹ️ D’où viennent les chiffres ?', 'ℹ️ Where do the figures come from?')}</summary><p>${L(`Statistiques « mon niveau » : ${esc(filt)} (réglable dans « Coup optimal ») ; « maîtres » : joueurs titrés 2200+ FIDE ; « Élite » : parties blitz/rapide des meilleurs joueurs Lichess et Chess.com (fréquences observées, pas une évaluation). Évaluations vérifiées : ${esc(d.moteur.nom)}, profondeur ${d.moteur.profondeur}. Codes ECO et noms : base Lichess chess-openings (CC0) ; il n’existe pas de nomenclature FIDE officielle des variantes.`, `“My level” statistics: ${esc(filt)} (adjustable in “Best move”); “masters”: titled players 2200+ FIDE; “Elite”: blitz/rapid games of the best Lichess and Chess.com players (observed frequencies, not an evaluation). Verified evaluations: ${esc(d.moteur.nom)}, depth ${d.moteur.profondeur}. ECO codes and names: Lichess chess-openings database (CC0); there is no official FIDE nomenclature of variations.`)}</p></details>
       </div>
       <div data-ranking>${this.rankingHtml(list)}</div>
       <section id="rep-players">${playersSectionHtml(this.joueurs, this.query, list.length)}</section>
@@ -399,7 +408,7 @@ export class RepertoirePage {
     const v = e.verification;
     const live = this.live.get(e.id) || {};
     const color = this.data.repertoires[e.rep].couleur;
-    return `<tr data-id="${e.id}">
+    return `<tr data-id="${e.id}" class="replie">
       <td data-label="ECO · Nom" data-l="${L('ECO · Nom', 'ECO · Name')}">
         <span class="badge eco">${esc(e.eco)}</span> <button type="button" class="badge badge-btn ${BADGE_CLASS[e.badge]}" data-badge-filter="${e.badge}" title="${L('Afficher toutes les fiches de ce type', 'Show all lines of this type')}">${esc(BADGE_LABEL[e.badge])}</button>
         <div class="rep-name">${esc(e.nom)}</div>
@@ -409,6 +418,7 @@ export class RepertoirePage {
           <button type="button" class="primary small-btn" data-entrainer="${e.id}">${this.etat(e).cours ? L('🎯 S’entraîner', '🎯 Practise') : L('📖 Apprendre', '📖 Learn')}</button>
           <button type="button" class="small-btn" data-test="${e.id}">▶ ${L('Tester cette ligne', 'Test this line')}</button>
           <button type="button" class="link-btn" data-tree="${e.id}">${L('Arbre des coups joués', 'Tree of played moves')}</button>
+          <button type="button" class="link-btn details-btn" data-deplier aria-expanded="false">${L('▾ Plan, piège, punition, vidéos…', '▾ Plan, trap, punishment, videos…')}</button>
         </div>
       </td>
       <td data-label="Séquence" data-l="${L('Séquence', 'Moves')}" class="line">${esc(sanLine(e.san))}</td>
@@ -444,6 +454,8 @@ export class RepertoirePage {
       if (!s.total) return `<div class="muted tiny">${L(`${label} : aucune partie`, `${label}: no games`)}</div>`;
       return `<div class="stat-line"><span class="tiny"><strong>${label}</strong> · ${s.total.toLocaleString(LOC())} ${L('parties', 'games')}</span>${bar(s)}<span class="tiny">${wdl(s)}</span></div>`;
     };
+    // Sans connexion Lichess : un seul bouton au lieu de deux lignes « jeton requis ».
+    if (live.explorer?.status === 'notoken' || (!this.client.explorerMode() && !live.explorer)) return `<div class="tiny">${boutonLichess()}</div>` + this.eliteLine(e.fenFinale, e.rep);
     return one(live.explorer, L('Mon niveau', 'My level')) + one(live.masters, L('Maîtres', 'Masters')) + this.eliteLine(e.fenFinale, e.rep);
   }
 
@@ -629,7 +641,7 @@ export class RepertoirePage {
     let body = '';
     const n = t.node;
     if (!n || n.status === 'loading') body = `<p class="state"><span class="spinner"></span> ${L('Chargement…', 'Loading…')}</p>`;
-    else if (n.status === 'notoken') body = `<p class="muted">${L('Jeton Lichess requis (⚙ Réglages) pour l’Opening Explorer.', 'Lichess token required (⚙ Settings) for the Opening Explorer.')}</p>`;
+    else if (n.status === 'notoken') body = `<p>${boutonLichess()}</p>`;
     else if (n.status === 'unavailable') body = `<p class="muted">${L(`Jeu de données Élite non publié sur ce site (${esc(n.error)}).`, `Elite dataset not published on this site (${esc(n.error)}).`)}</p>`;
     else if (n.status === 'nocamp') body = `<p class="muted elite-absent">${esc(NOCAMP_TEXT)}</p>`;
     else if (n.status === 'absent') body = `<p class="muted elite-absent">${esc(absentText(n.meta, n.camp))}</p>`;

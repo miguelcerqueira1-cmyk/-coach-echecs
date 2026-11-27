@@ -97,6 +97,7 @@ test('hors connexion : Moteur (Stockfish), Répertoire et Entraînement après u
   expect(await page.locator('.rep-table tbody tr[data-id]').count()).toBeGreaterThan(10);
 
   await page.goto('./#/entrainement');
+  await page.click('#page-entrainement [data-tuile="entrainer"]');
   await page.click('#page-entrainement [data-lines]');
   await expect(page.locator('#page-entrainement [data-status]')).toContainText('À vous', { timeout: 15000 });
 

@@ -542,6 +542,20 @@ domaine + dépôt privé + licences ; 7. Lemon Squeezy + clé de licence + verro
 langues. Écartés d'un commun accord : refonte i18n (tant que 2 langues), packs, contenu grand débutant
 (cible ≈ 800 Elo et plus), Claude en V1.
 
+**Peaufinage « priorité 1 » (2026-11-27, après comparaison aux concurrents : Chessable, Chessbook,
+Chess.com/Chessly, Lichess/Listudy, Aimchess)** ✅ : 1. Entraînement en 4 tuiles (`data-tuile` /
+`data-zone`, `prefs.zone` mémorisé, une section à la fois : apprendre / entrainer (S'entraîner, positions de
+mes parties, progression) / reflexes (Rush, anti-trash) / plus (problèmes, finales, Stockfish, autres
+modes)) ; numéros 1–6 retirés ; visite guidée → `.tuiles`. 2. Fiches du Répertoire repliées sur téléphone
+(`tr.replie`, bouton `data-deplier`, boutons en ligne) ; sources dans « ℹ️ D'où viennent les chiffres ? ».
+3. Sons et vibrations `sons.js` (Web Audio, sans fichier ; Board : son au nouveau coup, erreur sur
+flashError ; réussite : ligne, anti-trash, Rush, problème, finale ; ⚙ `sons` / `vibrations`). 4. Plus de
+« jeton requis » : `lien-lichess.js` → bouton « ♞ Se connecter avec Lichess pour voir les statistiques »
+(Moteur, fiches, arbre, classement), clic global dans main.js. Prochaines idées proposées : badges/XP +
+objectif quotidien, notifications de rappel (Web Push via Worker), test de départ en 2 min, « pourquoi ce
+coup ? » rédigé une fois par coup, variantes perso, coups adverses non couverts, accueil avec captures,
+pages publiques par ouverture (SEO).
+
 **Anciennes prochaines étapes (intégrées au plan ci-dessus) :**
 1. Brouillons des pages légales (mentions, CGV, confidentialité), à compléter avec l'entreprise.
 2. Vidéos pour une partie des ≈ 50 fiches restantes (méthode : § 9).

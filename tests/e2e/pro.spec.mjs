@@ -41,9 +41,11 @@ test('formule gratuite : marque, 3 variantes ouvertes, contenu Pro verrouillé, 
   expect(await page.evaluate(() => localStorage.getItem('coach-echecs:pro'))).toBeNull();
   // Entraînement : module anti-trash réservé, leçon de base ouverte, leçon Pro verrouillée.
   await page.goto('./#/entrainement');
+  await page.click('[data-tuile="reflexes"]');
   await page.click('[data-trash]');
   await expect(dlg).toContainText('Le module Réflexes anti-trash');
   await dlg.locator('[data-pro-close]').click();
+  await page.click('[data-tuile="apprendre"]');
   await page.click('[data-course="gd"]');
   await expect(page.locator('[data-lesson="gd-echange"]')).toHaveText('🔒 Pro');
   await page.click('[data-lesson="gd-orthodoxe"]');

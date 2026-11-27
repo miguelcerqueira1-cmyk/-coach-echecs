@@ -94,6 +94,7 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   await page.click('#page-entrainement [data-quit]');
   // Entraînement : la sortie réelle (2.Cf3 au lieu de 2.c4) devient une position à corriger.
   await page.goto('./#/entrainement');
+  await page.click('[data-tuile="entrainer"]');
   const card = page.locator('[data-reelles]');
   await expect(card).toContainText('sortie(s) de répertoire');
   await expect(card).toContainText('contre Adversaire1');
@@ -114,6 +115,7 @@ test('Mes parties : import Lichess + Chess.com, sorties du répertoire, analyse 
   const left = await page.evaluate(() => JSON.parse(localStorage.getItem('coach-echecs:progression-v1')).sorties.filter((x) => x.corrige).length);
   expect(left).toBe(1);
   // Apprendre : bilan de mes vraies parties par variante (sortie 2.Cf3 → variante à revoir).
+  await page.click('[data-tuile="apprendre"]');
   await page.click('[data-course="gd"]');
   const mv = page.locator('[data-mes-variantes]');
   await expect(mv).toContainText('D’après mes');

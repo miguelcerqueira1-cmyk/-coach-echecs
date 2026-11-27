@@ -18,6 +18,7 @@ import { lineText } from './games-core.js';
 import { recordLine, recordDrill, saveProgress } from './progress.js';
 import { langue } from './i18n.js';
 import { VIES, tempsRush, melanger, charger as chargerRush } from './rush-core.js';
+import { sons } from './sons.js';
 
 // Phrases en français ou en anglais selon la langue de l'interface.
 const L = (fr, en) => (langue() === 'en' ? en : fr);
@@ -394,6 +395,7 @@ export class DrillRunner {
       } else if (this.consec[c.e.id] >= this.repeter) this.log(L(`🏆 « ${esc(c.e.nom)} » : ${this.repeter} fois d’affilée sans faute !`, `🏆 “${esc(c.e.nom)}”: ${this.repeter} times in a row without a mistake!`), 'ok');
     }
     this.log(ok ? L(`<strong>Ligne réussie sans faute ✔</strong>`, `<strong>Line completed without a mistake ✔</strong>`) : L(`<strong>Ligne terminée</strong> avec ${c.errors} erreur(s).`, `<strong>Line finished</strong> with ${c.errors} mistake(s).`), ok ? 'ok' : 'warn');
+    if (ok) sons.reussite();
     this.status(ok ? L('Ligne réussie ✔', 'Line completed ✔') : L('Ligne terminée', 'Line finished'), ok ? 'player' : 'opponent');
     this.draw();
     this.later(() => this.next(), 1100);
@@ -660,6 +662,7 @@ export class DrillRunner {
       else this.noteMissed({ kind: 'trash', e: c.e, color: c.color });
     }
     if (!ok) this.bumpStreak(false);
+    if (ok) sons.reussite();
     if (this.rush) { this.endRush(c, ok, why); return; }
     const fenAt = (() => { const x = new Chess(); for (const u of c.d.setup) x.move(toObj(u)); x.move(toObj(c.d.bad.uci)); return x.fen(); })();
     const seq = lineText(fenAt, c.steps.map((s) => s.san));

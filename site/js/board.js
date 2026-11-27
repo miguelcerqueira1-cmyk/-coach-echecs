@@ -1,6 +1,8 @@
 // Échiquier DOM : clic ou glisser-déposer, flèches SVG, choix explicite de promotion.
 // Il n'applique aucune règle lui-même : la liste des coups légaux vient de chess.js.
 
+import { sons, sonDuCoup } from './sons.js';
+
 const FILES = 'abcdefgh';
 const PROMO = ['q', 'r', 'b', 'n'];
 const PROMO_NAMES = { q: 'Dame', r: 'Tour', b: 'Fou', n: 'Cavalier' };
@@ -85,6 +87,10 @@ export class Board {
     this.turn = chess.turn();
     this.legal = interactive ? chess.moves({ verbose: true }) : [];
     this.interactive = interactive;
+    // Son quand un nouveau coup apparaît (pas au premier affichage ni en redessinant le même coup).
+    const cle = lastMove ? `${chess.history().length}:${lastMove.from}${lastMove.to}` : '';
+    if (this._cleSon !== undefined && cle && cle !== this._cleSon) sonDuCoup(lastMove);
+    this._cleSon = cle;
     this.lastMove = lastMove;
     this.checkSquare = null;
     if (chess.inCheck()) {
@@ -99,6 +105,7 @@ export class Board {
   // Coup refusé : la case visée clignote en rouge, l'échiquier tremble et une bulle explique.
   // La position n'est pas modifiée (c'est l'appelant qui redessine la position inchangée).
   flashError(square, text = '') {
+    sons.erreur();
     const sq = this.squares[square];
     if (sq) {
       sq.classList.remove('sq-error');
