@@ -1059,9 +1059,9 @@
    "rep": "philidor"
   },
   "naj-anglaise": {
-   "n": 79,
-   "ply": 10,
-   "coup": "Be3",
+   "n": 36,
+   "ply": 12,
+   "coup": "Nb3",
    "rep": "najdorf"
   },
   "naj-fg5": {
@@ -1098,6 +1098,72 @@
    "n": 153,
    "ply": 4,
    "coup": "Bb5+",
+   "rep": "najdorf"
+  },
+  "naj-grand-prix": {
+   "n": 12,
+   "ply": 4,
+   "coup": "f4",
+   "rep": "najdorf"
+  },
+  "naj-fermee": {
+   "n": 7,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "najdorf"
+  },
+  "naj-alapin": {
+   "n": 140,
+   "ply": 2,
+   "coup": "c3",
+   "rep": "najdorf"
+  },
+  "naj-morra": {
+   "n": 69,
+   "ply": 2,
+   "coup": "d4",
+   "rep": "najdorf"
+  },
+  "naj-cc3": {
+   "n": 71,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "najdorf"
+  },
+  "naj-c3": {
+   "n": 36,
+   "ply": 4,
+   "coup": "c3",
+   "rep": "najdorf"
+  },
+  "naj-dxd4": {
+   "n": 35,
+   "ply": 6,
+   "coup": "Qxd4",
+   "rep": "najdorf"
+  },
+  "naj-fc4": {
+   "n": 34,
+   "ply": 4,
+   "coup": "Bc4",
+   "rep": "najdorf"
+  },
+  "naj-f3": {
+   "n": 32,
+   "ply": 10,
+   "coup": "f3",
+   "rep": "najdorf"
+  },
+  "naj-g3": {
+   "n": 17,
+   "ply": 10,
+   "coup": "g3",
+   "rep": "najdorf"
+  },
+  "naj-fe3-cf3": {
+   "n": 15,
+   "ply": 12,
+   "coup": "Nf3",
    "rep": "najdorf"
   },
   "dragon-yougoslave": {
