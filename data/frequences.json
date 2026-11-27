@@ -2013,20 +2013,98 @@
    "rep": "contre-reti"
   },
   "cr-e3": {
-   "n": 17,
-   "ply": 4,
-   "coup": "e3",
+   "n": 28,
+   "ply": 6,
+   "coup": "Nc3",
    "rep": "contre-reti"
   },
   "cr-d4": {
-   "n": 74,
-   "ply": 2,
-   "coup": "d4",
+   "n": 42,
+   "ply": 4,
+   "coup": "e3",
    "rep": "contre-reti"
   },
   "cr-b3": {
    "n": 68,
    "ply": 2,
+   "coup": "b3",
+   "rep": "contre-reti"
+  },
+  "cr-slave": {
+   "n": 80,
+   "ply": 6,
+   "coup": "Nc3",
+   "rep": "contre-reti"
+  },
+  "cr-slave-d4": {
+   "n": 5,
+   "ply": 4,
+   "coup": "d4",
+   "rep": "contre-reti"
+  },
+  "cr-slave-e3": {
+   "n": 46,
+   "ply": 6,
+   "coup": "e3",
+   "rep": "contre-reti"
+  },
+  "cr-slave-g3": {
+   "n": 35,
+   "ply": 6,
+   "coup": "g3",
+   "rep": "contre-reti"
+  },
+  "cr-slave-cxd5": {
+   "n": 22,
+   "ply": 6,
+   "coup": "cxd5",
+   "rep": "contre-reti"
+  },
+  "cr-slave-dc2": {
+   "n": 14,
+   "ply": 6,
+   "coup": "Qc2",
+   "rep": "contre-reti"
+  },
+  "cr-londres": {
+   "n": 156,
+   "ply": 4,
+   "coup": "Bf4",
+   "rep": "contre-reti"
+  },
+  "cr-c3": {
+   "n": 38,
+   "ply": 4,
+   "coup": "c3",
+   "rep": "contre-reti"
+  },
+  "cr-torre": {
+   "n": 28,
+   "ply": 4,
+   "coup": "Bg5",
+   "rep": "contre-reti"
+  },
+  "cr-e3-direct": {
+   "n": 102,
+   "ply": 2,
+   "coup": "e3",
+   "rep": "contre-reti"
+  },
+  "cr-g3": {
+   "n": 21,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "contre-reti"
+  },
+  "cr-reti-g3": {
+   "n": 13,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "contre-reti"
+  },
+  "cr-e3-b3": {
+   "n": 11,
+   "ply": 6,
    "coup": "b3",
    "rep": "contre-reti"
   }
