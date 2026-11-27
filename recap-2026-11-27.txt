@@ -1,0 +1,36 @@
+Reprends le projet BlitzRefute. Lis d'abord CLAUDE.md (surtout § 8 « Règles de travail » et § 8 bis « Où on en est (2026-11-27) »). Tout est publié sur main. Je suis sur téléphone, pas développeuse : explique simplement, en français, un chantier à la fois, et dis-moi chaque prochaine étape avant de la commencer.
+
+CE QU'ON A FAIT LES 26 ET 27/11 (tout est en ligne)
+
+1. Code Pro : j'ai retrouvé mon code. Un outil « Calculer l'empreinte d'un code » existe dans Réglages > Avancé, pour un futur nouveau code.
+2. Badge « Claude : erreur » : corrigé. Claude n'est pas activé, c'est mon choix (payant), et l'explication gratuite par Stockfish suffit.
+3. Cours « les plus jouées d'abord » pour les 29 ouvertures, d'après 13 091 parties des meilleurs joueurs.
+4. Plan V1 vendable, étapes 1 à 5 faites :
+   - réglages simplifiés, le technique rangé dans « Avancé » ;
+   - tableau Gratuit / Pro (29 € une fois, à vie) et aperçu des fiches verrouillées ;
+   - « 1 clic » : état de chaque fiche (Nouvelle / En cours / Maîtrisée / À revoir), boutons Apprendre / S'entraîner, « Travailler mon erreur » dans Mes parties, gros bouton « Continuer » ;
+   - mode Rush réfutations : 3 vies, chrono qui raccourcit, record ;
+   - pages légales (mentions, conditions de vente, confidentialité) en « version provisoire » en attendant mon SIRET, et FAQ acheteur. Garantie « satisfait ou remboursé 14 jours » validée.
+5. Peaufinage :
+   - Entraînement en 4 tuiles (Apprendre · S'entraîner · Réflexes · Plus) ;
+   - fiches du Répertoire repliées sur téléphone ;
+   - sons et vibrations ;
+   - bouton « Se connecter avec Lichess » à la place de « jeton requis ».
+6. Moteur plus fluide : le meilleur coup provisoire s'affiche pendant le calcul.
+7. Test de départ : 5 positions de mes ouvertures. Points d'expérience, niveaux, objectif du jour et 15 badges.
+8. « Pourquoi ce coup ? » : 242 explications pour la Caro-Kann, en français et en anglais, vérifiées automatiquement. J'ai validé le ton : « très propre ».
+
+PROCHAINE ÉTAPE CONVENUE
+Étendre « Pourquoi ce coup ? » aux 28 autres ouvertures (environ 2 200 coups), par lots, des plus jouées aux moins jouées, avec la même méthode que la Caro-Kann (décrite dans CLAUDE.md). Publier après chaque lot testé.
+
+ENSUITE, À CHOISIR
+Variantes perso, coups adverses non couverts, accueil plus vendeur et pages publiques par ouverture pour Google.
+
+REPORTÉS
+- Rappels par notification et Stockfish plus rapide (plusieurs cœurs) : avec le déménagement sur Cloudflare.
+- Vente (Cloudflare Pages, nom de domaine, Lemon Squeezy, vrai verrou Pro) : après ma micro-entreprise.
+
+DE MON CÔTÉ
+- Créer ma micro-entreprise (guide donné le 26/11), puis t'envoyer nom, SIRET et adresse pour les pages légales, et choisir un médiateur de la consommation.
+- Attendre la réponse de Lichess sur l'usage commercial.
+- Bilan de ma routine d'échecs vers le 14/12.
