@@ -11,6 +11,12 @@ bugs connus sont dans `STATE.md`.** Ne pas recopier de code ici.
 2. **À chaque nouvelle fonctionnalité, étape terminée ou nouveau projet, mettre à jour `STATE.md`**
    (avancement + suite prévue). Ici, ne garder qu'une courte mention vers `STATE.md`, sans détailler.
 
+## Chantier en cours (détail et prochaine étape : `STATE.md`)
+
+On passe toutes les ouvertures en revue, une par une : plus de fiches et de variantes dans chaque
+ouverture (d'après les coups adverses les plus fréquents), puis les explications « 💡 Pourquoi ce coup ? »
+pour chaque coup des fiches.
+
 ## Le projet en deux lignes
 
 Application web d'entraînement aux ouvertures d'échecs (marque **BlitzRefute**), en français et en anglais,
