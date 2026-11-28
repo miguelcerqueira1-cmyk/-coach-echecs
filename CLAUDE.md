@@ -13,9 +13,8 @@ bugs connus sont dans `STATE.md`.** Ne pas recopier de code ici.
 
 ## Chantier en cours (détail et prochaine étape : `STATE.md`)
 
-On passe toutes les ouvertures en revue, une par une : plus de fiches et de variantes dans chaque
-ouverture (d'après les coups adverses les plus fréquents), puis les explications « 💡 Pourquoi ce coup ? »
-pour chaque coup des fiches.
+Le chantier fiches + « 💡 Pourquoi ce coup ? » des 29 ouvertures est terminé (2026-11-28). Le prochain chantier
+est à choisir avec l'utilisatrice (pistes dans `STATE.md`).
 
 ## Le projet en deux lignes
 
