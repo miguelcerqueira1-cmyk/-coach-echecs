@@ -3,24 +3,69 @@
 Lu au début de chaque session (voir CLAUDE.md). Mis à jour à chaque fonctionnalité, étape ou projet
 terminé. Les règles stables (stack, architecture, conventions, commandes) sont dans CLAUDE.md.
 
-## En bref (mis à jour le 2026-11-27)
+## En bref (mis à jour le 2026-11-28)
 
 - **Chantier en cours** : compléter les fiches puis écrire les « 💡 Pourquoi ce coup ? », une ouverture à la fois,
-  des plus jouées aux moins jouées. Faites : Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la
-  Dame, Najdorf, Italienne, Espagnole, 1…e5, Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise (23 / 29). **Prochaine étape exacte :
-  Alekhine (alekhine, 8 fiches ; 105 parties Élite)**, puis Dragon (84), Benoni (80), Hollandaise (58), Smith-Morra (49), Grünfeld (5). L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
-  publication sans attendre sa validation de la liste (résumé ensuite) ; elle donne son « continue » entre deux
-  ouvertures.
-- **Publication** : tout est sur `main` ; dernière publication : Viennoise (8 fiches ajoutées, 113 « Pourquoi », correction de vie-fc5 : 5.Ca4 au lieu de
-  5.f4) ; avant : Philidor (11 fiches, dont 4 reprises de 1…e5, 133), Écossaise (12 fiches, 196), Bogo-indienne (7 fiches, 110), Contre le Londres (8 fiches,
-  127, correction de cl-c5-db6 : 6…e5 au lieu de 6…Ff5 ??), Contre l'Anglaise (7 fiches, 109), Pirc (9 fiches, 142,
-  correction de pirc-e5 : 6…Cxe5 au lieu de 6…Cc6), Scandinave (13 fiches, 150), Catalane (10 fiches, 159), Anglaise (17 fiches,
-  dont plusieurs transpositions vers le Gambit Dame, 237 « Pourquoi »), Indienne du Roi (17 fiches, 194), Contre 1.Cf3 (13 fiches,
-  dont 9 reprises du GD refusé / Slave par transposition, 160 « Pourquoi »), GD refusé / Slave (16 fiches, 236, correction gdrn-londres 6…e5 au lieu de 6…Ff5 ??),
-  Française (13, 211), 1…e5 (14, 256), en ligne.
+  des plus jouées aux moins jouées (nombre de parties dans les données Élite). **23 / 29 faites et en ligne** :
+  Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la Dame, Najdorf, Italienne, Espagnole, 1…e5,
+  Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre
+  l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise.
+  **Prochaine étape exacte : Alekhine (alekhine, 8 fiches ; 105 parties Élite)**, puis Dragon (84), Benoni / Benko
+  (80), Hollandaise (58), Smith-Morra (49), Grünfeld (5). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
+- L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests → publication sans attendre sa validation
+  (résumé simple ensuite) ; elle donne son « continue » entre deux ouvertures (parfois « les 2 / 3 suivantes »,
+  ou une heure précise via une tâche programmée).
+- **Publication** : tout est sur `main` et en ligne (dernier run deploy.yml vérifié : Viennoise, succès, 2026-11-28).
+- **Compteurs** : **509 fiches** vérifiées par Stockfish (profondeur 18), toutes traduites ; « Pourquoi » complets
+  pour les 23 répertoires faits (FR + EN, contrôlés par verifie-pourquoi en CI).
 - **En attente de l'utilisatrice** : décision sur la fiche Smith-Morra (sic-morra 6…Dc7, voir plus bas) — « on
   attend de voir » ; micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
+
+### Session des 27–28/11/2026 (15 ouvertures complétées, tout en ligne)
+
+Ouvertures faites (fiches ajoutées / « Pourquoi ») : 1…e5 (+14 / 256), Française (+13 / 211), GD refusé / Slave
+(+16 / 236), Contre 1.Cf3 (+13 / 160), Indienne du Roi (+17 / 194), Anglaise (+17 / 237), Catalane (+10 / 159),
+Scandinave (+13 / 150), Pirc (+9 / 142), Contre l'Anglaise (+7 / 109), Contre le Londres (+8 / 127),
+Bogo-indienne (+7 / 110), Écossaise (+12 / 196), Philidor (+11 / 133), Viennoise (+8 / 113). Total : 334 → 509 fiches.
+
+**Méthode (à réutiliser telle quelle pour les 6 restants)** — outils dans `scripts/outils-fiches/` (README) :
+1. Télécharger `elite.json` (branche donnees-elite) ; `trous.mjs <rep>` liste les coups adverses Élite non couverts
+   (MIN=3 à 8 selon le volume) ; `pos.mjs` donne les réponses Élite dans une position.
+2. Choisir ≈ 7 à 17 lignes : suivre les coups des meilleurs joueurs, transpositions comprises. Les coups joués
+   AVANT la racine du répertoire (ex. 2…Cf6 contre l'Écossaise, 2.Cc3 contre la Philidor, 2.Cf3 g6 contre l'Indienne
+   du Roi) sont traités en reprenant les fiches d'un autre répertoire (`reuse.py`, nouveaux ids) : autorisé
+   (« une fiche peut commencer avant la racine »).
+3. `check.mjs <w|b>` : chaque coup « à nous » doit perdre < 50 cp ; corriger la ligne sinon.
+4. `greedy.mjs` puis `probe-line.mjs` : punitions ≥ +1,5 (ou `minCp` explicite, ex. 140 pour cl-cbd2-db6).
+5. Écrire FR + EN avec `gen.py` (familles EN = celles déjà utilisées dans `en/<rep>.js`) ; vérifier chaque
+   affirmation du plan sur la position (une Dame « qui attaque d4 » derrière son propre pion c5 = faux).
+6. verify:repertoire, repertoire.mjs, verifie-en, prolonge-lignes, frequences, puis `pourquoi-faits.mjs <rep>` :
+   reprendre les textes existants par clé (même position + même coup, tous répertoires), rédiger le reste
+   (phrases courtes, sans chiffre), `verifie-pourquoi.mjs`.
+7. **Contrôle des anciennes fiches** : dans la sortie de pourquoi-faits, tout coup « à nous » avec un écart
+   Stockfish ≥ 50 cp est une erreur à corriger (voir ci-dessous).
+8. npm test + Playwright, commit en français, push branche + main, une seule vérification de deploy.yml
+   (tâche programmée ≈ 16 min plus tard), STATE.md.
+
+**Erreurs trouvées et corrigées dans d'anciennes fiches** (grâce à l'étape 7) :
+- gdrn-londres et cl-c5-db6 : 6…Ff5 ?? laissait 7.Dxf5 (la Dame c2 voit f5) → remplacé par 6…e5 ! 7.dxe5 Ff5
+  8.Dc1 f6 (plan corrigé : « pas …Ff5 tout de suite, …e5 d'abord »).
+- pirc-e5 : 6…Cc6 → 6…Cxe5 (gagne un pion) 7.Cf3 Cxf3+ 8.gxf3 Cc6.
+- vie-fc5 : 5.f4 (−0,7) → 5.Ca4 Fb6 6.Cxb6 axb6 7.Cf3 O-O 8.O-O (paire de Fous).
+- Dans mes propres fiches, avant publication : Française (6.h4 : Stockfish accepte …Fxg5 ; Dame b6 « attaquant d4 »
+  à travers c5), Anglaise (quatre Cavaliers : plus de pion d après dxc3 → « f3 attaquera e4 »), Catalane
+  (cat-a5 : 9.a3 au lieu de 9.e4), Philidor / Écossaise (textes « Pourquoi » ajustés).
+
+**Pièges rencontrés (techniques)** :
+- `verifie-pourquoi` refuse un coup de pièce cité s'il n'est légal ni avant ni après le coup (ex. « prépare …Fb7 »
+  juste après …b6, « empêche …Fb4 » si le pion c5 bloque, « Fg2 » juste après g3) → reformuler sans notation
+  (« libère la case b7 pour le Fou c8 », « prépare le fianchetto du Fou f1 »).
+- `repertoire.mjs` refuse les ids en double (scan-cf3 existait → scan-2cf3) ; vérifier avec grep avant d'écrire.
+- Le serveur local `scripts/serve.mjs` s'arrête souvent entre deux lancements → `curl` (000) puis relancer avec nohup.
+- Lien Chromium : `PLAYWRIGHT_BROWSERS_PATH=<scratchpad>/pw` avec `chromium_headless_shell-1194/chrome-linux/headless_shell`
+  → `/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell`.
+- Un test e2e Élite reste parfois instable en suite complète locale (98 au lieu de 99) : il passe au second lancement.
 
 ## 0. Contenu actuel (compteurs)
 
@@ -64,10 +109,13 @@ Utilisable sur téléphone (installable, hors connexion) et sur ordinateur, sans
   `donnees-elite` gérée par un workflow).
 - Pseudos de l'utilisateur : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
 
-## ★ Où on en est (2026-11-27) et prochaines étapes
+## ★ Où on en est (2026-11-28) et prochaines étapes
 
-**Tout est publié sur `main`** (site en ligne à jour au 2026-11-27, dernier deploy.yml réussi ; branche de
-travail de la session des 26–27/11 : `claude/hopeful-davinci-99nq74`). Plus rien « en attente de publication ».
+**Tout est publié sur `main`** (site en ligne à jour au 2026-11-28, dernier deploy.yml réussi ; branche de
+travail de la session des 27–28/11 : `claude/intelligent-noether-xvt971`, celle des 26–27/11 :
+`claude/hopeful-davinci-99nq74`). Plus rien « en attente de publication ».
+Avancement détaillé du chantier fiches + « Pourquoi » : voir « En bref » et « Session des 27–28/11 » en tête de fichier
+(les paragraphes ci-dessous datent du 2026-11-27).
 
 **Résumé de la session des 26–27/11 (tout en ligne)** : outil d'empreinte de code Pro ; badge « Claude :
 erreur » corrigé ; « les plus jouées d'abord » pour toutes les ouvertures ; plan V1 étapes 1 à 5 (réglages

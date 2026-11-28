@@ -98,6 +98,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
 worker/src/                   Cloudflare Worker (API Claude, relais explorer) : index.js, prompt.js
 scripts/                      vendor, build (→ dist/), serve, icons, repertoire (ECO + noms par coup → JSON),
                               verify-repertoire (+ uci-node, Stockfish Node), probe-line,
+                              outils-fiches/ (trous Élite, contrôle des coups, punitions, écriture FR + EN),
                               elite.mjs / elite-core.mjs / elite-suivis.mjs (collecte Élite), verify-videos
 data/chess-openings/          Base ECO CC0 (lichess-org/chess-openings)
 data/verification.json        Résultats Stockfish (profondeur 18) par empreinte de fiche
