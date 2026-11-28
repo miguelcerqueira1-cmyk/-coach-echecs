@@ -96,7 +96,10 @@ export default [
     cases: 'e5 (pression), d5 (case centrale), colonne e',
     echanger: 'Fou b5 contre le Cavalier c6 quand il gagne e5',
     conserver: 'Tour e1 sur la colonne e',
-    video: { recherche: 'Steinitz Defense Ruy Lopez 3...d6 plans', url: null },
+    video: { recherche: 'Steinitz Defense Ruy Lopez 3...d6 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FNRh5E1Ocqg', titre: 'Ruy Lopez, (Old) Steinitz Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-cordel', rep: 'espagnole', famille: 'Défense classique', nom: 'Défense classique (3…Fc5)', badge: 'theorie',
@@ -138,7 +141,10 @@ export default [
     cases: 'g8 et la diagonale a2-g8, e5',
     echanger: 'Fou b5 contre le Cavalier c6 pour gagner e5',
     conserver: 'Roque rapide et pion e4',
-    video: { recherche: 'Schliemann gambit 4.d3 anti line', url: null },
+    video: { recherche: 'Schliemann gambit 4.d3 anti line', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=ne67RDbXVsU', titre: 'Ruy Lopez - Schliemann Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-canne-a-peche', rep: 'espagnole', famille: 'Pièges de l’Espagnole', nom: 'Piège de la « canne à pêche » (4…Cg4 ?!)', badge: 'piege',
@@ -172,7 +178,11 @@ export default [
     cases: 'b3 (Fou enfermé), c4, a4',
     echanger: 'Fou a4 contre le Cavalier c6 si le Fou risque d’être enfermé',
     conserver: 'Une case de retraite pour le Fou (c2)',
-    video: { recherche: 'Noahs Ark trap Ruy Lopez', url: null },
+    video: { recherche: 'Noahs Ark trap Ruy Lopez', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=ydMe19P7dR8', titre: 'The Ruy Lopez | Noah\'s Ark Trap | Chess Openings | IM Andrey Ostrovskiy', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=W7RD4QZ8VPI', titre: 'The Ruy Lopez | Modern Steinitz Defense | Chess Openings | IM Andrey Ostrovskiy', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'esp-marshall', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: 'Attaque Marshall (8.c3 d5)', badge: 'theorie',
@@ -217,7 +227,10 @@ export default [
     cases: 'e4 (Cavalier noir), e-file, c4',
     echanger: 'Le Fou d3 contre le Cavalier e4 si besoin',
     conserver: 'La Tour sur la colonne e',
-    video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null },
+    video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-philidor', rep: 'espagnole', famille: 'Sans 2…Cc6', nom: 'Défense Philidor 2…d6 3.d4', badge: 'theorie',
@@ -235,7 +248,12 @@ export default [
     cases: 'd4, f7, b7',
     echanger: 'Le Cavalier d4 contre un Cavalier qui vient en d4',
     conserver: 'Le pion e4',
-    video: { recherche: 'Philidor Defense for White 3.d4', url: null },
+    video: { recherche: 'Philidor Defense for White 3.d4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rtC6XhBLtqs', titre: 'Chess Traps #5: Legal Trap - Philidor Defence', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'esp-elephant', rep: 'espagnole', famille: 'Sans 2…Cc6', nom: 'Contre-gambit de l’éléphant 2…d5', badge: 'loufoque',
@@ -253,7 +271,10 @@ export default [
     cases: 'e4 (pion cloué), d5',
     echanger: 'Les Dames si les Noirs cherchent l’attaque',
     conserver: 'Le pion de plus',
-    video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null },
+    video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-letton', rep: 'espagnole', famille: 'Sans 2…Cc6', nom: 'Gambit letton 2…f5 3.Cxe5', badge: 'loufoque',
@@ -271,7 +292,11 @@ export default [
     cases: 'h5 et e8 (diagonale), e4 (cible)',
     echanger: 'Rien de pressé : développer et attaquer le pion e4',
     conserver: 'Le Cavalier c4',
-    video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null },
+    video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-arkhangelsk', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: 'Arkhangelsk 5…b5 6.Fb3 Fb7', badge: 'theorie',
@@ -289,7 +314,10 @@ export default [
     cases: 'e4, f2, d4',
     echanger: 'Le Fou e3 contre le Fou b6',
     conserver: 'Le centre c3-d4-e4',
-    video: { recherche: 'Ruy Lopez Arkhangelsk 5...b5 6.Bb3 Bb7', url: null },
+    video: { recherche: 'Ruy Lopez Arkhangelsk 5...b5 6.Bb3 Bb7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=gf-5PDa619E', titre: 'Ruy Lopez - Archangel (Arkhangelsk) Variation ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-moller', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: 'Møller 5…Fc5', badge: 'theorie',
@@ -304,7 +332,10 @@ export default [
     cases: 'b5 (cible de a4), f2, d4',
     echanger: 'Le pion a4 contre b5 pour ouvrir la colonne a',
     conserver: 'Le Fou b3, braqué sur f7',
-    video: { recherche: 'Ruy Lopez Moller 5...Bc5 6.c3', url: null },
+    video: { recherche: 'Ruy Lopez Moller 5...Bc5 6.c3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=wxeIrtY5Onw', titre: 'Ruy Lopez - ...a6 with ...Bc5 Variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-cozio-differee', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: '4.Fa4 Cge7 (Cozio différée)', badge: 'theorie',
@@ -322,7 +353,10 @@ export default [
     cases: 'd4, e4, grande diagonale',
     echanger: 'Le Fou c1 contre le Fou g7 si possible',
     conserver: 'Le centre d4-e4',
-    video: { recherche: 'Ruy Lopez Cozio deferred 4...Nge7', url: null },
+    video: { recherche: 'Ruy Lopez Cozio deferred 4...Nge7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=CScN9zlPuXc', titre: 'Ruy Lopez, Cozio Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-d6-fg4', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: '5.O-O d6 6.c3 Fg4', badge: 'theorie',
@@ -337,7 +371,11 @@ export default [
     cases: 'd4, g4, h3',
     echanger: 'Le Cavalier f3 contre le Fou g4 si les Noirs prennent',
     conserver: 'Le pion e4 bien soutenu',
-    video: { recherche: 'Ruy Lopez 5.O-O d6 6.c3 Bg4', url: null },
+    video: { recherche: 'Ruy Lopez 5.O-O d6 6.c3 Bg4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=AUKqRZanVQ8', titre: 'Chess Basics #7: The closed Ruy Lopez', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'esp-echange-df6', rep: 'espagnole', famille: 'Variante d’échange', nom: 'Échange 4.Fxc6 dxc6 5.O-O Df6', badge: 'theorie',
@@ -352,7 +390,10 @@ export default [
     cases: 'd4, e5, aile roi (majorité)',
     echanger: 'Les pièces : la finale favorise la majorité blanche',
     conserver: 'La majorité de pions à l’aile roi',
-    video: { recherche: 'Ruy Lopez Exchange 5.O-O Qf6', url: null },
+    video: { recherche: 'Ruy Lopez Exchange 5.O-O Qf6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=W72Vw-DxvA0', titre: 'Ruy Lopez - Exchange Variation ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'esp-anti-marshall-b4', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: 'Anti-Marshall 8.a4 b4', badge: 'theorie',
@@ -367,7 +408,11 @@ export default [
     cases: 'b6, c4, e4',
     echanger: 'Le Fou b3 contre le Fou e6 si les Noirs le proposent',
     conserver: 'Le pion a5',
-    video: { recherche: 'Anti-Marshall 8.a4 b4', url: null },
+    video: { recherche: 'Anti-Marshall 8.a4 b4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=AUKqRZanVQ8', titre: 'Chess Basics #7: The closed Ruy Lopez', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'esp-norvegienne', rep: 'espagnole', famille: 'Défense Morphy (3…a6)', nom: 'Variante norvégienne 4…b5 5.Fb3 Ca5', badge: 'loufoque',
@@ -382,7 +427,10 @@ export default [
     cases: 'd4, colonne a, f7',
     echanger: 'Le Fou b3 contre le Cavalier a5 (inévitable)',
     conserver: 'L’avance de développement',
-    video: { recherche: 'Ruy Lopez Norwegian 4...b5 5.Bb3 Na5', url: null },
+    video: { recherche: 'Ruy Lopez Norwegian 4...b5 5.Bb3 Na5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=l9egatXy9Dk', titre: 'Ruy Lopez - Norwegian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-smyslov', rep: 'espagnole', famille: 'Défense classique', nom: 'Smyslov 3…g6', badge: 'theorie',
@@ -397,7 +445,10 @@ export default [
     cases: 'd4, d5, grande diagonale',
     echanger: 'Le Fou a4 contre le Cavalier c6 si cela gagne e5',
     conserver: 'Le pion d4',
-    video: { recherche: 'Ruy Lopez Smyslov 3...g6', url: null },
+    video: { recherche: 'Ruy Lopez Smyslov 3...g6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=4gLWs4rWCIo', titre: 'Ruy Lopez, Fianchetto Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'esp-cozio', rep: 'espagnole', famille: 'Défense classique', nom: 'Cozio 3…Cge7', badge: 'theorie',
@@ -412,6 +463,9 @@ export default [
     cases: 'd4, d5, g5',
     echanger: 'Le Fou b5 contre le Cavalier c6 si cela gagne e5',
     conserver: 'Le centre d4-e4',
-    video: { recherche: 'Ruy Lopez Cozio 3...Nge7', url: null },
+    video: { recherche: 'Ruy Lopez Cozio 3...Nge7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=CScN9zlPuXc', titre: 'Ruy Lopez, Cozio Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

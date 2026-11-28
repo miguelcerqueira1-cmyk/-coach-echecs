@@ -83,7 +83,10 @@ export default [
     cases: 'e-colonne (clouage), e6, d4 (pion à récupérer)',
     echanger: 'Le Fou c4 contre la Dame/le pion d5 dans la ligne forcée',
     conserver: 'Tour e1 sur la colonne ouverte',
-    video: { recherche: 'Two Knights Defense 4.d4 Modern attack', url: null },
+    video: { recherche: 'Two Knights Defense 4.d4 Modern attack', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-deux-cavaliers-d3', rep: 'italienne', famille: 'Défense des deux Cavaliers', nom: 'Deux Cavaliers avec 4.d3 (jeu tranquille)', badge: 'theorie',
@@ -95,7 +98,10 @@ export default [
     cases: 'd4 (rupture), f5 (case pour un Cavalier via g3), g4 (à interdire)',
     echanger: 'Rien de particulier',
     conserver: 'Fou c4, pion e4 solide',
-    video: { recherche: 'Italian Game 4.d3 Two Knights quiet line', url: null },
+    video: { recherche: 'Italian Game 4.d3 Two Knights quiet line', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-hongroise', rep: 'italienne', famille: 'Défense hongroise', nom: 'Défense hongroise (3…Fe7)', badge: 'theorie',
@@ -176,7 +182,10 @@ export default [
     cases: 'f7, d5, e5',
     echanger: 'Fou d5 contre le Cavalier c6 si utile',
     conserver: 'Pion de plus',
-    video: { recherche: 'Traxler counterattack 5.Bxf7+ Ke7 6.Bd5', url: null },
+    video: { recherche: 'Traxler counterattack 5.Bxf7+ Ke7 6.Bd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=te4yVda5mhI', titre: 'Chess Openings: Traxler Counter Attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-moller', rep: 'italienne', famille: 'Giuoco Piano', nom: 'c3-d4 : 6…Fb4+ 7.Fd2 (ligne sûre)', badge: 'theorie',
@@ -188,7 +197,11 @@ export default [
     cases: 'd5, e5, b7',
     echanger: 'Cavalier e4 contre le Cavalier d5 noir',
     conserver: 'Pion d4',
-    video: { recherche: 'Giuoco Piano 6...Bb4+ 7.Bd2 main line', url: null },
+    video: { recherche: 'Giuoco Piano 6...Bb4+ 7.Bd2 main line', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=C0ArOkXBG5Q', titre: 'Chess Openings: Giuoco Piano / Moeller attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4x5Y62g4UhI', titre: 'Giuoco Piano | Italian Game Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ita-petrov', rep: 'italienne', famille: 'Sans 2…Cc6', nom: 'Défense Petrov 2…Cf6 3.Cxe5', badge: 'theorie',
@@ -203,7 +216,10 @@ export default [
     cases: 'e4 (Cavalier noir), e-file, c4',
     echanger: 'Le Fou d3 contre le Cavalier e4 si besoin',
     conserver: 'La Tour sur la colonne e',
-    video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null },
+    video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-philidor', rep: 'italienne', famille: 'Sans 2…Cc6', nom: 'Défense Philidor 2…d6 3.d4', badge: 'theorie',
@@ -221,7 +237,12 @@ export default [
     cases: 'd4, f7, b7',
     echanger: 'Le Cavalier d4 contre un Cavalier qui vient en d4',
     conserver: 'Le pion e4',
-    video: { recherche: 'Philidor Defense for White 3.d4', url: null },
+    video: { recherche: 'Philidor Defense for White 3.d4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rtC6XhBLtqs', titre: 'Chess Traps #5: Legal Trap - Philidor Defence', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ita-elephant', rep: 'italienne', famille: 'Sans 2…Cc6', nom: 'Contre-gambit de l’éléphant 2…d5', badge: 'loufoque',
@@ -239,7 +260,10 @@ export default [
     cases: 'e4 (pion cloué), d5',
     echanger: 'Les Dames si les Noirs cherchent l’attaque',
     conserver: 'Le pion de plus',
-    video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null },
+    video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-letton', rep: 'italienne', famille: 'Sans 2…Cc6', nom: 'Gambit letton 2…f5 3.Cxe5', badge: 'loufoque',
@@ -257,7 +281,11 @@ export default [
     cases: 'h5 et e8 (diagonale), e4 (cible)',
     echanger: 'Rien de pressé : développer et attaquer le pion e4',
     conserver: 'Le Cavalier c4',
-    video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null },
+    video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-dc-d3-fc5', rep: 'italienne', famille: 'Défense des deux Cavaliers', nom: '3…Cf6 4.d3 Fc5 (retour au Giuoco)', badge: 'theorie',
@@ -272,7 +300,10 @@ export default [
     cases: 'd4 (poussée), b5 (à empêcher), g3 et f5',
     echanger: 'Le Fou c4 contre le Fou e6 si les Noirs le proposent',
     conserver: 'Le pion d3 jusqu’à d4',
-    video: { recherche: 'Giuoco Pianissimo 4.d3 Bc5 plans', url: null },
+    video: { recherche: 'Giuoco Pianissimo 4.d3 Bc5 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9Q2oa73y5PU', titre: 'Italian Game | The Giuoco Pianissimo | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ita-dc-d3-h6', rep: 'italienne', famille: 'Défense des deux Cavaliers', nom: '3…Cf6 4.d3 h6', badge: 'theorie',
@@ -287,7 +318,10 @@ export default [
     cases: 'g5 (contrôlée par …h6), d4, f5',
     echanger: 'Le Cavalier d2 passe par f1 et g3 vers f5',
     conserver: 'Le Fou c4 sur la diagonale',
-    video: { recherche: 'Two Knights 4.d3 h6 Italian plans', url: null },
+    video: { recherche: 'Two Knights 4.d3 h6 Italian plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9Q2oa73y5PU', titre: 'Italian Game | The Giuoco Pianissimo | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ita-pianissimo-a5', rep: 'italienne', famille: 'Giuoco Piano', nom: 'Pianissimo …a5', badge: 'theorie',
@@ -302,7 +336,10 @@ export default [
     cases: 'b5, g4 (contrôlée par h3), d4',
     echanger: 'Le Fou c4 contre le Fou e6 seulement si cela abîme les pions noirs',
     conserver: 'Le pion h3',
-    video: { recherche: 'Giuoco Pianissimo ...a5 plans', url: null },
+    video: { recherche: 'Giuoco Pianissimo ...a5 plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9Q2oa73y5PU', titre: 'Italian Game | The Giuoco Pianissimo | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ita-dc-cg5-fd7', rep: 'italienne', famille: 'Défense des deux Cavaliers', nom: '4.Cg5 d5 5.exd5 Ca5 6.Fb5+ Fd7', badge: 'theorie',
@@ -320,7 +357,10 @@ export default [
     cases: 'd5 (pion de plus), e5, b5',
     echanger: 'Le Fou b5 contre le Fou d7',
     conserver: 'Le pion d5',
-    video: { recherche: 'Two Knights 4.Ng5 d5 5.exd5 Na5 6.Bb5+ Bd7', url: null },
+    video: { recherche: 'Two Knights 4.Ng5 d5 5.exd5 Na5 6.Bb5+ Bd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ita-giuoco-d6', rep: 'italienne', famille: 'Giuoco Piano', nom: '4.c3 d6 5.d4', badge: 'theorie',
@@ -338,6 +378,9 @@ export default [
     cases: 'd4, e4, g4',
     echanger: 'Le Fou c1 contre le Fou b6 avec Fe3',
     conserver: 'Le centre d4-e4',
-    video: { recherche: 'Giuoco Piano 4.c3 d6 5.d4', url: null },
+    video: { recherche: 'Giuoco Piano 4.c3 d6 5.d4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=4x5Y62g4UhI', titre: 'Giuoco Piano | Italian Game Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
 ];

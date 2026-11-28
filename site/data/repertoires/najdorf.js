@@ -121,7 +121,10 @@ export default [
     cases: 'd5, d4, e5',
     echanger: 'Fou d7 contre le Fou b5 (4.Fxd7+)',
     conserver: 'Pion d6',
-    video: { recherche: 'Sicilian Moscow variation 3.Bb5+ Bd7', url: null },
+    video: { recherche: 'Sicilian Moscow variation 3.Bb5+ Bd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=XI9_mUSzAF4', titre: 'The Moscow Variation of the Sicilian (3.Bb5+)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-grand-prix', rep: 'najdorf', famille: 'Sans 2.Cf3', nom: 'Grand Prix 2.Cc3 d6 3.f4 g6', badge: 'theorie',
@@ -133,7 +136,10 @@ export default [
     cases: 'f7 (à fermer par …e6), d4, b5',
     echanger: 'Le Cavalier c6 contre un Cavalier qui vient en d4',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Grand Prix Attack 2.Nc3 d6 3.f4 g6 for Black', url: null },
+    video: { recherche: 'Grand Prix Attack 2.Nc3 d6 3.f4 g6 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=y_nTGCFsrUc', titre: 'The Grand Prix Attack against the Sicilian', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-fermee', rep: 'najdorf', famille: 'Sans 2.Cf3', nom: 'Sicilienne fermée 2.Cc3 d6 3.g3', badge: 'theorie',
@@ -145,7 +151,11 @@ export default [
     cases: 'd4, b4, f5',
     echanger: 'Le pion f contre e4 avec …f5 au bon moment',
     conserver: 'Le Fou g7 (grande diagonale)',
-    video: { recherche: 'Closed Sicilian 2.Nc3 d6 3.g3 for Black', url: null },
+    video: { recherche: 'Closed Sicilian 2.Nc3 d6 3.g3 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-alapin', rep: 'najdorf', famille: 'Sans 2.Cf3', nom: 'Alapin 2.c3 d5', badge: 'theorie',
@@ -163,7 +173,10 @@ export default [
     cases: 'd4 (pion isolé), d5, e4',
     echanger: 'Les pièces : le pion isolé devient faible en finale',
     conserver: 'Le blocage en d5',
-    video: { recherche: 'Alapin Sicilian 2.c3 d5 3.exd5 Qxd5', url: null },
+    video: { recherche: 'Alapin Sicilian 2.c3 d5 3.exd5 Qxd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-morra', rep: 'najdorf', famille: 'Sans 2.Cf3', nom: 'Gambit Morra refusé 2.d4 cxd4 3.c3 Cf6', badge: 'theorie',
@@ -181,7 +194,11 @@ export default [
     cases: 'd5 (Cavalier), e5 (cible), d4',
     echanger: 'Le pion d6 contre le pion e5',
     conserver: 'Le Cavalier d5',
-    video: { recherche: 'Smith-Morra declined 3...Nf6 4.e5 Nd5', url: null },
+    video: { recherche: 'Smith-Morra declined 3...Nf6 4.e5 Nd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-cc3', rep: 'najdorf', famille: 'Sans 3.d4', nom: '2.Cf3 d6 3.Cc3 Cf6 4.e5', badge: 'theorie',
@@ -226,7 +243,10 @@ export default [
     cases: 'e4, d6, c6 (Fou)',
     echanger: 'Les pièces mineures quand cela fait valoir la paire de Fous',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Sicilian 4.Qxd4 Nc6 5.Bb5 Bd7 Chekhover', url: null },
+    video: { recherche: 'Sicilian 4.Qxd4 Nc6 5.Bb5 Bd7 Chekhover', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vT4FQsKzX2A', titre: 'How to play the Qxd4 Sicilian (Chekhover)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-fc4', rep: 'najdorf', famille: 'Sans 3.d4', nom: '2.Cf3 d6 3.Fc4 Cf6 4.d3', badge: 'theorie',
@@ -256,7 +276,11 @@ export default [
     cases: 'd5, d4, c4',
     echanger: 'Le Fou e6 contre un Cavalier qui arrive en d5',
     conserver: 'Le contrôle de d5',
-    video: { recherche: 'Najdorf 6.f3 e5 7.Nb3 Be6', url: null },
+    video: { recherche: 'Najdorf 6.f3 e5 7.Nb3 Be6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-g3', rep: 'najdorf', famille: 'Najdorf 5…a6', nom: '6.g3 e5 7.Cde2', badge: 'theorie',
@@ -271,7 +295,11 @@ export default [
     cases: 'd5, b5, grande diagonale',
     echanger: 'Le Fou b7 contre le Fou g2',
     conserver: 'Le pion b5',
-    video: { recherche: 'Najdorf 6.g3 e5', url: null },
+    video: { recherche: 'Najdorf 6.g3 e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'naj-fe3-cf3', rep: 'najdorf', famille: 'Najdorf 5…a6', nom: '6.Fe3 e5 7.Cf3', badge: 'theorie',
@@ -286,6 +314,10 @@ export default [
     cases: 'd5, e5, c4',
     echanger: 'Le Fou e6 contre le Fou c4',
     conserver: 'Le pion e5',
-    video: { recherche: 'Najdorf 6.Be3 e5 7.Nf3', url: null },
+    video: { recherche: 'Najdorf 6.Be3 e5 7.Nf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7RX0Iq4bvOM', titre: 'SICILIENNE NAJDORF: l\'ouverture appréciée des grands maîtres', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=qyfsb56Cy9g', titre: 'HOW TO PLAY Sicilian Defense Najdorf Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

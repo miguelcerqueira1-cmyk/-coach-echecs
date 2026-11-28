@@ -36,7 +36,10 @@ export default [
     cases: 'e4 (pion cible), d5, f3 (levier blanc)',
     echanger: 'Cavalier c3 contre le Fou b4 (paire de Fous)',
     conserver: 'Fous de cases noires et blanches',
-    video: { recherche: 'English Four Knights Bb4 e4 Ne1 plan', url: null },
+    video: { recherche: 'English Four Knights Bb4 e4 Ne1 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-symetrique', rep: 'anglaise', famille: 'Contre 1…c5', nom: 'Anglaise symétrique (double fianchetto)', badge: 'theorie',
@@ -66,7 +69,10 @@ export default [
     cases: 'b5 (levier), d5 (Cavalier), e4 (contrôle)',
     echanger: 'Fou de cases noires seulement si le Roi noir s’affaiblit',
     conserver: 'Fou g2, Tour b1 pour la poussée b4',
-    video: { recherche: 'English Opening against King\'s Indian setup', url: null },
+    video: { recherche: 'English Opening against King\'s Indian setup', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-gd', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: '…e6 et …d5 : transposition au Gambit Dame', badge: 'theorie',
@@ -78,7 +84,10 @@ export default [
     cases: 'd5, c7 et e5 (contrôle du Fou f4)',
     echanger: 'Cavaliers qui défendent d5',
     conserver: 'Fou f4',
-    video: { recherche: 'English Opening transposition Queen\'s Gambit Bf4', url: null },
+    video: { recherche: 'English Opening transposition Queen\'s Gambit Bf4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e6-echange', rep: 'anglaise', famille: 'Contre 1…e6', nom: '1…e6 et 2…d5 : structure d’échange', badge: 'theorie',
@@ -90,7 +99,10 @@ export default [
     cases: 'b5 (levier), c6 (cible), e5',
     echanger: 'Fou g5 contre Cf6 si cela affaiblit d5',
     conserver: 'Tours pour l’attaque de minorité',
-    video: { recherche: 'Queen\'s Gambit exchange Carlsbad minority attack', url: null },
+    video: { recherche: 'Queen\'s Gambit exchange Carlsbad minority attack', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-d5', rep: 'anglaise', famille: 'Coups loufoques', nom: '1…d5 ?! : le pion se reprend mal', badge: 'loufoque',
@@ -105,7 +117,10 @@ export default [
     cases: 'e4, a4 (diagonale de la Dame), d5',
     echanger: 'Rien de particulier : développer avec gain de temps',
     conserver: 'Pion d5 de plus quand les Noirs ne peuvent pas le reprendre',
-    video: { recherche: 'English Opening 1...d5 refutation', url: null },
+    video: { recherche: 'English Opening 1...d5 refutation', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-df6', rep: 'anglaise', famille: 'Coups loufoques', nom: '…Fc5 et …Df6 : Ce4 gagne la paire de Fous', badge: 'loufoque',
@@ -117,7 +132,10 @@ export default [
     cases: 'e4 (Cavalier), c5, f2',
     echanger: 'Cavalier e4 contre le Fou c5',
     conserver: 'Paire de Fous',
-    video: { recherche: 'English Opening early Qf6 Bc5 Ne4', url: null },
+    video: { recherche: 'English Opening early Qf6 Bc5 Ne4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-ragozine', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: 'Ragozine 4…Fb4 5.Fg5', badge: 'theorie',
@@ -129,7 +147,11 @@ export default [
     cases: 'c7 (colonne c), d5, e5',
     echanger: 'Le Fou g5 contre le Cavalier f6',
     conserver: 'Le Cavalier c3 (contre …Fxc3)',
-    video: { recherche: 'Ragozin Defense 5.Bg5 h6 6.Bxf6 plan for white', url: null },
+    video: { recherche: 'Ragozin Defense 5.Bg5 h6 6.Bxf6 plan for white', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=6oRtSS4lENo', titre: 'Ragozin Defense Opening Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-semi-slave', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: 'Semi-slave 4…c6 5.e3', badge: 'theorie',
@@ -141,7 +163,11 @@ export default [
     cases: 'd5, e4, c6',
     echanger: 'Rien de pressé : ouvrir le centre',
     conserver: 'Le Fou d3',
-    video: { recherche: 'Meran Variation 10.e4 c5 11.d5 explained', url: null },
+    video: { recherche: 'Meran Variation 10.e4 c5 11.d5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=AdiwIMRwPSk', titre: 'The Complete Semi-Slav Part 2: The Modern Meran (8...Bb7)', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-cbd7', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: '4…Cbd7 5.Fg5 Fe7', badge: 'theorie',
@@ -153,7 +179,10 @@ export default [
     cases: 'c-colonne, e5, d5',
     echanger: 'Le Fou g5 contre le Fou e7',
     conserver: 'Le Fou c4',
-    video: { recherche: 'Queens Gambit Declined Orthodox 7.Rc1 c6 8.Bd3 dxc4', url: null },
+    video: { recherche: 'Queens Gambit Declined Orthodox 7.Rc1 c6 8.Bd3 dxc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-semi-tarrasch', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: 'Semi-Tarrasch 4…c5 5.cxd5', badge: 'theorie',
@@ -165,7 +194,11 @@ export default [
     cases: 'd5 (poussée), e5, f7',
     echanger: 'Les Fous de cases noires',
     conserver: 'Le centre d4-e4',
-    video: { recherche: 'Semi-Tarrasch 6.e4 Nxc3 7.bxc3 plan for white', url: null },
+    video: { recherche: 'Semi-Tarrasch 6.e4 Nxc3 7.bxc3 plan for white', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=KNg5A_XZGfY', titre: 'Semi-Tarrasch Defense Opening Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-dxc4', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: '4…dxc4 5.e4 Fb4', badge: 'theorie',
@@ -180,7 +213,11 @@ export default [
     cases: 'e5 (Cavalier), a3, g7',
     echanger: 'Rien de pressé',
     conserver: 'L’avance de développement',
-    video: { recherche: 'Vienna Variation 5.e4 Bb4 6.Bxc4 Nxe4 7.O-O', url: null },
+    video: { recherche: 'Vienna Variation 5.e4 Bb4 6.Bxc4 Nxe4 7.O-O', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=DXPrQwSRiBw', titre: 'Queen\'s Gambit Accepted, Main Line (3.Nf3)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e6-fe7', rep: 'anglaise', famille: 'Contre 1…e6', nom: '3…Fe7 4.cxd5 exd5 5.Ff4', badge: 'theorie',
@@ -192,7 +229,10 @@ export default [
     cases: 'c-colonne, b4 (attaque de minorité), e5',
     echanger: 'Fou d3 contre le Fou g6',
     conserver: 'Fou f4',
-    video: { recherche: 'Queens Gambit Exchange 5.Bf4 c6 6.e3 Bf5 7.Nge2', url: null },
+    video: { recherche: 'Queens Gambit Exchange 5.Bf4 c6 6.e3 Bf5 7.Nge2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e6-c6', rep: 'anglaise', famille: 'Contre 1…e6', nom: '3…c6 4.e4 (gambit Marshall)', badge: 'theorie',
@@ -204,7 +244,11 @@ export default [
     cases: 'g7, d6, f8',
     echanger: 'Rien : garder l’initiative',
     conserver: 'Le Fou de cases noires',
-    video: { recherche: 'Marshall Gambit Slav 4.e4 dxe4 5.Nxe4 Bb4+', url: null },
+    video: { recherche: 'Marshall Gambit Slav 4.e4 dxe4 5.Nxe4 Bb4+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Lvi3O2HknCQ', titre: 'Marshall Gambit Madness', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e6-c5', rep: 'anglaise', famille: 'Contre 1…e6', nom: 'Tarrasch 3…c5 4.cxd5', badge: 'theorie',
@@ -216,7 +260,10 @@ export default [
     cases: 'd5 (cible), d4, c5',
     echanger: 'Pièces mineures (la finale est bonne contre le pion isolé)',
     conserver: 'Fou g2',
-    video: { recherche: 'Tarrasch Defense 6.g3 Nf6 7.Bg2 Be7 plan for white', url: null },
+    video: { recherche: 'Tarrasch Defense 6.g3 Nf6 7.Bg2 Be7 plan for white', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e6-a6', rep: 'anglaise', famille: 'Contre 1…e6', nom: '3…a6 4.cxd5 exd5 5.Ff4', badge: 'theorie',
@@ -228,7 +275,10 @@ export default [
     cases: 'c-colonne, e5, b4',
     echanger: 'Fou f4 contre le Fou d6',
     conserver: 'Fou d3',
-    video: { recherche: 'Queens Gambit Declined 3...a6 4.cxd5 exd5', url: null },
+    video: { recherche: 'Queens Gambit Declined 3...a6 4.cxd5 exd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e6-cxd5', rep: 'anglaise', famille: 'Contre 1…e6', nom: '3…Cf6 4.cxd5 Cxd5 5.e4', badge: 'theorie',
@@ -240,7 +290,10 @@ export default [
     cases: 'd5 (poussée), e5, f7',
     echanger: 'Les Fous de cases noires',
     conserver: 'Le centre d4-e4',
-    video: { recherche: 'Queens Gambit 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3', url: null },
+    video: { recherche: 'Queens Gambit 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-c6', rep: 'anglaise', famille: 'Autres premiers coups noirs', nom: '1…c6 2.Cf3 d5 3.e3', badge: 'theorie',
@@ -252,7 +305,10 @@ export default [
     cases: 'd5, e4, c6',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou d3',
-    video: { recherche: 'English Opening 1...c6 2.Nf3 d5 3.e3 plan', url: null },
+    video: { recherche: 'English Opening 1...c6 2.Nf3 d5 3.e3 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-g6', rep: 'anglaise', famille: 'Autres premiers coups noirs', nom: '1…g6 2.Cc3 Fg7 3.g3 c5', badge: 'theorie',
@@ -264,7 +320,10 @@ export default [
     cases: 'd5, c6, b7',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Symmetrical English 7.d4 cxd4 8.Nxd4', url: null },
+    video: { recherche: 'Symmetrical English 7.d4 cxd4 8.Nxd4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e5-fb4', rep: 'anglaise', famille: 'Contre 1…e5', nom: '2…Fb4 3.Cd5', badge: 'theorie',
@@ -279,7 +338,10 @@ export default [
     cases: 'd5, e4, c4',
     echanger: 'Cavalier d5 contre le Fou e7',
     conserver: 'La paire de Fous',
-    video: { recherche: 'English Opening 2...Bb4 3.Nd5', url: null },
+    video: { recherche: 'English Opening 2...Bb4 3.Nd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-b6', rep: 'anglaise', famille: 'Autres premiers coups noirs', nom: '1…b6 2.Cc3 Fb7 3.e4', badge: 'theorie',
@@ -294,7 +356,10 @@ export default [
     cases: 'e4 (à défendre), d5, e5',
     echanger: 'Rien de pressé',
     conserver: 'Le centre c4-d4-e4',
-    video: { recherche: 'English Defence 1.c4 b6 2.Nc3 Bb7 3.e4', url: null },
+    video: { recherche: 'English Defence 1.c4 b6 2.Nc3 Bb7 3.e4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-cf6-e5', rep: 'anglaise', famille: 'Contre 1…Cf6', nom: '2…e5 3.Cf3 Cc6', badge: 'theorie',
@@ -306,7 +371,10 @@ export default [
     cases: 'e4 (cible), d5, f4',
     echanger: 'Rien : garder la paire de Fous',
     conserver: 'La paire de Fous',
-    video: { recherche: 'English Four Knights 4.g3 Bb4 5.Bg2 O-O 6.O-O e4', url: null },
+    video: { recherche: 'English Four Knights 4.g3 Bb4 5.Bg2 O-O 6.O-O e4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-e5-cc6', rep: 'anglaise', famille: 'Contre 1…e5', nom: '2…Cc6 3.Cf3 Cf6', badge: 'theorie',
@@ -318,7 +386,10 @@ export default [
     cases: 'e4 (cible), d5, f4',
     echanger: 'Rien : garder la paire de Fous',
     conserver: 'La paire de Fous',
-    video: { recherche: 'English Four Knights 4.g3 Bb4 plan for white', url: null },
+    video: { recherche: 'English Four Knights 4.g3 Bb4 plan for white', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'ang-f5', rep: 'anglaise', famille: 'Autres premiers coups noirs', nom: '1…f5 2.Cc3 Cf6 3.g3', badge: 'theorie',
@@ -330,6 +401,9 @@ export default [
     cases: 'e4 (rupture), d5, e6',
     echanger: 'Le pion e4 contre le pion f5',
     conserver: 'Le Fou g2',
-    video: { recherche: 'English Opening vs Dutch 1...f5 2.Nc3 Nf6 3.g3', url: null },
+    video: { recherche: 'English Opening vs Dutch 1...f5 2.Nc3 Nf6 3.g3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3aedSwUI9UU', titre: 'Introduction to the English Opening', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
 ];

@@ -110,7 +110,10 @@ export default [
     cases: 'e4 (à contrôler), b4 (case du Fou), f5',
     echanger: 'Fou b4 contre le Cavalier c3 si les Blancs poussent e4',
     conserver: 'Fou f5 (le « bon » Fou sorti de la chaîne)',
-    video: { recherche: 'Slav Defense main line 4...dxc4 5.a4 Bf5 explained', url: null },
+    video: { recherche: 'Slav Defense main line 4...dxc4 5.a4 Bf5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'cr-slave-d4', rep: 'contre-reti', famille: 'Défense slave', nom: 'Slave par 2.c4 c6 3.d4', badge: 'theorie',
@@ -122,7 +125,10 @@ export default [
     cases: 'e4 (à contrôler), b4 (case du Fou), f5',
     echanger: 'Fou b4 contre le Cavalier c3 si les Blancs poussent e4',
     conserver: 'Fou f5 (le « bon » Fou sorti de la chaîne)',
-    video: { recherche: 'Slav Defense main line 4...dxc4 5.a4 Bf5 explained', url: null },
+    video: { recherche: 'Slav Defense main line 4...dxc4 5.a4 Bf5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'cr-slave-e3', rep: 'contre-reti', famille: 'Défense slave', nom: 'Slave 4.e3 Ff5', badge: 'theorie',
@@ -134,7 +140,10 @@ export default [
     cases: 'f5 (Fou), h-colonne, e4',
     echanger: 'Le Fou g6 contre le Cavalier h4 (colonne h ouverte)',
     conserver: 'Le centre c6-d5-e6',
-    video: { recherche: 'Slav Defense 4.e3 Bf5 5.Nc3 e6 6.Nh4 plan', url: null },
+    video: { recherche: 'Slav Defense 4.e3 Bf5 5.Nc3 e6 6.Nh4 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'cr-slave-g3', rep: 'contre-reti', famille: 'Défense slave', nom: 'Slave 4.g3 Ff5', badge: 'theorie',
@@ -146,7 +155,10 @@ export default [
     cases: 'f5 (Fou), e4, b1-h7',
     echanger: 'Rien de pressé',
     conserver: 'Le centre c6-d5',
-    video: { recherche: 'Slav Defense 4.g3 Bf5 plan for black', url: null },
+    video: { recherche: 'Slav Defense 4.g3 Bf5 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'cr-slave-cxd5', rep: 'contre-reti', famille: 'Défense slave', nom: 'Échange par 4.cxd5 cxd5 5.Cc3 Cc6', badge: 'theorie',
@@ -158,7 +170,11 @@ export default [
     cases: 'c-colonne, b4, e4',
     echanger: 'Fou d6 contre le Fou f4',
     conserver: 'Fou f5',
-    video: { recherche: 'Exchange Slav 6.Bf4 Bf5 7.e3 e6 plan', url: null },
+    video: { recherche: 'Exchange Slav 6.Bf4 Bf5 7.e3 e6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Cw5wQQT6iZg', titre: 'Slav Defense Theory: Exchange Variation', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'cr-slave-dc2', rep: 'contre-reti', famille: 'Défense slave', nom: 'Slave 4.Dc2 g6', badge: 'theorie',
@@ -170,7 +186,10 @@ export default [
     cases: 'f5, e4, g7',
     echanger: 'Rien de pressé',
     conserver: 'Le centre c6-d5',
-    video: { recherche: 'Slav 4.Qc2 g6 Schlechter plan', url: null },
+    video: { recherche: 'Slav 4.Qc2 g6 Schlechter plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'cr-londres', rep: 'contre-reti', famille: 'Systèmes sans c4', nom: 'Londres 2.d4 Cf6 3.Ff4 c5', badge: 'theorie',
@@ -185,7 +204,11 @@ export default [
     cases: 'b2 (cible), c4, f5',
     echanger: 'Rien de pressé : garder les Dames',
     conserver: 'Pion c4',
-    video: { recherche: 'London System 3...c5 4.e3 Nc6 5.c3 Qb6 black', url: null },
+    video: { recherche: 'London System 3...c5 4.e3 Nc6 5.c3 Qb6 black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-c3', rep: 'contre-reti', famille: 'Systèmes sans c4', nom: '2.d4 Cf6 3.c3 Ff5', badge: 'theorie',
@@ -197,7 +220,11 @@ export default [
     cases: 'f5 (Fou), e4, d6',
     echanger: 'Fou d6 contre le Fou f4',
     conserver: 'Fou f5',
-    video: { recherche: 'Queens Pawn 3.c3 Bf5 4.Bf4 e6 black plan', url: null },
+    video: { recherche: 'Queens Pawn 3.c3 Bf5 4.Bf4 e6 black plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-torre', rep: 'contre-reti', famille: 'Systèmes sans c4', nom: 'Torre 2.d4 Cf6 3.Fg5 Ce4', badge: 'theorie',
@@ -209,7 +236,11 @@ export default [
     cases: 'e4 (Cavalier), b2, d4',
     echanger: 'Le pion c5 contre le pion d4 si utile',
     conserver: 'Cavalier e4',
-    video: { recherche: 'Torre Attack 3...Ne4 4.Bf4 c5 plan', url: null },
+    video: { recherche: 'Torre Attack 3...Ne4 4.Bf4 c5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-e3-direct', rep: 'contre-reti', famille: 'Réti 2.c4', nom: '2.e3 Cf6 3.c4 c6', badge: 'theorie',
@@ -221,7 +252,11 @@ export default [
     cases: 'e5 (rupture), d6, e4',
     echanger: 'Rien de pressé : préparer …e5',
     conserver: 'Le centre c6-d5-e6',
-    video: { recherche: 'Reti 2.e3 Nf6 3.c4 c6 plan for black', url: null },
+    video: { recherche: 'Reti 2.e3 Nf6 3.c4 c6 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-g3', rep: 'contre-reti', famille: 'Déviations', nom: '2.d4 Cf6 3.g3 Ff5', badge: 'theorie',
@@ -233,7 +268,11 @@ export default [
     cases: 'f5 (Fou), e4, d5',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Catalan 3.g3 Bf5 slav setup black', url: null },
+    video: { recherche: 'Catalan 3.g3 Bf5 slav setup black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-reti-g3', rep: 'contre-reti', famille: 'Réti 2.c4', nom: '2.c4 c6 3.g3 Cf6 4.Fg2 Fg4', badge: 'theorie',
@@ -245,7 +284,11 @@ export default [
     cases: 'g4 (Fou), e5, d5',
     echanger: 'Fou g4 contre le Cavalier f3 si utile',
     conserver: 'Le centre c6-d5',
-    video: { recherche: 'Reti Opening 2...c6 3.g3 Nf6 4.Bg2 Bg4', url: null },
+    video: { recherche: 'Reti Opening 2...c6 3.g3 Nf6 4.Bg2 Bg4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cr-e3-b3', rep: 'contre-reti', famille: 'Réti 2.c4', nom: '2.c4 c6 3.e3 Cf6 4.b3 Ff5', badge: 'theorie',
@@ -257,6 +300,10 @@ export default [
     cases: 'f5 (Fou), h7, e4',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Reti 3.e3 Nf6 4.b3 Bf5 plan for black', url: null },
+    video: { recherche: 'Reti 3.e3 Nf6 4.b3 Bf5 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=46xrC53FaBc', titre: 'Beat the Reti Opening', chaine: 'ChessGoals', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=6b9BLyJ2xf8', titre: 'Reti Opening: COMPLETE Guide Against d5 | The Best Chess Opening For White', chaine: 'Checkmate with Blake', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

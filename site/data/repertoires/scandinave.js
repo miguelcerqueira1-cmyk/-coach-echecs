@@ -159,7 +159,11 @@ export default [
     cases: 'f5 (Fou), a5, e4',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Scandinavian 3...Qa5 4.Nf3 Nf6 5.d4 c6', url: null },
+    video: { recherche: 'Scandinavian 3...Qa5 4.Nf3 Nf6 5.d4 c6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-g3', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '3.Cc3 Da5 4.g3', badge: 'theorie',
@@ -171,7 +175,11 @@ export default [
     cases: 'e5, c6, d4',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Scandinavian 3...Qa5 4.g3 c6 e5', url: null },
+    video: { recherche: 'Scandinavian 3...Qa5 4.g3 c6 e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-5fc4', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '5.Fc4 c6 6.Fd2', badge: 'theorie',
@@ -183,7 +191,11 @@ export default [
     cases: 'f5 (Fou), a5, b4',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Scandinavian 5.Bc4 c6 6.Bd2 Bf5', url: null },
+    video: { recherche: 'Scandinavian 5.Bc4 c6 6.Bd2 Bf5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-5fd2', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '5.Fd2 c6 6.Fc4', badge: 'theorie',
@@ -195,7 +207,11 @@ export default [
     cases: 'd5, b5, f5',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Scandinavian 5.Bd2 c6 6.Bc4 Bf5', url: null },
+    video: { recherche: 'Scandinavian 5.Bd2 c6 6.Bc4 Bf5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-6fd2', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '6.Fd2 Ff5 7.Fc4', badge: 'theorie',
@@ -207,7 +223,11 @@ export default [
     cases: 'f5 (Fou), d5, b4',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Scandinavian 6.Bd2 Bf5 7.Bc4 e6', url: null },
+    video: { recherche: 'Scandinavian 6.Bd2 Bf5 7.Bc4 e6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-ce5', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '6.Ce5 Fe6', badge: 'theorie',
@@ -219,7 +239,11 @@ export default [
     cases: 'e5 (Cavalier à échanger), g7, d5',
     echanger: 'Cavalier d7 contre le Cavalier e5',
     conserver: 'Fou e6',
-    video: { recherche: 'Scandinavian 6.Ne5 Be6 7.Bd3', url: null },
+    video: { recherche: 'Scandinavian 6.Ne5 Be6 7.Bd3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cf6-fb5', rep: 'scandinave', famille: 'Scandinave 2…Cf6', nom: '2…Cf6 3.Fb5+ Fd7', badge: 'theorie',
@@ -231,7 +255,11 @@ export default [
     cases: 'd5 (pion à reprendre), b6, f5',
     echanger: 'Rien de pressé',
     conserver: 'Fou f5',
-    video: { recherche: 'Scandinavian 2...Nf6 3.Bb5+ Bd7 4.Bc4', url: null },
+    video: { recherche: 'Scandinavian 2...Nf6 3.Bb5+ Bd7 4.Bc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-2cf3', rep: 'scandinave', famille: 'Déviations', nom: '2.Cf3 dxe4 3.Cg5 Ff5', badge: 'theorie',
@@ -246,7 +274,11 @@ export default [
     cases: 'e4 (pion à garder), f5, f7',
     echanger: 'Les Dames',
     conserver: 'Le pion de plus',
-    video: { recherche: 'Scandinavian 2.Nf3 dxe4 3.Ng5 Bf5', url: null },
+    video: { recherche: 'Scandinavian 2.Nf3 dxe4 3.Ng5 Bf5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-dd6-cf3', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '3…Dd6 4.Cf3 Cf6 5.d4 a6', badge: 'theorie',
@@ -258,7 +290,11 @@ export default [
     cases: 'd4 (cible), b5, g4',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'La Dame d6',
-    video: { recherche: 'Scandinavian 3...Qd6 4.Nf3 Nf6 5.d4 a6', url: null },
+    video: { recherche: 'Scandinavian 3...Qd6 4.Nf3 Nf6 5.d4 a6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cf6-cf3', rep: 'scandinave', famille: 'Scandinave 2…Cf6', nom: '2…Cf6 3.Cf3 Cxd5 4.d4 g6', badge: 'theorie',
@@ -270,7 +306,11 @@ export default [
     cases: 'd4 (cible), c4, g7',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Scandinavian 2...Nf6 3.Nf3 Nxd5 4.d4 g6', url: null },
+    video: { recherche: 'Scandinavian 2...Nf6 3.Nf3 Nxd5 4.d4 g6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-d3', rep: 'scandinave', famille: 'Déviations', nom: '2.d3 dxe4 3.dxe4 Dxd1+', badge: 'theorie',
@@ -282,7 +322,11 @@ export default [
     cases: 'd4, c5, f2',
     echanger: 'Les Dames',
     conserver: 'Le pion e5',
-    video: { recherche: 'Scandinavian 2.d3 dxe4 3.dxe4 Qxd1+', url: null },
+    video: { recherche: 'Scandinavian 2.d3 dxe4 3.dxe4 Qxd1+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-7ce5', rep: 'scandinave', famille: 'Scandinave 2…Dxd5', nom: '7.Ce5 e6 8.g4', badge: 'theorie',
@@ -294,7 +338,11 @@ export default [
     cases: 'h-colonne, h4, g4',
     echanger: 'Fou g6 contre le Cavalier e5',
     conserver: 'La Tour h8 sur la colonne h',
-    video: { recherche: 'Scandinavian 7.Ne5 e6 8.g4 Bg6 9.h4', url: null },
+    video: { recherche: 'Scandinavian 7.Ne5 e6 8.g4 Bg6 9.h4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'scan-cf6-cc3', rep: 'scandinave', famille: 'Scandinave 2…Cf6', nom: '2…Cf6 3.Cc3 Cxd5 4.Fc4', badge: 'theorie',
@@ -309,6 +357,10 @@ export default [
     cases: 'e5, f7 (à surveiller), d4',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Scandinavian 2...Nf6 3.Nc3 Nxd5 4.Bc4 Nb6', url: null },
+    video: { recherche: 'Scandinavian 2...Nf6 3.Nc3 Nxd5 4.Bc4 Nb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=7HZcMHBz2X0', titre: 'La défense Scandinave aux échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4Rrt0Lm176I', titre: 'Chess Openings: Scandinavian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

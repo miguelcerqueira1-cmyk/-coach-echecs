@@ -97,7 +97,11 @@ export default [
     cases: 'b2, d5, c7',
     echanger: 'Rien d’urgent : terminer le développement',
     conserver: 'Fou f4 actif',
-    video: { recherche: 'London System vs Slav setup Qb6 Qc1', url: null },
+    video: { recherche: 'London System vs Slav setup Qb6 Qc1', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-englund', rep: 'londres', famille: 'Coups loufoques', nom: 'Gambit Englund (1…e5 ?!) et le piège de mat en c1', badge: 'loufoque',
@@ -130,7 +134,11 @@ export default [
     cases: 'd6 (pion isolé), d5, e4',
     echanger: 'Dames et Fous de cases noires',
     conserver: 'Pion de plus',
-    video: { recherche: 'London System 1...Nc6 e5 gambit', url: null },
+    video: { recherche: 'London System 1...Nc6 e5 gambit', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=z43Nz5-bU6E', titre: 'London System against the Chigorin (Nc6 setups)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-gambit-e5', rep: 'londres', famille: 'Coups loufoques', nom: '1…d5 2.Ff4 e5 ?! : le gambit à prendre', badge: 'loufoque',
@@ -142,7 +150,11 @@ export default [
     cases: 'h4 (avance noire), h2 (retraite du Fou), d5',
     echanger: 'Fous de cases noires si …Fd6 se présente',
     conserver: 'Pion de plus, Fou de cases noires',
-    video: { recherche: 'London System 2...e5 gambit', url: null },
+    video: { recherche: 'London System 2...e5 gambit', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-hollandaise', rep: 'londres', famille: 'Contre 1…f5', nom: 'Contre la Hollandaise (1…f5 2.Ff4)', badge: 'theorie',
@@ -154,7 +166,10 @@ export default [
     cases: 'e5 (Cavalier), e4 (rupture), h2',
     echanger: 'Fou d3 contre le Fou b7 si la grande diagonale s’ouvre',
     conserver: 'Fou f4',
-    video: { recherche: 'London System vs Dutch 1...f5', url: null },
+    video: { recherche: 'London System vs Dutch 1...f5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-benoni', rep: 'londres', famille: 'Contre 1…c5', nom: 'Contre 1…c5 : 2.d5 et le centre', badge: 'theorie',
@@ -166,7 +181,10 @@ export default [
     cases: 'e5 (poussée), d5, c4',
     echanger: 'Rien de pressé',
     conserver: 'Pion d5',
-    video: { recherche: '1.d4 c5 2.d5 Benoni plans for white', url: null },
+    video: { recherche: '1.d4 c5 2.d5 Benoni plans for white', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-db6-tb1', rep: 'londres', famille: 'Contre 1…Cf6', nom: '1…Cf6 2.Ff4 c5 3.e3 Db6 4.Cc3 a6 5.Tb1', badge: 'theorie',
@@ -178,7 +196,10 @@ export default [
     cases: 'b2, d4, b5',
     echanger: 'Pion d4 contre c5 seulement si cela active les pièces',
     conserver: 'Fou f4',
-    video: { recherche: 'London System 2...c5 3.e3 Qb6 4.Nc3', url: null },
+    video: { recherche: 'London System 2...c5 3.e3 Qb6 4.Nc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-e6', rep: 'londres', famille: 'Contre 1…e6', nom: '1…e6 2.Ff4 c5 : le Londres reste le même', badge: 'theorie',
@@ -193,7 +214,11 @@ export default [
     cases: 'd4 (à tenir), e5, b7',
     echanger: 'Le Fou f4 contre le Fou d6 seulement si cela abîme les pions noirs',
     conserver: 'Le triangle de pions c3-d4-e3',
-    video: { recherche: 'London System against 1...e6', url: null },
+    video: { recherche: 'London System against 1...e6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3ZOcEWKPSOc', titre: 'London System against the Queen’s Indian setup', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-moderne', rep: 'londres', famille: 'Contre 1…g6', nom: '1…g6 (Moderne) : Ff4, e3, Cf3, h3', badge: 'theorie',
@@ -211,7 +236,11 @@ export default [
     cases: 'h2 (repli du Fou), d4, e5',
     echanger: 'Le pion d4 contre e5 seulement quand les pièces blanches sont prêtes',
     conserver: 'Le Fou de cases noires (h2)',
-    video: { recherche: 'London System against Modern Defense 1...g6', url: null },
+    video: { recherche: 'London System against Modern Defense 1...g6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=8riYW7EC1lQ', titre: 'London System against the King’s Indian setup', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-d6', rep: 'londres', famille: 'Contre 1…d6', nom: '1…d6 2.Ff4 : contre …Cf6 et …g6', badge: 'theorie',
@@ -227,7 +256,11 @@ export default [
     cases: 'e5 (contrôlée par le Fou f4), d4, h2',
     echanger: 'Les Dames si les Noirs jouent …e5 trop tôt',
     conserver: 'Le Fou f4, qui freine …e5',
-    video: { recherche: 'London System against 1...d6', url: null },
+    video: { recherche: 'London System against 1...d6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=8riYW7EC1lQ', titre: 'London System against the King’s Indian setup', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-c6', rep: 'londres', famille: 'Contre 1…c6', nom: '1…c6 2.Ff4 d5 3.e3 Ff5', badge: 'theorie',
@@ -242,7 +275,11 @@ export default [
     cases: 'e4 (poussée), e5, d3',
     echanger: 'Le Fou d3 contre le Fou f5',
     conserver: 'Le Fou f4 (il recule en g3 contre …Fd6)',
-    video: { recherche: 'London System against Slav setup 1...c6', url: null },
+    video: { recherche: 'London System against Slav setup 1...c6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-b6', rep: 'londres', famille: 'Contre 1…b6', nom: '1…b6 2.Ff4 Fb7', badge: 'theorie',
@@ -257,7 +294,11 @@ export default [
     cases: 'e4, g2, d3',
     echanger: 'Le Fou d3 contre un Cavalier qui vient en e4',
     conserver: 'Le contrôle de la case e4',
-    video: { recherche: 'London System against 1...b6', url: null },
+    video: { recherche: 'London System against 1...b6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3ZOcEWKPSOc', titre: 'London System against the Queen’s Indian setup', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-c5-direct', rep: 'londres', famille: 'Contre 1…d5', nom: '2…Cf6 3.e3 c5 4.c3 Cc6 5.Cd2 Ff5', badge: 'theorie',
@@ -272,7 +313,11 @@ export default [
     cases: 'b7 (cible), e4, c2',
     echanger: 'Le Fou e2 ou d3 contre le Fou f5',
     conserver: 'La pression de la Dame sur b7',
-    video: { recherche: 'London System 2...Nf6 3.e3 c5 4.c3 Nc6 5.Nd2 Bf5 6.Qb3', url: null },
+    video: { recherche: 'London System 2...Nf6 3.e3 c5 4.c3 Nc6 5.Nd2 Bf5 6.Qb3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-fd6', rep: 'londres', famille: 'Contre 1…d5', nom: '…e6 et …Fd6 : reculer en g3', badge: 'theorie',
@@ -284,7 +329,11 @@ export default [
     cases: 'e4, e5, colonne h',
     echanger: 'Le Fou g3 contre le Fou d6 si les Noirs prennent (hxg3)',
     conserver: 'Le triangle de pions c3-d4-e3',
-    video: { recherche: 'London System against ...Bd6 Bg3', url: null },
+    video: { recherche: 'London System against ...Bd6 Bg3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-ch5', rep: 'londres', famille: 'Contre 1…d5', nom: 'Classique : …Ch5 contre le Fou, Fg5 !', badge: 'theorie',
@@ -299,7 +348,11 @@ export default [
     cases: 'g5, h5 (Cavalier décentré), e4',
     echanger: 'Le Fou g5 contre le Fou e7',
     conserver: 'Les Cavaliers bien centralisés',
-    video: { recherche: 'London System ...Nh5 Bg5', url: null },
+    video: { recherche: 'London System ...Nh5 Bg5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'lon-cxd4', rep: 'londres', famille: 'Contre 1…d5', nom: 'Classique : …cxd4 exd4, la colonne e', badge: 'theorie',
@@ -314,6 +367,10 @@ export default [
     cases: 'e5 (avant-poste), colonne e, d4',
     echanger: 'Le Fou f4 contre le Fou d6',
     conserver: 'Le pion d4 bien soutenu par c3',
-    video: { recherche: 'London System ...cxd4 exd4 structure', url: null },
+    video: { recherche: 'London System ...cxd4 exd4 structure', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9z0NuNeDU6M', titre: 'London System against 1...d5', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=S_OYdWbJMKM', titre: 'Introduction to the London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
 ];

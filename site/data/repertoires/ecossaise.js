@@ -178,7 +178,11 @@ export default [
     cases: 'd5 (cible), g5, e-colonne',
     echanger: 'Fou g5 contre le Cavalier f6 si utile',
     conserver: 'Le Fou d3',
-    video: { recherche: 'Scotch Four Knights 7.Bd3 O-O 8.O-O d5', url: null },
+    video: { recherche: 'Scotch Four Knights 7.Bd3 O-O 8.O-O d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-4cav-8oo', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: 'Quatre Cavaliers 8…O-O', badge: 'theorie',
@@ -190,7 +194,11 @@ export default [
     cases: 'd5 (cible), g5, e-colonne',
     echanger: 'Fou g5 contre le Cavalier f6 si utile',
     conserver: 'Le Fou d3',
-    video: { recherche: 'Scotch Four Knights 8.exd5 O-O 9.O-O', url: null },
+    video: { recherche: 'Scotch Four Knights 8.exd5 O-O 9.O-O', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-df6', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Df6 5.Cb5', badge: 'theorie',
@@ -202,7 +210,11 @@ export default [
     cases: 'c7 (cible), c5, f2',
     echanger: 'Cavalier a4 contre le Fou c5',
     conserver: 'Cavalier b5',
-    video: { recherche: 'Scotch Game 4...Qf6 5.Nb5', url: null },
+    video: { recherche: 'Scotch Game 4...Qf6 5.Nb5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-cxe4', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: 'Quatre Cavaliers 5…Cxe4 ?!', badge: 'theorie',
@@ -214,7 +226,11 @@ export default [
     cases: 'c6 (clouage), a8, e-colonne',
     echanger: 'Rien : garder l’avantage matériel',
     conserver: 'Le Fou b5 (clouage)',
-    video: { recherche: 'Scotch Four Knights 5...Nxe4 6.Nxe4 Qe7 7.f3', url: null },
+    video: { recherche: 'Scotch Four Knights 5...Nxe4 6.Nxe4 Qe7 7.f3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-dxc6', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: '4…Cf6 5.Cxc6 dxc6', badge: 'theorie',
@@ -229,7 +245,11 @@ export default [
     cases: 'd8 (roi noir), g5, e5',
     echanger: 'Les Dames',
     conserver: 'La majorité à l’aile roi',
-    video: { recherche: 'Scotch Game 5.Nxc6 dxc6 6.Qxd8+', url: null },
+    video: { recherche: 'Scotch Game 5.Nxc6 dxc6 6.Qxd8+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-fc5-4cav', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: 'Quatre Cavaliers 5…Fc5', badge: 'theorie',
@@ -244,7 +264,11 @@ export default [
     cases: 'a4, g5, e4',
     echanger: 'Cavalier a4 contre le Fou c5',
     conserver: 'Le pion e4',
-    video: { recherche: 'Scotch Four Knights 5...Bc5 6.Nxc6 bxc6 7.Bd3', url: null },
+    video: { recherche: 'Scotch Four Knights 5...Bc5 6.Nxc6 bxc6 7.Bd3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-4cav-fe6', rep: 'ecossaise', famille: 'Écossaise 4.Cxd4', nom: 'Quatre Cavaliers 10…Fe6', badge: 'theorie',
@@ -256,7 +280,11 @@ export default [
     cases: 'd5 (cible), f6, h7',
     echanger: 'Fou g5 contre le Cavalier f6',
     conserver: 'Le Fou d3',
-    video: { recherche: 'Scotch Four Knights 10.Bg5 Be6 11.Qf3', url: null },
+    video: { recherche: 'Scotch Four Knights 10.Bg5 Be6 11.Qf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-gambit-cf6', rep: 'ecossaise', famille: 'Gambit écossais 4.Fc4', nom: 'Gambit 4.Fc4 Cf6 5.O-O', badge: 'theorie',
@@ -268,7 +296,12 @@ export default [
     cases: 'e-colonne, g5, d4',
     echanger: 'Rien de pressé',
     conserver: 'L’avance de développement',
-    video: { recherche: 'Scotch Gambit 4...Nf6 5.O-O Nxe4 6.Re1 d5', url: null },
+    video: { recherche: 'Scotch Gambit 4...Nf6 5.O-O Nxe4 6.Re1 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=xjMYoxjqgms', titre: 'Gambit écossais (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-petrov', rep: 'ecossaise', famille: 'Sans 2…Cc6', nom: 'Défense Petrov 2…Cf6 3.Cxe5', badge: 'theorie',
@@ -283,7 +316,12 @@ export default [
     cases: 'e4 (Cavalier noir), e-file, c4',
     echanger: 'Le Fou d3 contre le Cavalier e4 si besoin',
     conserver: 'La Tour sur la colonne e',
-    video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null },
+    video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-philidor', rep: 'ecossaise', famille: 'Sans 2…Cc6', nom: 'Défense Philidor 2…d6 3.d4', badge: 'theorie',
@@ -301,7 +339,12 @@ export default [
     cases: 'd4, f7, b7',
     echanger: 'Le Cavalier d4 contre un Cavalier qui vient en d4',
     conserver: 'Le pion e4',
-    video: { recherche: 'Philidor Defense for White 3.d4', url: null },
+    video: { recherche: 'Philidor Defense for White 3.d4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rtC6XhBLtqs', titre: 'Chess Traps #5: Legal Trap - Philidor Defence', chaine: 'ChessNetwork', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'eco-elephant', rep: 'ecossaise', famille: 'Sans 2…Cc6', nom: 'Contre-gambit de l’éléphant 2…d5', badge: 'loufoque',
@@ -319,7 +362,12 @@ export default [
     cases: 'e4 (pion cloué), d5',
     echanger: 'Les Dames si les Noirs cherchent l’attaque',
     conserver: 'Le pion de plus',
-    video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null },
+    video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'eco-letton', rep: 'ecossaise', famille: 'Sans 2…Cc6', nom: 'Gambit letton 2…f5 3.Cxe5', badge: 'loufoque',
@@ -337,6 +385,12 @@ export default [
     cases: 'h5 et e8 (diagonale), e4 (cible)',
     echanger: 'Rien de pressé : développer et attaquer le pion e4',
     conserver: 'Le Cavalier c4',
-    video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null },
+    video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

@@ -152,7 +152,10 @@ export default [
     cases: 'e5 (à défendre), d4, e6 (pour le Cavalier)',
     echanger: 'Fou b4 contre le Cavalier c3 (pions doublés)',
     conserver: 'Pion e5',
-    video: { recherche: 'Four Knights Spanish 4.Bb5 Bb4 black plan', url: null },
+    video: { recherche: 'Four Knights Spanish 4.Bb5 Bb4 black plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=EmuVOf5RmzU', titre: 'Four Knights Game: Spanish Variation (4. Bb5)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-quatre-cav-ecossais', rep: 'e5-noirs', famille: 'Partie des quatre Cavaliers', nom: 'Quatre Cavaliers écossais 4.d4 exd4 5.Cxd4 Fb4', badge: 'theorie',
@@ -164,7 +167,12 @@ export default [
     cases: 'e4 (à attaquer), d5, c3',
     echanger: 'Le pion d4 contre le pion e4 (rupture …d5)',
     conserver: 'Le Fou b4 sur la diagonale de c3',
-    video: { recherche: 'Scotch Four Knights 4.d4 exd4 5.Nxd4 Bb4 explained', url: null },
+    video: { recherche: 'Scotch Four Knights 4.d4 exd4 5.Nxd4 Bb4 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-dc-d3', rep: 'e5-noirs', famille: 'Partie italienne', nom: 'Deux Cavaliers 4.d3 Fe7', badge: 'theorie',
@@ -179,7 +187,10 @@ export default [
     cases: 'f7 (à surveiller), b5, c5',
     echanger: 'Cavalier a5 contre le Fou c4 si possible',
     conserver: 'Pion e5',
-    video: { recherche: 'Two Knights Defense 4.d3 Be7 plan for black', url: null },
+    video: { recherche: 'Two Knights Defense 4.d3 Be7 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-ita-d3', rep: 'e5-noirs', famille: 'Partie italienne', nom: 'Italienne lente 4.d3 Cf6 5.O-O', badge: 'theorie',
@@ -194,7 +205,11 @@ export default [
     cases: 'f2 (diagonale du Fou), d4, f7',
     echanger: 'Fou e6 contre le Fou b3',
     conserver: 'Fou a7 sur la diagonale de f2',
-    video: { recherche: 'Giuoco Pianissimo 4.d3 Nf6 black plan a6 Ba7', url: null },
+    video: { recherche: 'Giuoco Pianissimo 4.d3 Nf6 black plan a6 Ba7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9Q2oa73y5PU', titre: 'Italian Game | The Giuoco Pianissimo | IM Alex Astaneh', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-ita-d4', rep: 'e5-noirs', famille: 'Partie italienne', nom: 'Italienne 4.c3 Cf6 5.d4', badge: 'theorie',
@@ -209,7 +224,11 @@ export default [
     cases: 'd5 (case de blocage), d4 (pion isolé), b4',
     echanger: 'Fou b4 contre le Fou d2',
     conserver: 'Cavalier d5',
-    video: { recherche: 'Italian Game 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Bd2 d5', url: null },
+    video: { recherche: 'Italian Game 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Bd2 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=4x5Y62g4UhI', titre: 'Giuoco Piano | Italian Game Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-fou-c4', rep: 'e5-noirs', famille: 'Partie du Fou', nom: '2.Fc4 Cf6 3.d3 c6', badge: 'theorie',
@@ -224,7 +243,10 @@ export default [
     cases: 'd5 (rupture), e5, c7',
     echanger: 'Pion d5 contre le pion e4 si utile',
     conserver: 'Le centre c6-d5-e5',
-    video: { recherche: 'Bishop\'s Opening 2...Nf6 3.d3 c6 4.Nf3 d5', url: null },
+    video: { recherche: 'Bishop\'s Opening 2...Nf6 3.d3 c6 4.Nf3 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=CmZKgWY--L8', titre: 'Bishop\'s Opening Explained in 15 Minutes [Crash Course]', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-berlin-d3', rep: 'e5-noirs', famille: 'Partie espagnole', nom: 'Berlinoise 4.d3 Fc5', badge: 'theorie',
@@ -236,7 +258,12 @@ export default [
     cases: 'd4, g6 (pour le Cavalier), f2',
     echanger: 'Rien de pressé : garder les pièces',
     conserver: 'Fou c5 / b6 sur la diagonale de f2',
-    video: { recherche: 'Anti-Berlin 4.d3 Bc5 plan for black', url: null },
+    video: { recherche: 'Anti-Berlin 4.d3 Bc5 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=eM1yKnw2g2w', titre: 'Ruy Lopez - Berlin Defense ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=eFzZYlsYMhE', titre: 'The Ruy Lopez | Berlin Defense | Chess Openings | IM Andrey Ostrovskiy', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-berlin-te1', rep: 'e5-noirs', famille: 'Partie espagnole', nom: 'Berlinoise 5.Te1 Cd6', badge: 'theorie',
@@ -251,7 +278,12 @@ export default [
     cases: 'e7 (bloquer la colonne e), f5, e5',
     echanger: 'Le Cavalier c6 contre le Cavalier e5',
     conserver: 'Le Fou e7 devant le roi',
-    video: { recherche: 'Berlin Defense 5.Re1 Nd6 6.Nxe5 Be7 explained', url: null },
+    video: { recherche: 'Berlin Defense 5.Re1 Nd6 6.Nxe5 Be7 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=eM1yKnw2g2w', titre: 'Ruy Lopez - Berlin Defense ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=eFzZYlsYMhE', titre: 'The Ruy Lopez | Berlin Defense | Chess Openings | IM Andrey Ostrovskiy', chaine: 'Chessfactor', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-esp-echange', rep: 'e5-noirs', famille: 'Partie espagnole', nom: 'Variante d’échange 4.Fxc6 dxc6', badge: 'theorie',
@@ -263,7 +295,11 @@ export default [
     cases: 'e5, d4, c5',
     echanger: 'Les Dames (finale tranquille)',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Ruy Lopez Exchange Variation 5...f6 plan for black', url: null },
+    video: { recherche: 'Ruy Lopez Exchange Variation 5...f6 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=W72Vw-DxvA0', titre: 'Ruy Lopez - Exchange Variation ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-esp-d3', rep: 'e5-noirs', famille: 'Partie espagnole', nom: 'Morphy 6.d3 (espagnole lente)', badge: 'theorie',
@@ -275,7 +311,12 @@ export default [
     cases: 'b5, c5, a5',
     echanger: 'Cavalier a5 contre le Fou b3 si le Fou reste',
     conserver: 'Pion e5',
-    video: { recherche: 'Ruy Lopez 6.d3 Be7 b5 plan for black', url: null },
+    video: { recherche: 'Ruy Lopez 6.d3 Be7 b5 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=50Awfc3m6NI', titre: 'Ruy Lopez - Closed Ruy Lopez ⎸Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=AUKqRZanVQ8', titre: 'Chess Basics #7: The closed Ruy Lopez', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-centre', rep: 'e5-noirs', famille: 'Partie du centre', nom: '2.d4 exd4 3.Dxd4 Cc6', badge: 'theorie',
@@ -287,7 +328,10 @@ export default [
     cases: 'e4 (cible), e8 (Tour), b4',
     echanger: 'Fou b4 contre le Cavalier c3 si e4 tombe',
     conserver: 'L’avance de développement',
-    video: { recherche: 'Center Game 2.d4 exd4 3.Qxd4 Nc6 how to play black', url: null },
+    video: { recherche: 'Center Game 2.d4 exd4 3.Qxd4 Nc6 how to play black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=4ArTPSjSJbs', titre: 'Center Game Full Guide for beginners(Key ideas,Best traps, Main Variations)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-vienne-fc4', rep: 'e5-noirs', famille: 'Partie viennoise', nom: '2.Cc3 Cf6 3.Fc4 Cc6', badge: 'theorie',
@@ -302,7 +346,11 @@ export default [
     cases: 'd5 (rupture), b4, e5',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Pion e5',
-    video: { recherche: 'Vienna Game 3.Bc4 Nc6 4.d3 Bb4 black plan', url: null },
+    video: { recherche: 'Vienna Game 3.Bc4 Nc6 4.d3 Bb4 black plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-gambit-ecossais', rep: 'e5-noirs', famille: 'Partie écossaise', nom: 'Gambit écossais 4.Fc4 Cf6 5.e5 d5', badge: 'theorie',
@@ -317,7 +365,11 @@ export default [
     cases: 'd5 (riposte), e4 (Cavalier), c5',
     echanger: 'Rien de pressé : finir le développement',
     conserver: 'Cavalier e4',
-    video: { recherche: 'Scotch Gambit 4.Bc4 Nf6 5.e5 d5 explained', url: null },
+    video: { recherche: 'Scotch Gambit 4.Bc4 Nf6 5.e5 d5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=xjMYoxjqgms', titre: 'Gambit écossais (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=rzipGOopnKA', titre: '1. e4 e5 avec les noirs, sans théorie, que les plans à 1200 Elo |Parties pédagogiques', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'e5-goring', rep: 'e5-noirs', famille: 'Partie écossaise', nom: 'Gambit Göring 4.c3 d5', badge: 'theorie',
@@ -332,6 +384,9 @@ export default [
     cases: 'd5 (riposte), c4, g4',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Dame active au centre',
-    video: { recherche: 'Goring Gambit decline 4...d5 explained', url: null },
+    video: { recherche: 'Goring Gambit decline 4...d5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=20bcUsEPPTI', titre: 'A Shot of Scotch #4: Göring Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
 ];

@@ -152,7 +152,11 @@ export default [
     cases: 'd4 (cible), c5, f6 (rupture)',
     echanger: 'Fou c5 contre le Fou e3 ou le Cavalier d4',
     conserver: 'Cavalier c6 qui presse d4',
-    video: { recherche: 'French Defense Steinitz 4.e5 Nfd7 5.f4 c5 Alekhine 2.Nc3', url: null },
+    video: { recherche: 'French Defense Steinitz 4.e5 Nfd7 5.f4 c5 Alekhine 2.Nc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-cc3-ce2', rep: 'alekhine', famille: 'Déviations', nom: '2.Cc3 d5 3.e5 Cfd7 4.d4 e6 5.Cce2', badge: 'theorie',
@@ -164,7 +168,11 @@ export default [
     cases: 'd4, e5, b2',
     echanger: 'Pion f6 contre le pion e5 (fxe5)',
     conserver: 'Dame b6 tant que b2 et d4 sont fragiles',
-    video: { recherche: 'Alekhine 2.Nc3 d5 3.e5 Nfd7 4.d4 e6 5.Nce2', url: null },
+    video: { recherche: 'Alekhine 2.Nc3 d5 3.e5 Nfd7 4.d4 e6 5.Nce2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-cc3-fc4', rep: 'alekhine', famille: 'Déviations', nom: '2.Cc3 d5 3.exd5 Cxd5 4.Fc4', badge: 'theorie',
@@ -176,7 +184,11 @@ export default [
     cases: 'e5, d4, f7',
     echanger: 'Cavalier b6 contre le Fou b3 si l’occasion se présente',
     conserver: 'Pion e5 central',
-    video: { recherche: 'Alekhine 2.Nc3 d5 3.exd5 Nxd5 4.Bc4 Nb6', url: null },
+    video: { recherche: 'Alekhine 2.Nc3 d5 3.exd5 Nxd5 4.Bc4 Nb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-cc3-cf3', rep: 'alekhine', famille: 'Déviations', nom: '2.Cc3 d5 3.exd5 Cxd5 4.Cf3', badge: 'theorie',
@@ -191,7 +203,11 @@ export default [
     cases: 'd4 (cible), c3, grande diagonale',
     echanger: 'Pion c5 contre le pion d4 au bon moment',
     conserver: 'Fou g7',
-    video: { recherche: 'Alekhine 2.Nc3 d5 3.exd5 Nxd5 4.Nf3 Nxc3', url: null },
+    video: { recherche: 'Alekhine 2.Nc3 d5 3.exd5 Nxd5 4.Nf3 Nxc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-chase', rep: 'alekhine', famille: 'Déviations', nom: '3.c4 Cb6 4.c5 Cd5 (chasse)', badge: 'theorie',
@@ -206,7 +222,11 @@ export default [
     cases: 'c5, e5, d4',
     echanger: 'Cavalier d5 contre le Cavalier c3',
     conserver: 'Fou f8 qui vise c5',
-    video: { recherche: 'Alekhine Defense Chase variation 3.c4 Nb6 4.c5', url: null },
+    video: { recherche: 'Alekhine Defense Chase variation 3.c4 Nb6 4.c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-3cf3', rep: 'alekhine', famille: 'Déviations', nom: '3.Cf3 d6 4.Fc4', badge: 'theorie',
@@ -221,7 +241,11 @@ export default [
     cases: 'f7, e5, colonne b',
     echanger: 'Cavalier c6 contre le Cavalier e5',
     conserver: 'Pion e6 qui protège f7',
-    video: { recherche: 'Alekhine Defense 3.Nf3 d6 4.Bc4', url: null },
+    video: { recherche: 'Alekhine Defense 3.Nf3 d6 4.Bc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-fc4-dh5', rep: 'alekhine', famille: 'Variante classique 4.Fc4', nom: '4.Fc4 Cb6 5.Fb3 dxe5 6.Dh5', badge: 'theorie',
@@ -233,7 +257,11 @@ export default [
     cases: 'f7, b4, c5',
     echanger: 'Les Dames si la colonne d s’ouvre',
     conserver: 'Pion e6 qui ferme la diagonale b3-f7',
-    video: { recherche: 'Alekhine Defense 4.Bc4 Nb6 5.Bb3 dxe5 6.Qh5', url: null },
+    video: { recherche: 'Alekhine Defense 4.Bc4 Nb6 5.Bb3 dxe5 6.Qh5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-fc4-dxe5', rep: 'alekhine', famille: 'Variante classique 4.Fc4', nom: '4.Fc4 Cb6 5.Fb3 dxe5 6.dxe5', badge: 'theorie',
@@ -248,7 +276,11 @@ export default [
     cases: 'e5 (cible), f3, d1',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Cavalier c6 qui attaque e5',
-    video: { recherche: 'Alekhine Defense 4.Bc4 Nb6 5.Bb3 dxe5 6.dxe5 Qxd1', url: null },
+    video: { recherche: 'Alekhine Defense 4.Bc4 Nb6 5.Bb3 dxe5 6.dxe5 Qxd1', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-exd6', rep: 'alekhine', famille: 'Variante d’échange', nom: '4.exd6 exd6', badge: 'theorie',
@@ -260,7 +292,11 @@ export default [
     cases: 'colonne e, f3, d4',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Cavalier d5 central tant qu’il n’est pas chassé',
-    video: { recherche: 'Alekhine Defense 4.exd6 exd6', url: null },
+    video: { recherche: 'Alekhine Defense 4.exd6 exd6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-echange-cf3', rep: 'alekhine', famille: 'Variante d’échange', nom: '4.c4 Cb6 5.exd6 cxd6 6.Cc3 g6 7.Cf3', badge: 'theorie',
@@ -272,7 +308,11 @@ export default [
     cases: 'd4 (cible), f3, e5',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Fou g7',
-    video: { recherche: 'Alekhine Defense exchange variation 6.Nc3 g6 7.Nf3', url: null },
+    video: { recherche: 'Alekhine Defense exchange variation 6.Nc3 g6 7.Nf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-moderne-h3', rep: 'alekhine', famille: 'Variante moderne', nom: '4.Cf3 Fg4 5.h3 Fxf3', badge: 'theorie',
@@ -287,7 +327,11 @@ export default [
     cases: 'e5 (cible), d5, f7',
     echanger: 'Fou g4 contre le Cavalier f3 (fait)',
     conserver: 'Cavalier d5',
-    video: { recherche: 'Alekhine Defense modern 4...Bg4 5.h3 Bxf3', url: null },
+    video: { recherche: 'Alekhine Defense modern 4...Bg4 5.h3 Bxf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ale-4c4-cf3', rep: 'alekhine', famille: 'Variante moderne', nom: '4.c4 Cb6 5.Cf3 Fg4', badge: 'theorie',
@@ -302,6 +346,10 @@ export default [
     cases: 'd4, f7, e5',
     echanger: 'Fou g4 contre le Fou e2',
     conserver: 'Pion de plus',
-    video: { recherche: 'Alekhine Defense 4.c4 Nb6 5.Nf3 Bg4', url: null },
+    video: { recherche: 'Alekhine Defense 4.c4 Nb6 5.Nf3 Bg4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=IzDJNLdAlos', titre: 'Défense Alekhine [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=lbMHf80bFb8', titre: 'Alekhine Defense Opening Masterclass', chaine: 'Volclus', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

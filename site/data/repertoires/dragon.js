@@ -132,7 +132,10 @@ export default [
     cases: 'd5, d4, e5',
     echanger: 'Fou d7 contre le Fou b5 (4.Fxd7+)',
     conserver: 'Pion d6',
-    video: { recherche: 'Sicilian Moscow variation 3.Bb5+ Bd7', url: null },
+    video: { recherche: 'Sicilian Moscow variation 3.Bb5+ Bd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=XI9_mUSzAF4', titre: 'The Moscow Variation of the Sicilian (3.Bb5+)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-grand-prix', rep: 'dragon', famille: 'Sans 2.Cf3', nom: 'Grand Prix 2.Cc3 d6 3.f4 g6', badge: 'theorie',
@@ -144,7 +147,10 @@ export default [
     cases: 'f7 (à fermer par …e6), d4, b5',
     echanger: 'Le Cavalier c6 contre un Cavalier qui vient en d4',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Grand Prix Attack 2.Nc3 d6 3.f4 g6 for Black', url: null },
+    video: { recherche: 'Grand Prix Attack 2.Nc3 d6 3.f4 g6 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=y_nTGCFsrUc', titre: 'The Grand Prix Attack against the Sicilian', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-fermee', rep: 'dragon', famille: 'Sans 2.Cf3', nom: 'Sicilienne fermée 2.Cc3 d6 3.g3', badge: 'theorie',
@@ -156,7 +162,11 @@ export default [
     cases: 'd4, b4, f5',
     echanger: 'Le pion f contre e4 avec …f5 au bon moment',
     conserver: 'Le Fou g7 (grande diagonale)',
-    video: { recherche: 'Closed Sicilian 2.Nc3 d6 3.g3 for Black', url: null },
+    video: { recherche: 'Closed Sicilian 2.Nc3 d6 3.g3 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-alapin', rep: 'dragon', famille: 'Sans 2.Cf3', nom: 'Alapin 2.c3 d5', badge: 'theorie',
@@ -174,7 +184,10 @@ export default [
     cases: 'd4 (pion isolé), d5, e4',
     echanger: 'Les pièces : le pion isolé devient faible en finale',
     conserver: 'Le blocage en d5',
-    video: { recherche: 'Alapin Sicilian 2.c3 d5 3.exd5 Qxd5', url: null },
+    video: { recherche: 'Alapin Sicilian 2.c3 d5 3.exd5 Qxd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-morra', rep: 'dragon', famille: 'Sans 2.Cf3', nom: 'Gambit Morra refusé 2.d4 cxd4 3.c3 Cf6', badge: 'theorie',
@@ -192,7 +205,11 @@ export default [
     cases: 'd5 (Cavalier), e5 (cible), d4',
     echanger: 'Le pion d6 contre le pion e5',
     conserver: 'Le Cavalier d5',
-    video: { recherche: 'Smith-Morra declined 3...Nf6 4.e5 Nd5', url: null },
+    video: { recherche: 'Smith-Morra declined 3...Nf6 4.e5 Nd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-cc3', rep: 'dragon', famille: 'Sans 3.d4', nom: '2.Cf3 d6 3.Cc3 Cf6 4.e5', badge: 'theorie',
@@ -237,7 +254,10 @@ export default [
     cases: 'e4, d6, c6 (Fou)',
     echanger: 'Les pièces mineures quand cela fait valoir la paire de Fous',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Sicilian 4.Qxd4 Nc6 5.Bb5 Bd7 Chekhover', url: null },
+    video: { recherche: 'Sicilian 4.Qxd4 Nc6 5.Bb5 Bd7 Chekhover', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vT4FQsKzX2A', titre: 'How to play the Qxd4 Sicilian (Chekhover)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-fc4', rep: 'dragon', famille: 'Sans 3.d4', nom: '2.Cf3 d6 3.Fc4 Cf6 4.d3', badge: 'theorie',
@@ -267,7 +287,11 @@ export default [
     cases: 'g4, e5, colonne b',
     echanger: 'Cavalier g4 contre le Fou noir des Blancs si possible',
     conserver: 'Fou g7',
-    video: { recherche: 'Sicilian Dragon 7.Qd2 Ng4', url: null },
+    video: { recherche: 'Sicilian Dragon 7.Qd2 Ng4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: 'Chess Mode', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-10cxc6', rep: 'dragon', famille: 'Attaque yougoslave', nom: '9.O-O-O d5 10.Cxc6 bxc6', badge: 'theorie',
@@ -282,7 +306,11 @@ export default [
     cases: 'b2, c2, colonne b',
     echanger: 'Ne pas échanger le Fou g7, la meilleure pièce noire',
     conserver: 'Fou g7 qui vise b2',
-    video: { recherche: 'Sicilian Dragon Yugoslav 9.O-O-O d5 10.Nxc6', url: null },
+    video: { recherche: 'Sicilian Dragon Yugoslav 9.O-O-O d5 10.Nxc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TCPfXd3L3FM', titre: 'Sicilian Dragon Variation Plans and Pawn Structure, Yugoslav Attack (Chess Openings)', chaine: 'Chess Mode', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-5f3-fb5', rep: 'dragon', famille: 'Déviations', nom: '5.f3 e5 6.Fb5+', badge: 'theorie',
@@ -297,7 +325,10 @@ export default [
     cases: 'd5 (cible), f5, e5',
     echanger: 'Fou d7 contre le Cavalier f5',
     conserver: 'Paire de Fous',
-    video: { recherche: 'Sicilian 5.f3 e5 6.Bb5+', url: null },
+    video: { recherche: 'Sicilian 5.f3 e5 6.Bb5+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-5f3-cb3', rep: 'dragon', famille: 'Déviations', nom: '5.f3 e5 6.Cb3 d5', badge: 'theorie',
@@ -309,7 +340,10 @@ export default [
     cases: 'd5, e4, f4',
     echanger: 'Pion d5 contre le pion e4 au bon moment',
     conserver: 'Paire de Fous',
-    video: { recherche: 'Sicilian 5.f3 e5 6.Nb3 d5', url: null },
+    video: { recherche: 'Sicilian 5.f3 e5 6.Nb3 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-5fd3', rep: 'dragon', famille: 'Déviations', nom: '5.Fd3 Cc6', badge: 'theorie',
@@ -321,7 +355,10 @@ export default [
     cases: 'd4, f4, colonne b',
     echanger: 'Cavalier noir contre le Fou d3',
     conserver: 'Pion e5',
-    video: { recherche: 'Sicilian 5.Bd3 Nc6', url: null },
+    video: { recherche: 'Sicilian 5.Bd3 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'drg-6fd3', rep: 'dragon', famille: 'Déviations', nom: '6.Fd3 Fg7 7.O-O O-O', badge: 'theorie',
@@ -333,6 +370,9 @@ export default [
     cases: 'c5, c3, colonne b',
     echanger: 'Cavalier c5 contre le Fou d3',
     conserver: 'Fou g7',
-    video: { recherche: 'Sicilian Dragon 6.Bd3', url: null },
+    video: { recherche: 'Sicilian Dragon 6.Bd3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=u1Jji8Z4YS0', titre: 'HOW TO PLAY Sicilian Defense DRAGON Variation by Grandmaster Anish Giri', chaine: 'Anish Giri', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

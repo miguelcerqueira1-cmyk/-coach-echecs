@@ -97,7 +97,11 @@ export default [
     cases: 'c5, b4, e5',
     echanger: 'Cavalier f6 contre le Cavalier e4',
     conserver: 'Cavalier c5',
-    video: { recherche: 'Dutch Leningrad 7...Qe8 8.d5', url: null },
+    video: { recherche: 'Dutch Leningrad 7...Qe8 8.d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-8b3', rep: 'hollandaise', famille: 'Leningrad', nom: '7…De8 8.b3 a5', badge: 'theorie',
@@ -109,7 +113,11 @@ export default [
     cases: 'b4, e5, d6',
     echanger: 'Cavalier b4 contre le Fou a3 si l’occasion se présente',
     conserver: 'Pion d6, qui soutient e5',
-    video: { recherche: 'Dutch Leningrad 7...Qe8 8.b3', url: null },
+    video: { recherche: 'Dutch Leningrad 7...Qe8 8.b3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-cf3-b3', rep: 'hollandaise', famille: 'Leningrad', nom: '2.Cf3 Cf6 3.g3 g6 … 6.b3', badge: 'theorie',
@@ -121,7 +129,11 @@ export default [
     cases: 'e5, a4, b3',
     echanger: 'Fou g7 contre le Fou b2 si la diagonale s’ouvre',
     conserver: 'Pion f5',
-    video: { recherche: 'Dutch Leningrad 6.b3', url: null },
+    video: { recherche: 'Dutch Leningrad 6.b3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-c4-cc3', rep: 'hollandaise', famille: 'Leningrad', nom: '2.c4 Cf6 3.Cc3 g6 4.Cf3', badge: 'theorie',
@@ -133,7 +145,11 @@ export default [
     cases: 'e5, e4, d4',
     echanger: 'Fou c8 contre le Cavalier f3 si besoin',
     conserver: 'Fou g7',
-    video: { recherche: 'Dutch Leningrad 2.c4 Nf6 3.Nc3 g6', url: null },
+    video: { recherche: 'Dutch Leningrad 2.c4 Nf6 3.Nc3 g6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-c4-fg5', rep: 'hollandaise', famille: 'Leningrad', nom: '2.c4 Cf6 3.Cc3 g6 4.Fg5', badge: 'theorie',
@@ -148,7 +164,11 @@ export default [
     cases: 'e5, g5, h4',
     echanger: 'Pion e5 contre le pion d4',
     conserver: 'Fou g7',
-    video: { recherche: 'Dutch Leningrad 4.Bg5', url: null },
+    video: { recherche: 'Dutch Leningrad 4.Bg5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ukmYs93gey8', titre: 'How to Play the Leningrad Dutch Defence', chaine: 'Maverick Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-ff4', rep: 'hollandaise', famille: 'Déviations', nom: '2.Ff4 Cf6 3.e3 g6', badge: 'theorie',
@@ -163,7 +183,10 @@ export default [
     cases: 'e5, d4, c7',
     echanger: 'Pion e5 contre le pion d4',
     conserver: 'Fou g7',
-    video: { recherche: 'Dutch Defense vs London 2.Bf4 g6', url: null },
+    video: { recherche: 'Dutch Defense vs London 2.Bf4 g6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-cc3-fg5', rep: 'hollandaise', famille: 'Déviations', nom: '2.Cc3 Cf6 3.Fg5 d5', badge: 'theorie',
@@ -178,7 +201,10 @@ export default [
     cases: 'd5, e5, e4',
     echanger: 'Pas le Fou e6, qui garde d5',
     conserver: 'Paire de Fous',
-    video: { recherche: 'Dutch Defense 2.Nc3 Nf6 3.Bg5 d5', url: null },
+    video: { recherche: 'Dutch Defense 2.Nc3 Nf6 3.Bg5 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-staunton-f3', rep: 'hollandaise', famille: 'Gambit Staunton', nom: '2.e4 fxe4 3.Cc3 Cf6 4.f3 d5', badge: 'theorie',
@@ -193,7 +219,10 @@ export default [
     cases: 'e4, f7, colonne f',
     echanger: 'Fou e7 contre le Fou g5',
     conserver: 'Pion e4',
-    video: { recherche: 'Staunton Gambit 4.f3 d5', url: null },
+    video: { recherche: 'Staunton Gambit 4.f3 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'hol-cf3-fg5', rep: 'hollandaise', famille: 'Déviations', nom: '2.Cf3 Cf6 3.Fg5 e6', badge: 'theorie',
@@ -205,6 +234,9 @@ export default [
     cases: 'e5, e4, g5',
     echanger: 'Fou e7 contre le Fou g5',
     conserver: 'Pion f5, qui contrôle e4',
-    video: { recherche: 'Classical Dutch vs 3.Bg5', url: null },
+    video: { recherche: 'Classical Dutch vs 3.Bg5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=cB2qK299FNQ', titre: 'Défense hollandaise (1) : Partie d\'échecs pédagogique', chaine: 'Progresser aux échecs avec Marc Quenehen', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

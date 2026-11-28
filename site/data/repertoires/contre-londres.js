@@ -145,7 +145,11 @@ export default [
     cases: 'e5, b7, d6',
     echanger: 'Fou d6 contre le Fou de cases noires blanc',
     conserver: 'Le Fou c8 (futur …Fb7)',
-    video: { recherche: 'London System 4.Nf3 c5 5.Nbd2 Nc6 black plan', url: null },
+    video: { recherche: 'London System 4.Nf3 c5 5.Nbd2 Nc6 black plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-e3c5-cf3', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '3.e3 c5 4.Cf3 Cc6 5.c3 Db6', badge: 'theorie',
@@ -160,7 +164,11 @@ export default [
     cases: 'b2 (cible), c4, f5',
     echanger: 'Rien : garder les Dames',
     conserver: 'Le pion c4',
-    video: { recherche: 'London System 3...c5 4.Nf3 Nc6 5.c3 Qb6', url: null },
+    video: { recherche: 'London System 3...c5 4.Nf3 Nc6 5.c3 Qb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-cbd2-db6', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '4.Cf3 Cc6 5.Cbd2 Db6 6.Tb1', badge: 'theorie',
@@ -176,7 +184,11 @@ export default [
     cases: 'b1 (Tour), b2, c-colonne',
     echanger: 'Fou f5 contre le Fou d3',
     conserver: 'La pression sur b2',
-    video: { recherche: 'London System 5.Nbd2 Qb6 6.Rb1 black plan', url: null },
+    video: { recherche: 'London System 5.Nbd2 Qb6 6.Rb1 black plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-cd2-e6', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '3.e3 e6 4.Cd2 c5', badge: 'theorie',
@@ -188,7 +200,11 @@ export default [
     cases: 'e5, b7, d6',
     echanger: 'Fou d6 contre le Fou g3',
     conserver: 'Le Fou c8 (futur …Fb7)',
-    video: { recherche: 'London System 4.Nd2 c5 5.c3 Nc6', url: null },
+    video: { recherche: 'London System 4.Nd2 c5 5.c3 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-3cf3', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '2…Cf6 3.Cf3 c5', badge: 'theorie',
@@ -203,7 +219,11 @@ export default [
     cases: 'b2 (cible), c4, f5',
     echanger: 'Rien : garder les Dames',
     conserver: 'Le pion c4',
-    video: { recherche: 'London System 3.Nf3 c5 4.e3 Nc6 5.c3 Qb6', url: null },
+    video: { recherche: 'London System 3.Nf3 c5 4.e3 Nc6 5.c3 Qb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-4dxc5', rep: 'contre-londres', famille: 'Londres 2.Ff4 Cf6', nom: '3.e3 c5 4.dxc5 e6', badge: 'theorie',
@@ -218,7 +238,11 @@ export default [
     cases: 'c5 (Fou), e5, d4',
     echanger: 'Rien de pressé',
     conserver: 'Le pion d5',
-    video: { recherche: 'London System 3...c5 4.dxc5 e6', url: null },
+    video: { recherche: 'London System 3...c5 4.dxc5 e6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-2cf3', rep: 'contre-londres', famille: 'Autres ordres de coups', nom: 'Par 2.Cf3 Cf6 3.Ff4 c5', badge: 'theorie',
@@ -233,7 +257,11 @@ export default [
     cases: 'b2 (cible), c4, f5',
     echanger: 'Rien : garder les Dames',
     conserver: 'Le pion c4',
-    video: { recherche: 'London System 2.Nf3 Nf6 3.Bf4 c5', url: null },
+    video: { recherche: 'London System 2.Nf3 Nf6 3.Bf4 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cl-jobava', rep: 'contre-londres', famille: 'Autres ordres de coups', nom: 'Jobava 2.Cc3 Cf6 3.Ff4 e6', badge: 'theorie',
@@ -248,6 +276,10 @@ export default [
     cases: 'c7 (à défendre), e4, c5',
     echanger: 'Fou e7 contre le Fou f4 si possible',
     conserver: 'Le pion d5',
-    video: { recherche: 'Jobava London 3...e6 4.Nb5 Na6 plan', url: null },
+    video: { recherche: 'Jobava London 3...e6 4.Nb5 Na6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

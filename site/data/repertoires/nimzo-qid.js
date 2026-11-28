@@ -94,7 +94,11 @@ export default [
     cases: 'c4 (cible du Fou a6), e4, d5',
     echanger: 'Cavalier d7 contre le Cavalier e5 ; Fou e7 contre le Fou c3',
     conserver: 'Pion d5',
-    video: { recherche: 'Queen\'s Indian Defense 4.g3 Ba6 main line explained', url: null },
+    video: { recherche: 'Queen\'s Indian Defense 4.g3 Ba6 main line explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9Jt3AypZ59c', titre: 'Introduction to the Queen’s Indian Defense · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cdvhAziDTg', titre: 'Queen’s Indian Defense Main Line · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'qid-petrossian', rep: 'nimzo-qid', famille: 'Défense indienne de la Dame', nom: 'Indienne de la Dame, système Petrossian (4.a3)', badge: 'theorie',
@@ -106,7 +110,11 @@ export default [
     cases: 'e4 (cible du Fou b7), c5 (rupture), d5',
     echanger: 'Cavalier d5 contre le Cavalier c3',
     conserver: 'Fou b7',
-    video: { recherche: 'Queen\'s Indian Petrosian system 4.a3 Bb7 5.Nc3 d5 for Black', url: null },
+    video: { recherche: 'Queen\'s Indian Petrosian system 4.a3 Bb7 5.Nc3 d5 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9Jt3AypZ59c', titre: 'Introduction to the Queen’s Indian Defense · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cdvhAziDTg', titre: 'Queen’s Indian Defense Main Line · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-ouverte', rep: 'nimzo-qid', famille: 'Catalane', nom: 'Catalane ouverte (3.g3 d5 4.Fg2 … 6…dxc4)', badge: 'theorie',
@@ -139,7 +147,10 @@ export default [
     cases: 'f6, e5, d4',
     echanger: 'Le Fou b4 contre le Cavalier c3 si cela abîme les pions blancs',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Trompowsky 2.Bg5 e6 3.e4 h6', url: null },
+    video: { recherche: 'Trompowsky 2.Bg5 e6 3.e4 h6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=2fQdICXQvks', titre: 'Introduction to the Trompowsky Attack · Plans, Ideas, Structures and Common Variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-londres', rep: 'nimzo-qid', famille: 'Sans 2.c4', nom: 'Londres 2.Ff4 e6 3.e3 c5 4.c3 Db6', badge: 'theorie',
@@ -154,7 +165,11 @@ export default [
     cases: 'b2, d4, c-file',
     echanger: 'Les Dames en b3 si cela laisse aux Blancs des pions doublés',
     conserver: 'La pression sur b2',
-    video: { recherche: 'London System 1...Nf6 2.Bf4 e6 3.e3 c5 Qb6', url: null },
+    video: { recherche: 'London System 1...Nf6 2.Bf4 e6 3.e3 c5 Qb6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-torre', rep: 'nimzo-qid', famille: 'Sans 2.c4', nom: 'Attaque Torre 2.Cf3 e6 3.Fg5', badge: 'theorie',
@@ -169,7 +184,11 @@ export default [
     cases: 'e4 (contrôlée par le Fou b7), d4, h4',
     echanger: 'Le Fou e7 contre le Fou h4',
     conserver: 'Le Fou b7',
-    video: { recherche: 'Torre Attack 3.Bg5 c5 b6 for Black', url: null },
+    video: { recherche: 'Torre Attack 3.Bg5 c5 b6 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=xbUgaJGb5Ps', titre: 'The Torre Attack - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mvsiaWzHFyk', titre: 'Magnus Carlsen Teaches How to Beat the Torre Attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-jobava', rep: 'nimzo-qid', famille: 'Sans 2.c4', nom: 'Jobava 2.Cc3 d5 3.Ff4 c5', badge: 'theorie',
@@ -184,7 +203,11 @@ export default [
     cases: 'b5 et c7 (à protéger), d4, e4',
     echanger: 'Le pion c5 contre d4',
     conserver: 'Le pion d5',
-    video: { recherche: 'Jobava London 2.Nc3 d5 3.Bf4 c5', url: null },
+    video: { recherche: 'Jobava London 2.Nc3 d5 3.Bf4 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=8o5UitW0bRM', titre: 'Introduction to the Jobava London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=sBJzmRqfbWo', titre: 'Fighting Annoying Jobava London System!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-colle', rep: 'nimzo-qid', famille: 'Sans 2.c4', nom: 'Système Colle 2.Cf3 e6 3.e3', badge: 'theorie',
@@ -202,7 +225,10 @@ export default [
     cases: 'e4, e5, h7 et h2',
     echanger: 'Le pion c5 contre d4',
     conserver: 'Le Fou de cases noires',
-    video: { recherche: 'Colle System for Black ...e6 ...c5 ...d5', url: null },
+    video: { recherche: 'Colle System for Black ...e6 ...c5 ...d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FN7xJhjCxkY', titre: 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-f3', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Nimzo 4.f3 d5 5.a3 Fxc3+', badge: 'theorie',
@@ -217,7 +243,10 @@ export default [
     cases: 'e4 (à empêcher), c4, c3 (cible)',
     echanger: 'Le Fou b4 contre le Cavalier c3 dès que a3 le demande',
     conserver: 'Le pion d5',
-    video: { recherche: 'Nimzo-Indian 4.f3 d5 5.a3', url: null },
+    video: { recherche: 'Nimzo-Indian 4.f3 d5 5.a3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-fd2', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Rubinstein 5.Fd2', badge: 'theorie',
@@ -232,7 +261,10 @@ export default [
     cases: 'e4 (Cavalier), c3, d4',
     echanger: 'Le Cavalier e4 contre le Fou c3',
     conserver: 'Le pion d5',
-    video: { recherche: 'Nimzo-Indian Rubinstein 5.Bd2', url: null },
+    video: { recherche: 'Nimzo-Indian Rubinstein 5.Bd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-rub-a3', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Rubinstein 5.Fd3 d5 6.a3', badge: 'theorie',
@@ -247,7 +279,10 @@ export default [
     cases: 'e5, c4, c3 (cible)',
     echanger: 'Le Fou b4 contre le Cavalier c3 après a3',
     conserver: 'Le contrôle de e5 par la Dame c7',
-    video: { recherche: 'Nimzo-Indian Rubinstein 6.a3 Bxc3', url: null },
+    video: { recherche: 'Nimzo-Indian Rubinstein 6.a3 Bxc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-cat-a4', rep: 'nimzo-qid', famille: 'Catalane', nom: 'Catalane ouverte 7.Dc2 a6 8.a4', badge: 'theorie',
@@ -262,7 +297,11 @@ export default [
     cases: 'b4 (Cavalier), c6, grande diagonale a8-h1',
     echanger: 'Le Fou c6 contre le Fou g2 ou un Cavalier',
     conserver: 'Le Fou c6 sur la grande diagonale',
-    video: { recherche: 'Open Catalan 7.Qc2 a6 8.a4 Bd7', url: null },
+    video: { recherche: 'Open Catalan 7.Qc2 a6 8.a4 Bd7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-cat-da4', rep: 'nimzo-qid', famille: 'Catalane', nom: 'Catalane ouverte 7.Da4', badge: 'theorie',
@@ -277,7 +316,11 @@ export default [
     cases: 'b5, e4, c-file',
     echanger: 'Le Fou e4 contre le Fou g2',
     conserver: 'Le pion b5',
-    video: { recherche: 'Open Catalan 7.Qa4 a6 8.Qxc4 b5', url: null },
+    video: { recherche: 'Open Catalan 7.Qa4 a6 8.Qxc4 b5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nq-cat-ce5', rep: 'nimzo-qid', famille: 'Catalane', nom: 'Catalane ouverte 7.Ce5', badge: 'theorie',
@@ -292,7 +335,11 @@ export default [
     cases: 'c4 (pion de plus), cases blanches autour du Roi blanc, e5',
     echanger: 'Le Cavalier c6 contre le Cavalier e5',
     conserver: 'Le pion c4 tant que possible',
-    video: { recherche: 'Open Catalan 7.Ne5 Nc6', url: null },
+    video: { recherche: 'Open Catalan 7.Ne5 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'nimzo-e4', rep: 'nimzo-qid', famille: 'Défense nimzo-indienne', nom: 'Classique 4.Dc2 O-O 5.e4 d5', badge: 'theorie',
@@ -310,6 +357,9 @@ export default [
     cases: 'e4 (Cavalier), d4 (base de la chaîne), c3',
     echanger: 'Le Fou b4 contre le Cavalier c3',
     conserver: 'Le Cavalier e4',
-    video: { recherche: 'Nimzo-Indian Classical 4.Qc2 O-O 5.e4 d5', url: null },
+    video: { recherche: 'Nimzo-Indian Classical 4.Qc2 O-O 5.e4 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=htNc9zFPdQs', titre: 'Chess Openings: Nimzo-Indian Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

@@ -146,7 +146,11 @@ export default [
     cases: 'e4 (poussée), d5, c6',
     echanger: 'Rien de pressé : préparer e4',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Closed Catalan 6...c6 7.Qc2 b6 8.Nbd2', url: null },
+    video: { recherche: 'Closed Catalan 6...c6 7.Qc2 b6 8.Nbd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-fb4-5', rep: 'catalane', famille: 'Catalane ouverte', nom: 'Ouverte 5…Fb4+ 6.Fd2 a5', badge: 'theorie',
@@ -158,7 +162,11 @@ export default [
     cases: 'b5, g7, c4',
     echanger: 'Le Fou d2 contre le Fou b4',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Open Catalan 5...Bb4+ 6.Bd2 a5 7.Qc2', url: null },
+    video: { recherche: 'Open Catalan 5...Bb4+ 6.Bd2 a5 7.Qc2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-a5', rep: 'catalane', famille: 'Catalane fermée', nom: 'Fermée 6…a5 7.Cc3', badge: 'theorie',
@@ -170,7 +178,11 @@ export default [
     cases: 'e4 (poussée), d5, b5',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Catalan 6...a5 7.Nc3 plan for white', url: null },
+    video: { recherche: 'Catalan 6...a5 7.Nc3 plan for white', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-fb4-4', rep: 'catalane', famille: 'Déviations', nom: '4…Fb4+ 5.Cd2', badge: 'theorie',
@@ -182,7 +194,11 @@ export default [
     cases: 'd5, c6, b7',
     echanger: 'Rien de pressé',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Catalan 4...Bb4+ 5.Nd2', url: null },
+    video: { recherche: 'Catalan 4...Bb4+ 5.Nd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-dc2-b5', rep: 'catalane', famille: 'Catalane ouverte', nom: 'Ouverte 7.Dc2 b5 8.a4', badge: 'theorie',
@@ -194,7 +210,11 @@ export default [
     cases: 'c4 (Cavalier), c6, a4',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Open Catalan 7.Qc2 b5 8.a4 b4', url: null },
+    video: { recherche: 'Open Catalan 7.Qc2 b5 8.a4 b4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-fd7', rep: 'catalane', famille: 'Catalane ouverte', nom: 'Ouverte 5…Fd7 6.Ce5', badge: 'theorie',
@@ -206,7 +226,11 @@ export default [
     cases: 'c4 (cible), e5, c6',
     echanger: 'Cavalier e5 contre le Fou c6',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Open Catalan 5...Bd7 6.Ne5 Bc6', url: null },
+    video: { recherche: 'Open Catalan 5...Bd7 6.Ne5 Bc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-cc6', rep: 'catalane', famille: 'Catalane ouverte', nom: 'Ouverte 5…Cc6 6.Da4', badge: 'theorie',
@@ -218,7 +242,11 @@ export default [
     cases: 'c6 (clouage), c4, e5',
     echanger: 'Le Fou d2 contre le Fou b4',
     conserver: 'Le Fou g2 (clouage sur c6)',
-    video: { recherche: 'Open Catalan 5...Nc6 6.Qa4 Bb4+', url: null },
+    video: { recherche: 'Open Catalan 5...Nc6 6.Qa4 Bb4+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-dc2-a5', rep: 'catalane', famille: 'Catalane fermée', nom: 'Fermée 7.Dc2 a5 8.Td1', badge: 'theorie',
@@ -230,7 +258,11 @@ export default [
     cases: 'e4 (poussée), d-colonne, c4',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Closed Catalan 7.Qc2 a5 8.Rd1', url: null },
+    video: { recherche: 'Closed Catalan 7.Qc2 a5 8.Rd1', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-cbd7', rep: 'catalane', famille: 'Catalane ouverte', nom: 'Ouverte 5…Cbd7 6.O-O Tb8', badge: 'theorie',
@@ -242,7 +274,11 @@ export default [
     cases: 'c4 (cible), b5, a3',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Open Catalan 5...Nbd7 6.O-O Rb8 7.a4', url: null },
+    video: { recherche: 'Open Catalan 5...Nbd7 6.O-O Rb8 7.a4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'cat-c5-6', rep: 'catalane', famille: 'Catalane fermée', nom: '6…c5 7.dxc5 Fxc5', badge: 'theorie',
@@ -257,6 +293,10 @@ export default [
     cases: 'd5 (cible), d4, g5',
     echanger: 'Pièces mineures (la finale est bonne contre le pion isolé)',
     conserver: 'Le Fou g2',
-    video: { recherche: 'Catalan 6...c5 7.dxc5 Bxc5 isolated pawn', url: null },
+    video: { recherche: 'Catalan 6...c5 7.dxc5 Bxc5 isolated pawn', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

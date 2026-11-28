@@ -114,7 +114,11 @@ export default [
     cases: 'b6 (cible), d5, d4',
     echanger: 'Cavalier d5 contre le Cavalier c3',
     conserver: 'Avance de développement',
-    video: { recherche: 'Benko Gambit 5.b6', url: null },
+    video: { recherche: 'Benko Gambit 5.b6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'benko-cd2', rep: 'benoni', famille: 'Gambit Benko', nom: '4.Cd2 bxc4 5.e4', badge: 'theorie',
@@ -126,7 +130,11 @@ export default [
     cases: 'b2, e5, colonne b',
     echanger: 'Fou c8 contre un Cavalier blanc',
     conserver: 'Fou g7',
-    video: { recherche: 'Benko Gambit 4.Nd2', url: null },
+    video: { recherche: 'Benko Gambit 4.Nd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'benko-cf3', rep: 'benoni', famille: 'Gambit Benko', nom: '4.Cf3 bxc4 5.Cc3', badge: 'theorie',
@@ -138,7 +146,11 @@ export default [
     cases: 'b2, e5, c4',
     echanger: 'Cavalier f6 contre le Cavalier c3 si possible',
     conserver: 'Fou g7',
-    video: { recherche: 'Benko Gambit 4.Nf3 bxc4', url: null },
+    video: { recherche: 'Benko Gambit 4.Nf3 bxc4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'benko-a4', rep: 'benoni', famille: 'Gambit Benko', nom: '4.a4 b4', badge: 'theorie',
@@ -150,7 +162,11 @@ export default [
     cases: 'c3, e5, a5',
     echanger: 'Fou c8 contre un Cavalier blanc',
     conserver: 'Pion b4 qui prive les Blancs de la case c3',
-    video: { recherche: 'Benko Gambit 4.a4 b4', url: null },
+    video: { recherche: 'Benko Gambit 4.a4 b4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=_bG3XLZPqbw', titre: 'GAMBIT BENKO [Petite présentation + piège]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=-qGlSDA4w6M', titre: 'Chess Openings: Benko Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-cd2', rep: 'benoni', famille: 'Benoni moderne', nom: '6.Cf3 g6 7.Cd2', badge: 'theorie',
@@ -162,7 +178,11 @@ export default [
     cases: 'b5 (rupture), c4, e5',
     echanger: 'Cavalier noir contre le Cavalier c4 s’il s’y installe',
     conserver: 'Fou g7',
-    video: { recherche: 'Modern Benoni 7.Nd2', url: null },
+    video: { recherche: 'Modern Benoni 7.Nd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-h3', rep: 'benoni', famille: 'Benoni moderne', nom: '6.Cf3 g6 7.h3 Fg7 8.e4 O-O 9.Fd3 b5', badge: 'theorie',
@@ -177,7 +197,11 @@ export default [
     cases: 'e4, colonne e, b2',
     echanger: 'Cavalier e4 contre une pièce blanche active',
     conserver: 'Fou g7',
-    video: { recherche: 'Modern Benoni 7.h3 b5', url: null },
+    video: { recherche: 'Modern Benoni 7.h3 b5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-7e4', rep: 'benoni', famille: 'Benoni moderne', nom: '6.Cf3 g6 7.e4', badge: 'theorie',
@@ -189,7 +213,11 @@ export default [
     cases: 'e4, b5 (rupture), c5',
     echanger: 'Fou c8 contre un Cavalier blanc',
     conserver: 'Fou g7',
-    video: { recherche: 'Modern Benoni classical 7.e4', url: null },
+    video: { recherche: 'Modern Benoni classical 7.e4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-2cf3', rep: 'benoni', famille: 'Déviations', nom: '2.Cf3 c5 3.d5 b5 4.Fg5', badge: 'theorie',
@@ -201,7 +229,11 @@ export default [
     cases: 'd5 (cible), e5, b5',
     echanger: 'Ne pas échanger le Fou b7, qui vise d5',
     conserver: 'Paire de Fous',
-    video: { recherche: '1.d4 Nf6 2.Nf3 c5 3.d5 b5 4.Bg5', url: null },
+    video: { recherche: '1.d4 Nf6 2.Nf3 c5 3.d5 b5 4.Bg5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-fg5-ce4', rep: 'benoni', famille: 'Déviations', nom: '2.Fg5 c5 3.d5 Ce4', badge: 'theorie',
@@ -216,7 +248,11 @@ export default [
     cases: 'b2, e4, g3',
     echanger: 'Cavalier e4 contre le Fou g3',
     conserver: 'Fou g7 qui vise b2',
-    video: { recherche: 'Trompowsky 2...c5 3.d5 Ne4', url: null },
+    video: { recherche: 'Trompowsky 2...c5 3.d5 Ne4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-fxf6', rep: 'benoni', famille: 'Déviations', nom: '2.Fg5 c5 3.Fxf6 gxf6', badge: 'theorie',
@@ -228,7 +264,11 @@ export default [
     cases: 'e4, b2, colonne g',
     echanger: 'Pas le Fou g7',
     conserver: 'Paire de Fous',
-    video: { recherche: 'Trompowsky 2...c5 3.Bxf6 gxf6', url: null },
+    video: { recherche: 'Trompowsky 2...c5 3.Bxf6 gxf6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-ff4-dc1', rep: 'benoni', famille: 'Déviations', nom: '2.Ff4 c5 3.e3 Db6 4.Dc1 cxd4', badge: 'theorie',
@@ -240,7 +280,11 @@ export default [
     cases: 'b2, e4, d4',
     echanger: 'Fou f5 contre le Fou d3 s’il sort',
     conserver: 'Dame b6 qui fixe la Dame c1',
-    video: { recherche: 'London System 2...c5 3.e3 Qb6 4.Qc1', url: null },
+    video: { recherche: 'London System 2...c5 3.e3 Qb6 4.Qc1', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ben-ff4-cc3', rep: 'benoni', famille: 'Déviations', nom: '2.Ff4 c5 3.e3 Db6 4.Cc3', badge: 'theorie',
@@ -255,6 +299,10 @@ export default [
     cases: 'd4 (cible), b2, d5',
     echanger: 'Fou e7 contre le Fou f4 si possible',
     conserver: 'Pression sur d4',
-    video: { recherche: 'London System 2...c5 3.e3 Qb6 4.Nc3', url: null },
+    video: { recherche: 'London System 2...c5 3.e3 Qb6 4.Nc3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=3NSjEZEeLzE', titre: 'Echecs - Tout savoir sur la Defense Benoni - Stratégie', chaine: 'imineo', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=R3sT1d_npnQ', titre: 'The Modern Benoni is No Baloney: Part 1 - Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

@@ -101,7 +101,11 @@ export default [
     cases: 'd4, c5, f4',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Le pion e5',
-    video: { recherche: 'English Four Knights 4.e4 Bb4 5.d3 d6', url: null },
+    video: { recherche: 'English Four Knights 4.e4 Bb4 5.d3 d6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-4cav-d3', rep: 'contre-anglaise', famille: 'Quatre Cavaliers', nom: 'Quatre Cavaliers 4.d3 d5', badge: 'theorie',
@@ -116,7 +120,11 @@ export default [
     cases: 'd5 (Cavalier), d4, e5',
     echanger: 'Rien de pressé',
     conserver: 'Cavalier d5',
-    video: { recherche: 'English Four Knights 4.d3 d5 5.cxd5 Nxd5', url: null },
+    video: { recherche: 'English Four Knights 4.d3 d5 5.cxd5 Nxd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-4cav-e3', rep: 'contre-anglaise', famille: 'Quatre Cavaliers', nom: 'Quatre Cavaliers 4.e3 Fb4 5.Dc2', badge: 'theorie',
@@ -131,7 +139,11 @@ export default [
     cases: 'e5, h3, g4',
     echanger: 'Rien de pressé',
     conserver: 'La paire de Fous',
-    video: { recherche: 'English Four Knights 4.e3 Bb4 5.Qc2 O-O 6.Nd5', url: null },
+    video: { recherche: 'English Four Knights 4.e3 Bb4 5.Qc2 O-O 6.Nd5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-d3', rep: 'contre-anglaise', famille: 'Déviations', nom: '2.d3 Cf6 3.Cf3 Cc6', badge: 'theorie',
@@ -146,7 +158,11 @@ export default [
     cases: 'd5, d4, e5',
     echanger: 'Rien de pressé',
     conserver: 'Cavalier d5',
-    video: { recherche: 'English 1...e5 2.d3 Nf6 3.Nf3 Nc6', url: null },
+    video: { recherche: 'English 1...e5 2.d3 Nf6 3.Nf3 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-cc6-cf3', rep: 'contre-anglaise', famille: 'Quatre Cavaliers', nom: '2…Cc6 3.Cf3 Cf6 4.g3', badge: 'theorie',
@@ -158,7 +174,11 @@ export default [
     cases: 'e3, e4, d3',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Le pion e3',
-    video: { recherche: 'English Four Knights 4.g3 Bb4 5.Bg2 O-O 6.O-O e4 7.Ng5', url: null },
+    video: { recherche: 'English Four Knights 4.g3 Bb4 5.Bg2 O-O 6.O-O e4 7.Ng5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-3e3', rep: 'contre-anglaise', famille: 'Déviations', nom: '2…Cf6 3.e3 Fb4', badge: 'theorie',
@@ -170,7 +190,11 @@ export default [
     cases: 'd5, e-colonne, b4',
     echanger: 'Le pion e5 contre le pion d4',
     conserver: 'Le Fou e7',
-    video: { recherche: 'English 1...e5 2.Nc3 Nf6 3.e3 Bb4', url: null },
+    video: { recherche: 'English 1...e5 2.Nc3 Nf6 3.e3 Bb4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ca-b3', rep: 'contre-anglaise', famille: 'Déviations', nom: '2.b3 Cf6 3.Fb2 Cc6', badge: 'theorie',
@@ -182,6 +206,10 @@ export default [
     cases: 'e5 (à défendre), d5, d4',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'English 1...e5 2.b3 Nf6 3.Bb2 Nc6', url: null },
+    video: { recherche: 'English 1...e5 2.b3 Nf6 3.Bb2 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5-RMWPyyuUM', titre: 'The English Opening: 1... e5 (Bc5 and Bb4)', chaine: 'Palm Beach Chess', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=u6LKx4cpayM', titre: 'Playing e5 against the English/c4 strategy', chaine: 'NM Jessejames | Complete Chess', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

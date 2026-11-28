@@ -149,7 +149,11 @@ export default [
     cases: 'e5 (poussée), d4, g7',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian Defense 3.Nf3 Bg7 4.Nc3 O-O 5.e4 d6', url: null },
+    video: { recherche: 'Kings Indian Defense 3.Nf3 Bg7 4.Nc3 O-O 5.e4 d6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-makogonov', rep: 'indienne-roi', famille: 'Variante classique', nom: 'Makogonov 5.h3 O-O 6.Fe3 e5', badge: 'theorie',
@@ -161,7 +165,11 @@ export default [
     cases: 'c5 (Cavalier), b4, f5',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian Makogonov 5.h3 O-O 6.Be3 e5', url: null },
+    video: { recherche: 'Kings Indian Makogonov 5.h3 O-O 6.Be3 e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-averbakh-cf3', rep: 'indienne-roi', famille: 'Variante Averbakh', nom: '5.Fe2 O-O 6.Cf3 e5', badge: 'theorie',
@@ -173,7 +181,11 @@ export default [
     cases: 'f5 (poussée), e7, d4',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Kings Indian Classical 7.O-O Nc6 8.d5 Ne7 plan', url: null },
+    video: { recherche: 'Kings Indian Classical 7.O-O Nc6 8.d5 Ne7 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-be2-fe3', rep: 'indienne-roi', famille: 'Variante Averbakh', nom: '5.Fe2 O-O 6.Fe3 c5', badge: 'theorie',
@@ -185,7 +197,11 @@ export default [
     cases: 'e-colonne, b5, e5',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian 5.Be2 O-O 6.Be3 c5', url: null },
+    video: { recherche: 'Kings Indian 5.Be2 O-O 6.Be3 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-g3', rep: 'indienne-roi', famille: 'Variante du fianchetto', nom: '3.g3 Fg7 4.Fg2 O-O', badge: 'theorie',
@@ -197,7 +213,11 @@ export default [
     cases: 'e5 (poussée), d4, c5',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian Fianchetto 6...Nbd7 7.Nc3 e5', url: null },
+    video: { recherche: 'Kings Indian Fianchetto 6...Nbd7 7.Nc3 e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-h3-cf3', rep: 'indienne-roi', famille: 'Variante classique', nom: '5.Cf3 O-O 6.h3 e5', badge: 'theorie',
@@ -212,7 +232,11 @@ export default [
     cases: 'c5 (Cavalier), b4, f5',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Kings Indian 6.h3 e5 7.d5 a5', url: null },
+    video: { recherche: 'Kings Indian 6.h3 e5 7.d5 a5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-gligoric-direct', rep: 'indienne-roi', famille: 'Variante classique', nom: 'Gligoric 7.Fe3 Cg4', badge: 'theorie',
@@ -227,7 +251,11 @@ export default [
     cases: 'g4 (Cavalier), f5, e7',
     echanger: 'Cavalier g4 contre le Fou e3',
     conserver: 'Le pion e5',
-    video: { recherche: 'Kings Indian Gligoric 7.Be3 Ng4 8.Bg5 f6', url: null },
+    video: { recherche: 'Kings Indian Gligoric 7.Be3 Ng4 8.Bg5 f6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-petrosian', rep: 'indienne-roi', famille: 'Variante classique', nom: 'Petrosian 7.d5 a5', badge: 'theorie',
@@ -242,7 +270,11 @@ export default [
     cases: 'c5 (Cavalier), b4, h6',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian Petrosian 7.d5 a5 8.Bg5 h6', url: null },
+    video: { recherche: 'Kings Indian Petrosian 7.d5 a5 8.Bg5 h6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-bayonet', rep: 'indienne-roi', famille: 'Variante classique', nom: 'Baïonnette 9.b4 a5', badge: 'theorie',
@@ -257,7 +289,11 @@ export default [
     cases: 'f5 (poussée), h6, a-colonne',
     echanger: 'Le pion a5 contre le pion b4',
     conserver: 'Le pion d6',
-    video: { recherche: 'Kings Indian Bayonet 9.b4 a5 10.Ba3', url: null },
+    video: { recherche: 'Kings Indian Bayonet 9.b4 a5 10.Ba3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-f3', rep: 'indienne-roi', famille: 'Variante Sämisch', nom: 'Sämisch par 3.f3', badge: 'theorie',
@@ -269,7 +305,11 @@ export default [
     cases: 'e5, b5, d4',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian Samisch 6.Be3 e5 7.Nge2 c6', url: null },
+    video: { recherche: 'Kings Indian Samisch 6.Be3 e5 7.Nge2 c6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-fianchetto-cc3', rep: 'indienne-roi', famille: 'Variante du fianchetto', nom: 'Fianchetto 6.Cc3 Cbd7', badge: 'theorie',
@@ -281,7 +321,11 @@ export default [
     cases: 'd4, b2, e5',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Kings Indian Fianchetto 6.Nc3 Nbd7 7.O-O e5', url: null },
+    video: { recherche: 'Kings Indian Fianchetto 6.Nc3 Nbd7 7.O-O e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-samisch-fg5', rep: 'indienne-roi', famille: 'Variante Sämisch', nom: 'Sämisch 6.Fg5 c5', badge: 'theorie',
@@ -293,7 +337,11 @@ export default [
     cases: 'e-colonne, b5, h6',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian Samisch 6.Bg5 c5', url: null },
+    video: { recherche: 'Kings Indian Samisch 6.Bg5 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-cf3-c4', rep: 'indienne-roi', famille: 'Déviations', nom: '2.Cf3 g6 3.c4', badge: 'theorie',
@@ -305,7 +353,11 @@ export default [
     cases: 'e5 (poussée), d4, g7',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian 2.Nf3 g6 3.c4 Bg7', url: null },
+    video: { recherche: 'Kings Indian 2.Nf3 g6 3.c4 Bg7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-londres', rep: 'indienne-roi', famille: 'Déviations', nom: 'Londres 2.Cf3 g6 3.Ff4', badge: 'theorie',
@@ -320,7 +372,11 @@ export default [
     cases: 'd4 (cible), b2, e5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Le Fou g7',
-    video: { recherche: 'London System vs Kings Indian setup c5 plan', url: null },
+    video: { recherche: 'London System vs Kings Indian setup c5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-cf3-g3', rep: 'indienne-roi', famille: 'Déviations', nom: '2.Cf3 g6 3.g3', badge: 'theorie',
@@ -332,7 +388,11 @@ export default [
     cases: 'e5 (poussée), d4, c5',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: 'Kings Indian vs 3.g3 fianchetto setup', url: null },
+    video: { recherche: 'Kings Indian vs 3.g3 fianchetto setup', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-trompowsky', rep: 'indienne-roi', famille: 'Déviations', nom: 'Trompowsky 2.Fg5 g6 3.Fxf6', badge: 'theorie',
@@ -344,7 +404,11 @@ export default [
     cases: 'f5 (poussée), d4, g7',
     echanger: 'Rien : garder la paire de Fous',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Trompowsky 2...g6 3.Bxf6 exf6 plan', url: null },
+    video: { recherche: 'Trompowsky 2...g6 3.Bxf6 exf6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'kid-150', rep: 'indienne-roi', famille: 'Déviations', nom: '2.Ff4 g6 3.Cc3 Fg7 4.e4 d6', badge: 'theorie',
@@ -359,6 +423,10 @@ export default [
     cases: 'b5 (poussée), c6, g7',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou g7',
-    video: { recherche: '150 Attack vs Kings Indian setup c6 b5', url: null },
+    video: { recherche: '150 Attack vs Kings Indian setup c6 b5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=YN10K7hOm1I', titre: 'La DÉFENSE EST-INDIENNE aux Échecs : Une Arme REDOUTABLE contre 1.d4 ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DlkMDRh4iKs', titre: 'La défense Est-Indienne - Echecs leçon', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

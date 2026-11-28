@@ -112,7 +112,10 @@ export default [
     cases: 'f7, d5, f4',
     echanger: 'Fou g5 contre le Cavalier f6',
     conserver: 'Le Fou c4',
-    video: { recherche: 'Vienna Game 2...Nc6 3.Bc4 Nf6 4.d3 Bb4', url: null },
+    video: { recherche: 'Vienna Game 2...Nc6 3.Bc4 Nf6 4.d3 Bb4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-fc5-4', rep: 'viennoise', famille: 'Variante Fc4', nom: '3…Cc6 4.d3 Fc5 5.Cf3', badge: 'theorie',
@@ -127,7 +130,10 @@ export default [
     cases: 'f7, g5, d5',
     echanger: 'Fou g5 contre le Cavalier f6',
     conserver: 'Le Fou c4',
-    video: { recherche: 'Vienna Game 3.Bc4 Nc6 4.d3 Bc5 5.Nf3', url: null },
+    video: { recherche: 'Vienna Game 3.Bc4 Nc6 4.d3 Bc5 5.Nf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-ca5', rep: 'viennoise', famille: 'Variante Fc4', nom: '3…Cc6 4.d3 Ca5 5.Cge2', badge: 'theorie',
@@ -142,7 +148,10 @@ export default [
     cases: 'd5, f4, d-colonne',
     echanger: 'Le Fou c4 contre le Cavalier a5',
     conserver: 'Le contrôle de d5',
-    video: { recherche: 'Vienna Game 3.Bc4 Nc6 4.d3 Na5', url: null },
+    video: { recherche: 'Vienna Game 3.Bc4 Nc6 4.d3 Na5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-fc5-c6', rep: 'viennoise', famille: 'Variante Fc4', nom: '2…Fc5 3.Fc4 Cf6 4.d3 c6', badge: 'theorie',
@@ -154,7 +163,10 @@ export default [
     cases: 'd5, f7, b3',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou c4',
-    video: { recherche: 'Vienna Game 2...Bc5 3.Bc4 Nf6 4.d3 c6', url: null },
+    video: { recherche: 'Vienna Game 2...Bc5 3.Bc4 Nf6 4.d3 c6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-fc5-oo', rep: 'viennoise', famille: 'Variante Fc4', nom: '2…Fc5 3.Fc4 Cf6 4.d3 O-O 5.f4', badge: 'theorie',
@@ -166,7 +178,10 @@ export default [
     cases: 'f5, f7, e5',
     echanger: 'Le pion f4 contre le pion e5',
     conserver: 'Le Fou c4',
-    video: { recherche: 'Vienna Game 2...Bc5 3.Bc4 Nf6 4.d3 O-O 5.f4', url: null },
+    video: { recherche: 'Vienna Game 2...Bc5 3.Bc4 Nf6 4.d3 O-O 5.f4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-cf6-fc5', rep: 'viennoise', famille: 'Variante Fc4', nom: '3.Fc4 Fc5 4.d3 d6 5.Cf3', badge: 'theorie',
@@ -178,7 +193,10 @@ export default [
     cases: 'f7, d5, a4',
     echanger: 'Rien de pressé',
     conserver: 'Le Fou b3 (vers f7)',
-    video: { recherche: 'Vienna Game 3.Bc4 Bc5 4.d3 d6', url: null },
+    video: { recherche: 'Vienna Game 3.Bc4 Bc5 4.d3 d6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-fb4', rep: 'viennoise', famille: 'Variante Fc4', nom: '3.Fc4 Fb4 4.Cf3', badge: 'theorie',
@@ -190,7 +208,10 @@ export default [
     cases: 'e4 (à défendre), g5, d5',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e4',
-    video: { recherche: 'Vienna Game 3.Bc4 Bb4 4.Nf3', url: null },
+    video: { recherche: 'Vienna Game 3.Bc4 Bb4 4.Nf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'vie-dxf6', rep: 'viennoise', famille: 'Variante Fc4', nom: '6.Fxf6 Dxf6 7.Ce2', badge: 'theorie',
@@ -202,6 +223,9 @@ export default [
     cases: 'c3, d5, f7',
     echanger: 'Rien de pressé',
     conserver: 'Le Cavalier c3',
-    video: { recherche: 'Vienna Game 5.Bg5 h6 6.Bxf6 Qxf6', url: null },
+    video: { recherche: 'Vienna Game 5.Bg5 h6 6.Bxf6 Qxf6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FV67KSxkJQw', titre: 'The Vienna Game: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

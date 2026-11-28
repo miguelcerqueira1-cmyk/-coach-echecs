@@ -146,7 +146,10 @@ export default [
     cases: 'e5 (cible), d4, c5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Le pion d5',
-    video: { recherche: 'French Defense 2.Nf3 d5 3.Nc3 Nf6 4.e5', url: null },
+    video: { recherche: 'French Defense 2.Nf3 d5 3.Nc3 Nf6 4.e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-cf3-e5', rep: 'francaise', famille: 'Variante d’avance', nom: 'Avance par 2.Cf3 d5 3.e5', badge: 'theorie',
@@ -161,7 +164,11 @@ export default [
     cases: 'd4 (cible), b6, c5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'La pression sur d4',
-    video: { recherche: 'French Advance Milner-Barry Gambit black', url: null },
+    video: { recherche: 'French Advance Milner-Barry Gambit black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=RC_L_EhQMU8', titre: 'Défense Française variante d\'avance 1. e4 e6 2. d4 d5 3. e5 - Leçon d\'échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-cf3-echange', rep: 'francaise', famille: 'Variante d’échange', nom: 'Échange par 2.Cf3 d5 3.exd5', badge: 'theorie',
@@ -173,7 +180,10 @@ export default [
     cases: 'e4, e5 (colonne e), g4',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Pion d5',
-    video: { recherche: 'French Exchange 3.exd5 exd5 plan for black', url: null },
+    video: { recherche: 'French Exchange 3.exd5 exd5 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-cc3', rep: 'francaise', famille: 'Déviations', nom: '2.Cc3 d5 3.Cf3 Cf6 4.e5', badge: 'theorie',
@@ -188,7 +198,10 @@ export default [
     cases: 'e5 (cible), d4, c5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Le pion d5',
-    video: { recherche: 'French Defense 2.Nc3 d5 3.Nf3 Nf6 4.e5', url: null },
+    video: { recherche: 'French Defense 2.Nc3 d5 3.Nf3 Nf6 4.e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-echange-fd3', rep: 'francaise', famille: 'Variante d’échange', nom: 'Échange 4.Fd3 Cc6', badge: 'theorie',
@@ -203,7 +216,10 @@ export default [
     cases: 'd4 (cible), g4, e7',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Le pion d5',
-    video: { recherche: 'French Exchange 4.Bd3 Nc6 plan for black', url: null },
+    video: { recherche: 'French Exchange 4.Bd3 Nc6 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-echange-c4', rep: 'francaise', famille: 'Variante d’échange', nom: 'Échange 4.c4 Cf6', badge: 'theorie',
@@ -218,7 +234,10 @@ export default [
     cases: 'd5 (case de blocage), d4 (pion isolé), b4',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Le blocage en d5',
-    video: { recherche: 'French Exchange 4.c4 Nf6 5.Nc3 Bb4 plan', url: null },
+    video: { recherche: 'French Exchange 4.c4 Nf6 5.Nc3 Bb4 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-tarrasch-cgf3', rep: 'francaise', famille: 'Variante Tarrasch', nom: 'Tarrasch 3.Cd2 c5 4.Cgf3 cxd4', badge: 'theorie',
@@ -233,7 +252,11 @@ export default [
     cases: 'd5 (Cavalier), e6, c6',
     echanger: 'Cavalier d5 contre un Cavalier blanc si utile',
     conserver: 'Cavalier d5',
-    video: { recherche: 'French Tarrasch 4.Ngf3 cxd4 5.Nxd4 Nf6', url: null },
+    video: { recherche: 'French Tarrasch 4.Ngf3 cxd4 5.Nxd4 Nf6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=wV-6gYnR5Lk', titre: 'Expliquez moi cette ouverture - La Tarrasch', chaine: 'Echecs - CrazyBishops', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-steinitz-ce2', rep: 'francaise', famille: 'Variante classique', nom: 'Steinitz 5.Cce2 c5', badge: 'theorie',
@@ -248,7 +271,10 @@ export default [
     cases: 'd4 (cible), e5, b6',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'La pression sur d4',
-    video: { recherche: 'French Steinitz 5.Nce2 c5 6.c3 plan for black', url: null },
+    video: { recherche: 'French Steinitz 5.Nce2 c5 6.c3 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-avance-fe2', rep: 'francaise', famille: 'Variante d’avance', nom: 'Avance 6.Fe2 cxd4 7.cxd4 Ch6', badge: 'theorie',
@@ -260,7 +286,11 @@ export default [
     cases: 'd4 (cible), f5 (Cavalier), b4',
     echanger: 'Rien de pressé : garder la pression sur d4',
     conserver: 'Cavalier f5',
-    video: { recherche: 'French Advance 6.Be2 cxd4 7.cxd4 Nh6', url: null },
+    video: { recherche: 'French Advance 6.Be2 cxd4 7.cxd4 Nh6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=RC_L_EhQMU8', titre: 'Défense Française variante d\'avance 1. e4 e6 2. d4 d5 3. e5 - Leçon d\'échecs', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-fg5-h4', rep: 'francaise', famille: 'Variante classique', nom: 'Attaque Alekhine-Chatard 6.h4 c5', badge: 'theorie',
@@ -275,7 +305,10 @@ export default [
     cases: 'd4 (cible), b2, e7',
     echanger: 'Les Fous noirs (Fxe7)',
     conserver: 'Le pion c5 qui attaque d4',
-    video: { recherche: 'French Alekhine-Chatard Attack 6.h4 c5', url: null },
+    video: { recherche: 'French Alekhine-Chatard Attack 6.h4 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-b3', rep: 'francaise', famille: 'Déviations', nom: '2.b3 d5 3.Fb2', badge: 'theorie',
@@ -287,7 +320,10 @@ export default [
     cases: 'd4, e5 (cible), c5',
     echanger: 'Rien de pressé',
     conserver: 'Le contrôle de d4',
-    video: { recherche: 'French Defense 2.b3 d5 3.Bb2 plan for black', url: null },
+    video: { recherche: 'French Defense 2.b3 d5 3.Bb2 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-d3-de2', rep: 'francaise', famille: 'Déviations', nom: '2.d3 d5 3.De2', badge: 'theorie',
@@ -299,7 +335,10 @@ export default [
     cases: 'c5, d4, b5',
     echanger: 'Rien de pressé',
     conserver: 'L’espace à l’aile dame',
-    video: { recherche: 'French King\'s Indian Attack 3.Qe2 black plan', url: null },
+    video: { recherche: 'French King\'s Indian Attack 3.Qe2 black plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'fr-steinitz-dxc5', rep: 'francaise', famille: 'Variante classique', nom: 'Steinitz 5.f4 c5 6.dxc5', badge: 'theorie',
@@ -311,6 +350,9 @@ export default [
     cases: 'g1 (diagonale du Fou), b2, d4',
     echanger: 'Rien de pressé : finir le développement',
     conserver: 'Fou c5',
-    video: { recherche: 'French Steinitz 5.f4 c5 6.dxc5 Nc6', url: null },
+    video: { recherche: 'French Steinitz 5.f4 c5 6.dxc5 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=vVz6xqqtP1U', titre: 'LA DÉFENSE FRANÇAISE aux Échecs : Une Défense Solide avec les Noirs ! ♟️', chaine: 'Dingo Chess', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

@@ -100,7 +100,11 @@ export default [
     cases: 'c5, d5, b4',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Fou c5',
-    video: { recherche: 'Bogo-Indian 4...Be7 5.Nc3 d5 6.Bf4 O-O 7.a3', url: null },
+    video: { recherche: 'Bogo-Indian 4...Be7 5.Nc3 d5 6.Bf4 O-O 7.a3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-4cc3', rep: 'bogo', famille: 'Autres ordres de coups', nom: '4.Cc3 O-O 5.e3 d5', badge: 'theorie',
@@ -112,7 +116,11 @@ export default [
     cases: 'e5 (rupture), c4, d4',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'La structure solide',
-    video: { recherche: 'Nimzo-Indian Rubinstein 5.e3 d5 6.Bd3 c5 7.O-O Nc6 8.a3', url: null },
+    video: { recherche: 'Nimzo-Indian Rubinstein 5.e3 d5 6.Bd3 c5 7.O-O Nc6 8.a3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-de7-cc3', rep: 'bogo', famille: '4.Fd2', nom: '4…De7 5.Cc3 Fxc3', badge: 'theorie',
@@ -124,7 +132,11 @@ export default [
     cases: 'e4 (Cavalier), e5, c3',
     echanger: 'Cavalier e4 contre le Fou c3',
     conserver: 'Cavalier e4',
-    video: { recherche: 'Bogo-Indian 4...Qe7 5.Nc3 Bxc3 6.Bxc3 Ne4', url: null },
+    video: { recherche: 'Bogo-Indian 4...Qe7 5.Nc3 Bxc3 6.Bxc3 Ne4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-de7-e3', rep: 'bogo', famille: '4.Fd2', nom: '4…De7 5.e3 Fxd2+', badge: 'theorie',
@@ -136,7 +148,11 @@ export default [
     cases: 'e5 (rupture), d4, c5',
     echanger: 'Fou b4 contre le Fou d2',
     conserver: 'Le pion e5',
-    video: { recherche: 'Bogo-Indian 4...Qe7 5.e3 Bxd2+', url: null },
+    video: { recherche: 'Bogo-Indian 4...Qe7 5.e3 Bxd2+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-fe7-dc2', rep: 'bogo', famille: '4.Fd2', nom: '4…Fe7 5.Dc2 d5', badge: 'theorie',
@@ -148,7 +164,11 @@ export default [
     cases: 'd4, c5, d5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Le pion d5',
-    video: { recherche: 'Bogo-Indian 4...Be7 5.Qc2 d5 6.Bf4', url: null },
+    video: { recherche: 'Bogo-Indian 4...Be7 5.Qc2 d5 6.Bf4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-g3', rep: 'bogo', famille: 'Autres ordres de coups', nom: '3.g3 Fb4+ 4.Fd2 Fe7', badge: 'theorie',
@@ -160,7 +180,11 @@ export default [
     cases: 'd5, e4, b4',
     echanger: 'Rien de pressé',
     conserver: 'Le pion d5',
-    video: { recherche: 'Catalan 3...Bb4+ 4.Bd2 Be7', url: null },
+    video: { recherche: 'Catalan 3...Bb4+ 4.Bd2 Be7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'bogo-nimzo', rep: 'bogo', famille: 'Autres ordres de coups', nom: '3.Cc3 Fb4 (Nimzo) 4.e3 O-O', badge: 'theorie',
@@ -175,6 +199,10 @@ export default [
     cases: 'e5 (rupture), c4, d4',
     echanger: 'Fou b4 contre le Cavalier c3',
     conserver: 'Le Cavalier f6 (défenseur de h7)',
-    video: { recherche: 'Nimzo-Indian 4.e3 O-O 5.Bd3 d5 6.Nf3 c5', url: null },
+    video: { recherche: 'Nimzo-Indian 4.e3 O-O 5.Bd3 d5 6.Nf3 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=mfe1Jb22VHM', titre: 'Introduction to the Bogo-Indian Defense', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cmNaYOXZII', titre: 'Bogoindian Defense: Fundamental Concepts (Live Chess Lesson)', chaine: 'Bad Bishop Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

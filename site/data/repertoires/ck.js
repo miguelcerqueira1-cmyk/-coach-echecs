@@ -68,7 +68,10 @@ export default [
     cases: 'cases blanches (b5, d5, f5), d4',
     echanger: 'Fou f5 contre Fou d3 (le but de la manœuvre)',
     conserver: 'Fou de cases noires',
-    video: { recherche: 'Caro-Kann Advance 4.Bd3 Bxd3 easy equality', url: null },
+    video: { recherche: 'Caro-Kann Advance 4.Bd3 Bxd3 easy equality', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=PiMswlCna_k', titre: 'Introduction à la défense Caro Kann variante d\'avance (échecs)', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ck-echange', rep: 'ck', famille: 'Variante d’échange', nom: 'Échange (3.exd5 cxd5 4.Fd3)', badge: 'theorie',
@@ -308,7 +311,10 @@ export default [
     cases: 'c5, f6 (ruptures), f5',
     echanger: 'Fou f5 contre le Fou d3',
     conserver: 'Souplesse : …c5 au bon moment',
-    video: { recherche: 'Caro-Kann Advance 4.Be3 plan for Black', url: null },
+    video: { recherche: 'Caro-Kann Advance 4.Be3 plan for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=PiMswlCna_k', titre: 'Introduction à la défense Caro Kann variante d\'avance (échecs)', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'ck-avance-c5', rep: 'ck', famille: 'Variante d’avance', nom: 'Avance avec 3…c5 (Botvinnik-Carls)', badge: 'theorie',

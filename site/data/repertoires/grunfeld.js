@@ -155,7 +155,11 @@ export default [
     cases: 'd4 (cible), colonne d, c3',
     echanger: 'Les Dames (fait)',
     conserver: 'Fou g7',
-    video: { recherche: 'Grunfeld Exchange 8.Be3 Qa5', url: null },
+    video: { recherche: 'Grunfeld Exchange 8.Be3 Qa5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'grun-fb5', rep: 'grunfeld', famille: 'Variante d’échange', nom: '7.Cf3 c5 8.Fb5+', badge: 'theorie',
@@ -170,7 +174,11 @@ export default [
     cases: 'd4 (cible), c3, colonne d',
     echanger: 'Fou d7 contre le Fou b5',
     conserver: 'Fou g7',
-    video: { recherche: 'Grunfeld Exchange 8.Bb5+', url: null },
+    video: { recherche: 'Grunfeld Exchange 8.Bb5+', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'grun-fe2', rep: 'grunfeld', famille: 'Variante d’échange', nom: '7.Cf3 c5 8.Fe2 Cc6 9.d5', badge: 'theorie',
@@ -182,7 +190,11 @@ export default [
     cases: 'd4, f6, h6',
     echanger: 'Pas le Cavalier d4, qui bloque le centre',
     conserver: 'Cavalier d4',
-    video: { recherche: 'Grunfeld Exchange 8.Be2 Nc6 9.d5 exchange sacrifice', url: null },
+    video: { recherche: 'Grunfeld Exchange 8.Be2 Nc6 9.d5 exchange sacrifice', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'grun-cf3-fg5', rep: 'grunfeld', famille: 'Déviations', nom: '4.Cf3 Fg7 5.Fg5 Ce4', badge: 'theorie',
@@ -197,7 +209,11 @@ export default [
     cases: 'd4, e4, c4',
     echanger: 'Cavalier e4 contre le Fou g5 (fait)',
     conserver: 'Paire de Fous',
-    video: { recherche: 'Grunfeld 5.Bg5 Ne4', url: null },
+    video: { recherche: 'Grunfeld 5.Bg5 Ne4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'grun-cf3-fd2', rep: 'grunfeld', famille: 'Variante d’échange', nom: '4.Cf3 Fg7 5.cxd5 Cxd5 6.Fd2', badge: 'theorie',
@@ -209,7 +225,11 @@ export default [
     cases: 'd4 (cible), c4, f3',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Fou g7',
-    video: { recherche: 'Grunfeld 5.cxd5 Nxd5 6.Bd2', url: null },
+    video: { recherche: 'Grunfeld 5.cxd5 Nxd5 6.Bd2', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'grun-cf3-g3', rep: 'grunfeld', famille: 'Déviations', nom: '3.Cf3 Fg7 4.g3 O-O 5.Fg2 d5', badge: 'theorie',
@@ -221,7 +241,11 @@ export default [
     cases: 'd4 (cible), c4, e5',
     echanger: 'Cavalier c6 contre le Cavalier d4 s’il y arrive',
     conserver: 'Fou g7',
-    video: { recherche: 'Grunfeld fianchetto 3.Nf3 Bg7 4.g3', url: null },
+    video: { recherche: 'Grunfeld fianchetto 3.Nf3 Bg7 4.g3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'grun-cf3-e3', rep: 'grunfeld', famille: 'Déviations', nom: '4.Cf3 Fg7 5.e3 O-O', badge: 'theorie',
@@ -236,6 +260,10 @@ export default [
     cases: 'd4, c4, colonne c',
     echanger: 'Pion d5 contre le pion c4 au bon moment',
     conserver: 'Fou g7',
-    video: { recherche: 'Grunfeld 5.e3', url: null },
+    video: { recherche: 'Grunfeld 5.e3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=0DPvL4lDPwk', titre: 'Défense Grünfeld [Présentation rapide]', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=n7wI5Z--G0Q', titre: 'Chess Openings: Learn to Play the Grunfeld Defense!', chaine: 'The Chess Giant', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

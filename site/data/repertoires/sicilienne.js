@@ -123,7 +123,11 @@ export default [
     cases: 'a1-h8 (grande diagonale), e5, d5',
     echanger: 'Dame active contre pièces blanches en retard',
     conserver: 'Le pion de plus',
-    video: { recherche: 'Sicilian Wing Gambit 2.b4 how to refute', url: null },
+    video: { recherche: 'Sicilian Wing Gambit 2.b4 how to refute', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=9HRdGZlfZYY', titre: 'Partie n°22 Blancs: Gambit de l\'aile sur la sicilienne: 1.e4 c5 2.b4!? et miniature!', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NkD12gJcbO4', titre: 'GM Analysis #9: Williams vs Dragun: Sicilian Wing Gambit 2 b4!?', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-est-indienne', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Attaque est-indienne (3.d3)', badge: 'theorie',
@@ -135,7 +139,10 @@ export default [
     cases: 'd5, b4, e5',
     echanger: 'Pion d5 contre e4 si les Blancs ne poussent pas e5',
     conserver: 'Fou de cases noires pour défendre le roque',
-    video: { recherche: 'Sicilian 2...e6 vs King\'s Indian Attack d3 g3', url: null },
+    video: { recherche: 'Sicilian 2...e6 vs King\'s Indian Attack d3 g3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=yVEq05yABzw', titre: 'How to play the KIA Sicilian', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-bowdler', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Attaque Bowdler (2.Fc4)', badge: 'loufoque',
@@ -147,7 +154,11 @@ export default [
     cases: 'd5, f7 (à surveiller au début)',
     echanger: 'Pion d5 contre e4',
     conserver: 'Pion e6 tant que le Fou vise f7',
-    video: { recherche: 'Bowdler Attack 2.Bc4 Sicilian how to respond', url: null },
+    video: { recherche: 'Bowdler Attack 2.Bc4 Sicilian how to respond', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=NOp-Xkfxkxc', titre: 'Jouer contre l\'attaque Bowdler', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=WiSu6wSd4l8', titre: 'Quickly Crush The Dubious Bowdler Attack!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-c3', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: '2.Cf3 e6 3.c3 d5 4.e5 d4', badge: 'theorie',
@@ -165,7 +176,10 @@ export default [
     cases: 'd4 (pion avancé), f5 et g6 (Cavalier), e5 (cible)',
     echanger: 'Pion c5 contre le pion c3 pour ouvrir la colonne c',
     conserver: 'Le pion d4, qui gêne tout le développement blanc',
-    video: { recherche: 'Sicilian 2.Nf3 e6 3.c3 d5 4.e5 d4', url: null },
+    video: { recherche: 'Sicilian 2.Nf3 e6 3.c3 d5 4.e5 d4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-dame', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: '2.d4 cxd4 3.Dxd4 Cc6', badge: 'theorie',
@@ -195,7 +209,10 @@ export default [
     cases: 'd4 (Cavalier), f7 (à fermer par …e6), b5',
     echanger: 'Cavalier d4 contre le Cavalier f3 si les Blancs le proposent',
     conserver: 'Le Cavalier en d4 tant qu’il gêne',
-    video: { recherche: 'Sicilian 2.Nc3 Nc6 3.Bb5 Nd4', url: null },
+    video: { recherche: 'Sicilian 2.Nc3 Nc6 3.Bb5 Nd4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=TIQ9-8xp5II', titre: 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-g3', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: '2.Cf3 e6 3.g3 (fianchetto)', badge: 'theorie',
@@ -207,7 +224,10 @@ export default [
     cases: 'd5, e4, colonne e',
     echanger: 'Le Fou g2 si possible (…Fh3)',
     conserver: 'Le pion d5 bien soutenu',
-    video: { recherche: 'Sicilian 2.Nf3 e6 3.g3', url: null },
+    video: { recherche: 'Sicilian 2.Nf3 e6 3.g3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=yVEq05yABzw', titre: 'How to play the KIA Sicilian', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-b3', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: '2.Cf3 e6 3.b3 (fianchetto à l’aile dame)', badge: 'theorie',
@@ -237,7 +257,11 @@ export default [
     cases: 'd4, b4 (poussée …b5-b4), f5',
     echanger: 'Le pion f contre e4 avec …f5 au bon moment',
     conserver: 'Le Fou g7 (grande diagonale)',
-    video: { recherche: 'Closed Sicilian 2.Nc3 Nc6 3.g3 g6 for Black', url: null },
+    video: { recherche: 'Closed Sicilian 2.Nc3 Nc6 3.g3 g6 for Black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-alapin-cf3', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: 'Alapin 2.c3 Cf6 avec 4.Cf3', badge: 'theorie',
@@ -252,7 +276,10 @@ export default [
     cases: 'e5 (pointe à attaquer), d5, f7',
     echanger: 'Le pion d contre le pion e5',
     conserver: 'Le Cavalier b6, qui gêne le Fou',
-    video: { recherche: 'Alapin Sicilian 2.c3 Nf6 3.e5 Nd5 4.Nf3 Nc6', url: null },
+    video: { recherche: 'Alapin Sicilian 2.c3 Nf6 3.e5 Nd5 4.Nf3 Nc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dKqefFmq-qg', titre: 'GM Sam Shankland Explains how to play the Alapin as Black', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-cc3-fb5', rep: 'sicilienne', famille: 'Anti-sicilienne', nom: '2.Cf3 e6 3.Cc3 Cc6 4.Fb5', badge: 'theorie',
@@ -267,7 +294,10 @@ export default [
     cases: 'd4, d5, b5',
     echanger: 'Pion c5 contre le pion d4',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Sicilian 2.Nf3 e6 3.Nc3 Nc6 4.Bb5 Nge7', url: null },
+    video: { recherche: 'Sicilian 2.Nf3 e6 3.Nc3 Nc6 4.Bb5 Nge7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=TIQ9-8xp5II', titre: 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-taimanov-cxc6', rep: 'sicilienne', famille: 'Sicilienne ouverte (Taimanov)', nom: 'Taimanov 5.Cxc6 bxc6', badge: 'theorie',
@@ -279,7 +309,11 @@ export default [
     cases: 'd5, colonne b, e4',
     echanger: 'Pion d5 contre e4 si les Blancs ne le maintiennent pas',
     conserver: 'Le centre de pions',
-    video: { recherche: 'Sicilian Taimanov 5.Nxc6 bxc6', url: null },
+    video: { recherche: 'Sicilian Taimanov 5.Nxc6 bxc6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-taimanov-g3', rep: 'sicilienne', famille: 'Sicilienne ouverte (Taimanov)', nom: 'Taimanov 6.g3', badge: 'theorie',
@@ -294,7 +328,11 @@ export default [
     cases: 'b5, d5, e5',
     echanger: 'Cavalier c6 contre le Cavalier d4',
     conserver: 'La Dame en c7',
-    video: { recherche: 'Sicilian Taimanov 6.g3', url: null },
+    video: { recherche: 'Sicilian Taimanov 6.g3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sic-taimanov-df3', rep: 'sicilienne', famille: 'Sicilienne ouverte (Taimanov)', nom: 'Attaque anglaise 6.Fe3 a6 7.Df3', badge: 'theorie',
@@ -309,6 +347,10 @@ export default [
     cases: 'b5, e4, grande diagonale a8-h1',
     echanger: 'Cavalier c6 contre le Cavalier d4',
     conserver: 'Le pion b5 (levier …b4)',
-    video: { recherche: 'Sicilian Taimanov English Attack 7.Qf3', url: null },
+    video: { recherche: 'Sicilian Taimanov English Attack 7.Qf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=q-Mzn45iCeg', titre: 'The Taimanov Sicilian explained by GM Pentala Harikrishna', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Uxbb_lPGkk', titre: 'Opening Basics #9: Sicilian defense - Taimanov and Kan variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

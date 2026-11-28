@@ -104,7 +104,11 @@ export default [
     cases: 'e5 (à tenir), b7, f8',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Philidor Hanham 7.a4 c6', url: null },
+    video: { recherche: 'Philidor Hanham 7.a4 c6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-g3', rep: 'philidor', famille: 'Variante d’échange', nom: 'Échange 6.g3 O-O', badge: 'theorie',
@@ -116,7 +120,11 @@ export default [
     cases: 'e4 (cible), e-colonne, f8',
     echanger: 'Rien de pressé',
     conserver: 'La Tour e8',
-    video: { recherche: 'Philidor Exchange 6.g3 O-O 7.Bg2 Re8', url: null },
+    video: { recherche: 'Philidor Exchange 6.g3 O-O 7.Bg2 Re8', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-h3', rep: 'philidor', famille: 'Variante Hanham', nom: 'Hanham 5.h3 Fe7', badge: 'theorie',
@@ -128,7 +136,11 @@ export default [
     cases: 'e5 (à tenir), b5, g6',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Philidor Hanham 5.h3 Be7', url: null },
+    video: { recherche: 'Philidor Hanham 5.h3 Be7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-6fc4', rep: 'philidor', famille: 'Variante d’échange', nom: 'Échange 6.Fc4 O-O 7.O-O Cxe4', badge: 'theorie',
@@ -140,7 +152,11 @@ export default [
     cases: 'd5 (fourchette), f6, e4',
     echanger: 'Le Cavalier f6 contre le pion e4',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Philidor Exchange 6.Bc4 O-O 7.O-O Nxe4 fork trick', url: null },
+    video: { recherche: 'Philidor Exchange 6.Bc4 O-O 7.O-O Nxe4 fork trick', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-6a4', rep: 'philidor', famille: 'Variante Hanham', nom: 'Hanham 6.a4 O-O', badge: 'theorie',
@@ -152,7 +168,11 @@ export default [
     cases: 'e5 (à tenir), b5, a5',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Philidor Hanham 6.a4 O-O', url: null },
+    video: { recherche: 'Philidor Hanham 6.a4 O-O', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-6fe2', rep: 'philidor', famille: 'Variante d’échange', nom: 'Échange 6.Fe2 O-O', badge: 'theorie',
@@ -164,7 +184,11 @@ export default [
     cases: 'e4 (cible), d5, c6',
     echanger: 'Rien de pressé',
     conserver: 'La Tour e8',
-    video: { recherche: 'Philidor Exchange 6.Be2 O-O 7.O-O Re8', url: null },
+    video: { recherche: 'Philidor Exchange 6.Be2 O-O 7.O-O Re8', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-cc3-fc4', rep: 'philidor', famille: 'Déviations', nom: '3.Cc3 Cf6 4.Fc4 Fe7', badge: 'theorie',
@@ -179,7 +203,11 @@ export default [
     cases: 'd5, b5, f7',
     echanger: 'Rien de pressé',
     conserver: 'Le pion e5',
-    video: { recherche: 'Philidor 3.Nc3 Nf6 4.Bc4 Be7', url: null },
+    video: { recherche: 'Philidor 3.Nc3 Nf6 4.Bc4 Be7', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-viennoise', rep: 'philidor', famille: 'Partie viennoise', nom: 'Viennoise 2.Cc3 Cf6 3.f4 d5', badge: 'theorie',
@@ -211,7 +239,11 @@ export default [
     cases: 'd5 (rupture), e5, c7',
     echanger: 'Pion d5 contre le pion e4 si utile',
     conserver: 'Le centre c6-d5-e5',
-    video: { recherche: 'Bishop\'s Opening 2...Nf6 3.d3 c6 4.Nf3 d5', url: null },
+    video: { recherche: 'Bishop\'s Opening 2...Nf6 3.d3 c6 4.Nf3 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'phi-gambit-roi', rep: 'philidor', famille: 'Gambit du Roi', nom: 'Gambit du Roi accepté 3…d5', badge: 'theorie',
@@ -238,6 +270,10 @@ export default [
     cases: 'e4 (cible), e8 (Tour), b4',
     echanger: 'Fou b4 contre le Cavalier c3 si e4 tombe',
     conserver: 'L’avance de développement',
-    video: { recherche: 'Center Game 2.d4 exd4 3.Qxd4 Nc6 how to play black', url: null },
+    video: { recherche: 'Center Game 2.d4 exd4 3.Qxd4 Nc6 how to play black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=tlNZ9Eurb3k', titre: 'La défense Philidor (échecs débutant)', chaine: 'imineo Echecs', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mAf-YuGPYMo', titre: 'Philidor Defense - Chess Openings', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

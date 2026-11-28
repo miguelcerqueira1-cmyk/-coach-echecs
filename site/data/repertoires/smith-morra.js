@@ -120,7 +120,11 @@ export default [
     cases: 'e5, d5, f7',
     echanger: 'Les Dames si le matériel est rétabli',
     conserver: 'Pion e5',
-    video: { recherche: 'Smith-Morra 4...d6 5.Bc4 Nf6 6.e5', url: null },
+    video: { recherche: 'Smith-Morra 4...d6 5.Bc4 Nf6 6.e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-cf6-e5', rep: 'smith-morra', famille: 'Gambit accepté', nom: '4…Cc6 5.Cf3 d6 6.Fc4 Cf6 7.e5', badge: 'theorie',
@@ -135,7 +139,11 @@ export default [
     cases: 'c7, d6, f7',
     echanger: 'Cavalier b5 contre une pièce noire qui défend c7',
     conserver: 'Cavalier b5',
-    video: { recherche: 'Smith-Morra 6...Nf6 7.e5', url: null },
+    video: { recherche: 'Smith-Morra 6...Nf6 7.e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-e6-b5', rep: 'smith-morra', famille: 'Gambit accepté', nom: '4…e6 5.Cf3 a6 6.Fc4 b5', badge: 'theorie',
@@ -147,7 +155,11 @@ export default [
     cases: 'd5, e6, colonne c',
     echanger: 'Fou e3 contre le Fou noir de cases noires',
     conserver: 'Fou b3',
-    video: { recherche: 'Smith-Morra 4...e6 5.Nf3 a6 6.Bc4 b5', url: null },
+    video: { recherche: 'Smith-Morra 4...e6 5.Nf3 a6 6.Bc4 b5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-a6', rep: 'smith-morra', famille: 'Gambit accepté', nom: '4…a6 5.Fc4 e6', badge: 'theorie',
@@ -159,7 +171,11 @@ export default [
     cases: 'd5, e6, colonne d',
     echanger: 'Pas le Fou b3, qui vise e6',
     conserver: 'Avance de développement',
-    video: { recherche: 'Smith-Morra 4...a6', url: null },
+    video: { recherche: 'Smith-Morra 4...a6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-g6', rep: 'smith-morra', famille: 'Gambit accepté', nom: '4…g6 5.Fc4 Fg7 6.Db3', badge: 'theorie',
@@ -171,7 +187,11 @@ export default [
     cases: 'f7, d7, e6',
     echanger: 'Fou c1 contre le Cavalier h6, défenseur de f7',
     conserver: 'Fou e6',
-    video: { recherche: 'Smith-Morra 4...g6 6.Qb3', url: null },
+    video: { recherche: 'Smith-Morra 4...g6 6.Qb3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-e5', rep: 'smith-morra', famille: 'Gambit refusé', nom: '3…e5 4.Cf3 Cc6 5.Fc4', badge: 'theorie',
@@ -186,7 +206,11 @@ export default [
     cases: 'f7, a5, d5',
     echanger: 'Pas le Fou c4 contre le Cavalier a5 sans compensation',
     conserver: 'Pion d5',
-    video: { recherche: 'Smith-Morra declined 3...e5', url: null },
+    video: { recherche: 'Smith-Morra declined 3...e5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-g6-refuse', rep: 'smith-morra', famille: 'Gambit refusé', nom: '3…g6 4.cxd4 d5', badge: 'theorie',
@@ -201,7 +225,11 @@ export default [
     cases: 'd5, b5, e5',
     echanger: 'Fou b5 contre le Cavalier d7 si cela garde d5',
     conserver: 'Pion d5',
-    video: { recherche: 'Smith-Morra declined 3...g6', url: null },
+    video: { recherche: 'Smith-Morra declined 3...g6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-e6-refuse', rep: 'smith-morra', famille: 'Gambit refusé', nom: '3…e6 4.cxd4 d5 5.e5', badge: 'theorie',
@@ -216,7 +244,11 @@ export default [
     cases: 'c5, d4, colonne c',
     echanger: 'Cavalier a4 contre une pièce noire en c5',
     conserver: 'Pion e5',
-    video: { recherche: 'Smith-Morra declined 3...e6', url: null },
+    video: { recherche: 'Smith-Morra declined 3...e6', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-2d5', rep: 'smith-morra', famille: 'Sans 2…cxd4', nom: '2…d5 3.exd5 Dxd5 4.Cf3', badge: 'theorie',
@@ -231,7 +263,11 @@ export default [
     cases: 'c7, f7, d5',
     echanger: 'Les Dames (fait)',
     conserver: 'Avance de développement',
-    video: { recherche: '1.e4 c5 2.d4 d5', url: null },
+    video: { recherche: '1.e4 c5 2.d4 d5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'sm-2e6', rep: 'smith-morra', famille: 'Sans 2…cxd4', nom: '2…e6 3.Cf3 cxd4 4.Cxd4', badge: 'theorie',
@@ -246,6 +282,10 @@ export default [
     cases: 'd5 (cible), d6, c4',
     echanger: 'Fou g5 contre le Cavalier f6, défenseur de d5',
     conserver: 'Cavalier qui ira en d5',
-    video: { recherche: 'Sicilian 2.d4 e6 3.Nf3', url: null },
+    video: { recherche: 'Sicilian 2.d4 e6 3.Nf3', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=zgWTEOIQyHo', titre: 'Le Gambit Morra | Partie pédagogique | Niveau 1800 Elo#22 | Echecs', chaine: 'Échecs - Chess Trainer 2000', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=aydv_HHLry0', titre: 'Smith-Morra Gambit: Chess Ideas and Model Games!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
 ];

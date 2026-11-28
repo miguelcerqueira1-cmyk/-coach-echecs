@@ -101,7 +101,10 @@ export default [
     cases: 'e4 (à contrôler), b4 (case du Fou), f5',
     echanger: 'Fou b4 contre le Cavalier c3 si les Blancs poussent e4',
     conserver: 'Fou f5 (le « bon » Fou sorti de la chaîne)',
-    video: { recherche: 'Slav Defense main line 4...dxc4 5.a4 Bf5 explained', url: null },
+    video: { recherche: 'Slav Defense main line 4...dxc4 5.a4 Bf5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gdrn-slave-echange', rep: 'gdr-noirs', famille: 'Défense slave', nom: 'Slave, variante d’échange (3.cxd5 cxd5)', badge: 'theorie',
@@ -113,7 +116,11 @@ export default [
     cases: 'colonne c, b4, e4',
     echanger: 'Fou de cases noires contre le Fou f4 (…Fd6)',
     conserver: 'Fou f5 hors de la chaîne',
-    video: { recherche: 'Slav Defense Exchange Variation as Black plans', url: null },
+    video: { recherche: 'Slav Defense Exchange Variation as Black plans', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Cw5wQQT6iZg', titre: 'Slav Defense Theory: Exchange Variation', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gdrn-londres', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: 'Contre le Londres (2.Ff4) : …c5 et …Db6', badge: 'theorie',
@@ -144,7 +151,10 @@ export default [
     cases: 'e4 (case clé du Colle), f5, c6',
     echanger: 'Fou f5 contre le Fou d3 blanc',
     conserver: 'Contrôle de e4',
-    video: { recherche: 'Colle System as Black Bf5 antidote', url: null },
+    video: { recherche: 'Colle System as Black Bf5 antidote', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=FN7xJhjCxkY', titre: 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-bdg', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: 'Gambit Blackmar-Diemer (2.e4 dxe4 3.Cc3 Cf6 4.f3), défense Teichmann', badge: 'piege',
@@ -156,7 +166,10 @@ export default [
     cases: 'f7 et h7 (points d’attaque blancs), e6, d5',
     echanger: 'Fou g4 contre le Cavalier f3',
     conserver: 'Pion de plus, en finissant le développement avant de gourmander',
-    video: { recherche: 'Blackmar-Diemer Gambit Teichmann defense 5...Bg4', url: null },
+    video: { recherche: 'Blackmar-Diemer Gambit Teichmann defense 5...Bg4', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=54aTSbPQIHI', titre: 'Гамбит Блэкмара Димера (Защита Зиглера). Blackmar-Diemer Gambit, Ziegler Defense.', chaine: 'Пешка, универсальный шахматный портал', langue: 'ru', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-cf3-orthodoxe', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Par 3.Cf3 Cf6 4.Cc3 Fe7 5.Fg5', badge: 'theorie',
@@ -168,7 +181,11 @@ export default [
     cases: 'e4, d5, b7',
     echanger: 'Fou e7 contre le Fou g5 / h4',
     conserver: 'Le pion d5',
-    video: { recherche: 'Queens Gambit Declined Tartakower 7...b6 plan', url: null },
+    video: { recherche: 'Queens Gambit Declined Tartakower 7...b6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-cf3-cf6', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Par 2.Cf3 Cf6 3.c4 e6', badge: 'theorie',
@@ -180,7 +197,11 @@ export default [
     cases: 'e4, d5, b7',
     echanger: 'Fou e7 contre le Fou g5 / h4',
     conserver: 'Le pion d5',
-    video: { recherche: 'Queens Gambit Declined 2.Nf3 Nf6 3.c4 e6 plan', url: null },
+    video: { recherche: 'Queens Gambit Declined 2.Nf3 Nf6 3.c4 e6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-cc3-ff4', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'GD refusé 5.Ff4 O-O 6.e3 c5', badge: 'theorie',
@@ -192,7 +213,11 @@ export default [
     cases: 'c5, d5, a5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Fou c5 actif',
-    video: { recherche: 'Queens Gambit Declined 5.Bf4 O-O 6.e3 c5', url: null },
+    video: { recherche: 'Queens Gambit Declined 5.Bf4 O-O 6.e3 c5', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-cf3-ff4', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Par 3.Cf3 : 5.Ff4 O-O 6.e3 c5', badge: 'theorie',
@@ -204,7 +229,11 @@ export default [
     cases: 'c5, d5, a5',
     echanger: 'Le pion c5 contre le pion d4',
     conserver: 'Fou c5 actif',
-    video: { recherche: 'Queens Gambit Declined Bf4 system c5 plan', url: null },
+    video: { recherche: 'Queens Gambit Declined Bf4 system c5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=-m_oNZnQoYI', titre: 'Comment jouer contre le GAMBIT DAME?', chaine: 'Pro Evolution Echecs (Kevin Terrieux)', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xZ6pb498C0s', titre: 'Pourquoi le Fou c8 est bloqué dans le gambit dame', chaine: 'Blitzstream Facile', langue: 'fr', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-catalane', rep: 'gdr-noirs', famille: 'Gambit Dame refusé', nom: 'Catalane 4.g3 Fe7 5.Fg2 O-O', badge: 'theorie',
@@ -216,7 +245,11 @@ export default [
     cases: 'b7 (Fou), c4, e4',
     echanger: 'Fou b7 contre le Fou g2 si possible',
     conserver: 'L’espace à l’aile dame',
-    video: { recherche: 'Open Catalan 6...dxc4 7.Qc2 a6 8.Qxc4 b5 plan', url: null },
+    video: { recherche: 'Open Catalan 6...dxc4 7.Qc2 a6 8.Qxc4 b5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=dnBrQ7Oz64w', titre: 'OUVERTURE CATALANE (découverte de la partie catalane)', chaine: 'Echecs I Massacrealouverture', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=eGkEKQpt3Zg', titre: 'Learn the Catalan | Chess opening Explained in 10 minutes', chaine: 'DailyChessClips', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-londres-cf3', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: 'Londres par 2.Cf3 Cf6 3.Ff4 c5', badge: 'theorie',
@@ -231,7 +264,11 @@ export default [
     cases: 'b2 (cible), c4, f5',
     echanger: 'Rien de pressé : garder les Dames',
     conserver: 'Pion c4',
-    video: { recherche: 'London System 3...c5 4.e3 Nc6 5.c3 Qb6 black', url: null },
+    video: { recherche: 'London System 3...c5 4.e3 Nc6 5.c3 Qb6 black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Gc5ZKOhNanA', titre: 'How to Play Against The London', chaine: 'FMAleManzone', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=7I8vBgNzvVw', titre: 'My 3 Setups to Beat the London System', chaine: 'NM Robert Ramirez', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-semi-slave', rep: 'gdr-noirs', famille: 'Défense slave', nom: 'Semi-slave Meran 4.e3 e6', badge: 'theorie',
@@ -246,7 +283,10 @@ export default [
     cases: 'c5 (rupture), b7, b5',
     echanger: 'Rien de pressé : préparer …c5',
     conserver: 'Fou b7',
-    video: { recherche: 'Semi-Slav Meran 6.Bd3 dxc4 7.Bxc4 b5 explained', url: null },
+    video: { recherche: 'Semi-Slav Meran 6.Bd3 dxc4 7.Bxc4 b5 explained', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=AdiwIMRwPSk', titre: 'The Complete Semi-Slav Part 2: The Modern Meran (8...Bb7)', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-slave-e3', rep: 'gdr-noirs', famille: 'Défense slave', nom: 'Slave 4.e3 Ff5', badge: 'theorie',
@@ -258,7 +298,10 @@ export default [
     cases: 'f5 (Fou), h-colonne, e4',
     echanger: 'Le Fou g6 contre le Cavalier h4 (colonne h ouverte)',
     conserver: 'Le centre c6-d5-e6',
-    video: { recherche: 'Slav Defense 4.e3 Bf5 5.Nc3 e6 6.Nh4 plan', url: null },
+    video: { recherche: 'Slav Defense 4.e3 Bf5 5.Nc3 e6 6.Nh4 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gdrn-jobava', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: 'Londres-Jobava 2.Cc3 Cf6 3.Ff4 e6', badge: 'theorie',
@@ -273,7 +316,11 @@ export default [
     cases: 'c7 (à défendre), e4, c5',
     echanger: 'Fou e7 contre le Fou f4 si possible',
     conserver: 'Pion d5',
-    video: { recherche: 'Jobava London 3...e6 4.Nb5 Na6 plan', url: null },
+    video: { recherche: 'Jobava London 3...e6 4.Nb5 Na6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=8o5UitW0bRM', titre: 'Introduction to the Jobava London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=sBJzmRqfbWo', titre: 'Fighting Annoying Jobava London System!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-c3', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: '2.Cf3 Cf6 3.c3 Ff5', badge: 'theorie',
@@ -297,7 +344,10 @@ export default [
     cases: 'f5 (Fou), e4, b1-h7',
     echanger: 'Rien de pressé',
     conserver: 'Le centre c6-d5',
-    video: { recherche: 'Slav Defense 4.g3 Bf5 plan for black', url: null },
+    video: { recherche: 'Slav Defense 4.g3 Bf5 plan for black', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gdrn-fg5', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: '2.Fg5 h6 3.Fh4 c6', badge: 'theorie',
@@ -321,7 +371,11 @@ export default [
     cases: 'e4 (Cavalier), b2, d4',
     echanger: 'Le pion c5 contre le pion d4 si utile',
     conserver: 'Cavalier e4',
-    video: { recherche: 'Torre Attack 3...Ne4 4.Bf4 c5 plan', url: null },
+    video: { recherche: 'Torre Attack 3...Ne4 4.Bf4 c5 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=xbUgaJGb5Ps', titre: 'The Torre Attack - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mvsiaWzHFyk', titre: 'Magnus Carlsen Teaches How to Beat the Torre Attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+      ] },
   },
   {
     id: 'gdrn-slave-cxd5', rep: 'gdr-noirs', famille: 'Défense slave', nom: 'Échange par 4.cxd5 cxd5 5.Cc3 Cc6', badge: 'theorie',
@@ -333,7 +387,11 @@ export default [
     cases: 'c-colonne, b4, e4',
     echanger: 'Fou d6 contre le Fou f4',
     conserver: 'Fou f5',
-    video: { recherche: 'Exchange Slav 6.Bf4 Bf5 7.e3 e6 plan', url: null },
+    video: { recherche: 'Exchange Slav 6.Bf4 Bf5 7.e3 e6 plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=Cw5wQQT6iZg', titre: 'Slav Defense Theory: Exchange Variation', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
   {
     id: 'gdrn-cf3-g3', rep: 'gdr-noirs', famille: 'Systèmes sans c4', nom: '2.Cf3 Cf6 3.g3 e6 4.Fg2 c5', badge: 'theorie',
@@ -357,6 +415,9 @@ export default [
     cases: 'f5, e4, g7',
     echanger: 'Rien de pressé',
     conserver: 'Le centre c6-d5',
-    video: { recherche: 'Slav 4.Qc2 g6 Schlechter plan', url: null },
+    video: { recherche: 'Slav 4.Qc2 g6 Schlechter plan', url: null,
+      liens: [
+        { url: 'https://www.youtube.com/watch?v=U1A2fGvilsU', titre: '1.d4 Solid Repertoire: Slav', chaine: 'Bryan Tillis (Palm Beach Chess)', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
+      ] },
   },
 ];
