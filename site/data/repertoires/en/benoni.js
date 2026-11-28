@@ -151,9 +151,9 @@ export default {
   },
   'ben-ff4-dc1': {
     famille: 'Sidelines',
-    nom: '2.Bf4 c5 3.e3 Qb6 4.Qc1',
-    plan: 'Against a London without c4, …c5 and …Qb6 hit b2: the White queen must defend it. Then …Nc6, …d5 and …Bf5: Black develops the bishop before playing …e6.',
-    structure: 'A London structure: White pawns c3/d4/e3 against c5/d5.',
+    nom: '2.Bf4 c5 3.e3 Qb6 4.Qc1 cxd4',
+    plan: 'Against a London without c4, …c5 then …Qb6 hits b2: the White queen must defend it. Then …cxd4 exd4, followed by …Nc6, …d5 and …Bf5: Black develops the bishop before playing …e6.',
+    structure: 'An Exchange structure: White pawns c3/d4 with no e-pawn against Black’s d5 pawn, a half-open e-file for White.',
     cases: 'b2, e4, d4',
     echanger: 'The f5 bishop for the d3 bishop if it comes out',
     conserver: 'The b6 queen, which ties down the c1 queen',

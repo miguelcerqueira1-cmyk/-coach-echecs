@@ -170,7 +170,7 @@ export default {
   'drg-10cxc6': {
     famille: 'Yugoslav Attack',
     nom: '9.O-O-O d5 10.Nxc6 bxc6',
-    plan: 'The Dragon gambit: …d5 opens the centre against the White king on c1. After Nxc6 bxc6 and the capture on d5, …Qc7 threatens along the c-file, and the g7 bishop eyes b2; …Be6 and …Rb8 follow.',
+    plan: 'The Dragon gambit: …d5 opens the centre against the White king on c1. After Nxc6 bxc6 and the capture on d5, …Qc7 threatens along the c-file and the g7 bishop eyes b2; if White’s queen takes the a8 rook, …Bf5 hits c2 and the White king.',
     structure: 'Black is a pawn down, but the b- and c-files are open towards the White king.',
     cases: 'b2, c2, b-file',
     echanger: 'Do not trade the g7 bishop, Black’s best piece',

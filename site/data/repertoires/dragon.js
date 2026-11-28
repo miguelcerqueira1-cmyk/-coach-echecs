@@ -272,7 +272,7 @@ export default [
   {
     id: 'drg-10cxc6', rep: 'dragon', famille: 'Attaque yougoslave', nom: '9.O-O-O d5 10.Cxc6 bxc6', badge: 'theorie',
     ligne: '1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 6. Be3 Bg7 7. f3 O-O 8. Qd2 Nc6 9. O-O-O d5 10. Nxc6 bxc6 11. exd5 Nxd5 12. Nxd5 cxd5 13. Qxd5 Qc7',
-    plan: 'Le gambit du Dragon : …d5 ouvre le centre contre le roi blanc en c1. Après Cxc6 bxc6 et la prise du pion d5, …Dc7 menace le long de la colonne c, et le Fou g7 vise b2 ; …Fe6 et …Tb8 suivent.',
+    plan: 'Le gambit du Dragon : …d5 ouvre le centre contre le roi blanc en c1. Après Cxc6 bxc6 et la prise du pion d5, …Dc7 menace le long de la colonne c et le Fou g7 vise b2 ; si la Dame blanche prend la Tour a8, …Ff5 attaque c2 et le roi blanc.',
     structure: 'Un pion de moins pour les Noirs, mais colonnes b et c ouvertes vers le roi blanc.',
     punition: {
       ligne: '1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 6. Be3 Bg7 7. f3 O-O 8. Qd2 Nc6 9. O-O-O d5 10. Nxc6 bxc6 11. exd5 Nxd5 12. Bxa7? Rxa7',

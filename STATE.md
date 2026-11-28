@@ -6,21 +6,28 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 ## En bref (mis à jour le 2026-11-28)
 
 - **Chantier en cours** : compléter les fiches puis écrire les « 💡 Pourquoi ce coup ? », une ouverture à la fois,
-  des plus jouées aux moins jouées (nombre de parties dans les données Élite). **24 / 29 faites et en ligne** :
+  des plus jouées aux moins jouées (nombre de parties dans les données Élite). **26 / 29 faites et en ligne** :
   Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la Dame, Najdorf, Italienne, Espagnole, 1…e5,
   Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre
-  l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise, Alekhine.
-  **Prochaine étape exacte : Dragon (dragon, 7 fiches ; 84 parties Élite)**, puis Benoni / Benko
-  (80), Hollandaise (58), Smith-Morra (49), Grünfeld (5). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
+  l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise, Alekhine, Dragon, Benoni / Benko.
+  **Prochaine étape exacte : Hollandaise (hollandaise, 5 fiches ; 58 parties Élite)**, puis Smith-Morra (49),
+  Grünfeld (5). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
 - L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests → publication sans attendre sa validation
   (résumé simple ensuite) ; elle donne son « continue » entre deux ouvertures (parfois « les 2 / 3 suivantes »,
   ou une heure précise via une tâche programmée).
-- **Publication** : tout est sur `main` et en ligne (dernier run deploy.yml vérifié : Alekhine, voir ci-dessous).
-- **Compteurs** : **521 fiches** vérifiées par Stockfish (profondeur 18), toutes traduites ; « Pourquoi » complets
-  pour les 24 répertoires faits (FR + EN, contrôlés par verifie-pourquoi en CI).
+- **Publication** : tout est sur `main` et en ligne (dernier run deploy.yml vérifié : Alekhine, succès, 2026-11-28 ; Dragon + Benoni publiés ensuite).
+- **Compteurs** : **548 fiches** vérifiées par Stockfish (profondeur 18), toutes traduites ; « Pourquoi » complets
+  pour les 26 répertoires faits (FR + EN, contrôlés par verifie-pourquoi en CI).
 - **En attente de l'utilisatrice** : décision sur la fiche Smith-Morra (sic-morra 6…Dc7, voir plus bas) — « on
   attend de voir » ; micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
+
+### Dragon et Benoni / Benko (2026-11-28)
+
+Dragon +15 fiches (dont 9 reprises de la Najdorf), 219 « Pourquoi » ; Benoni / Benko +12, 170 « Pourquoi ».
+Correction d'une ancienne fiche : dragon-levenfish 6…Cbd7 / 7…Dc7 (≥ 50 cp) → 6…Cc6 7.Cxc6 bxc6 8.e5 Cd7
+9.exd6 exd6 10.Fe3 Fe7 11.Df3 d5 (le piège 6…Fg7 7.e5 reste). Dans le gambit du Dragon (drg-10cxc6), le plan dit
+que la Tour a8 est offerte (14.Dxa8 Ff5, vérifié). Contre le Londres (ben-ff4-dc1) : 4…cxd4 avant …Cc6.
 
 ### Alekhine (2026-11-28)
 
@@ -81,7 +88,7 @@ Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Vienno
 Anglaise), contre 1.e4 (Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Philidor,
 Najdorf, Dragon), contre 1.c4 / 1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4
 (+ Grünfeld, Benoni / Benko, Bogo-indienne) (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **521 fiches** (2026-11-28) : Gambit Dame 31,
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **548 fiches** (2026-11-28) : Gambit Dame 31,
 Caro-Kann 27 (répertoire historique du créateur), Italienne 21 (9 ajoutées le 2026-11-27 : Petrov, Philidor,
 éléphant, letton — avant la racine 3.Fc4 —, 4.d3 Fc5, 4.d3 h6, Pianissimo …a5, 6.Fb5+ Fd7, 4.c3 d6), Espagnole 26 (13 ajoutées le 2026-11-27 : Petrov, Philidor, éléphant, letton
 — reprises de l'Italienne —, Arkhangelsk, Møller, Cozio différée, 5…d6 6.c3 Fg4, échange …Df6, anti-Marshall …b4,
@@ -101,8 +108,8 @@ slave 4.e3 / 4.g3 / 4.Dc2 / 4.cxd5, 3.c3, 2.Fg5, Torre, 3.g3), Contre le Londres
 Trompowsky, Londres, Torre, Jobava, Colle — et 4.f3, 5.Fd2, 6.a3, 5.e4, Catalane 8.a4 / 7.Da4 / 7.Ce5), Pirc 16 (9 ajoutées le 2026-11-28 : 2.Cf3, 2.Cc3, 3.Fd3, 5.Fb5+, 3.f3, 5.Fe3, 4.f3, 5.h3, 2.Fc4), Alekhine 20 (12 ajoutées le 2026-11-28 : 2.Cc3 d5 3.e5 Cfd7 4.d4 e6 5.f4 / 5.Cce2, 3.exd5 Cxd5 4.Fc4 / 4.Cf3, chasse 3.c4 Cb6 4.c5, 3.Cf3 d6 4.Fc4, 4.Fc4 Cb6 5.Fb3 dxe5 6.Dh5 / 6.dxe5, 4.exd6, échange 7.Cf3, 4.Cf3 Fg4 5.h3, 4.c4 Cb6 5.Cf3 Fg4), Catalane 18 (10 ajoutées le 2026-11-27 : fermée 6…c6 / 6…a5 / 7…a5, 6…c5, 4…Fb4+, ouverte 5…Fb4+ / 5…Fd7 / 5…Cc6 /
 5…Cbd7 / 7…b5), Grünfeld 8, Najdorf 18 (11 ajoutées le 2026-11-27 : Grand Prix, fermée,
 Alapin, Morra refusé, 3.Cc3, 3.c3, 4.Dxd4, 3.Fc4, 6.f3, 6.g3, 6.Fe3 e5 7.Cf3),
-Dragon 7, Contre l'Anglaise 12 (7 ajoutées le 2026-11-28 : quatre Cavaliers 4.e4 / 4.d3 / 4.e3 et par 2…Cc6, 2.d3, 3.e3, 2.b3), Contre 1.Cf3 19 (13 ajoutées le 2026-11-27 : slave par 2.d4 Cf6 3.c4 c6 et ses suites, Londres, Torre, 3.c3, 3.g3,
-2.e3, Réti 3.g3 et 3.e3 4.b3), Benoni / Benko 6,
+Dragon 22 (15 ajoutées le 2026-11-28 : 9 reprises de la Najdorf avant la racine — Moscou, Grand Prix, fermée, Alapin, Morra, 3.Cc3, 3.c3, 4.Dxd4, 3.Fc4 — et 7.Dd2 Cg4, 10.Cxc6, 5.f3 e5 6.Fb5+ / 6.Cb3, 5.Fd3, 6.Fd3), Contre l'Anglaise 12 (7 ajoutées le 2026-11-28 : quatre Cavaliers 4.e4 / 4.d3 / 4.e3 et par 2…Cc6, 2.d3, 3.e3, 2.b3), Contre 1.Cf3 19 (13 ajoutées le 2026-11-27 : slave par 2.d4 Cf6 3.c4 c6 et ses suites, Londres, Torre, 3.c3, 3.g3,
+2.e3, Réti 3.g3 et 3.e3 4.b3), Benoni / Benko 18 (12 ajoutées le 2026-11-28 : Benko 5.b6 / 4.Cd2 / 4.Cf3 / 4.a4, Benoni 7.Cd2 / 7.h3 b5 / 7.e4, et sans 2.c4 : 2.Cf3 c5 3.d5 b5, Trompowsky 3.d5 Ce4 / 3.Fxf6, Londres 3.e3 Db6 4.Dc1 / 4.Cc3),
 Bogo-indienne 12 (7 ajoutées le 2026-11-28 : 7.a3, 4.Cc3, 4…De7 5.Cc3 / 5.e3, 4…Fe7 5.Dc2, 3.g3 Fb4+, 3.Cc3 Fb4), Philidor 16 (11 ajoutées le 2026-11-28 : Hanham 7.a4 / 5.h3 / 6.a4, échange 6.g3 / 6.Fc4 (coup de fourchette) / 6.Fe2,
 3.Cc3 Cf6 4.Fc4, et avant 2…d6 : viennoise, partie du Fou, gambit du Roi, partie du centre), Viennoise 14 (8 ajoutées le 2026-11-28 : 2…Cc6 3.Fc4 Cf6, 4…Fc5 5.Cf3, 4…Ca5, 2…Fc5 avec …c6 / …O-O, 3…Fc5, 3…Fb4,
 6.Fxf6 Dxf6), Smith-Morra 6 ; toutes

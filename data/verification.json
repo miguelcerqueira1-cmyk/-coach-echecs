@@ -16252,19 +16252,19 @@
    }
   },
   "ben-ff4-dc1": {
-   "fp": "ac58962a",
+   "fp": "e5d43add",
    "depth": 18,
    "main": {
     "type": "cp",
-    "value": 1,
-    "best": "dxc5",
+    "value": -20,
+    "best": "Be2",
     "pv": [
-     "dxc5",
-     "Qxc5",
-     "Nbd2",
-     "Rc8",
+     "Be2",
+     "e6",
      "a4",
-     "a6"
+     "Rc8",
+     "O-O",
+     "Be7"
     ],
     "pov": "w"
    }
