@@ -6746,19 +6746,19 @@
    }
   },
   "vie-fc5": {
-   "fp": "1e4161b",
+   "fp": "a89c46a9",
    "depth": 18,
    "main": {
     "type": "cp",
-    "value": 1,
-    "best": "Bg4",
+    "value": 16,
+    "best": "Be6",
     "pv": [
-     "Bg4",
-     "Bb5",
-     "Nh5",
-     "f5",
-     "a6",
-     "Bxc6+"
+     "Be6",
+     "Bxe6",
+     "fxe6",
+     "c3",
+     "Qe8",
+     "Be3"
     ],
     "pov": "w"
    }
@@ -14889,6 +14889,200 @@
      "Be6",
      "Bb5",
      "a6"
+    ],
+    "pov": "w"
+   }
+  },
+  "vie-cc6-cf6": {
+   "fp": "402b11ad",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -10,
+    "best": "Qf3",
+    "pv": [
+     "Qf3",
+     "Qxf3",
+     "Nxf3",
+     "d6",
+     "Nd2",
+     "Rf8"
+    ],
+    "pov": "w"
+   }
+  },
+  "vie-fc5-4": {
+   "fp": "8db9c717",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 18,
+    "best": "Nd4",
+    "pv": [
+     "Nd4",
+     "Nxd4",
+     "Bxd4",
+     "Bxf6",
+     "Qxf6",
+     "Nd5"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 9,
+    "errorSan": "Bxf2+",
+    "final": {
+     "type": "cp",
+     "value": 319,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 365,
+     "best": "Kxf2",
+     "pv": [
+      "Kxf2",
+      "Nd4",
+      "Nxd4",
+      "exd4",
+      "Nd5",
+      "Nxd5"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "vie-ca5": {
+   "fp": "ced9713e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 25,
+    "best": "Qd3",
+    "pv": [
+     "Qd3",
+     "O-O",
+     "Ng3",
+     "h6",
+     "b3",
+     "Bd7"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 11,
+    "errorSan": "Nxe4",
+    "final": {
+     "type": "cp",
+     "value": 306,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 283,
+     "best": "Nxe4",
+     "pv": [
+      "Nxe4",
+      "d6",
+      "f4",
+      "Be6",
+      "Qd3",
+      "Qd7"
+     ]
+    },
+    "pov": "w"
+   }
+  },
+  "vie-fc5-c6": {
+   "fp": "975b536f",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -2,
+    "best": "a3",
+    "pv": [
+     "a3",
+     "a5",
+     "Ba2",
+     "Nbd7",
+     "Nh4",
+     "Re8"
+    ],
+    "pov": "w"
+   }
+  },
+  "vie-fc5-oo": {
+   "fp": "adb70a85",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -1,
+    "best": "Nbd7",
+    "pv": [
+     "Nbd7",
+     "fxe5",
+     "Nxe5",
+     "Nxe5",
+     "dxe5",
+     "Qf3"
+    ],
+    "pov": "w"
+   }
+  },
+  "vie-cf6-fc5": {
+   "fp": "2978911b",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": -17,
+    "best": "a5",
+    "pv": [
+     "a5",
+     "a4",
+     "Na6",
+     "h3",
+     "Bb6",
+     "Be3"
+    ],
+    "pov": "w"
+   }
+  },
+  "vie-fb4": {
+   "fp": "e3452b92",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 12,
+    "best": "c6",
+    "pv": [
+     "c6",
+     "Bb3",
+     "Nbd7",
+     "Ne2",
+     "d5",
+     "c3"
+    ],
+    "pov": "w"
+   }
+  },
+  "vie-dxf6": {
+   "fp": "52763194",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 8,
+    "best": "Bxc3",
+    "pv": [
+     "Bxc3",
+     "Nxc3",
+     "Be6",
+     "Nd5",
+     "Bxd5",
+     "Bxd5"
     ],
     "pov": "w"
    }

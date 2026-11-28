@@ -741,21 +741,75 @@
    "rep": "viennoise"
   },
   "vie-dg4": {
-   "n": 27,
-   "ply": 3,
-   "coup": "Nc6",
+   "n": 3,
+   "ply": 5,
+   "coup": "Bc5",
+   "rep": "viennoise"
+  },
+  "vie-fc5": {
+   "n": 5,
+   "ply": 7,
+   "coup": "d6",
    "rep": "viennoise"
   },
   "vie-cf6-cc6": {
-   "n": 12,
-   "ply": 5,
-   "coup": "Nc6",
+   "n": 6,
+   "ply": 11,
+   "coup": "Bxc3+",
    "rep": "viennoise"
   },
   "vie-g3": {
    "n": 10,
    "ply": 4,
    "coup": "g3",
+   "rep": "viennoise"
+  },
+  "vie-cc6-cf6": {
+   "n": 14,
+   "ply": 5,
+   "coup": "Nf6",
+   "rep": "viennoise"
+  },
+  "vie-fc5-4": {
+   "n": 10,
+   "ply": 7,
+   "coup": "Bc5",
+   "rep": "viennoise"
+  },
+  "vie-ca5": {
+   "n": 10,
+   "ply": 7,
+   "coup": "Na5",
+   "rep": "viennoise"
+  },
+  "vie-fc5-c6": {
+   "n": 7,
+   "ply": 7,
+   "coup": "c6",
+   "rep": "viennoise"
+  },
+  "vie-fc5-oo": {
+   "n": 5,
+   "ply": 7,
+   "coup": "O-O",
+   "rep": "viennoise"
+  },
+  "vie-cf6-fc5": {
+   "n": 6,
+   "ply": 5,
+   "coup": "Bc5",
+   "rep": "viennoise"
+  },
+  "vie-fb4": {
+   "n": 4,
+   "ply": 5,
+   "coup": "Bb4",
+   "rep": "viennoise"
+  },
+  "vie-dxf6": {
+   "n": 4,
+   "ply": 11,
+   "coup": "Qxf6",
    "rep": "viennoise"
   },
   "sm-cf6": {
