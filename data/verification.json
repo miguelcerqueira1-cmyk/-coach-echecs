@@ -14002,6 +14002,182 @@
     },
     "pov": "b"
    }
+  },
+  "bogo-7a3": {
+   "fp": "df039ec4",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 26,
+    "best": "Nc6",
+    "pv": [
+     "Nc6",
+     "Be2",
+     "dxc4",
+     "Bxc4",
+     "b6",
+     "O-O"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 12,
+    "errorSan": "Nxd5",
+    "final": {
+     "type": "cp",
+     "value": 357,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 357,
+     "best": "exd5",
+     "pv": [
+      "exd5",
+      "cxd5",
+      "Qxd5",
+      "Rc1",
+      "Qxa2",
+      "Bd2"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "bogo-4cc3": {
+   "fp": "d9156757",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 22,
+    "best": "Bb5",
+    "pv": [
+     "Bb5",
+     "a6",
+     "Bxc6",
+     "Qxc6",
+     "Ne5",
+     "Qc7"
+    ],
+    "pov": "w"
+   }
+  },
+  "bogo-de7-cc3": {
+   "fp": "438249d4",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 25,
+    "best": "Bg2",
+    "pv": [
+     "Bg2",
+     "Nxc3",
+     "Rxc3",
+     "e5",
+     "O-O",
+     "a5"
+    ],
+    "pov": "w"
+   }
+  },
+  "bogo-de7-e3": {
+   "fp": "b3e3715e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 22,
+    "best": "Nb1",
+    "pv": [
+     "Nb1",
+     "c5",
+     "Nc3",
+     "e4",
+     "Nd2",
+     "Bf5"
+    ],
+    "pov": "w"
+   }
+  },
+  "bogo-fe7-dc2": {
+   "fp": "bd653019",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 25,
+    "best": "dxc5",
+    "pv": [
+     "dxc5",
+     "Na6",
+     "Nc3",
+     "Nxc5",
+     "Be2",
+     "b6"
+    ],
+    "pov": "w"
+   }
+  },
+  "bogo-g3": {
+   "fp": "cc5e9702",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 30,
+    "best": "Qc2",
+    "pv": [
+     "Qc2",
+     "Nbd7",
+     "Bf4",
+     "b6",
+     "Nbd2",
+     "Nh5"
+    ],
+    "pov": "w"
+   }
+  },
+  "bogo-nimzo": {
+   "fp": "95b85c8a",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 22,
+    "best": "Bb5",
+    "pv": [
+     "Bb5",
+     "a6",
+     "Bxc6",
+     "Qxc6",
+     "Ne5",
+     "Qc7"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 12,
+    "errorSan": "Bxh7+",
+    "final": {
+     "type": "cp",
+     "value": 305,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 306,
+     "best": "Nxh7",
+     "pv": [
+      "Nxh7",
+      "h4",
+      "Nc6",
+      "h5",
+      "Re8",
+      "h6"
+     ]
+    },
+    "pov": "b"
+   }
   }
  }
 }

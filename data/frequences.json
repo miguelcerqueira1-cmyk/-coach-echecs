@@ -2235,9 +2235,9 @@
    "rep": "benoni"
   },
   "bogo-de7": {
-   "n": 30,
-   "ply": 7,
-   "coup": "Qe7",
+   "n": 14,
+   "ply": 8,
+   "coup": "g3",
    "rep": "bogo"
   },
   "bogo-fxd2": {
@@ -2259,9 +2259,51 @@
    "rep": "bogo"
   },
   "bogo-fe7": {
-   "n": 7,
-   "ply": 7,
-   "coup": "Be7",
+   "n": 47,
+   "ply": 12,
+   "coup": "e3",
+   "rep": "bogo"
+  },
+  "bogo-7a3": {
+   "n": 6,
+   "ply": 12,
+   "coup": "a3",
+   "rep": "bogo"
+  },
+  "bogo-4cc3": {
+   "n": 5,
+   "ply": 6,
+   "coup": "Nc3",
+   "rep": "bogo"
+  },
+  "bogo-de7-cc3": {
+   "n": 5,
+   "ply": 8,
+   "coup": "Nc3",
+   "rep": "bogo"
+  },
+  "bogo-de7-e3": {
+   "n": 5,
+   "ply": 8,
+   "coup": "e3",
+   "rep": "bogo"
+  },
+  "bogo-fe7-dc2": {
+   "n": 4,
+   "ply": 8,
+   "coup": "Qc2",
+   "rep": "bogo"
+  },
+  "bogo-g3": {
+   "n": 89,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "bogo"
+  },
+  "bogo-nimzo": {
+   "n": 492,
+   "ply": 4,
+   "coup": "Nc3",
    "rep": "bogo"
   },
   "hol-leningrad": {
