@@ -198,3 +198,33 @@ test('bilan par variante : variante jouée dans une partie, résultats, état «
   assert.equal(b.z.etat, 'revoir', 'sortie de fiche');
   assert.equal(b.w, undefined, 'partie non terminée ignorée');
 });
+
+test('qui prend l’avantage : ampleur et moments clés (avantage donné, occasion manquée, cadeau adverse)', async () => {
+  const { avantage, avantageTxt, evalTxt, momentsCles, positionMoment } = await import('../../site/js/games-core.js');
+  assert.deepEqual(avantage(20), { camp: null, ampleur: 'equilibre' });
+  assert.deepEqual(avantage(-120), { camp: 'b', ampleur: 'leger' });
+  assert.deepEqual(avantage(250), { camp: 'w', ampleur: 'net' });
+  assert.deepEqual(avantage(-1000), { camp: 'b', ampleur: 'decisif' });
+  assert.equal(avantageTxt(-210), 'net avantage pour les Noirs');
+  assert.equal(evalTxt(-210), '−2,1');
+  assert.equal(evalTxt(30), '+0,3');
+  const g = { color: 'w' };
+  const P = (i, mover, cpBefore, cpAfter, extra = {}) => ({ i, san: 'e4', uci: 'e2e4', mover, cpBefore, cpAfter, loss: Math.max(0, (mover === 'w' ? 1 : -1) * (cpBefore - cpAfter)), cls: { id: 'erreur' }, bestSan: 'd4', bestUci: 'd2d4', ...extra });
+  const plies = [
+    P(0, 'w', 30, 20, { cls: null }),
+    P(1, 'b', 20, 300), // gaffe adverse : cadeau
+    P(2, 'w', 300, 120), // occasion manquée (j'avais +3, je retombe à +1,2)
+    P(3, 'b', 120, 110, { cls: null }),
+    P(4, 'w', 110, -200), // avantage donné
+  ];
+  const ms = momentsCles(g, plies);
+  assert.deepEqual(ms.map((m) => m.type), ['cadeau', 'occasion', 'donne']);
+  assert.equal(ms[0].saisi, false); // mon coup suivant perd 1,8 : cadeau pas exploité
+  assert.equal(ms[1].apresCadeau, true);
+  assert.match(ms[2].explication, /meilleur coup était d4/);
+  const pos = positionMoment(g, plies, ms[2]);
+  assert.equal(pos.kind, 'moment');
+  assert.equal(pos.moves.length, 4);
+  assert.deepEqual(pos.expected, ['d2d4']);
+  assert.equal(positionMoment(g, plies, ms[0]), null); // coup adverse : rien à rejouer
+});

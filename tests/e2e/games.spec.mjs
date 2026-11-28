@@ -295,3 +295,30 @@ test('Se connecter avec Lichess : aller-retour officiel, jeton gardé, pseudo re
   expect(revoque).toBe(true);
   expect(await page.evaluate(() => localStorage.getItem('coach-echecs:jeton-lichess'))).toBeNull();
 });
+
+test('bilan : moment clé « avantage donné » avec l’évaluation, puis « Rejouer ce moment » dans l’Entraînement', async ({ page }) => {
+  await page.route(/https:\/\/(lichess\.org|explorer\.lichess\.org)\//, (r) => r.abort());
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('e2e-init')) {
+      localStorage.clear();
+      localStorage.setItem('coach-echecs:pro', '{"pro":true}');
+      localStorage.setItem('coach-echecs:reglages:v1', JSON.stringify({ budget: 'rapide', autoExplain: false }));
+      sessionStorage.setItem('e2e-init', '1');
+    }
+  });
+  await page.goto('./');
+  await page.waitForFunction(() => window.__coach?.engine.state === 'ready', null, { timeout: 60000 });
+  for (const m of ['e4', 'e5', 'Qh5', 'Nc6', 'Qxe5+', 'Nxe5']) {
+    await page.fill('#notation-input', m);
+    await page.press('#notation-input', 'Enter');
+    await expect.poll(() => page.evaluate(() => window.__coach.state.game.moves.at(-1)?.san)).toBe(m);
+  }
+  await page.click('#btn-bilan');
+  const box = page.locator('#page-parties [data-analysis]');
+  const moment = box.locator('.moments li.moment-donne').first();
+  await expect(moment).toContainText('Avantage donné', { timeout: 90000 });
+  await expect(moment).toContainText('avantage décisif pour les Noirs');
+  await expect(moment).toContainText('→ −');
+  await moment.locator('[data-rejouer]').click();
+  await expect(page.locator('#page-entrainement [data-status]')).toContainText('Moment clé de votre partie', { timeout: 15000 });
+});

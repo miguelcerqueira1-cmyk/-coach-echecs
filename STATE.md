@@ -22,6 +22,20 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 - **En attente de l'utilisatrice** : micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
 
+### « Qui prend l'avantage » dans le bilan (2026-11-28) — chantier 2/3
+
+`games-core.js` : `avantage(cp)` (équilibré < 0,5 · léger < 1,5 · net < 3 · décisif ≥ 3 ou mat, côté Blancs),
+`avantageTxt`, `evalTxt` (« +0,3 », « −2,1 »), `momentsCles(game, plies)` : ⚠ avantage donné (mon coup, perte
+≥ 1,2, adversaire ≥ +0,5 après, pas déjà ≤ −1,5 avant) · 💡 occasion manquée (j'avais ≥ +1, perte ≥ 1,2, pas
+d'avantage donné) · 🎁 erreur de l'adversaire (perte ≥ 1,5 ; exploitée ou non par mon coup suivant) ; 5 au plus,
+chronologiques ; explication factuelle (mat forcé, pièce laissée sans défense / prenable par moins cher,
+meilleur coup). Bilan (Mes parties) : section « Moments clés : qui prend l'avantage » (remplace « Moments
+décisifs »), chiffres Stockfish avant → après. « 🎯 Rejouer ce moment » (Pro) : `positionMoment` →
+`recordMoment` (progress.js, id `${gameId}#${ply}`, kind 'moment') → Positions de mes parties (attendu = meilleur
+coup Stockfish). Corrigé au passage : dans Positions de mes parties, le type de position était perdu (kind
+écrasé en 'pos') → `posKind` ; texte du statut dans un seul <span> (la boîte flex coupait le texte en colonnes).
+Suite : chantier 3/3 = accueil unique du premier lancement.
+
 ### Ouverture reconnue en direct (2026-11-28) — chantier 1/3 du plan validé
 
 Plan validé avec l'utilisatrice (2026-11-28) : 1. ouverture reconnue en direct ✅ ; 2. « qui prend l'avantage »

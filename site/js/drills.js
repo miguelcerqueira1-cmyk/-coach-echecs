@@ -74,7 +74,7 @@ export class DrillRunner {
     this.pq = {};
     for (const rep of new Set(this.entries.map((e) => e.rep))) chargerPourquoi(rep).then((t) => { if (t) this.pq[rep] = t; });
     this.layout();
-    if (kind === 'reelles' || kind === 'examen') { this.startReview(positions.map((x) => ({ ...x, kind: 'pos' }))); return; }
+    if (kind === 'reelles' || kind === 'examen') { this.startReview(positions.map((x) => ({ ...x, posKind: x.kind, kind: 'pos' }))); return; }
     this.next();
   }
 
@@ -445,7 +445,7 @@ export class DrillRunner {
     this.log(this.kind === 'examen'
       ? L('🎯 Test de départ : à chaque position, joue le coup de ton répertoire. Un seul essai, pas de chrono.', '🎯 Starting test: in each position, play your repertoire move. One try, no clock.')
       : this.kind === 'reelles'
-      ? L('🎯 Positions de vos vraies parties : retrouvez le coup de votre répertoire. Une position ratée repasse en fin de liste.', '🎯 Positions from your real games: find your repertoire move. A missed position goes back to the end of the list.')
+      ? L('🎯 Positions de vos vraies parties : retrouvez le bon coup (celui de votre répertoire, ou celui de Stockfish pour un moment clé). Une position ratée repasse en fin de liste.', '🎯 Positions from your real games: find the right move (your repertoire move, or Stockfish’s for a key moment). A missed position goes back to the end of the list.')
       : L('🎯 Révision ciblée : seulement les positions ratées, jusqu’à ce qu’elles soient toutes validées.', '🎯 Targeted review: only the missed positions, until they are all solved.'), 'muted');
     this.nextReview();
   }
@@ -496,9 +496,12 @@ export class DrillRunner {
       return;
     }
     const vous = m.played ? L(`vous aviez joué <strong>${esc(sanFr(m.played))}</strong>`, `you played <strong>${esc(sanFr(m.played))}</strong>`) : L('la partie s’est arrêtée là', 'the game stopped there');
-    this.status(m.kind === 'punition'
+    // Texte dans un seul <span> : la boîte de statut est en flex (sinon le <strong> forme une colonne à part).
+    this.status('<span>' + (m.posKind === 'punition'
       ? L(`L’adversaire vient de faire l’erreur prévue par la fiche (${vous}) : punissez-la !`, `Your opponent has just made the mistake covered by the line (${vous}): punish it!`)
-      : L(`Ici, ${vous} et vous êtes sorti du répertoire : quel est le coup de vos fiches ?`, `Here, ${vous} and left your repertoire: what is the move from your lines?`), 'player');
+      : m.posKind === 'moment'
+        ? L(`Moment clé de votre partie : ${vous}. Trouvez le meilleur coup (calculé par Stockfish).`, `Key moment of your game: ${vous}. Find the best move (calculated by Stockfish).`)
+        : L(`Ici, ${vous} et vous êtes sorti du répertoire : quel est le coup de vos fiches ?`, `Here, ${vous} and left your repertoire: what is the move from your lines?`)) + '</span>', 'player');
     this.draw({ interactive: true });
   }
 
@@ -534,7 +537,7 @@ export class DrillRunner {
     this.log(L(`✘ ${esc(sanFr(mv.san))} — attendu ${esc(sanFr(bestSan))}`, `✘ ${esc(sanFr(mv.san))} — expected ${esc(sanFr(bestSan))}`), 'ko');
     c.wait = true;
     this.draw({ arrows: [{ from: m.expected[0].slice(0, 2), to: m.expected[0].slice(2, 4), kind: 'best' }] });
-    this.feedback(`<div class="drill-fb ko"><p>${L(`✘ Le coup de votre répertoire est <strong>${esc(sanFr(bestSan))}</strong> (flèche verte).`, `✘ Your repertoire move is <strong>${esc(sanFr(bestSan))}</strong> (green arrow).`)}</p>
+    this.feedback(`<div class="drill-fb ko"><p>${m.posKind === 'moment' ? L(`✘ Le meilleur coup était <strong>${esc(sanFr(bestSan))}</strong> (flèche verte, calcul Stockfish).`, `✘ The best move was <strong>${esc(sanFr(bestSan))}</strong> (green arrow, Stockfish calculation).`) : L(`✘ Le coup de votre répertoire est <strong>${esc(sanFr(bestSan))}</strong> (flèche verte).`, `✘ Your repertoire move is <strong>${esc(sanFr(bestSan))}</strong> (green arrow).`)}</p>
       ${m.texte ? `<p class="small">${esc(m.texte)}</p>` : ''}
       <p class="small muted">${L('La position repasse en fin de liste.', 'The position goes back to the end of the list.')}</p>
       <div class="actions"><button type="button" class="primary" data-continue>${L('Continuer', 'Continue')}</button></div></div>`);

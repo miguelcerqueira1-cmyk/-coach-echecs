@@ -413,6 +413,89 @@ export function analyseGame(game, evals) {
   return plies;
 }
 
+// Qui a l'avantage, d'après l'évaluation Stockfish côté Blancs (centipions, mats bornés à ±1000) :
+// équilibré (< 0,5), léger (< 1,5), net (< 3), décisif (≥ 3 ou mat).
+export function avantage(cp) {
+  if (cp == null) return null;
+  const a = Math.abs(cp);
+  const ampleur = a < 50 ? 'equilibre' : a < 150 ? 'leger' : a < 300 ? 'net' : 'decisif';
+  return { camp: ampleur === 'equilibre' ? null : cp > 0 ? 'w' : 'b', ampleur };
+}
+
+const CAMP = { w: L('les Blancs', 'White'), b: L('les Noirs', 'Black') };
+export function avantageTxt(cp) {
+  const a = avantage(cp);
+  if (!a) return '';
+  if (!a.camp) return L('position équilibrée', 'balanced position');
+  const qui = CAMP[a.camp];
+  return {
+    leger: L(`léger avantage pour ${qui}`, `slight edge for ${qui}`),
+    net: L(`net avantage pour ${qui}`, `clear advantage for ${qui}`),
+    decisif: L(`avantage décisif pour ${qui}`, `decisive advantage for ${qui}`),
+  }[a.ampleur];
+}
+
+// Évaluation lisible côté Blancs (« +0,3 », « −2,1 », « mat »).
+export function evalTxt(cp) {
+  if (cp == null) return '?';
+  if (Math.abs(cp) >= 1000) return cp > 0 ? L('mat pour les Blancs', 'mate for White') : L('mat pour les Noirs', 'mate for Black');
+  const v = (cp / 100).toFixed(1);
+  return (cp > 0 ? '+' : cp < 0 ? '−' : '') + (L(v.replace('.', ','), v)).replace('-', '');
+}
+
+// Moments clés d'une partie, du point de vue du joueur (game.color) :
+// - 'donne'    : votre coup laisse l'adversaire prendre l'avantage (≥ 0,5 pour lui après le coup,
+//                alors que vous n'étiez pas déjà nettement moins bien) ;
+// - 'occasion' : vous aviez (ou pouviez avoir) l'avantage (≥ 1) et votre coup en laisse filer une
+//                grande partie (perte ≥ 1,2) sans pour autant donner l'avantage ;
+// - 'cadeau'   : erreur adverse (perte ≥ 1,5) ; saisie = votre coup suivant ne la gâche pas (perte < 1).
+// Chaque moment : avant / après (centipions côté Blancs), meilleur coup, explication factuelle.
+export function momentsCles(game, plies, max = 5) {
+  const pov = (cp) => (game.color === 'w' ? cp : -cp);
+  const out = [];
+  for (const p of plies) {
+    if (p.cpBefore == null || p.cpAfter == null || !p.cls) continue;
+    const avant = pov(p.cpBefore), apres = pov(p.cpAfter);
+    if (p.mover === game.color) {
+      if (p.loss < 120) continue;
+      // Partie déjà nettement perdue avant le coup (≤ −1,5) : pas un « avantage donné ».
+      const type = apres <= -50 && avant > -150 ? 'donne' : avant >= 100 && apres > -50 ? 'occasion' : null;
+      if (!type) continue;
+      const prev = plies[p.i - 1];
+      const apresCadeau = !!(prev && prev.mover !== game.color && prev.loss >= 150);
+      out.push({ ...base(p), type, apresCadeau, explication: explication(p) });
+    } else if (p.loss >= 150 && pov(p.cpAfter) >= 50) {
+      const next = plies[p.i + 1];
+      out.push({ ...base(p), type: 'cadeau', saisi: next ? next.loss < 100 : null, suite: next?.san || null });
+    }
+  }
+  return out.sort((a, b) => b.loss - a.loss).slice(0, max).sort((a, b) => a.i - b.i);
+}
+
+function base(p) {
+  return { i: p.i, san: p.san, mover: p.mover, avant: p.cpBefore, apres: p.cpAfter, loss: p.loss, bestSan: p.bestSan, bestUci: p.bestUci, cls: p.cls };
+}
+
+// Explication courte et factuelle (aucune intention inventée) : pièce laissée en prise, mat, sinon le meilleur coup.
+function explication(p) {
+  const NOMS = L({ p: 'le pion', n: 'le Cavalier', b: 'le Fou', r: 'la Tour', q: 'la Dame' }, { p: 'the pawn', n: 'the knight', b: 'the bishop', r: 'the rook', q: 'the queen' });
+  const h = (p.hanging || []).find((x) => x.type !== 'p') || p.hanging?.[0];
+  const parts = [];
+  if (Math.abs(p.cpAfter) >= 1000 && Math.sign(p.cpAfter) !== (p.mover === 'w' ? 1 : -1)) parts.push(L('après ce coup, l’adversaire a un mat forcé', 'after this move, the opponent has a forced mate'));
+  else if (h) parts.push(L(h.defended ? `après ce coup, une pièce de moindre valeur peut prendre ${NOMS[h.type]} en ${h.square}` : `après ce coup, ${NOMS[h.type]} en ${h.square} reste sans défense`, `after this move, ${NOMS[h.type]} on ${h.square} ${h.defended ? 'can be taken by a cheaper piece' : 'is left undefended'}`));
+  if (p.bestSan) parts.push(L(`le meilleur coup était ${sanFr(p.bestSan)}`, `the best move was ${sanFr(p.bestSan)}`));
+  const t = parts.join(L(' ; ', '; '));
+  return t ? t[0].toUpperCase() + t.slice(1) + '.' : '';
+}
+
+// Position d'un moment clé à rejouer (« Positions de mes parties ») : à vous de jouer, attendu = meilleur coup Stockfish.
+export function positionMoment(game, plies, m) {
+  if (!m.bestUci || m.mover !== game.color) return null;
+  const moves = plies.slice(0, m.i).map((p) => p.uci);
+  if (moves.length !== m.i || moves.some((u) => !u)) return null;
+  return { kind: 'moment', moves, expected: [m.bestUci], played: m.san, color: game.color, texte: m.explication || null, ficheNom: null };
+}
+
 // Bilan d'une partie : moments décisifs, erreurs principales, trois pistes de travail.
 export function bilan(game, plies, deviation) {
   const mine = plies.filter((p) => p.mover === game.color && p.loss != null && p.cpBefore != null);

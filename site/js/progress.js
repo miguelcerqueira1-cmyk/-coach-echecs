@@ -76,6 +76,16 @@ export function recordSortie(p, { gameId, ficheId = null, rep, ply, date, pos = 
   return p;
 }
 
+// Moment clé d'une partie (bilan) à rejouer dans « Positions de mes parties » : identifiant
+// `${gameId}#${ply}` (plusieurs moments par partie), position = positionMoment (games-core).
+export function recordMoment(p, { gameId, ply, date, pos, opp = null, url = null }) {
+  if (!gameId || !pos) return p;
+  const id = `${gameId}#${ply}`;
+  const rec = { gameId: id, ficheId: null, rep: null, ply, date: date || new Date().toISOString(), kind: pos.kind, moves: pos.moves, expected: pos.expected, played: pos.played, color: pos.color, texte: pos.texte, ficheNom: null, opp, url };
+  p.sorties = [...(p.sorties || []).filter((x) => x.gameId !== id), rec].slice(-200);
+  return p;
+}
+
 // Résultat d'une vraie partie dans une variante (une fois par partie ; mise à jour si réimportée).
 // sortie : je suis sorti des fiches ; punition : j'ai laissé passer une punition prévue.
 // Pour la relecture : coups (120 demi-coups au plus), ma couleur, adversaire, lien, et le demi-coup

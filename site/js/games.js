@@ -3,7 +3,7 @@
 import { Chess } from '../vendor/chess.js';
 import { localiserData } from './donnees-langue.js';
 import { Board } from './board.js';
-import { loadProgress, saveProgress, recordSortie, recordPartie, vraiesErreurs } from './progress.js';
+import { loadProgress, saveProgress, recordSortie, recordPartie, recordMoment, vraiesErreurs } from './progress.js';
 import { demanderEntrainement } from './demande-entrainement.js';
 import { isPro, openPaywall } from './pro.js';
 import { loadPgnTolerant } from './game.js';
@@ -13,6 +13,7 @@ import { sanFr, formatScore } from './analysis.js';
 import {
   parseLichessGame, parseChessComGame, repertoireDeviation, localGame, analyseGame, bilan, whiteCp, moveNo, rapport, keyPlies,
   positionARevoir, alertePgn, ficheJouee, analyseTemps, bilanTempsParties, horlogesPgn, lireCadence, phaseTxt, outcomeTxt,
+  momentsCles, positionMoment, evalTxt, avantageTxt, avantage,
 } from './games-core.js';
 import { langue } from './i18n.js';
 import { connecter as connecterLichess, deconnecter as deconnecterLichess } from './lichess-auth.js';
@@ -528,8 +529,8 @@ export class GamesPage {
         <div>
           <h3>${L('Bilan', 'Summary')}</h3>
           <p class="small">${L(`${b.counts.gaffe} gaffe(s) · ${b.counts.erreur} erreur(s) · ${b.counts.imprecision} imprécision(s)${b.avg != null ? ` · perte moyenne ${(b.avg / 100).toFixed(2).replace('.', ',')} pion/coup` : ''}`, `${b.counts.gaffe} blunder(s) · ${b.counts.erreur} mistake(s) · ${b.counts.imprecision} inaccurac(y/ies)${b.avg != null ? ` · average loss ${(b.avg / 100).toFixed(2)} pawn/move` : ''}`)}</p>
-          <h3>${L('Moments décisifs', 'Decisive moments')}</h3>
-          ${b.decisive.length ? `<ul>${b.decisive.map((p) => `<li><button type="button" class="link-btn" data-ply="${p.i}">${line(p)}</button> (${p.mover === g.color ? L('vous', 'you') : L('adversaire', 'opponent')})${L(' : ', ': ')}${esc(formatScore({ type: 'cp', value: p.cpBefore }))} → ${esc(formatScore({ type: 'cp', value: p.cpAfter }))}</li>`).join('')}</ul>` : `<p class="small muted">${L('Aucun basculement majeur.', 'No major swing.')}</p>`}
+          <h3>${L('Moments clés : qui prend l’avantage', 'Key moments: who takes the advantage')}</h3>
+          ${this.momentsHtml(g, plies)}
           <h3>${L('Vos erreurs principales', 'Your main mistakes')}</h3>
           ${b.errors.length ? `<ul>${b.errors.map((p) => `<li><button type="button" class="link-btn" data-ply="${p.i}">${line(p)}</button> — ${esc(p.cls.label)}${L(' ; le moteur préférait ', '; the engine preferred ')}<strong>${fr(p.bestSan)}</strong> (${L('perte', 'loss')} ≈ ${dec((Math.min(p.loss, 1000) / 100).toFixed(1))})</li>`).join('')}</ul>` : `<p class="small muted">${L('Aucune erreur détectée à ce niveau d’analyse.', 'No mistake detected at this analysis depth.')}</p>`}
           <h3>${L('Trois pistes de travail', 'Three things to work on')}</h3>
@@ -547,6 +548,7 @@ export class GamesPage {
     this.reviewBoard.setOrientation(g.color);
     this.showPly(g, plies, b.errors[0]?.i ?? 0);
     box.querySelectorAll('[data-ply]').forEach((el) => el.addEventListener('click', () => this.showPly(g, plies, Number(el.dataset.ply))));
+    box.querySelectorAll('[data-rejouer]').forEach((el) => el.addEventListener('click', () => this.rejouerMoment(g, plies, Number(el.dataset.rejouer))));
     // Plus longues réflexions : la position au moment où j'ai réfléchi, échiquier ramené à l'écran.
     box.querySelectorAll('[data-temps-ply]').forEach((el) => el.addEventListener('click', () => {
       this.showPly(g, plies, Number(el.dataset.tempsPly), { temps: { s: Number(el.dataset.tempsS), reste: Number(el.dataset.tempsReste) } });
@@ -564,6 +566,47 @@ export class GamesPage {
       if (t) demanderEntrainement({ type: 'fiche', id: t.dataset.ouvEntrainer });
     });
     if (!cached.deep) this.deepen(g);
+  }
+
+  // Moments clés (occasion manquée / avantage donné / cadeau adverse), avec qui a l'avantage et son ampleur.
+  momentsHtml(g, plies) {
+    const ms = momentsCles(g, plies);
+    if (!ms.length) return `<p class="small muted">${L('Aucun basculement majeur : l’avantage n’a pas changé de camp sur une erreur.', 'No major swing: the advantage never changed sides on a mistake.')}</p>`;
+    const VOUS_AVIEZ = { leger: L('un léger avantage', 'a slight edge'), net: L('un net avantage', 'a clear advantage'), decisif: L('un avantage décisif', 'a decisive advantage') };
+    const TYPE = {
+      donne: L('⚠ Avantage donné', '⚠ Advantage given away'),
+      occasion: L('💡 Occasion manquée', '💡 Missed opportunity'),
+      cadeau: L('🎁 Erreur de l’adversaire', '🎁 Opponent’s mistake'),
+    };
+    return `<ul class="moments">${ms.map((m) => {
+      const coup = `<button type="button" class="link-btn" data-ply="${m.i}">${moveNo(m.i)} ${fr(m.san)}</button>`;
+      const chiffres = `<span class="muted">(${esc(evalTxt(m.avant))} → ${esc(evalTxt(m.apres))})</span>`;
+      let detail;
+      if (m.type === 'cadeau') {
+        detail = L(`${avantageTxt(m.apres)} ${chiffres}. `, `${avantageTxt(m.apres)} ${chiffres}. `)
+          + (m.saisi === true ? L('Vous en avez profité ✔', 'You took advantage of it ✔') : m.saisi === false ? L(`Vous ne l’avez pas exploitée : ${moveNo(m.i + 1)} ${fr(m.suite)} rendait une partie de l’avantage.`, `You did not exploit it: ${moveNo(m.i + 1)} ${fr(m.suite)} gave part of it back.`) : '');
+      } else {
+        const ctx = m.apresCadeau ? L(' juste après une erreur adverse', ' right after an opponent’s mistake') : '';
+        detail = (m.type === 'donne'
+          ? L(`Après votre coup${ctx}, ${avantageTxt(m.apres)} ${chiffres}.`, `After your move${ctx}, ${avantageTxt(m.apres)} ${chiffres}.`)
+          : L(`Vous aviez ${VOUS_AVIEZ[avantage(m.avant)?.ampleur] || 'l’avantage'}${ctx} ; après votre coup : ${avantageTxt(m.apres)} ${chiffres}.`, `You had ${VOUS_AVIEZ[avantage(m.avant)?.ampleur] || 'the advantage'}${ctx}; after your move: ${avantageTxt(m.apres)} ${chiffres}.`))
+          + (m.explication ? ` ${esc(m.explication)}` : '')
+          + (positionMoment(g, plies, m) ? ` <button type="button" class="small-btn" data-rejouer="${m.i}">${L('🎯 Rejouer ce moment', '🎯 Replay this moment')}</button>` : '');
+      }
+      return `<li class="moment-${m.type}"><strong>${TYPE[m.type]}</strong> · ${coup} (${m.mover === g.color ? L('vous', 'you') : L('adversaire', 'opponent')})<br>${detail}</li>`;
+    }).join('')}</ul>`;
+  }
+
+  // « Rejouer ce moment » : la position part dans « Positions de mes parties » (Entraînement).
+  rejouerMoment(g, plies, i) {
+    if (!isPro()) { openPaywall({ reason: L('« Positions de mes parties »', '“Positions from my games”') }); return; }
+    const m = momentsCles(g, plies, 99).find((x) => x.i === i);
+    const pos = m && positionMoment(g, plies, m);
+    if (!pos) return;
+    const p = loadProgress();
+    recordMoment(p, { gameId: g.id, ply: i, date: g.date, pos, opp: g.color === 'w' ? g.black : g.white, url: g.url });
+    saveProgress(p);
+    demanderEntrainement({ type: 'reelle', gameId: `${g.id}#${i}` });
   }
 
   reportHtml(g, plies, b, cached) {
