@@ -830,6 +830,36 @@
    "coup": "d3",
    "rep": "smith-morra"
   },
+  "sm-d6-e5": {
+   "n": 1,
+   "ply": 7,
+   "coup": "d6",
+   "rep": "smith-morra"
+  },
+  "sm-e6-b5": {
+   "n": 2,
+   "ply": 7,
+   "coup": "e6",
+   "rep": "smith-morra"
+  },
+  "sm-a6": {
+   "n": 1,
+   "ply": 7,
+   "coup": "a6",
+   "rep": "smith-morra"
+  },
+  "sm-2d5": {
+   "n": 1,
+   "ply": 3,
+   "coup": "d5",
+   "rep": "smith-morra"
+  },
+  "sm-2e6": {
+   "n": 1,
+   "ply": 3,
+   "coup": "e6",
+   "rep": "smith-morra"
+  },
   "ang-sicilienne-inversee": {
    "n": 17,
    "ply": 4,
@@ -2481,9 +2511,9 @@
    "rep": "contre-londres"
   },
   "grun-echange": {
-   "n": 20,
-   "ply": 12,
-   "coup": "Nf3",
+   "n": 5,
+   "ply": 14,
+   "coup": "Rb1",
    "rep": "grunfeld"
   },
   "grun-echange-fc4": {
@@ -2493,9 +2523,9 @@
    "rep": "grunfeld"
   },
   "grun-russe": {
-   "n": 24,
-   "ply": 6,
-   "coup": "Nf3",
+   "n": 8,
+   "ply": 8,
+   "coup": "Qb3",
    "rep": "grunfeld"
   },
   "grun-ff4": {
@@ -2526,6 +2556,48 @@
    "n": 20,
    "ply": 4,
    "coup": "g3",
+   "rep": "grunfeld"
+  },
+  "grun-cf3-fe3": {
+   "n": 10,
+   "ply": 10,
+   "coup": "e4",
+   "rep": "grunfeld"
+  },
+  "grun-fb5": {
+   "n": 10,
+   "ply": 14,
+   "coup": "Bb5+",
+   "rep": "grunfeld"
+  },
+  "grun-fe2": {
+   "n": 7,
+   "ply": 14,
+   "coup": "Be2",
+   "rep": "grunfeld"
+  },
+  "grun-cf3-fg5": {
+   "n": 10,
+   "ply": 8,
+   "coup": "Bg5",
+   "rep": "grunfeld"
+  },
+  "grun-cf3-fd2": {
+   "n": 2,
+   "ply": 10,
+   "coup": "Bd2",
+   "rep": "grunfeld"
+  },
+  "grun-cf3-g3": {
+   "n": 38,
+   "ply": 4,
+   "coup": "Nf3",
+   "rep": "grunfeld"
+  },
+  "grun-cf3-e3": {
+   "n": 6,
+   "ply": 8,
+   "coup": "e3",
    "rep": "grunfeld"
   },
   "ben-moderne": {
@@ -2690,24 +2762,6 @@
    "coup": "Nc3",
    "rep": "bogo"
   },
-  "hol-leningrad": {
-   "n": 6,
-   "ply": 2,
-   "coup": "g3",
-   "rep": "hollandaise"
-  },
-  "hol-stonewall": {
-   "n": 15,
-   "ply": 2,
-   "coup": "c4",
-   "rep": "hollandaise"
-  },
-  "hol-staunton": {
-   "n": 3,
-   "ply": 2,
-   "coup": "e4",
-   "rep": "hollandaise"
-  },
   "hol-fg5": {
    "n": 5,
    "ply": 2,
@@ -2715,9 +2769,33 @@
    "rep": "hollandaise"
   },
   "hol-cc3": {
-   "n": 10,
+   "n": 1,
+   "ply": 3,
+   "coup": "d5",
+   "rep": "hollandaise"
+  },
+  "hol-cf3-b3": {
+   "n": 4,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "hollandaise"
+  },
+  "hol-ff4": {
+   "n": 3,
    "ply": 2,
-   "coup": "Nc3",
+   "coup": "Bf4",
+   "rep": "hollandaise"
+  },
+  "hol-cc3-fg5": {
+   "n": 8,
+   "ply": 3,
+   "coup": "Nf6",
+   "rep": "hollandaise"
+  },
+  "hol-cf3-fg5": {
+   "n": 2,
+   "ply": 4,
+   "coup": "Bg5",
    "rep": "hollandaise"
   },
   "nimzo-rubinstein": {
