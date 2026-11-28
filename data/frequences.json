@@ -1694,10 +1694,16 @@
    "coup": "Nc3",
    "rep": "alekhine"
   },
+  "phi-hanham": {
+   "n": 17,
+   "ply": 12,
+   "coup": "Re1",
+   "rep": "philidor"
+  },
   "phi-exd4": {
-   "n": 23,
-   "ply": 5,
-   "coup": "exd4",
+   "n": 7,
+   "ply": 10,
+   "coup": "Bf4",
    "rep": "philidor"
   },
   "phi-fc4": {
@@ -1707,9 +1713,75 @@
    "rep": "philidor"
   },
   "phi-cc3": {
-   "n": 9,
-   "ply": 4,
+   "n": 13,
+   "ply": 6,
+   "coup": "d4",
+   "rep": "philidor"
+  },
+  "phi-7a4": {
+   "n": 15,
+   "ply": 12,
+   "coup": "a4",
+   "rep": "philidor"
+  },
+  "phi-g3": {
+   "n": 10,
+   "ply": 10,
+   "coup": "g3",
+   "rep": "philidor"
+  },
+  "phi-h3": {
+   "n": 7,
+   "ply": 8,
+   "coup": "h3",
+   "rep": "philidor"
+  },
+  "phi-6fc4": {
+   "n": 7,
+   "ply": 10,
+   "coup": "Bc4",
+   "rep": "philidor"
+  },
+  "phi-6a4": {
+   "n": 6,
+   "ply": 10,
+   "coup": "a4",
+   "rep": "philidor"
+  },
+  "phi-6fe2": {
+   "n": 6,
+   "ply": 10,
+   "coup": "Be2",
+   "rep": "philidor"
+  },
+  "phi-cc3-fc4": {
+   "n": 6,
+   "ply": 6,
+   "coup": "Bc4",
+   "rep": "philidor"
+  },
+  "phi-viennoise": {
+   "n": 83,
+   "ply": 2,
    "coup": "Nc3",
+   "rep": "philidor"
+  },
+  "phi-fou-c4": {
+   "n": 70,
+   "ply": 2,
+   "coup": "Bc4",
+   "rep": "philidor"
+  },
+  "phi-gambit-roi": {
+   "n": 45,
+   "ply": 2,
+   "coup": "f4",
+   "rep": "philidor"
+  },
+  "phi-centre": {
+   "n": 26,
+   "ply": 2,
+   "coup": "d4",
    "rep": "philidor"
   },
   "naj-anglaise": {
