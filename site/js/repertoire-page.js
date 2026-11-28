@@ -176,6 +176,23 @@ export class RepertoirePage {
     this.render();
   }
 
+  // Ouvre une fiche depuis une autre page (ligne « ouverture reconnue » du Moteur) : son répertoire,
+  // sans filtre, fiche dépliée et mise en évidence.
+  ouvrirFiche(id) {
+    const e = this.data?.entries.find((x) => x.id === id);
+    if (!e) return false;
+    this.view = e.rep; this.badge = ''; this.query = ''; this.sort = '';
+    this.render();
+    const tr = this.el.querySelector(`tr[data-id="${CSS.escape(id)}"]`);
+    if (!tr) return false;
+    tr.classList.remove('replie');
+    const dep = tr.querySelector('[data-deplier]');
+    if (dep) { dep.setAttribute('aria-expanded', 'true'); dep.textContent = L('▴ Replier', '▴ Collapse'); }
+    tr.classList.add('surbrillance');
+    tr.scrollIntoView({ block: 'start' });
+    return true;
+  }
+
   filterKey() {
     const f = this.getFilter();
     return JSON.stringify([f.ratings, f.speeds]);

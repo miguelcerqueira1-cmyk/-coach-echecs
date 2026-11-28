@@ -47,6 +47,8 @@ jobs:
         run: node scripts/verify-finales.mjs --check
       - name: Explications « Pourquoi ce coup ? » contrôlées (coups cités légaux, aucune évaluation inventée)
         run: node scripts/verifie-pourquoi.mjs
+      - name: Ouvertures reconnues à jour (site/data/ouvertures.json)
+        run: node scripts/ouvertures-site.mjs --check
       - name: Tests du Worker (auth, CORS, limites) avec Claude simulé
         run: npm test
         working-directory: worker

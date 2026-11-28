@@ -72,6 +72,7 @@ site/                         Site statique (GitHub Pages), modules ES, aucun bu
   js/repertoire-page.js Page Répertoire (rendu, recherche, classement, arbre, vidéos, export)
   js/repertoire-pgn.js        Export PGN (variantes, $2, commentaires)
   js/lines.js                 Lecture des lignes, index ECO, empreintes de fiche
+  js/ouverture.js / ouverture-core.js  Ouverture reconnue coup par coup (local) ; data/ouvertures.json GÉNÉRÉ
   js/youtube.js               Recherche YouTube Data v3 (clé perso facultative, cache 7 j)
   js/elite.js                 Données Élite : chargement (raw GitHub → copie du site), lecture par FEN
   js/joueurs.js, joueurs-ui.js  Recherche par nom de joueur (index joueurs.json) et affichage en cartes
@@ -127,8 +128,8 @@ site/data/repertoires/en/<id>.js  Textes anglais des fiches (mêmes ids)
   Seuils : punition ≥ +1,5 (ou `minCp`), piège ≤ −1,5, à profondeur 18. Une fiche peut commencer avant la
   racine du répertoire.
 - **Après tout ajout / modification de fiche** : `npm run verify:repertoire`, `node scripts/repertoire.mjs`,
-  `node scripts/verifie-en.mjs`, `node scripts/prolonge-lignes.mjs`, `node scripts/frequences.mjs`, puis les
-  « Pourquoi » du répertoire.
+  `node scripts/verifie-en.mjs`, `node scripts/prolonge-lignes.mjs`, `node scripts/frequences.mjs`,
+  `node scripts/ouvertures-site.mjs` (ouverture reconnue en direct ; contrôlé en CI), puis les « Pourquoi » du répertoire.
 - **« 💡 Pourquoi ce coup ? »** : `node scripts/pourquoi-faits.mjs <rep>` (faits chess.js + Stockfish), une
   phrase courte FR + EN par coup, sans aucun chiffre, chaque affirmation vérifiée sur la position ;
   « Stockfish préférait X » seulement si X est le meilleur coup calculé ; contrôle

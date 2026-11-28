@@ -22,6 +22,21 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 - **En attente de l'utilisatrice** : micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
 
+### Ouverture reconnue en direct (2026-11-28) — chantier 1/3 du plan validé
+
+Plan validé avec l'utilisatrice (2026-11-28) : 1. ouverture reconnue en direct ✅ ; 2. « qui prend l'avantage »
+dans le bilan (moments clés : occasion manquée / avantage donné, ampleur équilibré / léger / net / décisif AVEC
+le chiffre Stockfish, bouton « Rejouer ce moment » vers Positions de mes parties) ; 3. accueil unique du premier
+lancement (ouvertures + où/cadence + temps ; pas de compte, tout reste sur l'appareil). Point 7 : abandonné.
+Fait : `scripts/ouvertures-site.mjs` → `site/data/ouvertures.json` (≈ 430 Ko, 120 Ko compressé : 3 864 noms ECO,
+positions des fiches, 249 erreurs connues = punitions, pièges et coups « ?! » des lignes principales) ;
+`ouverture-core.js` (empreinte de position 48 bits, `reconnaitre`) et `ouverture.js` (ligne HTML FR/EN, nom
+traduit par `nomFr`). Moteur : ligne `#opening-line` sous l'échiquier (suit la position affichée et le
+brouillon) : 📖 nom (ECO) ; gris « Hors des lignes connues depuis X » (aucun jugement) ; orange « ⚠ Erreur connue /
+coup douteux connu » + réfutation (masquée si fiche Pro verrouillée) ; vert « ✅ Réfutation jouée » ; liens « Voir
+la fiche » (Répertoire, fiche dépliée en surbrillance, `RepertoirePage.ouvrirFiche`) et « S'entraîner ». Bilan de
+partie (Mes parties) : même ligne + chaque erreur connue rencontrée. Contrôle CI `ouvertures-site.mjs --check`.
+
 ### Vidéos des fiches (2026-11-28)
 
 342 fiches sans vidéo → **21** (variantes trop rares : gd-g5/fg4/h5/dd6, ck-dh5/fd3/df3, ita-df6, sic-dame, sic-b3,

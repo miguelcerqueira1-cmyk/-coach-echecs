@@ -29,6 +29,8 @@ import { ProgressionPage } from './progression-page.js';
 import { explicationGratuite, renderExplication, menaceSerieuse } from './explain-free.js';
 import { indicesNiveau1, indiceNiveau2 } from './hints.js';
 import { RepertoirePage } from './repertoire-page.js';
+import { chargerOuvertures, etatOuverture, ligneOuvertureHtml } from './ouverture.js';
+import { demanderEntrainement } from './demande-entrainement.js';
 import { YouTubeClient } from './youtube.js';
 import { THEMES, BOARDS, applyAppearance } from './theme.js';
 import { importData, describe } from './transfer.js';
@@ -86,6 +88,7 @@ const optimal = new OptimalPanel({
   },
 });
 let repertoirePage = null;
+let ficheDemandee = null; // fiche à ouvrir dans le Répertoire (lien « Voir la fiche » du Moteur)
 let legalPage = null;
 let trainingPage = null;
 let accueilPage = null;
@@ -161,7 +164,7 @@ async function init() {
           openGame: (san, color, label, headers) => openSanInBoard(san, color, label, { headers }),
           youtube: new YouTubeClient({ getKey: () => store.getYoutubeKey() }),
         });
-        repertoirePage.show();
+        repertoirePage.show().then(() => { if (ficheDemandee) { repertoirePage.ouvrirFiche(ficheDemandee); ficheDemandee = null; } });
       }
       if (page === 'entrainement') {
         trainingPage ??= new TrainingPage({ el: $('page-entrainement'), engine, client: lichess, getFilter: currentFilter, filterLabel, openSan: (san, color, label) => openSanInBoard(san, color, label) });
@@ -459,6 +462,30 @@ function renderAll() {
   renderButtons();
 }
 
+// Lien « Voir la fiche » (Moteur, bilan) : Répertoire, fiche dépliée.
+function ouvrirFicheRepertoire(id) {
+  ficheDemandee = id;
+  if (location.hash.startsWith('#/repertoire') && repertoirePage) { repertoirePage.ouvrirFiche(id); ficheDemandee = null; } else location.hash = '#/repertoire';
+}
+
+// Ouverture reconnue (calcul local, instantané) pour la position affichée : partie, coup passé ou brouillon.
+function renderOpening() {
+  const el = $('opening-line');
+  if (!el) return;
+  const g = state.game;
+  let fens, sans;
+  if (state.variante) {
+    const c = new Chess(g.startFen);
+    fens = [c.fen()]; sans = [];
+    for (const u of state.variante.ucis()) { const m = c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); sans.push(m.san); fens.push(c.fen()); }
+  } else {
+    const ply = state.viewPly ?? g.ply;
+    fens = Array.from({ length: ply + 1 }, (_, i) => g.fen(i));
+    sans = Array.from({ length: ply }, (_, i) => g.verboseMove(i).san);
+  }
+  el.innerHTML = ligneOuvertureHtml(etatOuverture(fens, sans), { startFen: g.startFen });
+}
+
 // Joueurs et contexte d'une partie ouverte depuis un PGN (maîtres, Élite, mes parties).
 function renderGameInfo() {
   const h = state.game.record.headers || {};
@@ -492,6 +519,7 @@ function renderTurn() {
 
 function renderBoard() {
   const g = state.game;
+  renderOpening();
   if (state.variante) { renderBoardVariante(); return; }
   const ply = state.viewPly ?? g.ply;
   const live = state.viewPly === null;
@@ -1264,6 +1292,14 @@ function bindUi() {
   };
   $('btn-explain').onclick = () => explain();
   $('btn-bilan').onclick = () => openBilan();
+  $('opening-line').addEventListener('click', (ev) => {
+    const f = ev.target.closest('[data-ouv-fiche]');
+    if (f) ouvrirFicheRepertoire(f.dataset.ouvFiche);
+    const t = ev.target.closest('[data-ouv-entrainer]');
+    if (t) demanderEntrainement({ type: 'fiche', id: t.dataset.ouvEntrainer });
+  });
+  chargerOuvertures().then(() => renderOpening());
+  window.addEventListener('ouvrir-fiche', (ev) => ouvrirFicheRepertoire(ev.detail));
   $('btn-auto').onclick = () => (autoplay.running ? stopAutoplay(L('Suite automatique arrêtée.', 'Automatic continuation stopped.')) : startAutoplay());
   $('btn-export').onclick = openExport;
   $('btn-settings').onclick = openSettings;

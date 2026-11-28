@@ -7,6 +7,7 @@ import { loadProgress, saveProgress, recordSortie, recordPartie, vraiesErreurs }
 import { demanderEntrainement } from './demande-entrainement.js';
 import { isPro, openPaywall } from './pro.js';
 import { loadPgnTolerant } from './game.js';
+import { chargerOuvertures, resumeOuverture, resumeOuvertureHtml } from './ouverture.js';
 import { choisis, REPERTOIRES } from './mon-repertoire.js';
 import { sanFr, formatScore } from './analysis.js';
 import {
@@ -517,7 +518,9 @@ export class GamesPage {
     const plies = analyseGame(g, cached.evals);
     const b = bilan(g, plies, g.deviation);
     const line = (p) => `${moveNo(p.i)} ${fr(p.san)}`;
+    const ouv = resumeOuverture([...plies.map((p) => p.fenBefore), plies.at(-1)?.fenAfter].filter(Boolean), plies.map((p) => p.san));
     box.innerHTML = `<div class="card analysis-card">${head}
+      <div class="ouverture-bilan" data-ouverture>${resumeOuvertureHtml(ouv)}</div>
       <p class="small">${this.deviationText(g)}</p>
       ${this.graphHtml(cached.evals, g.color)}
       <div class="analysis-grid">
@@ -553,6 +556,13 @@ export class GamesPage {
       this.showPly(g, plies, Number(el.dataset.exo), { exo: true });
       box.querySelector('[data-review-board]').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }));
+    if (!ouv) chargerOuvertures().then(() => { const el = box.querySelector('[data-ouverture]'); if (el) el.innerHTML = resumeOuvertureHtml(resumeOuverture([...plies.map((p) => p.fenBefore), plies.at(-1)?.fenAfter].filter(Boolean), plies.map((p) => p.san))); });
+    box.querySelector('[data-ouverture]')?.addEventListener('click', (ev) => {
+      const f = ev.target.closest('[data-ouv-fiche]');
+      if (f) window.dispatchEvent(new CustomEvent('ouvrir-fiche', { detail: f.dataset.ouvFiche }));
+      const t = ev.target.closest('[data-ouv-entrainer]');
+      if (t) demanderEntrainement({ type: 'fiche', id: t.dataset.ouvEntrainer });
+    });
     if (!cached.deep) this.deepen(g);
   }
 

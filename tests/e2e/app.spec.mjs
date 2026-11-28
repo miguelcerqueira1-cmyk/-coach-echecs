@@ -614,3 +614,20 @@ test('Moteur : meilleur coup provisoire fléché pendant le calcul, avant le ré
   expect(Date.now() - t0).toBeLessThan(9000); // bien avant la fin du calcul de 10 s
   expect(await page.evaluate(() => window.__coach.state.analysis.status)).toBe('computing');
 });
+
+test('ouverture reconnue en direct : nom, suivi de la position affichée, sortie des lignes connues', async ({ page }) => {
+  await setup(page);
+  await page.goto('./#/moteur');
+  await waitAdvice(page);
+  for (const m of ['d4', 'd5', 'c4', 'e6']) await typeMove(page, m);
+  await expect(page.locator('#opening-line')).toContainText('Gambit Dame refusé');
+  await expect(page.locator('#opening-line')).toContainText('(D3');
+  // Retour en arrière : la ligne suit la position affichée.
+  await page.locator('[data-nav=start]').click();
+  await expect(page.locator('#opening-line')).toBeEmpty();
+  await page.locator('[data-nav=end]').click();
+  await expect(page.locator('#opening-line')).toContainText('Gambit Dame refusé');
+  // Coup hors théorie : signalé sans jugement.
+  await typeMove(page, 'h4');
+  await expect(page.locator('#opening-line')).toContainText('Hors des lignes connues depuis 3.h4');
+});
