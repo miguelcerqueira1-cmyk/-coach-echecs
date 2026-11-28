@@ -1491,9 +1491,9 @@
    "rep": "scandinave"
   },
   "pirc-classique": {
-   "n": 16,
-   "ply": 6,
-   "coup": "Nf3",
+   "n": 9,
+   "ply": 8,
+   "coup": "Be2",
    "rep": "pirc"
   },
   "pirc-autrichienne": {
@@ -1515,9 +1515,63 @@
    "rep": "pirc"
   },
   "pirc-cd2": {
-   "n": 1,
+   "n": 5,
+   "ply": 8,
+   "coup": "Bd3",
+   "rep": "pirc"
+  },
+  "pirc-2cf3": {
+   "n": 15,
+   "ply": 2,
+   "coup": "Nf3",
+   "rep": "pirc"
+  },
+  "pirc-2cc3": {
+   "n": 13,
+   "ply": 2,
+   "coup": "Nc3",
+   "rep": "pirc"
+  },
+  "pirc-fd3": {
+   "n": 14,
    "ply": 4,
-   "coup": "Nd2",
+   "coup": "Bd3",
+   "rep": "pirc"
+  },
+  "pirc-fb5": {
+   "n": 13,
+   "ply": 8,
+   "coup": "Bb5+",
+   "rep": "pirc"
+  },
+  "pirc-f3": {
+   "n": 11,
+   "ply": 4,
+   "coup": "f3",
+   "rep": "pirc"
+  },
+  "pirc-fe3": {
+   "n": 10,
+   "ply": 8,
+   "coup": "Be3",
+   "rep": "pirc"
+  },
+  "pirc-4f3": {
+   "n": 5,
+   "ply": 6,
+   "coup": "f3",
+   "rep": "pirc"
+  },
+  "pirc-h3": {
+   "n": 5,
+   "ply": 8,
+   "coup": "h3",
+   "rep": "pirc"
+  },
+  "pirc-fc4-2": {
+   "n": 4,
+   "ply": 2,
+   "coup": "Bc4",
    "rep": "pirc"
   },
   "ale-moderne": {

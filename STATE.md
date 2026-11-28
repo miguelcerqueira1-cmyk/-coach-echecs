@@ -7,11 +7,12 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 
 - **Chantier en cours** : compléter les fiches puis écrire les « 💡 Pourquoi ce coup ? », une ouverture à la fois,
   des plus jouées aux moins jouées. Faites : Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la
-  Dame, Najdorf, Italienne, Espagnole, 1…e5, Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave (16 / 29). **Prochaine étape exacte :
-  Pirc (pirc, 7 fiches ; 219 parties Élite)**, puis Contre l'Anglaise (219), Contre le Londres (189), Bogo (179), Écossaise (174)… L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
+  Dame, Najdorf, Italienne, Espagnole, 1…e5, Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc (17 / 29). **Prochaine étape exacte :
+  Contre l'Anglaise (contre-anglaise, 5 fiches ; 219 parties Élite)**, puis Contre le Londres (189), Bogo (179), Écossaise (174)… L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
   publication sans attendre sa validation de la liste (résumé ensuite) ; elle donne son « continue » entre deux
   ouvertures.
-- **Publication** : tout est sur `main` ; dernière publication : Scandinave (13 fiches ajoutées, 150 « Pourquoi ») ; avant : Catalane (10 fiches, 159), Anglaise (17 fiches,
+- **Publication** : tout est sur `main` ; dernière publication : Pirc (9 fiches ajoutées, 142 « Pourquoi », correction de pirc-e5 : 6…Cxe5 au lieu de 6…Cc6) ;
+  avant : Scandinave (13 fiches, 150), Catalane (10 fiches, 159), Anglaise (17 fiches,
   dont plusieurs transpositions vers le Gambit Dame, 237 « Pourquoi »), Indienne du Roi (17 fiches, 194), Contre 1.Cf3 (13 fiches,
   dont 9 reprises du GD refusé / Slave par transposition, 160 « Pourquoi »), GD refusé / Slave (16 fiches, 236, correction gdrn-londres 6…e5 au lieu de 6…Ff5 ??),
   Française (13, 211), 1…e5 (14, 256), en ligne.
@@ -27,7 +28,7 @@ Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Vienno
 Anglaise), contre 1.e4 (Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Philidor,
 Najdorf, Dragon), contre 1.c4 / 1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4
 (+ Grünfeld, Benoni / Benko, Bogo-indienne) (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **447 fiches** (2026-11-27) : Gambit Dame 31,
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **456 fiches** (2026-11-28) : Gambit Dame 31,
 Caro-Kann 27 (répertoire historique du créateur), Italienne 21 (9 ajoutées le 2026-11-27 : Petrov, Philidor,
 éléphant, letton — avant la racine 3.Fc4 —, 4.d3 Fc5, 4.d3 h6, Pianissimo …a5, 6.Fb5+ Fd7, 4.c3 d6), Espagnole 26 (13 ajoutées le 2026-11-27 : Petrov, Philidor, éléphant, letton
 — reprises de l'Italienne —, Arkhangelsk, Møller, Cozio différée, 5…d6 6.c3 Fg4, échange …Df6, anti-Marshall …b4,
@@ -43,7 +44,7 @@ Steinitz 5.Cce2 / 6.dxc5, avance 6.Fe2, Alekhine-Chatard 6.h4, 2.b3, 2.d3 d5 3.D
 3.f3, fianchetto 6.Cc3, Sämisch 6.Fg5, et sans 2.c4 : 2.Cf3 g6 3.c4 / 3.Ff4 / 3.g3, Trompowsky, 2.Ff4 Cc3 e4 Dd2),
 GD refusé / Slave 26 (16 ajoutées le 2026-11-27 : ordres 3.Cf3 / 2.Cf3, 5.Ff4, Catalane, Londres et Jobava, Semi-slave,
 slave 4.e3 / 4.g3 / 4.Dc2 / 4.cxd5, 3.c3, 2.Fg5, Torre, 3.g3), Contre le Londres 8, Hollandaise 5, Nimzo / Indienne de la Dame 20 (12 ajoutées le 2026-11-27 : sans 2.c4 —
-Trompowsky, Londres, Torre, Jobava, Colle — et 4.f3, 5.Fd2, 6.a3, 5.e4, Catalane 8.a4 / 7.Da4 / 7.Ce5), Pirc 7, Alekhine 8, Catalane 18 (10 ajoutées le 2026-11-27 : fermée 6…c6 / 6…a5 / 7…a5, 6…c5, 4…Fb4+, ouverte 5…Fb4+ / 5…Fd7 / 5…Cc6 /
+Trompowsky, Londres, Torre, Jobava, Colle — et 4.f3, 5.Fd2, 6.a3, 5.e4, Catalane 8.a4 / 7.Da4 / 7.Ce5), Pirc 16 (9 ajoutées le 2026-11-28 : 2.Cf3, 2.Cc3, 3.Fd3, 5.Fb5+, 3.f3, 5.Fe3, 4.f3, 5.h3, 2.Fc4), Alekhine 8, Catalane 18 (10 ajoutées le 2026-11-27 : fermée 6…c6 / 6…a5 / 7…a5, 6…c5, 4…Fb4+, ouverte 5…Fb4+ / 5…Fd7 / 5…Cc6 /
 5…Cbd7 / 7…b5), Grünfeld 8, Najdorf 18 (11 ajoutées le 2026-11-27 : Grand Prix, fermée,
 Alapin, Morra refusé, 3.Cc3, 3.c3, 4.Dxd4, 3.Fc4, 6.f3, 6.g3, 6.Fe3 e5 7.Cf3),
 Dragon 7, Contre l'Anglaise 5, Contre 1.Cf3 19 (13 ajoutées le 2026-11-27 : slave par 2.d4 Cf6 3.c4 c6 et ses suites, Londres, Torre, 3.c3, 3.g3,
@@ -161,7 +162,7 @@ clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, co
 présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
 Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
 Fait : **ck 242 / 242** (ton validé), **gd 283 / 283**, **sicilienne 208 / 208**, **londres 209 / 209**, **nimzo-qid 220 / 220**, **najdorf 170 / 170**, **italienne 185 / 185**, **espagnole 224 / 224** (2026-11-27 ; 42 textes repris de
-l'Italienne pour les coups communs), **e5-noirs 256 / 256** (81 textes repris de l'Italienne / Espagnole), **francaise 211 / 211**, **gdr-noirs 236 / 236**, **contre-reti 160 / 160**, **indienne-roi 194 / 194**, **anglaise 237 / 237**, **catalane 159 / 159**, **scandinave 150 / 150**. À faire : les 13 autres répertoires (suivant : pirc). Des fiches peuvent commencer
+l'Italienne pour les coups communs), **e5-noirs 256 / 256** (81 textes repris de l'Italienne / Espagnole), **francaise 211 / 211**, **gdr-noirs 236 / 236**, **contre-reti 160 / 160**, **indienne-roi 194 / 194**, **anglaise 237 / 237**, **catalane 159 / 159**, **scandinave 150 / 150**, **pirc 142 / 142**. À faire : les 12 autres répertoires (suivant : contre-anglaise). Des fiches peuvent commencer
 avant la racine du répertoire (ex. ita-petrov : 2…Cf6) : accepté par l'appli et les contrôles.
 **Autorisation de l'utilisatrice (2026-11-27)** : pour ce chantier « fiches + Pourquoi », enchaîner liste des trous →
 fiches → Pourquoi → tests → publication SANS attendre sa validation de la liste (lui résumer ensuite). Identifiants : repertoire.mjs

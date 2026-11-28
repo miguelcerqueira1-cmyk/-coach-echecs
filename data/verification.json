@@ -1,7 +1,7 @@
 {
  "engine": "Stockfish 18 Lite WASM",
  "depth": 18,
- "date": "2026-11-27",
+ "date": "2026-11-28",
  "entries": {
   "gd-orthodoxe": {
    "fp": "8ba06a94",
@@ -5215,19 +5215,19 @@
    }
   },
   "pirc-e5": {
-   "fp": "43449963",
+   "fp": "b25e741f",
    "depth": 18,
    "main": {
     "type": "cp",
-    "value": -43,
-    "best": "f4",
+    "value": -199,
+    "best": "Be3",
     "pv": [
-     "f4",
-     "Nb4",
-     "Na3",
+     "Be3",
+     "g6",
+     "c3",
      "Bf5",
-     "h3",
-     "Nh6"
+     "Nd2",
+     "Bg7"
     ],
     "pov": "w"
    }
@@ -13241,6 +13241,243 @@
       "d4",
       "e6",
       "Nc3"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "pirc-2cf3": {
+   "fp": "b0e5b055",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 61,
+    "best": "a4",
+    "pv": [
+     "a4",
+     "a5",
+     "d5",
+     "Nb4",
+     "h3",
+     "Bxf3"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-2cc3": {
+   "fp": "29ee1c33",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 61,
+    "best": "a4",
+    "pv": [
+     "a4",
+     "d5",
+     "e5",
+     "Ne4",
+     "Ra3",
+     "Nxc3"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-fd3": {
+   "fp": "397fe92f",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 65,
+    "best": "O-O",
+    "pv": [
+     "O-O",
+     "O-O",
+     "b4",
+     "Bb6",
+     "Nbd2",
+     "f5"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-fb5": {
+   "fp": "77e9ed2e",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 35,
+    "best": "Re1",
+    "pv": [
+     "Re1",
+     "e5",
+     "c3",
+     "Re8",
+     "h3",
+     "a5"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 10,
+    "errorSan": "Bxc6+",
+    "final": {
+     "type": "cp",
+     "value": 330,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 337,
+     "best": "bxc6",
+     "pv": [
+      "bxc6",
+      "e5",
+      "dxe5",
+      "dxe5",
+      "Nh5",
+      "Qe2"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "pirc-f3": {
+   "fp": "d57c7652",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 54,
+    "best": "Bd3",
+    "pv": [
+     "Bd3",
+     "b5",
+     "cxb5",
+     "cxd5",
+     "exd5",
+     "Bb7"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-fe3": {
+   "fp": "bb59e1e8",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 66,
+    "best": "Bh6",
+    "pv": [
+     "Bh6",
+     "Bxh6",
+     "Qxh6",
+     "e5",
+     "h3",
+     "Qe7"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 12,
+    "errorSan": "Nxb5",
+    "final": {
+     "type": "cp",
+     "value": 165,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 287,
+     "best": "Nxe4",
+     "pv": [
+      "Nxe4",
+      "Qd3",
+      "Bf5",
+      "Nh4",
+      "Nxf2",
+      "Qe2"
+     ]
+    },
+    "pov": "b"
+   }
+  },
+  "pirc-4f3": {
+   "fp": "c1ae8020",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 31,
+    "best": "Bh6",
+    "pv": [
+     "Bh6",
+     "Bxh6",
+     "Qxh6",
+     "Qa5",
+     "Nc1",
+     "Qb6"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-h3": {
+   "fp": "411b3fc8",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 69,
+    "best": "Qd2",
+    "pv": [
+     "Qd2",
+     "Na6",
+     "Be2",
+     "Nb4",
+     "Rd1",
+     "Qc7"
+    ],
+    "pov": "w"
+   }
+  },
+  "pirc-fc4-2": {
+   "fp": "de0eab80",
+   "depth": 18,
+   "main": {
+    "type": "cp",
+    "value": 24,
+    "best": "a4",
+    "pv": [
+     "a4",
+     "c5",
+     "Re1",
+     "Nc6",
+     "h3",
+     "a6"
+    ],
+    "pov": "w"
+   },
+   "punition": {
+    "ok": true,
+    "minCp": 150,
+    "errorPly": 8,
+    "errorSan": "Nxe5",
+    "final": {
+     "type": "cp",
+     "value": 323,
+     "mated": null
+    },
+    "afterError": {
+     "type": "cp",
+     "value": 333,
+     "best": "dxe5",
+     "pv": [
+      "dxe5",
+      "O-O",
+      "O-O",
+      "f4",
+      "Nc6",
+      "f5"
      ]
     },
     "pov": "b"
