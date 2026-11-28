@@ -10,22 +10,22 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
   Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre
   l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise, Alekhine, Dragon, Benoni / Benko, Hollandaise, Smith-Morra, Grünfeld.
   **Prochaine étape : à choisir avec l'utilisatrice** (pistes : variantes perso, accueil plus vendeur + pages publiques
-  par ouverture (SEO), vidéos des fiches sans vidéo, décision sm-siberien, partie B du plan après la micro-entreprise). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
+  par ouverture (SEO), vidéos des fiches sans vidéo, partie B du plan après la micro-entreprise). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
 - L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests → publication sans attendre sa validation
   (résumé simple ensuite) ; elle donne son « continue » entre deux ouvertures (parfois « les 2 / 3 suivantes »,
   ou une heure précise via une tâche programmée).
 - **Publication** : tout est sur `main` et en ligne (deploy.yml vérifié : Dragon + Benoni, succès, 2026-11-28 ; Hollandaise + Smith-Morra + Grünfeld publiés ensuite).
 - **Compteurs** : **574 fiches** vérifiées par Stockfish (profondeur 18), toutes traduites ; « Pourquoi » complets
   pour les 29 répertoires (FR + EN, contrôlés par verifie-pourquoi en CI).
-- **En attente de l'utilisatrice** : décision sur la fiche Smith-Morra (sic-morra 6…Dc7, voir plus bas) — « on
-  attend de voir » ; micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
+- **Décision prise (2026-11-28)** : la fiche Smith-Morra sm-siberien (6…Dc7 7.De2) reste telle quelle (choix de
+  l'utilisatrice) ; ne plus la signaler comme défaut.
+- **En attente de l'utilisatrice** : micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
 
 ### Hollandaise, Smith-Morra, Grünfeld (2026-11-28) — fin du chantier
 
 Hollandaise +9 (139 « Pourquoi »), Smith-Morra +10 (166), Grünfeld +7 (152). Aucune ancienne fiche à corriger,
-sauf le défaut connu sm-siberien (7.De2 au lieu de 7.Cb5, écart Stockfish 84 cp), laissé tel quel : décision de
-l'utilisatrice en attente.
+sm-siberien (7.De2, écart Stockfish 84 cp) laissé tel quel par décision de l'utilisatrice (2026-11-28).
 
 ### Dragon et Benoni / Benko (2026-11-28)
 
@@ -246,7 +246,7 @@ Pour chaque nouvelle fiche : lignes testées par probe-line, chaque coup « à n
 profondeur 14), pièges/punitions cherchés parmi les prises et échecs « gourmands » puis vérifiés (profondeur 18) ;
 verify-repertoire, repertoire.mjs, verifie-en, prolonge-lignes, frequences (données Élite du jour), pourquoi.
 Le jeton Lichess (statistiques au niveau 1000–1400) n'est pas disponible dans l'environnement cloud.
-**Défaut connu (signalé le 2026-11-27, non corrigé)** : sic-morra 6…Dc7 permet 7.Cb5 ! Db8 8.Ff4 (avantage blanc net
+**Signalé le 2026-11-27, gardé tel quel par décision de l'utilisatrice le 2026-11-28** : sic-morra 6…Dc7 permet 7.Cb5 ! Db8 8.Ff4 (avantage blanc net
 selon Stockfish) ; 6…a6 est meilleur, mais le piège sibérien de la fiche suppose …Dc7 : à revoir avec l'utilisatrice. Le Gambit Dame ayant ses textes, le test e2e « Lignes » attend
 « 💡 Pourquoi c4 ? » (et non plus le plan) après l'erreur volontaire. Conseils de rédaction : 1 phrase courte, le « pourquoi » (centre, développement, gain de temps,
 clouage, rupture, plan de la fiche), jamais de chiffre ; vérifier chaque affirmation (une case « défendue »,
