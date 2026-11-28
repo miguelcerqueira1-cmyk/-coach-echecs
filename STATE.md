@@ -9,18 +9,33 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
   Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la Dame, Najdorf, Italienne, Espagnole, 1…e5,
   Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre
   l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise, Alekhine, Dragon, Benoni / Benko, Hollandaise, Smith-Morra, Grünfeld.
+  Puis (2026-11-28) vidéos (342 → 21 fiches sans vidéo) et plan en 3 chantiers TERMINÉ : ouverture reconnue en direct,
+  « qui prend l'avantage » dans le bilan, accueil unique du premier lancement (détails plus bas).
   **Prochaine étape : à choisir avec l'utilisatrice** (pistes : variantes perso, accueil plus vendeur + pages publiques
   par ouverture (SEO), partie B du plan après la micro-entreprise). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
 - L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests → publication sans attendre sa validation
   (résumé simple ensuite) ; elle donne son « continue » entre deux ouvertures (parfois « les 2 / 3 suivantes »,
   ou une heure précise via une tâche programmée).
-- **Publication** : tout est sur `main` et en ligne (deploy.yml vérifié : Dragon + Benoni, succès, 2026-11-28 ; Hollandaise + Smith-Morra + Grünfeld publiés ensuite).
+- **Publication** : tout est sur `main` et en ligne (deploy.yml vérifié à chaque publication du 2026-11-28, dernier vérifié : moments clés du bilan ; accueil du premier lancement publié ensuite).
 - **Compteurs** : **574 fiches** vérifiées par Stockfish (profondeur 18), toutes traduites ; « Pourquoi » complets
   pour les 29 répertoires (FR + EN, contrôlés par verifie-pourquoi en CI).
 - **Décision prise (2026-11-28)** : la fiche Smith-Morra sm-siberien (6…Dc7 7.De2) reste telle quelle (choix de
   l'utilisatrice) ; ne plus la signaler comme défaut.
 - **En attente de l'utilisatrice** : micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
+
+### Accueil unique du premier lancement (2026-11-28) — chantier 3/3 (plan terminé)
+
+`choix.js` : au premier lancement (aucune ouverture encore choisie ET routine sans profil), deux étapes après
+les 4 étapes d'ouvertures : « 5. Où je joue » (sites Lichess / Chess.com + cadences Bullet / Blitz / Rapide, au
+moins un de chaque) et « 6. Mon temps » (20 / 45 / 90 min + cote approximative `COTES` → difficulté des problèmes
+`routine-v1.niveau` : < 1000 et « je ne sais pas » → easiest, 1000–1400 → easier, > 1400 → normal), récapitulatif
+« Ta routine sera bâtie sur : ouvertures · temps · sites · cadences », bouton « Créer ma routine et commencer » :
+enregistre les ouvertures (`mon-repertoire`) et le profil (`routine-v1.profil`, `normaliserProfil`). La routine
+du jour est prête dès l'Entraînement (plus de questions) ; sa théorie suit déjà les ouvertures choisies
+(`planTheorie`). « Modifier mes ouvertures » ensuite : 4 étapes d'ouvertures seules ; routine modifiable dans
+Entraînement → Ma routine → ⚙ Modifier. Pas de compte (choix confirmé par l'utilisatrice) : tout reste sur
+l'appareil. Texte « Comment ça marche » de l'accueil mis à jour.
 
 ### « Qui prend l'avantage » dans le bilan (2026-11-28) — chantier 2/3
 
@@ -34,7 +49,6 @@ décisifs »), chiffres Stockfish avant → après. « 🎯 Rejouer ce moment »
 `recordMoment` (progress.js, id `${gameId}#${ply}`, kind 'moment') → Positions de mes parties (attendu = meilleur
 coup Stockfish). Corrigé au passage : dans Positions de mes parties, le type de position était perdu (kind
 écrasé en 'pos') → `posKind` ; texte du statut dans un seul <span> (la boîte flex coupait le texte en colonnes).
-Suite : chantier 3/3 = accueil unique du premier lancement.
 
 ### Ouverture reconnue en direct (2026-11-28) — chantier 1/3 du plan validé
 

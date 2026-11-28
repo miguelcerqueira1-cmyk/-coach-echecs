@@ -57,6 +57,19 @@ test('première visite : accueil, choix en 4 étapes (Londres, Sicilienne, Indie
   await expect(ch.locator('[data-choix-q]')).toHaveText('Avec les Noirs, contre 1.c4 ou 1.Cf3, je joue…');
   await expect(ch.locator('.choix-recap')).toContainText('Système de Londres · Défense sicilienne · Défense indienne du Roi');
   await ch.locator('[data-choix-next]').click();
+  // Accueil unique : où et à quelle cadence je joue (au moins un site et une cadence), puis temps et niveau.
+  await expect(ch.locator('[data-choix-q]')).toHaveText('Où et à quelle cadence joues-tu ?');
+  await ch.locator('[data-choix-next]').click();
+  await expect(ch.locator('[data-choix-err]')).toHaveText('Choisis au moins un site et une cadence.');
+  await ch.locator('[data-rt="sites"][data-val="lichess"]').click();
+  await ch.locator('[data-rt="cadences"][data-val="blitz"]').click();
+  await ch.locator('[data-choix-next]').click();
+  await expect(ch.locator('[data-choix-q]')).toHaveText('Combien de temps par jour, et quel est ton niveau ?');
+  await ch.locator('[data-rt="temps"][data-val="20"]').click();
+  await ch.locator('[data-rt="cote"][data-val="1000-1400"]').click();
+  await expect(ch.locator('.choix-recap')).toContainText('Système de Londres · Défense sicilienne · Défense indienne du Roi · 20 min par jour · Lichess · Blitz');
+  await expect(ch.locator('[data-choix-next]')).toHaveText('Créer ma routine et commencer');
+  await ch.locator('[data-choix-next]').click();
   // Nouvel utilisateur : visite guidée (6 étapes, une seule fois), la page suit chaque étape.
   const tour = page.locator('.tour-bulle');
   await expect(tour).toContainText('1 / 6');
@@ -87,9 +100,12 @@ test('première visite : accueil, choix en 4 étapes (Londres, Sicilienne, Indie
   await rep.locator('[data-view="indienne-roi"]').click();
   await expect(rep.locator('[data-soon="indienne-roi"]')).toBeVisible();
   expect(JSON.parse(await page.evaluate((k) => localStorage.getItem(k), KEY)).ids).toEqual(['londres', 'sicilienne', 'indienne-roi']);
-  // Entraînement : le cours du Londres est proposé.
+  // Entraînement : le cours du Londres est proposé ; la routine est déjà prête (pas de questions).
   await page.goto('./#/entrainement');
   await expect(page.locator('[data-course="londres"]')).toBeVisible();
+  await expect(page.locator('[data-routine-profil]')).toHaveCount(0);
+  await expect(page.locator('[data-routine]')).toContainText('Ma routine : 20 min par jour · Lichess · Blitz');
+  expect(JSON.parse(await page.evaluate(() => localStorage.getItem('coach-echecs:routine-v1'))).niveau).toBe('easier');
   // Revenir à l'accueil depuis le logo.
   await page.click('.brand');
   await expect(page.locator('#page-accueil')).toBeVisible();

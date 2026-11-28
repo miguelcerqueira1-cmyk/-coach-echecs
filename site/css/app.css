@@ -950,3 +950,6 @@ a.chip { display: inline-flex; align-items: center; text-decoration: none; color
 .moments li.moment-occasion { border-left-color: var(--reply); }
 .moments li.moment-cadeau { border-left-color: var(--best); }
 .moments .small-btn { margin-top: .3rem; }
+.choix-grid-mini { grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
+.choix-card.choix-mini { min-height: 52px; justify-content: center; }
+.choix h3.small { margin: .4rem 0 0; font-size: .95rem; }

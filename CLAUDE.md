@@ -13,8 +13,9 @@ bugs connus sont dans `STATE.md`.** Ne pas recopier de code ici.
 
 ## Chantier en cours (détail et prochaine étape : `STATE.md`)
 
-Le chantier fiches + « 💡 Pourquoi ce coup ? » des 29 ouvertures est terminé (2026-11-28). Le prochain chantier
-est à choisir avec l'utilisatrice (pistes dans `STATE.md`).
+Aucun chantier en cours (2026-11-28 : fiches + « Pourquoi » des 29 ouvertures, vidéos, ouverture reconnue en direct,
+« qui prend l'avantage », accueil du premier lancement : tout est fait). Le prochain est à choisir avec
+l'utilisatrice (pistes dans `STATE.md`).
 
 ## Le projet en deux lignes
 

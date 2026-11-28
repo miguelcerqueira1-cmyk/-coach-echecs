@@ -71,7 +71,7 @@ export class AccueilPage {
       <section class="card acc-steps">
         <h2>${L('Comment ça marche', 'How it works')}</h2>
         <ol>
-          <li>${L('<strong>Choisissez vos ouvertures</strong> : avec les Blancs, contre 1.e4, contre 1.d4.', '<strong>Choose your openings</strong>: with White, against 1.e4, against 1.d4.')}</li>
+          <li>${L('<strong>Choisissez vos ouvertures</strong> (avec les Blancs, contre 1.e4, contre 1.d4), puis où, à quelle cadence et combien de temps vous jouez : l’appli vous prépare une routine du jour sur mesure.', '<strong>Choose your openings</strong> (with White, against 1.e4, against 1.d4), then where, at what time control and how long you play: the app prepares a tailored daily routine.')}</li>
           <li>${L('<strong>Apprenez</strong> chaque variante en leçon, avec ses pièges et ses punitions à jouer sur l’échiquier.', '<strong>Learn</strong> each line as a lesson, with its traps and punishments to play on the board.')}</li>
           <li>${L('<strong>Entraînez-vous</strong> : lignes de mémoire, réflexes anti-trash chronométrés, et vos propres erreurs tirées de vos parties.', '<strong>Train</strong>: lines from memory, timed anti-trash reflexes, and your own mistakes taken from your games.')}</li>
         </ol>
