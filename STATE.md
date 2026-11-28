@@ -16,7 +16,7 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 - L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests → publication sans attendre sa validation
   (résumé simple ensuite) ; elle donne son « continue » entre deux ouvertures (parfois « les 2 / 3 suivantes »,
   ou une heure précise via une tâche programmée).
-- **Publication** : tout est sur `main` et en ligne (deploy.yml vérifié à chaque publication du 2026-11-28, dernier vérifié : moments clés du bilan ; accueil du premier lancement publié ensuite).
+- **Publication** : tout est sur `main` et en ligne. Dernière mise en ligne vérifiée : accueil du premier lancement (deploy.yml réussi le 2026-11-28 vers 17 h 18, heure française, tests iPhone compris). Les 3 chantiers du plan (ouverture en direct, « qui prend l’avantage », accueil) sont en ligne.
 - **Compteurs** : **574 fiches** vérifiées par Stockfish (profondeur 18), toutes traduites ; « Pourquoi » complets
   pour les 29 répertoires (FR + EN, contrôlés par verifie-pourquoi en CI).
 - **Décision prise (2026-11-28)** : la fiche Smith-Morra sm-siberien (6…Dc7 7.De2) reste telle quelle (choix de
