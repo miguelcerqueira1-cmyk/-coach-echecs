@@ -2001,9 +2001,9 @@
    "rep": "dragon"
   },
   "dragon-9ooo": {
-   "n": 27,
-   "ply": 16,
-   "coup": "O-O-O",
+   "n": 10,
+   "ply": 18,
+   "coup": "exd5",
    "rep": "dragon"
   },
   "dragon-9g4": {
@@ -2028,6 +2028,84 @@
    "n": 1,
    "ply": 10,
    "coup": "g3",
+   "rep": "dragon"
+  },
+  "drg-moscou": {
+   "n": 153,
+   "ply": 4,
+   "coup": "Bb5+",
+   "rep": "dragon"
+  },
+  "drg-grand-prix": {
+   "n": 14,
+   "ply": 4,
+   "coup": "f4",
+   "rep": "dragon"
+  },
+  "drg-fermee": {
+   "n": 7,
+   "ply": 4,
+   "coup": "g3",
+   "rep": "dragon"
+  },
+  "drg-alapin": {
+   "n": 151,
+   "ply": 2,
+   "coup": "c3",
+   "rep": "dragon"
+  },
+  "drg-morra": {
+   "n": 91,
+   "ply": 2,
+   "coup": "d4",
+   "rep": "dragon"
+  },
+  "drg-cc3": {
+   "n": 73,
+   "ply": 4,
+   "coup": "Nc3",
+   "rep": "dragon"
+  },
+  "drg-c3": {
+   "n": 36,
+   "ply": 4,
+   "coup": "c3",
+   "rep": "dragon"
+  },
+  "drg-dxd4": {
+   "n": 33,
+   "ply": 6,
+   "coup": "Qxd4",
+   "rep": "dragon"
+  },
+  "drg-fc4": {
+   "n": 33,
+   "ply": 4,
+   "coup": "Bc4",
+   "rep": "dragon"
+  },
+  "drg-dd2-cg4": {
+   "n": 6,
+   "ply": 12,
+   "coup": "Qd2",
+   "rep": "dragon"
+  },
+  "drg-10cxc6": {
+   "n": 3,
+   "ply": 18,
+   "coup": "Nxc6",
+   "rep": "dragon"
+  },
+  "drg-5fd3": {
+   "n": 5,
+   "ply": 8,
+   "coup": "Bd3",
+   "rep": "dragon"
+  },
+  "drg-6fd3": {
+   "n": 3,
+   "ply": 10,
+   "coup": "Bd3",
    "rep": "dragon"
   },
   "kid-classique": {
@@ -2457,9 +2535,9 @@
    "rep": "benoni"
   },
   "ben-fianchetto": {
-   "n": 10,
-   "ply": 10,
-   "coup": "Nf3",
+   "n": 4,
+   "ply": 12,
+   "coup": "g3",
    "rep": "benoni"
   },
   "ben-taimanov": {
@@ -2484,6 +2562,60 @@
    "n": 9,
    "ply": 8,
    "coup": "e3",
+   "rep": "benoni"
+  },
+  "benko-5b6": {
+   "n": 6,
+   "ply": 8,
+   "coup": "b6",
+   "rep": "benoni"
+  },
+  "benko-cd2": {
+   "n": 3,
+   "ply": 6,
+   "coup": "Nd2",
+   "rep": "benoni"
+  },
+  "benko-cf3": {
+   "n": 1,
+   "ply": 6,
+   "coup": "Nf3",
+   "rep": "benoni"
+  },
+  "ben-cd2": {
+   "n": 5,
+   "ply": 12,
+   "coup": "Nd2",
+   "rep": "benoni"
+  },
+  "ben-h3": {
+   "n": 3,
+   "ply": 12,
+   "coup": "h3",
+   "rep": "benoni"
+  },
+  "ben-7e4": {
+   "n": 5,
+   "ply": 12,
+   "coup": "e4",
+   "rep": "benoni"
+  },
+  "ben-2cf3": {
+   "n": 638,
+   "ply": 2,
+   "coup": "Nf3",
+   "rep": "benoni"
+  },
+  "ben-fg5-ce4": {
+   "n": 11,
+   "ply": 4,
+   "coup": "d5",
+   "rep": "benoni"
+  },
+  "ben-fxf6": {
+   "n": 8,
+   "ply": 4,
+   "coup": "Bxf6",
    "rep": "benoni"
   },
   "bogo-de7": {
