@@ -7,11 +7,12 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
 
 - **Chantier en cours** : compléter les fiches puis écrire les « 💡 Pourquoi ce coup ? », une ouverture à la fois,
   des plus jouées aux moins jouées. Faites : Caro-Kann, Gambit Dame, Sicilienne, Londres, Nimzo / Indienne de la
-  Dame, Najdorf, Italienne, Espagnole, 1…e5, Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre l'Anglaise, Contre le Londres, Bogo-indienne (20 / 29). **Prochaine étape exacte :
-  Écossaise (ecossaise, 10 fiches ; 174 parties Élite)**, puis Philidor (138), Viennoise (131), Alekhine (105), Dragon (84)… L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
+  Dame, Najdorf, Italienne, Espagnole, 1…e5, Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise (21 / 29). **Prochaine étape exacte :
+  Philidor (philidor, 5 fiches ; 138 parties Élite)**, puis Viennoise (131), Alekhine (105), Dragon (84), Benoni (80)… L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests →
   publication sans attendre sa validation de la liste (résumé ensuite) ; elle donne son « continue » entre deux
   ouvertures.
-- **Publication** : tout est sur `main` ; dernière publication : Bogo-indienne (7 fiches ajoutées, 110 « Pourquoi ») ; avant : Contre le Londres (8 fiches,
+- **Publication** : tout est sur `main` ; dernière publication : Écossaise (12 fiches ajoutées, dont Petrov / Philidor / éléphant / letton reprises de
+  l’Italienne, 196 « Pourquoi ») ; avant : Bogo-indienne (7 fiches, 110), Contre le Londres (8 fiches,
   127, correction de cl-c5-db6 : 6…e5 au lieu de 6…Ff5 ??), Contre l'Anglaise (7 fiches, 109), Pirc (9 fiches, 142,
   correction de pirc-e5 : 6…Cxe5 au lieu de 6…Cc6), Scandinave (13 fiches, 150), Catalane (10 fiches, 159), Anglaise (17 fiches,
   dont plusieurs transpositions vers le Gambit Dame, 237 « Pourquoi »), Indienne du Roi (17 fiches, 194), Contre 1.Cf3 (13 fiches,
@@ -29,12 +30,13 @@ Blancs (Gambit Dame, Italienne, Espagnole, Londres, Écossaise, Catalane, Vienno
 Anglaise), contre 1.e4 (Caro-Kann, 1…e5, Sicilienne, Française, Scandinave, Pirc, Alekhine, Philidor,
 Najdorf, Dragon), contre 1.c4 / 1.Cf3 (Contre l'Anglaise 1.c4 e5, Contre 1.Cf3 Réti), contre 1.d4
 (+ Grünfeld, Benoni / Benko, Bogo-indienne) (Indienne du Roi, GD refusé / Slave, Contre le
-Londres, Hollandaise, Nimzo / Indienne de la Dame). **478 fiches** (2026-11-28) : Gambit Dame 31,
+Londres, Hollandaise, Nimzo / Indienne de la Dame). **490 fiches** (2026-11-28) : Gambit Dame 31,
 Caro-Kann 27 (répertoire historique du créateur), Italienne 21 (9 ajoutées le 2026-11-27 : Petrov, Philidor,
 éléphant, letton — avant la racine 3.Fc4 —, 4.d3 Fc5, 4.d3 h6, Pianissimo …a5, 6.Fb5+ Fd7, 4.c3 d6), Espagnole 26 (13 ajoutées le 2026-11-27 : Petrov, Philidor, éléphant, letton
 — reprises de l'Italienne —, Arkhangelsk, Møller, Cozio différée, 5…d6 6.c3 Fg4, échange …Df6, anti-Marshall …b4,
 norvégienne, Smyslov, Cozio), Londres 21 (9 ajoutées le 2026-11-27 :
-1…e6, 1…g6, 1…d6, 1…c6, 1…b6, 3…c5 direct, …Fd6, …Ch5, …cxd4), Écossaise 10,
+1…e6, 1…g6, 1…d6, 1…c6, 1…b6, 3…c5 direct, …Fd6, …Ch5, …cxd4), Écossaise 22 (12 ajoutées le 2026-11-28 : quatre Cavaliers 7…O-O / 8…O-O / 5…Fc5 / 5…Cxe4 / 10…Fe6, 4…Df6,
+5.Cxc6 dxc6, gambit 4.Fc4 Cf6 5.O-O, et avant 3.d4 : Petrov, Philidor, éléphant, letton),
 Anglaise 25 (17 ajoutées le 2026-11-27 : après 4.d4 Ragozine / Semi-slave / …Cbd7 / Semi-Tarrasch / …dxc4, contre 1…e6
 …Fe7 / …c6 (gambit Marshall) / …c5 / …a6 / …Cxd5, 1…c6, 1…g6, 1…b6, 1…f5, 2…Fb4, 2…Cc6, 2…e5), 1…e5 22 (14 ajoutées le 2026-11-27 : quatre Cavaliers 4.Fb5 et 4.d4, Deux Cavaliers 4.d3,
 Italienne 4.d3 et 5.d4, partie du Fou, Berlinoise 4.d3 et 5.Te1, échange 4.Fxc6, 6.d3, partie du centre, viennoise 3.Fc4,
@@ -163,7 +165,7 @@ clé reliée à une fiche, ≤ 240 caractères, aucune évaluation chiffrée, co
 présents dans une fiche de la position ; « Stockfish préférait X » seulement si c'est le meilleur coup calculé).
 Affichage : leçon étape « Les coups » (`data-pourquoi`, `pourquoi.js`) et erreur dans S'entraîner (remplace le plan).
 Fait : **ck 242 / 242** (ton validé), **gd 283 / 283**, **sicilienne 208 / 208**, **londres 209 / 209**, **nimzo-qid 220 / 220**, **najdorf 170 / 170**, **italienne 185 / 185**, **espagnole 224 / 224** (2026-11-27 ; 42 textes repris de
-l'Italienne pour les coups communs), **e5-noirs 256 / 256** (81 textes repris de l'Italienne / Espagnole), **francaise 211 / 211**, **gdr-noirs 236 / 236**, **contre-reti 160 / 160**, **indienne-roi 194 / 194**, **anglaise 237 / 237**, **catalane 159 / 159**, **scandinave 150 / 150**, **pirc 142 / 142**, **contre-anglaise 109 / 109**, **contre-londres 127 / 127**, **bogo 110 / 110**. À faire : les 9 autres répertoires (suivant : ecossaise). Des fiches peuvent commencer
+l'Italienne pour les coups communs), **e5-noirs 256 / 256** (81 textes repris de l'Italienne / Espagnole), **francaise 211 / 211**, **gdr-noirs 236 / 236**, **contre-reti 160 / 160**, **indienne-roi 194 / 194**, **anglaise 237 / 237**, **catalane 159 / 159**, **scandinave 150 / 150**, **pirc 142 / 142**, **contre-anglaise 109 / 109**, **contre-londres 127 / 127**, **bogo 110 / 110**, **ecossaise 196 / 196**. À faire : les 8 autres répertoires (suivant : philidor). Des fiches peuvent commencer
 avant la racine du répertoire (ex. ita-petrov : 2…Cf6) : accepté par l'appli et les contrôles.
 **Autorisation de l'utilisatrice (2026-11-27)** : pour ce chantier « fiches + Pourquoi », enchaîner liste des trous →
 fiches → Pourquoi → tests → publication SANS attendre sa validation de la liste (lui résumer ensuite). Identifiants : repertoire.mjs

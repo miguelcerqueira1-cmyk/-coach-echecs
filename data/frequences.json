@@ -519,9 +519,9 @@
    "rep": "ecossaise"
   },
   "eco-cf6": {
-   "n": 44,
-   "ply": 8,
-   "coup": "Nxc6",
+   "n": 40,
+   "ply": 9,
+   "coup": "bxc6",
    "rep": "ecossaise"
   },
   "eco-dh4": {
@@ -531,9 +531,9 @@
    "rep": "ecossaise"
   },
   "eco-gambit": {
-   "n": 12,
-   "ply": 6,
-   "coup": "Bc4",
+   "n": 1,
+   "ply": 7,
+   "coup": "Bc5",
    "rep": "ecossaise"
   },
   "eco-cb3": {
@@ -549,9 +549,81 @@
    "rep": "ecossaise"
   },
   "eco-4cav": {
-   "n": 1,
-   "ply": 8,
-   "coup": "Nc3",
+   "n": 14,
+   "ply": 19,
+   "coup": "c6",
+   "rep": "ecossaise"
+  },
+  "eco-4cav-oo": {
+   "n": 33,
+   "ply": 13,
+   "coup": "O-O",
+   "rep": "ecossaise"
+  },
+  "eco-4cav-8oo": {
+   "n": 9,
+   "ply": 15,
+   "coup": "O-O",
+   "rep": "ecossaise"
+  },
+  "eco-df6": {
+   "n": 15,
+   "ply": 7,
+   "coup": "Qf6",
+   "rep": "ecossaise"
+  },
+  "eco-cxe4": {
+   "n": 7,
+   "ply": 9,
+   "coup": "Nxe4",
+   "rep": "ecossaise"
+  },
+  "eco-dxc6": {
+   "n": 4,
+   "ply": 9,
+   "coup": "dxc6",
+   "rep": "ecossaise"
+  },
+  "eco-fc5-4cav": {
+   "n": 3,
+   "ply": 9,
+   "coup": "Bc5",
+   "rep": "ecossaise"
+  },
+  "eco-4cav-fe6": {
+   "n": 3,
+   "ply": 19,
+   "coup": "Be6",
+   "rep": "ecossaise"
+  },
+  "eco-gambit-cf6": {
+   "n": 8,
+   "ply": 7,
+   "coup": "Nf6",
+   "rep": "ecossaise"
+  },
+  "eco-petrov": {
+   "n": 132,
+   "ply": 3,
+   "coup": "Nf6",
+   "rep": "ecossaise"
+  },
+  "eco-philidor": {
+   "n": 46,
+   "ply": 3,
+   "coup": "d6",
+   "rep": "ecossaise"
+  },
+  "eco-elephant": {
+   "n": 21,
+   "ply": 3,
+   "coup": "d5",
+   "rep": "ecossaise"
+  },
+  "eco-letton": {
+   "n": 13,
+   "ply": 3,
+   "coup": "f5",
    "rep": "ecossaise"
   },
   "cat-fermee": {
