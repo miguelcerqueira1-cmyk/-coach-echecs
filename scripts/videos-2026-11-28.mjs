@@ -7,7 +7,6 @@ const letton = [['2flPdsk9uz4', 'Chess Openings: Latvian Gambit', 'en'], ['zV3no
 const deuxCav = ['NKI-7UwuGTM', 'The Two Knights Defense', 'en'];
 const fermee = [['5bsKlnGLI7g', 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', 'en'], ['vYtXb1Fl7NU', 'The Closed Sicilian explained by GM Alex Colovic', 'en']];
 const moscou = ['XI9_mUSzAF4', 'The Moscow Variation of the Sicilian (3.Bb5+)', 'en'];
-const chekhover = ['vT4FQsKzX2A', 'How to play the Qxd4 Sicilian (Chekhover)', 'en'];
 const rossolimo = ['TIQ9-8xp5II', 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', 'en'];
 const kia = ['yVEq05yABzw', 'How to play the KIA Sicilian', 'en'];
 const colle = ['FN7xJhjCxkY', 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', 'en'];
@@ -39,7 +38,7 @@ export default {
   'sic-fb5': [rossolimo], 'sic-cc3-fb5': [rossolimo],
   'sic-fermee': fermee, 'naj-fermee': fermee, 'drg-fermee': fermee,
   'naj-moscou': [moscou], 'drg-moscou': [moscou],
-  'naj-dxd4': [chekhover], 'drg-dxd4': [chekhover],
+  // vT4FQsKzX2A (Chekhover) retirée : oEmbed « restreinte » le 2026-11-28.
   'gdrn-colle': [colle], 'nq-colle': [colle],
   'gdrn-torre': torre, 'nq-torre': torre,
   'gdrn-jobava': jobava, 'nq-jobava': jobava,

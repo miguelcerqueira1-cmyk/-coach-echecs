@@ -154,7 +154,7 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Four Knights Spanish 4.Bb5 Bb4 black plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=EmuVOf5RmzU', titre: 'Four Knights Game: Spanish Variation (4. Bb5)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=EmuVOf5RmzU', titre: 'Four Knights Game: Spanish Variation (4. Bb5)', chaine: 'Chess Openings', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -189,7 +189,7 @@ export default [
     conserver: 'Pion e5',
     video: { recherche: 'Two Knights Defense 4.d3 Be7 plan for black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense | Chess Opening Tutorial', chaine: 'GM Huschenbeth', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -245,7 +245,7 @@ export default [
     conserver: 'Le centre c6-d5-e5',
     video: { recherche: 'Bishop\'s Opening 2...Nf6 3.d3 c6 4.Nf3 d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=CmZKgWY--L8', titre: 'Bishop\'s Opening Explained in 15 Minutes [Crash Course]', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=CmZKgWY--L8', titre: 'Bishop\'s Opening Explained in 15 Minutes [Crash Course]', chaine: 'Remote Chess Academy', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -330,7 +330,7 @@ export default [
     conserver: 'L’avance de développement',
     video: { recherche: 'Center Game 2.d4 exd4 3.Qxd4 Nc6 how to play black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=4ArTPSjSJbs', titre: 'Center Game Full Guide for beginners(Key ideas,Best traps, Main Variations)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4ArTPSjSJbs', titre: 'Center Game Full Guide for beginners(Key ideas,Best traps, Main Variations)', chaine: 'Chessbrainly', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -386,7 +386,7 @@ export default [
     conserver: 'Dame active au centre',
     video: { recherche: 'Goring Gambit decline 4...d5 explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=20bcUsEPPTI', titre: 'A Shot of Scotch #4: Göring Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=20bcUsEPPTI', titre: 'A Shot of Scotch #4: Göring Gambit | Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

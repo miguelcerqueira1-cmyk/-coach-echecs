@@ -98,7 +98,7 @@ export default [
     conserver: 'Tour e1 sur la colonne e',
     video: { recherche: 'Steinitz Defense Ruy Lopez 3...d6 plans', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FNRh5E1Ocqg', titre: 'Ruy Lopez, (Old) Steinitz Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FNRh5E1Ocqg', titre: 'Ruy Lopez, (Old) Steinitz Defense · Complete Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -143,7 +143,7 @@ export default [
     conserver: 'Roque rapide et pion e4',
     video: { recherche: 'Schliemann gambit 4.d3 anti line', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=ne67RDbXVsU', titre: 'Ruy Lopez - Schliemann Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=ne67RDbXVsU', titre: 'Ruy Lopez - Schliemann Defense | Chess Openings | 1.e4 e5 2.Nf3 Nc6 3.Bb5 f5', chaine: 'AIChess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -229,7 +229,7 @@ export default [
     conserver: 'La Tour sur la colonne e',
     video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -273,7 +273,7 @@ export default [
     conserver: 'Le pion de plus',
     video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit! | Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -294,8 +294,8 @@ export default [
     conserver: 'Le Cavalier c4',
     video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -316,7 +316,7 @@ export default [
     conserver: 'Le centre c3-d4-e4',
     video: { recherche: 'Ruy Lopez Arkhangelsk 5...b5 6.Bb3 Bb7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=gf-5PDa619E', titre: 'Ruy Lopez - Archangel (Arkhangelsk) Variation ⎸Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=gf-5PDa619E', titre: 'Ruy Lopez - Archangel (Arkhangelsk) Variation ⎸Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -334,7 +334,7 @@ export default [
     conserver: 'Le Fou b3, braqué sur f7',
     video: { recherche: 'Ruy Lopez Moller 5...Bc5 6.c3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=wxeIrtY5Onw', titre: 'Ruy Lopez - ...a6 with ...Bc5 Variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=wxeIrtY5Onw', titre: 'Ruy Lopez - ...a6 with ...Bc5 Variations', chaine: 'Tyrone Ferrara (Black Knight)', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -355,7 +355,7 @@ export default [
     conserver: 'Le centre d4-e4',
     video: { recherche: 'Ruy Lopez Cozio deferred 4...Nge7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=CScN9zlPuXc', titre: 'Ruy Lopez, Cozio Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=CScN9zlPuXc', titre: 'Ruy Lopez, Cozio Defense · Complete Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -429,7 +429,7 @@ export default [
     conserver: 'L’avance de développement',
     video: { recherche: 'Ruy Lopez Norwegian 4...b5 5.Bb3 Na5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=l9egatXy9Dk', titre: 'Ruy Lopez - Norwegian Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=l9egatXy9Dk', titre: 'Ruy Lopez - Norwegian Defense', chaine: 'Tyrone Ferrara (Black Knight)', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -447,7 +447,7 @@ export default [
     conserver: 'Le pion d4',
     video: { recherche: 'Ruy Lopez Smyslov 3...g6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=4gLWs4rWCIo', titre: 'Ruy Lopez, Fianchetto Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=4gLWs4rWCIo', titre: 'Ruy Lopez, Fianchetto Defense · Complete Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -465,7 +465,7 @@ export default [
     conserver: 'Le centre d4-e4',
     video: { recherche: 'Ruy Lopez Cozio 3...Nge7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=CScN9zlPuXc', titre: 'Ruy Lopez, Cozio Defense · Complete Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=CScN9zlPuXc', titre: 'Ruy Lopez, Cozio Defense · Complete Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
 ];

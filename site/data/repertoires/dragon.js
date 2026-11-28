@@ -134,7 +134,7 @@ export default [
     conserver: 'Pion d6',
     video: { recherche: 'Sicilian Moscow variation 3.Bb5+ Bd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=XI9_mUSzAF4', titre: 'The Moscow Variation of the Sicilian (3.Bb5+)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=XI9_mUSzAF4', titre: 'The Moscow Variation of the Sicilian (3.Bb5+)', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -164,8 +164,8 @@ export default [
     conserver: 'Le Fou g7 (grande diagonale)',
     video: { recherche: 'Closed Sicilian 2.Nc3 d6 3.g3 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -254,10 +254,7 @@ export default [
     cases: 'e4, d6, c6 (Fou)',
     echanger: 'Les pièces mineures quand cela fait valoir la paire de Fous',
     conserver: 'La paire de Fous',
-    video: { recherche: 'Sicilian 4.Qxd4 Nc6 5.Bb5 Bd7 Chekhover', url: null,
-      liens: [
-        { url: 'https://www.youtube.com/watch?v=vT4FQsKzX2A', titre: 'How to play the Qxd4 Sicilian (Chekhover)', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-      ] },
+    video: { recherche: 'Sicilian 4.Qxd4 Nc6 5.Bb5 Bd7 Chekhover', url: null },
   },
   {
     id: 'drg-fc4', rep: 'dragon', famille: 'Sans 3.d4', nom: '2.Cf3 d6 3.Fc4 Cf6 4.d3', badge: 'theorie',

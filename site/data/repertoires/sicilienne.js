@@ -125,8 +125,8 @@ export default [
     conserver: 'Le pion de plus',
     video: { recherche: 'Sicilian Wing Gambit 2.b4 how to refute', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=9HRdGZlfZYY', titre: 'Partie n°22 Blancs: Gambit de l\'aile sur la sicilienne: 1.e4 c5 2.b4!? et miniature!', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=NkD12gJcbO4', titre: 'GM Analysis #9: Williams vs Dragun: Sicilian Wing Gambit 2 b4!?', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9HRdGZlfZYY', titre: 'Partie n°22 Blancs: Gambit de l\'aile sur la sicilienne: 1.e4 c5 2.b4!? et miniature!', chaine: 'Echecs et Maths Faciles', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NkD12gJcbO4', titre: 'GM Analysis #9: Williams vs Dragun: Sicilian Wing Gambit 2 b4!?', chaine: 'GingerGM', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -141,7 +141,7 @@ export default [
     conserver: 'Fou de cases noires pour défendre le roque',
     video: { recherche: 'Sicilian 2...e6 vs King\'s Indian Attack d3 g3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=yVEq05yABzw', titre: 'How to play the KIA Sicilian', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=yVEq05yABzw', titre: 'How to play the KIA Sicilian', chaine: 'Daaron Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -156,8 +156,8 @@ export default [
     conserver: 'Pion e6 tant que le Fou vise f7',
     video: { recherche: 'Bowdler Attack 2.Bc4 Sicilian how to respond', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=NOp-Xkfxkxc', titre: 'Jouer contre l\'attaque Bowdler', chaine: null, langue: 'fr', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=WiSu6wSd4l8', titre: 'Quickly Crush The Dubious Bowdler Attack!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NOp-Xkfxkxc', titre: 'Jouer contre l\'attaque Bowdler', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=WiSu6wSd4l8', titre: 'Quickly Crush The Dubious Bowdler Attack!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -211,7 +211,7 @@ export default [
     conserver: 'Le Cavalier en d4 tant qu’il gêne',
     video: { recherche: 'Sicilian 2.Nc3 Nc6 3.Bb5 Nd4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=TIQ9-8xp5II', titre: 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TIQ9-8xp5II', titre: 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -226,7 +226,7 @@ export default [
     conserver: 'Le pion d5 bien soutenu',
     video: { recherche: 'Sicilian 2.Nf3 e6 3.g3', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=yVEq05yABzw', titre: 'How to play the KIA Sicilian', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=yVEq05yABzw', titre: 'How to play the KIA Sicilian', chaine: 'Daaron Chess', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -259,8 +259,8 @@ export default [
     conserver: 'Le Fou g7 (grande diagonale)',
     video: { recherche: 'Closed Sicilian 2.Nc3 Nc6 3.g3 g6 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=5bsKlnGLI7g', titre: 'Closed Sicilian: Ideas, Principles and Common Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=vYtXb1Fl7NU', titre: 'The Closed Sicilian explained by GM Alex Colovic', chaine: 'Chessable', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -296,7 +296,7 @@ export default [
     conserver: 'La paire de Fous',
     video: { recherche: 'Sicilian 2.Nf3 e6 3.Nc3 Nc6 4.Bb5 Nge7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=TIQ9-8xp5II', titre: 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=TIQ9-8xp5II', titre: 'Opening Basics #7: Sicilian defense - Rossolimo and related variations', chaine: 'Jim\'s Chess Channel', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {

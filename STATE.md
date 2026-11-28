@@ -10,7 +10,7 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
   Française, GD refusé / Slave, Contre 1.Cf3, Indienne du Roi, Anglaise, Catalane, Scandinave, Pirc, Contre
   l'Anglaise, Contre le Londres, Bogo-indienne, Écossaise, Philidor, Viennoise, Alekhine, Dragon, Benoni / Benko, Hollandaise, Smith-Morra, Grünfeld.
   **Prochaine étape : à choisir avec l'utilisatrice** (pistes : variantes perso, accueil plus vendeur + pages publiques
-  par ouverture (SEO), vidéos des fiches sans vidéo, partie B du plan après la micro-entreprise). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
+  par ouverture (SEO), partie B du plan après la micro-entreprise). Méthode et outils : § « Session des 27–28/11 » ci-dessous.
 - L'utilisatrice autorise à enchaîner liste → fiches → Pourquoi → tests → publication sans attendre sa validation
   (résumé simple ensuite) ; elle donne son « continue » entre deux ouvertures (parfois « les 2 / 3 suivantes »,
   ou une heure précise via une tâche programmée).
@@ -21,6 +21,15 @@ terminé. Les règles stables (stack, architecture, conventions, commandes) sont
   l'utilisatrice) ; ne plus la signaler comme défaut.
 - **En attente de l'utilisatrice** : micro-entreprise (SIRET → pages légales) ; réponse de Lichess sur l'usage commercial.
 - Pseudos de l'utilisatrice : Lichess **LeugiMC**, Chess.com **QG_Miguel**.
+
+### Vidéos des fiches (2026-11-28)
+
+342 fiches sans vidéo → **21** (variantes trop rares : gd-g5/fg4/h5/dd6, ck-dh5/fd3/df3, ita-df6, sic-dame, sic-b3,
+naj/drg-cc3, -c3, -fc4, -dxd4, gdrn-c3/fg5/cf3-g3). `scripts/ajout-videos-2026-11-28.mjs` : (1) vidéos déjà
+confirmées d'autres fiches reprises quand elles traitent de l'ouverture ou de la variante ; (2) 41 vidéos trouvées
+par recherche web (`scripts/videos-2026-11-28.mjs`), confirmées par oEmbed via le workflow « Chapitres » lancé sur
+la branche (`scripts/videos-confirmees-2026-11-28.json` : vrai titre, vraie chaîne) ; 1 retirée (restreinte :
+Chekhover vT4FQsKzX2A). Le test unitaire refuse toute vidéo `verifie: false` : confirmer AVANT de publier.
 
 ### Hollandaise, Smith-Morra, Grünfeld (2026-11-28) — fin du chantier
 

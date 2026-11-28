@@ -318,7 +318,7 @@ export default [
     conserver: 'La Tour sur la colonne e',
     video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
@@ -364,7 +364,7 @@ export default [
     conserver: 'Le pion de plus',
     video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit! | Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
@@ -387,8 +387,8 @@ export default [
     conserver: 'Le Cavalier c4',
     video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=QRSg2GNkcRA', titre: 'Répertoire blanc: introduction à l\'ouverture Écossaise', chaine: 'Echecs - Blitzstream', langue: 'fr', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=af8Air9_kKY', titre: 'Scotch Game Basics - Main Lines, Ideas, Traps', chaine: 'Chess Vibes', langue: 'en', verifie: true, source: 'recherche web' },
       ] },

@@ -85,7 +85,7 @@ export default [
     conserver: 'Tour e1 sur la colonne ouverte',
     video: { recherche: 'Two Knights Defense 4.d4 Modern attack', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense | Chess Opening Tutorial', chaine: 'GM Huschenbeth', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -100,7 +100,7 @@ export default [
     conserver: 'Fou c4, pion e4 solide',
     video: { recherche: 'Italian Game 4.d3 Two Knights quiet line', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense | Chess Opening Tutorial', chaine: 'GM Huschenbeth', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -184,7 +184,7 @@ export default [
     conserver: 'Pion de plus',
     video: { recherche: 'Traxler counterattack 5.Bxf7+ Ke7 6.Bd5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=te4yVda5mhI', titre: 'Chess Openings: Traxler Counter Attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=te4yVda5mhI', titre: 'Chess Openings: Traxler Counter Attack', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -199,7 +199,7 @@ export default [
     conserver: 'Pion d4',
     video: { recherche: 'Giuoco Piano 6...Bb4+ 7.Bd2 main line', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=C0ArOkXBG5Q', titre: 'Chess Openings: Giuoco Piano / Moeller attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=C0ArOkXBG5Q', titre: 'Chess Openings: Giuoco Piano / Moeller attack', chaine: 'futurefox128', langue: 'en', verifie: true, source: 'recherche web' },
         { url: 'https://www.youtube.com/watch?v=4x5Y62g4UhI', titre: 'Giuoco Piano | Italian Game Theory', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'vidéothèque Lichess' },
       ] },
   },
@@ -218,7 +218,7 @@ export default [
     conserver: 'La Tour sur la colonne e',
     video: { recherche: 'Petrov Defense for White 3.Nxe5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=DyDVQPwk6fY', titre: 'Chess Openings: Petrov Defense', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -262,7 +262,7 @@ export default [
     conserver: 'Le pion de plus',
     video: { recherche: 'Elephant Gambit 2...d5 refutation', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=S8fEZJuBMkI', titre: 'Watch Out for The Elephant Gambit! | Chess Openings Explained', chaine: 'Saint Louis Chess Club', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -283,8 +283,8 @@ export default [
     conserver: 'Le Cavalier c4',
     video: { recherche: 'Latvian Gambit refutation 3.Nxe5 Qf6 4.Nc4', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2flPdsk9uz4', titre: 'Chess Openings: Latvian Gambit', chaine: 'thechesswebsite', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=zV3no3AK_P0', titre: 'Chess For Beginners: Annihilating The Latvian Gambit', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -359,7 +359,7 @@ export default [
     conserver: 'Le pion d5',
     video: { recherche: 'Two Knights 4.Ng5 d5 5.exd5 Na5 6.Bb5+ Bd7', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=NKI-7UwuGTM', titre: 'The Two Knights Defense | Chess Opening Tutorial', chaine: 'GM Huschenbeth', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {

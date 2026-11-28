@@ -153,7 +153,7 @@ export default [
     conserver: 'Contrôle de e4',
     video: { recherche: 'Colle System as Black Bf5 antidote', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FN7xJhjCxkY', titre: 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FN7xJhjCxkY', titre: 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -318,8 +318,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Jobava London 3...e6 4.Nb5 Na6 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=8o5UitW0bRM', titre: 'Introduction to the Jobava London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=sBJzmRqfbWo', titre: 'Fighting Annoying Jobava London System!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=8o5UitW0bRM', titre: 'Introduction to the Jobava London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=sBJzmRqfbWo', titre: 'Fighting Annoying Jobava London System!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -373,8 +373,8 @@ export default [
     conserver: 'Cavalier e4',
     video: { recherche: 'Torre Attack 3...Ne4 4.Bf4 c5 plan', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=xbUgaJGb5Ps', titre: 'The Torre Attack - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=mvsiaWzHFyk', titre: 'Magnus Carlsen Teaches How to Beat the Torre Attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xbUgaJGb5Ps', titre: 'The Torre Attack - Plans, Structures, Patterns, Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mvsiaWzHFyk', titre: 'Magnus Carlsen Teaches How to Beat the Torre Attack', chaine: 'Chess Dropout', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {

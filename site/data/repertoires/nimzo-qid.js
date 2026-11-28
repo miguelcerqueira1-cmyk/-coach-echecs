@@ -96,8 +96,8 @@ export default [
     conserver: 'Pion d5',
     video: { recherche: 'Queen\'s Indian Defense 4.g3 Ba6 main line explained', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=9Jt3AypZ59c', titre: 'Introduction to the Queen’s Indian Defense · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cdvhAziDTg', titre: 'Queen’s Indian Defense Main Line · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Jt3AypZ59c', titre: 'Introduction to the Queen’s Indian Defense · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cdvhAziDTg', titre: 'Queen’s Indian Defense Main Line · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -112,8 +112,8 @@ export default [
     conserver: 'Fou b7',
     video: { recherche: 'Queen\'s Indian Petrosian system 4.a3 Bb7 5.Nc3 d5 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=9Jt3AypZ59c', titre: 'Introduction to the Queen’s Indian Defense · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=1cdvhAziDTg', titre: 'Queen’s Indian Defense Main Line · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=9Jt3AypZ59c', titre: 'Introduction to the Queen’s Indian Defense · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=1cdvhAziDTg', titre: 'Queen’s Indian Defense Main Line · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -149,7 +149,7 @@ export default [
     conserver: 'La paire de Fous',
     video: { recherche: 'Trompowsky 2.Bg5 e6 3.e4 h6', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=2fQdICXQvks', titre: 'Introduction to the Trompowsky Attack · Plans, Ideas, Structures and Common Variations', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=2fQdICXQvks', titre: 'Introduction to the Trompowsky Attack · Plans, Ideas, Structures and Common Variations', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -186,8 +186,8 @@ export default [
     conserver: 'Le Fou b7',
     video: { recherche: 'Torre Attack 3.Bg5 c5 b6 for Black', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=xbUgaJGb5Ps', titre: 'The Torre Attack - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=mvsiaWzHFyk', titre: 'Magnus Carlsen Teaches How to Beat the Torre Attack', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=xbUgaJGb5Ps', titre: 'The Torre Attack - Plans, Structures, Patterns, Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=mvsiaWzHFyk', titre: 'Magnus Carlsen Teaches How to Beat the Torre Attack', chaine: 'Chess Dropout', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -205,8 +205,8 @@ export default [
     conserver: 'Le pion d5',
     video: { recherche: 'Jobava London 2.Nc3 d5 3.Bf4 c5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=8o5UitW0bRM', titre: 'Introduction to the Jobava London System', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
-        { url: 'https://www.youtube.com/watch?v=sBJzmRqfbWo', titre: 'Fighting Annoying Jobava London System!!', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=8o5UitW0bRM', titre: 'Introduction to the Jobava London System', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=sBJzmRqfbWo', titre: 'Fighting Annoying Jobava London System!!', chaine: 'Miodrag Perunovic', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
@@ -227,7 +227,7 @@ export default [
     conserver: 'Le Fou de cases noires',
     video: { recherche: 'Colle System for Black ...e6 ...c5 ...d5', url: null,
       liens: [
-        { url: 'https://www.youtube.com/watch?v=FN7xJhjCxkY', titre: 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', chaine: null, langue: 'en', verifie: false, source: 'recherche web' },
+        { url: 'https://www.youtube.com/watch?v=FN7xJhjCxkY', titre: 'The Colle System - Plans, Structures, Patterns, Variations · Chess Openings', chaine: 'Hanging Pawns', langue: 'en', verifie: true, source: 'recherche web' },
       ] },
   },
   {
